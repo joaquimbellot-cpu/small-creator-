@@ -1,0 +1,476 @@
+<!doctype html>
+<html lang="en" data-type="software" data-radius="round" data-ground="sage" data-buttons="arrow" data-motion>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Smallfold: ad marketplace for small creators and brands</title>
+<meta name="description" content="Smallfold connects creators who have 1,000 to 50,000 followers with companies that want to advertise through them.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Smallfold: ad marketplace for small creators and brands">
+<meta property="og:description" content="Brands post a campaign. Creators with 1,000 to 50,000 followers apply, post the ad and get paid.">
+<meta property="og:image" content="share.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<meta name="theme-color" content="#f7f7f5">
+<!-- <link rel="canonical" href="https://[the company's domain]/"> : add once the domain is known -->
+<meta name="site-kind" content="software">
+<meta name="page-type" content="software">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Reddit+Sans:wght@400..700&family=JetBrains+Mono:wght@400..500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/system.css">
+<link rel="stylesheet" href="assets/ui/cards.css">
+<link rel="stylesheet" href="assets/motion/motion.css">
+<link rel="stylesheet" href="assets/backgrounds/backgrounds.css">
+<link rel="stylesheet" href="assets/layout/layout.css">
+<link rel="stylesheet" href="assets/icons/icon.css">
+<style>
+:root {
+  --p-bg: #f7f7f5; --p-surface: #ebebe8; --p-ink: #000000; --p-muted: #666662;
+  --p-accent: #d0106f; --p-accent-ink: #ffffff; --p-action: #d0106f; --p-action-ink: #ffffff;
+  --p-inv-bg: #000000; --p-inv-surface: #010101; --p-inv-ink: #f7f7f5; --p-inv-muted: #828280;
+  --p-inv-accent: #d0106f; --p-inv-accent-ink: #ffffff; --p-inv-action: #d0106f; --p-inv-action-ink: #ffffff;
+  --font-display: "Reddit Sans", system-ui, sans-serif;
+  --font-text: "Reddit Sans", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  --display-weight: 500;
+  --display-tracking: -0.03em;
+  --display-tracking-xl: -0.04em;
+}
+</style>
+<link rel="stylesheet" href="assets/ui/base.css">
+<link rel="stylesheet" href="assets/ui/window/fragment.css">
+<link rel="stylesheet" href="assets/ui/chat/fragment.css">
+<link rel="stylesheet" href="assets/ui/checklist/fragment.css">
+<link rel="stylesheet" href="assets/ui/search/fragment.css">
+<link rel="stylesheet" href="assets/ui/notify/fragment.css">
+<link rel="stylesheet" href="assets/ui/stat/fragment.css">
+<link rel="stylesheet" href="assets/diagrams/diagram.css">
+<script>document.documentElement.classList.add('m-enter');setTimeout(()=>document.documentElement.classList.add('m-enter-done'),700)</script>
+<script src="assets/backgrounds/backgrounds.js"></script>
+<script>document.documentElement.classList.add('mo-js');setTimeout(()=>document.documentElement.classList.add('mo-safe'),2500)</script>
+<link rel="modulepreload" href="assets/moments/moments.js">
+<link rel="modulepreload" href="assets/moments/lib.js">
+<link rel="modulepreload" href="assets/moments/letters-assemble/moment.js">
+<!-- page CSS: only what sits inside a visual and the kit lacks, and one --p-h per card group -->
+<style>
+  /* the app window (sections-library.md, app-frame): the list beside the open thread in one frame */
+  .app.ui { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); background: var(--u-bg); border: 1px solid var(--u-border); border-radius: var(--u-r); box-shadow: var(--u-shadow); overflow: hidden; }
+  .app > .app__pane { position: relative; min-width: 0; min-height: 0; overflow: hidden; }
+  .app > .app__pane + .app__pane { border-left: 1px solid var(--u-line); }
+  .app > .app__pane > .ui-panel { width: 100%; border: 0; border-radius: 0; box-shadow: none; }
+  @media (max-width: 1023px) {
+    .app.ui { grid-template-columns: minmax(0, 1fr); }
+    .app > .app__pane--list { display: none; }
+    .app > .app__pane + .app__pane { border-left: 0; }
+  }
+  #brands .panel { --p-h: 336px; }
+  #join .panel { --p-h: 300px; }
+  @media (min-width: 640px) and (max-width: 1023px) {
+    #brands .panel { --p-h: calc(100svh - 560px); } #join .panel { --p-h: calc(100svh - 804px); } #creators .at-over { display: none; }
+    /* the questions fill their screen: the rows share what the list leaves */
+    #questions .grid { flex: 1 1 0; min-height: 0; grid-template-rows: auto minmax(0, 1fr); } #questions .faq { display: grid; align-content: space-between; }
+    /* the form stands on the container's lines */
+    #join .grid > .form-box { background: none; padding: 0; border-radius: 0; }
+  }
+  @media (min-width: 1024px) and (max-height: 820px) { #brands .panel { --p-h: 232px; } }
+  #followers .sides { margin-top: var(--s-7); }
+  @media (min-width: 640px) and (max-width: 1023px) { #followers .mo-la__type { font-size: 17vw; } }
+  @media (max-width: 639px) { .hero--centred .pill, #brands h2 > .muted, #questions .section-head > p, #questions .faq__item:nth-child(3) { display: none; } #brands .panel { --p-h: 166px; } #brands .stage { --fade-h: 40px; } #join .panel { --p-h: 240px; } }
+  @media (max-width: 359px) { #questions .faq__item:nth-child(2) { display: none; } }
+  /* the diagram's labels in the ink on the lit ground (4.5:1 and more) */
+  #join .dg .dg-cap__l { color: var(--ground-ink, var(--ink)); }
+  /* the sign-up form's own ground: a filled column (system.md, Forms) */
+  .form-box { background: var(--surface); border-radius: var(--r-lg); padding: var(--s-7); }
+  @media (max-width: 639px) { .form-box { padding: var(--s-5); } }
+  /* text people read stands in the ink (system.md, Type: 7:1) */
+  .hero--centred .hero__lead, #followers .mo-la__sub { color: var(--ink); }
+  /* the name from line to line: nine letters, sized from the row's own width (close-word) */
+  .closing__cta.close--word { container-type: inline-size; }
+  .close--word > .close__word { font-size: 25.6cqw; line-height: 1; overflow: visible; }
+  /* the last question ends the list on its rule, with no padding under it */
+  #questions .faq > .faq__item:last-child { padding-bottom: 0; }
+  /* the diagram takes what the words leave of the screen, so the section ends on its picture */
+  @media (min-width: 1024px) { #join .span-5 { align-self: stretch; display: flex; flex-direction: column; } #join .span-5 > .panel { flex: 1 1 0; height: auto; min-height: 260px; } }
+</style>
+</head>
+<body>
+<!-- type: software (a marketplace app with accounts)
+     deal: hero centred, nav nav-centre (nav-cards re-dealt: the page has no photographs), close close-word,
+           footer footer-statement, rhythm space, buttons arrow, mark initial, lit ground sage
+     palette card-pastels, type reddit (Reddit Sans + JetBrains Mono), radius round
+     effect: grain-gradient in the hero frame; card grounds: the lit ground plain (no second id fits the family)
+     moments: letters-assemble in #followers (the follower range is the one fact the whole offer turns on) -->
+
+<header class="nav nav--centre">
+  <div class="wrap nav__bar">
+    <a class="skip-link" href="#top">Skip to content</a>
+    <a class="nav__logo" href="#top"><span class="mark mark--initial" aria-hidden="true">S</span>Smallfold</a>
+    <nav class="nav__links" aria-label="Main">
+      <div class="nav__item"><a class="nav__link" href="#brands">Brands</a></div>
+      <div class="nav__item"><a class="nav__link" href="#followers">Followers</a></div>
+      <div class="nav__item"><a class="nav__link" href="#creators">Creators</a></div>
+      <div class="nav__item"><a class="nav__link" href="#questions">Questions</a></div>
+    </nav>
+    <div class="nav__actions">
+      <a class="btn btn--primary" href="#join">Join Smallfold</a>
+    </div>
+    <button class="nav__toggle" type="button" aria-expanded="false" aria-label="Menu">
+      <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><path d="M2 5h14M2 13h14" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+    </button>
+  </div>
+</header>
+
+<main id="top">
+  <!-- HERO (centred): the pill, the h1, the lead, two buttons, then the app window rising out of the lit frame -->
+  <section class="hero hero--centred" data-enter aria-labelledby="hero-h">
+    <div class="wrap"><div class="hero-text">
+      <div class="hero__c">
+        <a class="pill" href="#followers"><span>1,000 to 50,000 followers</span><span class="muted">See who can join</span></a>
+        <h1 id="hero-h">Ad marketplace for small creators</h1>
+        <p class="hero__lead">Brands post a campaign. Creators with 1,000 to 50,000 followers apply, post the ad and get paid.</p>
+        <div class="btn-row">
+          <a class="btn btn--primary" href="#join">Join Smallfold<svg class="m-arrow" viewBox="0 0 12 12" aria-hidden="true"><path class="m-arrow__stem" d="M1 6h8"/><path class="m-arrow__head" d="M4.5 2.5 8 6l-3.5 3.5"/></svg></a>
+          <a class="btn btn--secondary" href="#brands">See how it works</a>
+        </div>
+      </div>
+      <div class="hero__window" data-fx="grain-gradient" data-fx-seed="7" data-ui-pause-host role="img" aria-label="The Smallfold app: creator applications for a campaign, and the message thread with one creator agreeing two videos and one story for 180 dollars">
+        <div class="ly-piece ui app" aria-hidden="true">
+          <div class="app__pane app__pane--list">
+            <div class="ui ui-panel ui-win" data-ui="window" data-open="Applied" data-work="Reviewing" data-done="Approved">
+              <div class="ui-win__bar">
+                <span class="ui-dots" aria-hidden="true"><i></i><i></i><i></i></span>
+                <span class="ui-win__crumb">Oat drink launch <i>/</i> <b>Applications</b></span>
+                <span class="ui-spacer"></span>
+              </div>
+              <div class="ui-win__body">
+                <div class="ui-win__main">
+                  <div class="ui-win__cols" aria-hidden="true"><span>Creator</span><span>Niche</span><span>Status</span><span>Age</span></div>
+                  <ul class="ui-win__rows">
+                    <li class="ui-win__row" data-row><span class="ui-avatar" data-tone="1">MR</span><span class="ui-win__who">Mila R.</span><span class="ui-win__sub">Home baking · 12,400 followers</span><span class="ui-win__st" data-st>Applied</span><span class="ui-win__age">2m</span></li>
+                    <li class="ui-win__row" data-row><span class="ui-avatar" data-tone="3">JT</span><span class="ui-win__who">Jonas T.</span><span class="ui-win__sub">Trail running · 8,900 followers</span><span class="ui-win__st" data-st>Applied</span><span class="ui-win__age">9m</span></li>
+                    <li class="ui-win__row" data-row><span class="ui-avatar" data-tone="4">AS</span><span class="ui-win__who">Aiko S.</span><span class="ui-win__sub">Plant care · 31,200 followers</span><span class="ui-win__st" data-st>Applied</span><span class="ui-win__age">14m</span></li>
+                    <li class="ui-win__row" data-row><span class="ui-avatar" data-tone="2">DP</span><span class="ui-win__who">Dario P.</span><span class="ui-win__sub">Budget cooking · 4,700 followers</span><span class="ui-win__st is-you" data-st>Fee offered</span><span class="ui-win__age">31m</span></li>
+                    <li class="ui-win__row" data-row><span class="ui-avatar" data-tone="5">LV</span><span class="ui-win__who">Lea V.</span><span class="ui-win__sub">Thrift fashion · 22,800 followers</span><span class="ui-win__st is-done" data-st>Approved</span><span class="ui-win__age">1h</span></li>
+                    <li class="ui-win__row" data-row><span class="ui-avatar" data-tone="3">SO</span><span class="ui-win__who">Sam O.</span><span class="ui-win__sub">Home coffee · 1,900 followers</span><span class="ui-win__st is-done" data-st>Approved</span><span class="ui-win__age">2h</span></li>
+                    <li class="ui-win__row" data-row><span class="ui-avatar" data-tone="1">TK</span><span class="ui-win__who">Tess K.</span><span class="ui-win__sub">Student meals · 15,300 followers</span><span class="ui-win__st is-done" data-st>Approved</span><span class="ui-win__age">3h</span></li>
+                    <li class="ui-win__row" data-row><span class="ui-avatar" data-tone="4">BA</span><span class="ui-win__who">Ben A.</span><span class="ui-win__sub">Cycling · 6,400 followers</span><span class="ui-win__st is-done" data-st>Approved</span><span class="ui-win__age">5h</span></li>
+                    <li class="ui-win__row" data-row><span class="ui-avatar" data-tone="2">GM</span><span class="ui-win__who">Gwen M.</span><span class="ui-win__sub">Skincare · 44,100 followers</span><span class="ui-win__st is-done" data-st>Approved</span><span class="ui-win__age">6h</span></li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="app__pane app__pane--open" data-ui-cycles="2">
+            <div class="ui ui-panel ui-chat" data-ui="chat">
+              <div class="ui-head">
+                <span class="ui-avatar" data-tone="1" aria-hidden="true">MR</span>
+                <div class="ui-title">Mila R.</div>
+                <span class="ui-chat__online">Home baking · 12,400 followers</span>
+                <span class="ui-spacer"></span>
+              </div>
+              <div class="ui-chat__body">
+                <div class="ui-msg ui-msg--me" data-chat-q>
+                  <span class="ui-msg__text">Can you post two short videos by 14 March?</span>
+                </div>
+                <div class="ui-msg ui-msg--bot" data-chat-a>
+                  <span class="ui-avatar ui-msg__av" data-tone="1" aria-hidden="true">MR</span>
+                  <span class="ui-msg__col">
+                    <span class="ui-chat__answer">Yes. Two videos and one story for <b>$180</b>, posted by 14 March.</span>
+                    <span class="ui-chat__srcs">
+                      <span class="ui-chat__src"><svg class="ui-icon" viewBox="0 0 16 16"><path d="M4 2.5h5l3 3v8H4z"/><path d="M9 2.5v3h3"/></svg>Oat drink launch brief</span>
+                      <span class="ui-chat__src"><svg class="ui-icon" viewBox="0 0 16 16"><path d="m3.5 8.4 2.8 2.8 6.2-6.4"/></svg>2 videos, 1 story</span>
+                    </span>
+                  </span>
+                </div>
+                <div class="ui-msg ui-msg--me">
+                  <span class="ui-msg__text">Agreed. I am approving your application now.</span>
+                </div>
+              </div>
+              <div class="ui-chat__input">
+                <span class="ui-chat__ph">Write a message</span>
+                <span class="ui-chat__send" aria-hidden="true"><svg viewBox="0 0 16 16" width="14" height="14"><path d="M8 13V3.5M3.8 7.5 8 3.3l4.2 4.2" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div></div>
+  </section>
+
+  <!-- BRANDS (features-2x2, two screens): four cards, each a fragment of the product on the lit ground -->
+  <section class="section g2" id="brands" aria-labelledby="brands-h">
+    <div class="wrap">
+      <div class="group">
+        <div class="section-head">
+          <h2 id="brands-h">Brands advertise through small creators. <span class="muted">Smallfold carries the brief, the applications and the payment.</span></h2>
+        </div>
+        <div class="grid">
+          <article class="card card--row card--open span-6">
+            <h3>Brief creators on a campaign</h3>
+            <p>Say what you sell, what you want posted and what you pay. Creators see the brief and apply.</p>
+            <div class="panel">
+              <div class="stage"><div class="at-rise fit" style="--fit-max:340px;--ax:max(24px, 50% - 170px);--ay:36px;--ay-sm:20px" data-ui-loop>
+                <div class="ui ui-panel ui-checks" data-ui="checklist">
+                  <div class="ui-checks__head">
+                    <div class="ui-title">Campaign brief</div>
+                    <span class="ui-spacer"></span>
+                    <div class="ui-meta" data-checks-count>3 of 5</div>
+                  </div>
+                  <div class="ui-checks__bar"><i data-checks-bar style="--k:0.6"></i></div>
+                  <ul class="ui-checks__list">
+                    <li class="ui-check is-done"><span class="ui-check__box"><svg viewBox="0 0 16 16"><path d="m4.5 8.2 2.3 2.3 4.7-5"/></svg></span><span class="ui-check__label">Product: oat drink, 1 litre</span></li>
+                    <li class="ui-check is-done"><span class="ui-check__box"><svg viewBox="0 0 16 16"><path d="m4.5 8.2 2.3 2.3 4.7-5"/></svg></span><span class="ui-check__label">Posts: 2 videos, 1 story</span></li>
+                    <li class="ui-check is-done"><span class="ui-check__box"><svg viewBox="0 0 16 16"><path d="m4.5 8.2 2.3 2.3 4.7-5"/></svg></span><span class="ui-check__label">Fee per creator: $180</span></li>
+                    <li class="ui-check"><span class="ui-check__box"><svg viewBox="0 0 16 16"><path d="m4.5 8.2 2.3 2.3 4.7-5"/></svg></span><span class="ui-check__label">Post by 14 March</span></li>
+                    <li class="ui-check"><span class="ui-check__box"><svg viewBox="0 0 16 16"><path d="m4.5 8.2 2.3 2.3 4.7-5"/></svg></span><span class="ui-check__label">Publish to creators</span></li>
+                  </ul>
+                </div>
+              </div></div>
+            </div>
+          </article>
+          <article class="card card--row card--open span-6">
+            <h3>Compare creator applications</h3>
+            <p>Each application shows the creator's niche and follower count, so you choose who fits the campaign.</p>
+            <div class="panel">
+              <div class="stage stage--fade-b"><div class="at-rise fit to-edge" style="--fit-max:380px;--ax:max(24px, 50% - 190px);--ay:48px;--ay-sm:20px">
+                <div class="ui ui-panel ui-search" data-ui="search">
+                  <div class="ui-search__field">
+                    <svg class="ui-icon" viewBox="0 0 16 16" aria-hidden="true"><circle cx="7" cy="7" r="4.5"/><path d="m10.5 10.5 3 3"/></svg>
+                    <span class="ui-search__q"><span data-search-q>food</span><i class="ui-search__caret"></i></span>
+                    <kbd class="ui-search__kbd">Ctrl K</kbd>
+                  </div>
+                  <div class="ui-search__group">Applications</div>
+                  <ul class="ui-search__list" data-search-list>
+                    <li class="ui-search__row is-sel"><span class="ui-search__ico"><svg class="ui-icon" viewBox="0 0 16 16"><circle cx="8" cy="6" r="2.5"/><path d="M3.5 13.5c.6-2.3 2.4-3.5 4.5-3.5s3.9 1.2 4.5 3.5"/></svg></span><span class="ui-search__t">Mila R., home baking</span><span class="ui-search__m">12,400</span></li>
+                    <li class="ui-search__row"><span class="ui-search__ico"><svg class="ui-icon" viewBox="0 0 16 16"><circle cx="8" cy="6" r="2.5"/><path d="M3.5 13.5c.6-2.3 2.4-3.5 4.5-3.5s3.9 1.2 4.5 3.5"/></svg></span><span class="ui-search__t">Dario P., budget cooking</span><span class="ui-search__m">4,700</span></li>
+                    <li class="ui-search__row"><span class="ui-search__ico"><svg class="ui-icon" viewBox="0 0 16 16"><circle cx="8" cy="6" r="2.5"/><path d="M3.5 13.5c.6-2.3 2.4-3.5 4.5-3.5s3.9 1.2 4.5 3.5"/></svg></span><span class="ui-search__t">Tess K., student meals</span><span class="ui-search__m">15,300</span></li>
+                  </ul>
+                  <div class="ui-search__foot"><span><kbd>&uarr;</kbd><kbd>&darr;</kbd> to move</span><span><kbd>Enter</kbd> to open</span></div>
+                </div>
+              </div></div>
+            </div>
+          </article>
+        </div>
+      </div>
+      <div class="grid">
+        <article class="card card--row card--open span-6">
+          <h3>Agree the creator's fee in one thread</h3>
+          <p>Message the creator, settle the posts and the fee, then approve. Both sides see the same terms.</p>
+          <div class="panel">
+            <div class="stage stage--fade-b"><div class="at-rise fit to-edge" style="--fit-max:400px;--ax:max(24px, 50% - 200px);--ay:48px;--ay-sm:20px">
+              <div class="ui ui-panel ui-chat" data-ui="chat">
+                <div class="ui-head"><span class="ui-avatar" data-tone="3" aria-hidden="true">JT</span><div class="ui-title">Jonas T.</div><span class="ui-chat__online">Trail running</span><span class="ui-spacer"></span></div>
+                <div class="ui-chat__body">
+                  <div class="ui-msg ui-msg--me" data-chat-q><span class="ui-msg__text">We can offer $150 for one video and two stories.</span></div>
+                  <div class="ui-msg ui-msg--bot" data-chat-a>
+                    <span class="ui-avatar ui-msg__av" data-tone="3" aria-hidden="true">JT</span>
+                    <span class="ui-msg__col">
+                      <span class="ui-chat__answer">That works. I can post all three by <b>14 March</b>.</span>
+                      <span class="ui-chat__srcs"><span class="ui-chat__src"><svg class="ui-icon" viewBox="0 0 16 16"><path d="m3.5 8.4 2.8 2.8 6.2-6.4"/></svg>Fee agreed: $150</span></span>
+                    </span>
+                  </div>
+                  <div class="ui-msg ui-msg--me"><span class="ui-msg__text">Agreed. The brief is on its way to you.</span></div>
+                  <div class="ui-msg ui-msg--bot"><span class="ui-avatar ui-msg__av" data-tone="3" aria-hidden="true">JT</span><span class="ui-msg__col"><span class="ui-chat__answer">Got it. First draft on Monday.</span></span></div>
+                </div>
+                <div class="ui-chat__input"><span class="ui-chat__ph">Write a message</span><span class="ui-chat__send" aria-hidden="true"><svg viewBox="0 0 16 16" width="14" height="14"><path d="M8 13V3.5M3.8 7.5 8 3.3l4.2 4.2" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></span></div>
+              </div>
+            </div></div>
+          </div>
+        </article>
+        <article class="card card--row card--open span-6">
+          <h3>Pay creators per finished deal</h3>
+          <p>You pay each creator's fee through Smallfold. Smallfold takes a commission on each deal.</p>
+          <div class="panel">
+            <div class="stage stage--fade-b"><div class="at-right to-edge" style="--ax:32px;--ay:48px;--ay-sm:20px">
+              <div class="ui ui-panel ui-stat" data-ui="stat" data-ui-opts='{"fill":true}' data-values="0,0,180,180,180,360,360,540,540,540,720,720,900,900" data-prev="0,0,0,180,180,180,360,360,360,540,540,540,720,720">
+                <div class="ui-stat__head">
+                  <div class="ui-stat__top">
+                    <span class="ui-stat__label">Paid to creators</span>
+                    <span class="ui-stat__range">Oat drink launch<svg class="ui-icon" viewBox="0 0 16 16" aria-hidden="true"><path d="m4.5 6.5 3.5 3.5 3.5-3.5"/></svg></span>
+                  </div>
+                  <div class="ui-stat__line">
+                    <span class="ui-stat__num" data-stat-num>$900</span>
+                    <span class="ui-chip ui-chip--plain ui-stat__delta">5 deals</span>
+                    <span class="ui-stat__sub">$180 each</span>
+                  </div>
+                </div>
+                <div class="ui-stat__chart">
+                  <svg class="ui-stat__svg" viewBox="0 0 400 120" preserveAspectRatio="none" aria-hidden="true">
+                    <path class="ui-stat__grid" d="M0 30.5H400M0 60.5H400M0 90.5H400"/>
+                    <path class="ui-stat__cover" fill-rule="evenodd" d=""/>
+                    <g class="ui-stat__bars"><rect rx="3" x="0.00" y="116" width="21.14" height="4"/><rect rx="3" x="29.14" y="116" width="21.14" height="4"/><rect rx="3" x="58.29" y="98" width="21.14" height="22"/><rect rx="3" x="87.43" y="98" width="21.14" height="22"/><rect rx="3" x="116.57" y="98" width="21.14" height="22"/><rect rx="3" x="145.71" y="76" width="21.14" height="44"/><rect rx="3" x="174.86" y="76" width="21.14" height="44"/><rect rx="3" x="204.00" y="54" width="21.14" height="66"/><rect rx="3" x="233.14" y="54" width="21.14" height="66"/><rect rx="3" x="262.29" y="54" width="21.14" height="66"/><rect rx="3" x="291.43" y="32" width="21.14" height="88"/><rect rx="3" x="320.57" y="32" width="21.14" height="88"/><rect rx="3" x="349.71" y="10" width="21.14" height="110"/><rect rx="3" x="378.86" y="10" width="21.14" height="110"/></g>
+                  </svg>
+                  <div class="ui-stat__axis" aria-hidden="true"><span>1 March</span><span>7 March</span><span>14 March</span></div>
+                </div>
+              </div>
+            </div></div>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOLLOWERS (the statement, moment letters-assemble): the range the whole marketplace turns on -->
+  <section class="section" id="followers" data-moment="letters-assemble" aria-labelledby="followers-h">
+    <div class="wrap">
+      <h2 class="mo-la__type" id="followers-h">1,000 to 50,000 followers</h2>
+      <p class="mo-la__sub">Smallfold is for creators in this range, and for the companies that want to advertise through them.</p>
+      <div class="grid grid--top sides">
+        <div class="span-5 stack-4"><h3>Creators</h3><p>Apply to paid campaigns from your first 1,000 followers.</p></div>
+        <div class="span-6 start-7 stack-4"><h3>Brands</h3><p>Reach many small audiences with one campaign brief.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CREATORS (split-text-left): the creator's own view, open campaigns and an approval -->
+  <section class="section" id="creators" aria-labelledby="creators-h">
+    <div class="wrap">
+      <div class="grid grid--top fill">
+        <div class="span-5 stack-5">
+          <h2 id="creators-h">Paid ad work for small creators</h2>
+          <p class="t-lead">Open campaigns list what the brand wants posted and what it pays. Apply to the ones that fit your audience, post the ad and get paid through Smallfold.</p>
+          <a class="link" href="#questions">Read the questions creators ask</a>
+        </div>
+        <div class="frame frame--split frame--fill span-6 start-7" role="img" aria-label="A creator's Smallfold account: a list of open campaigns with their posts and fees, and a notice that one application was approved">
+          <div class="stage stage--fade-br" aria-hidden="true">
+            <div class="at-corner to-edge wide" style="--ax:56px;--ay:56px;--w:720px">
+              <div class="ui ui-panel ui-win" data-ui="window" data-open="Open" data-work="Applying" data-done="Applied">
+                <div class="ui-win__bar">
+                  <span class="ui-dots" aria-hidden="true"><i></i><i></i><i></i></span>
+                  <span class="ui-win__crumb">Campaigns <i>/</i> <b>Open</b></span>
+                  <span class="ui-spacer"></span>
+                  <span class="ui-win__search" aria-hidden="true"><svg class="ui-icon" viewBox="0 0 16 16"><circle cx="7" cy="7" r="4.5"/><path d="m10.5 10.5 3 3"/></svg><span class="ui-win__ph">Search</span><span class="ui-kbd">/</span></span>
+                </div>
+                <div class="ui-win__body">
+                  <nav class="ui-win__side" aria-hidden="true">
+                    <span class="ui-win__nav is-on"><svg class="ui-icon" viewBox="0 0 16 16"><path d="M2.5 9h3l1 1.5h3l1-1.5h3"/><path d="M2.5 9 4 3.5h8L13.5 9v3.5h-11z"/></svg>Open<em>18</em></span>
+                    <span class="ui-win__nav"><svg class="ui-icon" viewBox="0 0 16 16"><circle cx="8" cy="8" r="5.5"/><path d="M8 5v3l2 1.5"/></svg>Applied<em>3</em></span>
+                    <span class="ui-win__nav"><svg class="ui-icon" viewBox="0 0 16 16"><path d="m3.5 8.4 2.8 2.8 6.2-6.4"/></svg>Approved<em>1</em></span>
+                    <span class="ui-win__nav"><svg class="ui-icon" viewBox="0 0 16 16"><circle cx="8" cy="6" r="2.5"/><path d="M3.5 13.5c.6-2.3 2.4-3.5 4.5-3.5s3.9 1.2 4.5 3.5"/></svg>Paid</span>
+                    <span class="ui-win__label">Topics</span>
+                    <span class="ui-win__nav"><span class="ui-win__hash">#</span>Food</span>
+                    <span class="ui-win__nav"><span class="ui-win__hash">#</span>Outdoors</span>
+                  </nav>
+                  <div class="ui-win__main">
+                    <div class="ui-win__cols" aria-hidden="true"><span>Campaign</span><span>Posts and fee</span><span>Status</span><span>Age</span></div>
+                    <ul class="ui-win__rows">
+                      <li class="ui-win__row" data-row><span class="ui-avatar" data-tone="1">OD</span><span class="ui-win__who">Oat drink launch</span><span class="ui-win__sub">2 videos, 1 story · $180</span><span class="ui-win__st is-done" data-st>Approved</span><span class="ui-win__age">2m</span></li>
+                      <li class="ui-win__row" data-row><span class="ui-avatar" data-tone="3">TS</span><span class="ui-win__who">Trail shoes, spring</span><span class="ui-win__sub">1 video · $120</span><span class="ui-win__st" data-st>Open</span><span class="ui-win__age">1h</span></li>
+                      <li class="ui-win__row" data-row><span class="ui-avatar" data-tone="4">RS</span><span class="ui-win__who">Refill soap kit</span><span class="ui-win__sub">3 stories · $90</span><span class="ui-win__st" data-st>Open</span><span class="ui-win__age">3h</span></li>
+                      <li class="ui-win__row" data-row><span class="ui-avatar" data-tone="2">BL</span><span class="ui-win__who">City bike lock</span><span class="ui-win__sub">1 video, 2 stories · $150</span><span class="ui-win__st" data-st>Open</span><span class="ui-win__age">5h</span></li>
+                      <li class="ui-win__row" data-row><span class="ui-avatar" data-tone="5">TB</span><span class="ui-win__who">Loose-leaf tea box</span><span class="ui-win__sub">2 stories · $60</span><span class="ui-win__st" data-st>Open</span><span class="ui-win__age">1d</span></li>
+                      <li class="ui-win__row" data-row><span class="ui-avatar" data-tone="3">RA</span><span class="ui-win__who">Running app, yearly plan</span><span class="ui-win__sub">1 video · $200</span><span class="ui-win__st" data-st>Open</span><span class="ui-win__age">1d</span></li>
+                      <li class="ui-win__row" data-row><span class="ui-avatar" data-tone="1">HP</span><span class="ui-win__who">Herb planter</span><span class="ui-win__sub">2 videos · $140</span><span class="ui-win__st" data-st>Open</span><span class="ui-win__age">2d</span></li>
+                      <li class="ui-win__row" data-row><span class="ui-avatar" data-tone="4">LB</span><span class="ui-win__who">Lunch box, steel</span><span class="ui-win__sub">1 video, 1 story · $110</span><span class="ui-win__st" data-st>Open</span><span class="ui-win__age">2d</span></li>
+                      <li class="ui-win__row" data-row><span class="ui-avatar" data-tone="2">SC</span><span class="ui-win__who">Sunscreen, 50 ml</span><span class="ui-win__sub">2 stories · $75</span><span class="ui-win__st" data-st>Open</span><span class="ui-win__age">3d</span></li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="at-over" style="--bx:24px;--by:40px">
+              <div class="ui ui-notify" data-ui="notify">
+                <ul class="ui-notify__list" data-notify-list>
+                  <li class="ui-note"><span class="ui-note__ico"><svg class="ui-icon" viewBox="0 0 16 16"><path d="m3.5 8.4 2.8 2.8 6.2-6.4"/></svg></span><span class="ui-note__text"><span class="ui-note__title">Your application was approved<time>now</time></span><span class="ui-note__body">Oat drink launch, $180</span></span><span class="ui-btn ui-btn--sm ui-note__btn">Open</span></li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- QUESTIONS (faq): every answer open -->
+  <section class="section" id="questions" aria-labelledby="questions-h">
+    <div class="wrap">
+      <div class="grid grid--top">
+        <div class="span-5 section-head">
+          <h2 id="questions-h">Questions</h2>
+          <p>What brands and creators want to know before they sign up.</p>
+        </div>
+        <div class="faq span-6 start-7">
+          <div class="faq__item"><h3>What does Smallfold cost?</h3><p>Smallfold takes a commission on each deal between a brand and a creator. No deal, no commission.</p></div>
+          <div class="faq__item"><h3>Who counts as a small creator?</h3><p>A creator with 1,000 to 50,000 followers.</p></div>
+          <div class="faq__item"><h3>How does a deal on Smallfold work?</h3><p>A brand posts a campaign brief. Creators apply, the brand approves the ones that fit, and the creators post the ad and get paid.</p></div>
+          <div class="faq__item"><h3>Is Smallfold for brands or for creators?</h3><p>Both. Larger companies post campaigns and small creators apply to them.</p></div>
+          <div class="faq__item"><h3>How do creators get paid?</h3><p>Through Smallfold. The brand pays the creator's fee there when the deal is done, and Smallfold keeps its commission.</p></div>
+          <div class="faq__item"><h3>How do I join Smallfold?</h3><p>Fill in the form on this page and say whether you are a creator or a brand.</p></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- JOIN (the form): the main action is done here -->
+  <section class="section" id="join" style="--h: 1; --hm: 2" aria-labelledby="join-h">
+    <div class="wrap">
+      <div class="grid grid--top fill">
+        <div class="span-5 stack-5">
+          <h2 id="join-h">Sign-up for creators and brands</h2>
+          <p class="t-lead">One campaign brief reaches many small creators at once. Say which side you are on and we set up your account.</p>
+          <div class="panel">
+            <div class="dg" data-dg-still data-diagram='{"layout":"lanes","alt":"One campaign brief from a brand goes through Smallfold to three creators at once.","input":{"label":"Brief","icon":"ui:file-text","kindCompact":"pill"},"core":{"label":"Smallfold"},"lanes":[{"label":"Baking","icon":"ui:user","done":true,"kindCompact":"pill"},{"label":"Running","icon":"ui:user","done":true,"kindCompact":"pill"},{"label":"Plants","icon":"ui:user","done":true,"kindCompact":"pill"}]}'></div>
+          </div>
+        </div>
+        <div class="span-6 start-7 form-box">
+          <form class="form" action="mailto:hello@smallfold.example" method="post" enctype="text/plain" data-endpoint="" data-sent="Your request to join Smallfold is in. We reply by email." novalidate>
+            <div class="field field--full"><label for="f-role">I am a</label>
+              <select id="f-role" name="role" required aria-describedby="f-role-err">
+                <option value="">Choose one</option>
+                <option value="creator">Creator</option>
+                <option value="brand">Brand</option>
+              </select>
+              <p class="field__error" id="f-role-err" hidden>Choose creator or brand.</p></div>
+            <div class="field"><label for="f-name">Name</label>
+              <input id="f-name" name="name" type="text" autocomplete="name" required aria-describedby="f-name-err">
+              <p class="field__error" id="f-name-err" hidden>Write your name.</p></div>
+            <div class="field"><label for="f-email">Email</label>
+              <input id="f-email" name="email" type="email" autocomplete="email" inputmode="email" required aria-describedby="f-email-err">
+              <p class="field__error" id="f-email-err" hidden>Write an email address with an @, like name@example.com.</p></div>
+            <div class="field field--full"><label for="f-channel">Channel or company</label>
+              <input id="f-channel" name="channel" type="text" autocomplete="organization" required aria-describedby="f-channel-err">
+              <p class="field__error" id="f-channel-err" hidden>Write the name of your channel or your company.</p></div>
+            <div class="btn-row"><button class="btn btn--primary" type="submit">Join Smallfold</button></div>
+            <p class="form__status" role="status" data-form-status></p>
+            <p class="t-small muted">We reply by email.</p>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="footer closing footer--statement" id="contact" aria-labelledby="close-h">
+  <div class="wrap">
+    <div class="closing__cta close--word">
+      <div class="section-head--split">
+        <div><h2 id="close-h">Join as a creator or a brand</h2><p class="t-lead">Smallfold takes a commission on each deal.</p></div>
+        <a class="btn btn--primary" href="#join">Join Smallfold<svg class="m-arrow" viewBox="0 0 12 12" aria-hidden="true"><path class="m-arrow__stem" d="M1 6h8"/><path class="m-arrow__head" d="M4.5 2.5 8 6l-3.5 3.5"/></svg></a>
+      </div>
+      <p class="close__word" aria-hidden="true">Smallfold</p>
+    </div>
+    <div class="closing__links">
+      <div class="grid">
+        <div class="span-4 stack-4">
+          <p class="footer__lede">Ad marketplace for creators with 1,000 to 50,000 followers.</p>
+        </div>
+        <div class="span-2 footer__col"><h3>Brands</h3><ul><li><a href="#brands">Campaigns</a></li></ul></div>
+        <div class="span-2 footer__col"><h3>Creators</h3><ul><li><a href="#creators">Paid work</a></li></ul></div>
+        <div class="span-2 footer__col"><h3>Range</h3><ul><li><a href="#followers">Followers</a></li></ul></div>
+        <div class="span-2 footer__col"><h3>Help</h3><ul><li><a href="#questions">Questions</a></li></ul></div>
+      </div>
+      <div class="footer__legal">
+        <span>&copy; 2026 Smallfold</span>
+        <div class="socials"></div>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script type="module" src="assets/system.js"></script>
+<script type="module" src="assets/motion/motion.js"></script>
+<script type="module" src="assets/layout/layout.js"></script>
+<script type="module" src="assets/diagrams/mount.js"></script>
+</body>
+</html>
