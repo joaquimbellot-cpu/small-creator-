@@ -255,7 +255,7 @@ fieldset.field { border: 0; margin: 0; padding: 0; min-width: 0; }
       <a href="#creators">Creators</a>
       <a href="#steps">How it works</a>
       <a href="#questions">Questions</a>
-      <a href="#brands">Brands</a>
+      <a href="#brands">For brands</a>
     </nav>
     <a class="btn" href="#join">Join<span class="nav__long">&nbsp;Smallfold</span></a>
   </div>
@@ -372,21 +372,54 @@ fieldset.field { border: 0; margin: 0; padding: 0; min-width: 0; }
       <div class="faq" style="margin-top: clamp(40px, 5vw, 72px)">
         <div class="faq__item"><h3>What does Smallfold cost?</h3><p>Smallfold takes a 10% commission on each deal, and the brand pays it. As a creator you keep the whole fee in the offer. No deal, no commission.</p></div>
         <div class="faq__item"><h3>Is my channel big enough?</h3><p>Yes, if it has between 1,000 and 50,000 subscribers. A channel with fewer than 1,000 cannot join yet: come back when you reach 1,000.</p></div>
-        <div class="faq__item"><h3>How do I find a sponsor?</h3><p>Join as a creator, add your channel and apply to the offers that fit your audience. The brand approves the channels it wants to work with.</p></div>
         <div class="faq__item"><h3>How do I get paid?</h3><p>Through Smallfold. The brand pays your fee there once your video is published.</p></div>
         <div class="faq__item"><h3>Can I say no to a sponsorship?</h3><p>Yes. You choose which offers to apply to, and you can read each one in full first. Nothing is assigned to you.</p></div>
-        <div class="faq__item"><h3>How do I join?</h3><p>Fill in the form below and say whether you are a creator or a brand.</p></div>
       </div>
     </div>
   </section>
 
+  <!-- JOIN -->
+  <section class="section on-ink" id="join" aria-labelledby="join-h">
+    <div class="wrap join">
+      <div class="chapter__body">
+        <p class="label label--muted">Join</p>
+        <h2 class="display d-lg" id="join-h">Join as a creator or a brand</h2>
+        <p class="lead muted">Tell us which side you are on and where to reach you. We reply by email.</p>
+      </div>
+      <form class="form" id="join-form" novalidate>
+        <fieldset class="field field--full">
+          <legend>I am a</legend>
+          <div class="choice label">
+            <label><input type="radio" name="role" value="creator" required aria-describedby="role-err">Creator</label>
+            <label><input type="radio" name="role" value="brand" aria-describedby="role-err">Brand</label>
+          </div>
+          <p class="error" id="role-err" hidden>Choose creator or brand.</p>
+        </fieldset>
+        <div class="field"><label for="f-name">Name</label>
+          <input id="f-name" name="name" type="text" autocomplete="name" required aria-describedby="name-err">
+          <p class="error" id="name-err" hidden>Write your name.</p></div>
+        <div class="field"><label for="f-email">Email</label>
+          <input id="f-email" name="email" type="email" autocomplete="email" inputmode="email" required aria-describedby="email-err">
+          <p class="error" id="email-err" hidden>Write an email address with an @, like name@example.com.</p></div>
+        <div class="field field--full"><label for="f-channel" id="channel-label">YouTube channel link or company name</label>
+          <input id="f-channel" name="channel" type="text" autocomplete="off" required aria-describedby="channel-err">
+          <p class="error" id="channel-err" hidden>Write your channel link or your company's name.</p></div>
+        <div class="form__foot">
+          <button class="btn" type="submit">Join Smallfold</button>
+          <p class="form__status muted" role="status" id="form-status"></p>
+        </div>
+      </form>
+    </div>
+  </section>
+
   <!-- BRANDS -->
-  <section class="section on-ink" id="brands" aria-labelledby="brands-h">
+  <section class="section on-cream" id="brands" aria-labelledby="brands-h">
     <div class="wrap">
       <div class="chapter">
         <p class="label label--muted">For brands</p>
         <div class="chapter__body">
           <h2 class="display d-lg" id="brands-h">Sponsor many small channels with one brief</h2>
+          <p><a class="link" href="#join">Join as a brand <svg class="arrow" viewBox="0 0 12 12" aria-hidden="true"><path d="M1 6h9M6.5 2.5 10 6l-3.5 3.5" fill="none" stroke="currentColor" stroke-width="1.3"/></svg></a></p>
         </div>
       </div>
       <div class="split">
@@ -413,40 +446,6 @@ fieldset.field { border: 0; margin: 0; padding: 0; min-width: 0; }
       </div>
     </div>
   </section>
-
-  <!-- JOIN -->
-  <section class="section on-cream" id="join" aria-labelledby="join-h">
-    <div class="wrap join">
-      <div class="chapter__body">
-        <p class="label label--muted">Join</p>
-        <h2 class="display d-lg" id="join-h">Join as a creator or a brand</h2>
-        <p class="lead muted">Tell us which side you are on and where to reach you. We reply by email.</p>
-      </div>
-      <form class="form" id="join-form" novalidate>
-        <fieldset class="field field--full">
-          <legend>I am a</legend>
-          <div class="choice label">
-            <label><input type="radio" name="role" value="creator" required aria-describedby="role-err">Creator with a YouTube channel</label>
-            <label><input type="radio" name="role" value="brand" aria-describedby="role-err">Brand looking for creators</label>
-          </div>
-          <p class="error" id="role-err" hidden>Choose creator or brand.</p>
-        </fieldset>
-        <div class="field"><label for="f-name">Name</label>
-          <input id="f-name" name="name" type="text" autocomplete="name" required aria-describedby="name-err">
-          <p class="error" id="name-err" hidden>Write your name.</p></div>
-        <div class="field"><label for="f-email">Email</label>
-          <input id="f-email" name="email" type="email" autocomplete="email" inputmode="email" required aria-describedby="email-err">
-          <p class="error" id="email-err" hidden>Write an email address with an @, like name@example.com.</p></div>
-        <div class="field field--full"><label for="f-channel" id="channel-label">YouTube channel link or company name</label>
-          <input id="f-channel" name="channel" type="text" autocomplete="off" required aria-describedby="channel-err">
-          <p class="error" id="channel-err" hidden>Write your channel link or your company's name.</p></div>
-        <div class="form__foot">
-          <button class="btn" type="submit">Join Smallfold</button>
-          <p class="form__status muted" role="status" id="form-status"></p>
-        </div>
-      </form>
-    </div>
-  </section>
 </main>
 
 <footer class="footer on-ink">
@@ -454,7 +453,7 @@ fieldset.field { border: 0; margin: 0; padding: 0; min-width: 0; }
     <div class="footer__row">
       <p class="lead" style="max-width: 22em">A sponsorship marketplace for YouTube channels with 1,000 to 50,000 subscribers.</p>
       <nav class="footer__links" aria-label="Footer">
-        <a href="#creators">Creators</a><a href="#steps">How it works</a><a href="#questions">Questions</a><a href="#brands">Brands</a><a href="#join">Join Smallfold</a>
+        <a href="#creators">Creators</a><a href="#steps">How it works</a><a href="#questions">Questions</a><a href="#join">Join Smallfold</a><a href="#brands">For brands</a>
       </nav>
     </div>
     <p class="footer__word" aria-hidden="true">Smallfold</p>
