@@ -60,13 +60,14 @@ ul, ol { padding: 0; list-style: none; }
 .btn { display: inline-flex; align-items: center; justify-content: center; gap: 10px; min-height: 48px; padding: 0 24px; border-radius: 999px; border: 1px solid var(--fg);
   background: var(--fg); color: var(--bg); font: 400 12px/1 var(--font-label); text-transform: uppercase; letter-spacing: .09em; text-decoration: none; cursor: pointer;
   transition: background-color .2s var(--ease), color .2s var(--ease), transform .2s var(--ease); }
-.btn:hover { background: transparent; color: var(--fg); }
+@media (hover: hover) { .btn:hover { background: transparent; color: var(--fg); } }
+.btn:focus-visible { outline: 2px solid var(--fg); outline-offset: 3px; }
 .btn:active { transform: scale(.98); }
 .btn--ghost { background: transparent; color: var(--fg); }
-.btn--ghost:hover { background: var(--fg); color: var(--bg); }
+@media (hover: hover) { .btn--ghost:hover { background: var(--fg); color: var(--bg); } }
 .link { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; font: 400 12px/1.4 var(--font-label); text-transform: uppercase; letter-spacing: .09em; text-decoration: none;
   background: linear-gradient(currentColor, currentColor) 0 calc(100% - 9px) / 100% 1px no-repeat; transition: background-size .3s var(--ease); }
-.link:hover { background-size: 0 1px; background-position: 100% calc(100% - 9px); }
+@media (hover: hover) { .link:hover { background-size: 0 1px; background-position: 100% calc(100% - 9px); } }
 .arrow { width: 12px; height: 12px; flex: none; transition: transform .25s var(--ease); }
 a:hover > .arrow, button:hover > .arrow { transform: translateX(3px); }
 :focus-visible { outline: 2px solid currentColor; outline-offset: 3px; }
@@ -78,23 +79,25 @@ a:hover > .arrow, button:hover > .arrow { transform: translateX(3px); }
 .nav__bar { height: 100%; display: flex; align-items: center; gap: 32px; }
 .nav__logo { font: 400 22px/1 var(--font-display); text-transform: uppercase; letter-spacing: .02em; text-decoration: none; min-height: 44px; display: inline-flex; align-items: center; }
 .nav__links { display: flex; gap: clamp(16px, 2.4vw, 36px); margin-inline: auto; }
-.nav__links a { display: inline-flex; align-items: center; min-height: 44px; text-decoration: none; font: 400 11px/1 var(--font-label); text-transform: uppercase; letter-spacing: .09em; color: var(--muted); transition: color .2s; }
+.nav__links a { display: inline-flex; align-items: center; min-height: 44px; text-decoration: none; font: 400 12px/1 var(--font-label); text-transform: uppercase; letter-spacing: .09em; color: var(--muted); transition: color .2s; }
 .nav__links a:hover, .nav__links a[aria-current="true"] { color: var(--fg); }
-.nav .btn { min-height: 40px; padding: 0 18px; font-size: 11px; }
-.nav__toggle { display: none; width: 44px; height: 44px; border: 1px solid var(--line); border-radius: 50%; background: none; color: inherit; cursor: pointer; align-items: center; justify-content: center; }
+.nav .btn { min-height: 44px; padding: 0 18px; gap: 0; }
+.nav__logo { transition: opacity .2s; } @media (hover: hover) { .nav__logo:hover { opacity: .7; } }
+.nav__toggle .x { display: none; } .nav__toggle[aria-expanded="true"] .x { display: block; } .nav__toggle[aria-expanded="true"] .bars { display: none; }
+.nav__toggle { display: none; order: 3; width: 44px; height: 44px; border: 1px solid var(--line); border-radius: 50%; background: none; color: inherit; cursor: pointer; align-items: center; justify-content: center; }
 @media (max-width: 860px) {
   .nav__links { display: none; position: fixed; inset: var(--nav) 0 0; margin: 0; padding: 12px var(--gut) 40px; flex-direction: column; gap: 0; background: var(--ink); overflow: auto; }
   .nav__links.is-open { display: flex; }
   .nav__links a { min-height: 60px; font-size: 13px; color: var(--cream); border-bottom: 1px solid var(--line-on-ink); }
   .nav__toggle { display: inline-flex; }
   .nav__bar { gap: 12px; }
-  .nav__bar > .btn { margin-left: auto; }
+  .nav__bar > .btn { margin-left: auto; order: 2; }
 }
 @media (max-width: 420px) { .nav__long { display: none; } .nav__logo { font-size: 19px; } .nav .btn { padding: 0 14px; } }
 
 /* hero */
 .hero { padding-top: calc(var(--nav) + clamp(32px, 5vw, 64px)); padding-bottom: 0; overflow: hidden; }
-.hero__top { display: grid; gap: clamp(20px, 2.4vw, 32px); }
+.hero__top { position: relative; display: grid; gap: clamp(20px, 2.4vw, 32px); }
 .stats { display: flex; gap: clamp(24px, 4vw, 64px); }
 .hero__side { display: grid; gap: clamp(24px, 3vw, 40px); padding-bottom: 6px; }
 .stat__num { font: 400 clamp(34px, 3.6vw, 56px)/1 var(--font-display); letter-spacing: -0.02em; white-space: nowrap; }
@@ -110,25 +113,35 @@ a:hover > .arrow, button:hover > .arrow { transform: translateX(3px); }
 .window__dots { display: inline-flex; gap: 6px; } .window__dots i { width: 9px; height: 9px; border-radius: 50%; background: rgba(14, 14, 14, .22); }
 .window__bar .label { color: var(--on-cream-muted); }
 .rows { width: 100%; border-collapse: collapse; font-size: 15px; }
-.rows th { text-align: left; padding: 12px 20px; font: 400 10.5px/1.4 var(--font-label); text-transform: uppercase; letter-spacing: .09em; color: var(--on-cream-muted); border-bottom: 1px solid var(--line-on-cream); white-space: nowrap; }
+.rows th { text-align: left; padding: 12px 20px; font: 400 12px/1.4 var(--font-label); text-transform: uppercase; letter-spacing: .09em; color: var(--on-cream-muted); border-bottom: 1px solid var(--line-on-cream); white-space: nowrap; }
 .rows td { padding: 15px 20px; border-bottom: 1px solid var(--line-on-cream); vertical-align: middle; }
 .rows td:first-child { font-weight: 600; }
+.rows .show-s { display: none; }
+.rows .sub { display: none; font-weight: 400; color: var(--on-cream-muted); margin-top: 2px; }
 .rows .num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
-.chip { display: inline-block; padding: 4px 10px; border: 1px solid rgba(14, 14, 14, .3); border-radius: 999px; font: 400 10px/1.4 var(--font-label); text-transform: uppercase; letter-spacing: .08em; white-space: nowrap; }
+.chip { display: inline-block; padding: 4px 10px; border: 1px solid rgba(14, 14, 14, .45); border-radius: 999px; font: 400 12px/1.4 var(--font-label); text-transform: uppercase; letter-spacing: .04em; white-space: nowrap; }
 .chip--on { background: var(--ink); color: var(--cream); border-color: var(--ink); }
 .table-scroll { overflow-x: auto; }
-.circle { position: absolute; right: clamp(16px, 4vw, 56px); top: -64px; width: 168px; height: 168px; border-radius: 50%; border: 1px solid var(--cream); background: var(--ink); color: var(--cream);
-  display: grid; place-items: center; text-align: center; text-decoration: none; padding: 20px; font: 400 11.5px/1.6 var(--font-label); text-transform: uppercase; letter-spacing: .09em;
+.circle { position: absolute; right: 0; bottom: 6px; width: 168px; height: 168px; border-radius: 50%; border: 1px solid var(--cream); background: var(--ink); color: var(--cream);
+  display: grid; place-items: center; text-align: center; text-decoration: none; padding: 20px; font: 400 12px/1.6 var(--font-label); text-transform: uppercase; letter-spacing: .09em;
   transition: background-color .3s var(--ease), color .3s var(--ease), transform .4s var(--ease); }
-.circle:hover { background: var(--cream); color: var(--ink); transform: rotate(-6deg); }
+@media (hover: hover) { .circle:hover { background: var(--cream); color: var(--ink); transform: rotate(-6deg); } }
+.hero__top h1 { max-width: calc(100% - 190px); }
 @media (max-width: 980px) {
   .hero__mid { grid-template-columns: minmax(0, 1fr); }
-  .circle { width: 128px; height: 128px; top: -48px; font-size: 10.5px; padding: 14px; }
+  .circle { display: none; }
+  .hero__top h1 { max-width: none; }
 }
 @media (max-width: 640px) {
   .rows .hide-s { display: none; }
-  .rows th, .rows td { padding: 12px 14px; }
-  .circle { display: none; }
+  .rows { font-size: 14px; }
+  .rows th, .rows td { padding: 12px 7px; }
+  .rows th { letter-spacing: .02em; }
+  .rows .chip { padding: 3px 7px; letter-spacing: 0; }
+  .rows .show-s { display: inline; }
+  .rows th:first-child, .rows td:first-child { padding-left: 14px; }
+  .rows th:last-child, .rows td:last-child { padding-right: 14px; }
+  .rows .sub { display: block; }
 }
 
 /* chapter heads */
@@ -175,24 +188,27 @@ a:hover > .arrow, button:hover > .arrow { transform: translateX(3px); }
 
 /* join */
 .join { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: 40px clamp(24px, 4vw, 64px); align-items: start; }
-.form { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 22px 20px; }
-.field { display: grid; gap: 8px; }
+.form { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 22px 20px; align-items: start; }
+.field { display: grid; gap: 8px; align-content: start; }
+.field input, .choice label { scroll-margin-top: calc(var(--nav) + 56px); }
 .field--full, .form__foot { grid-column: 1 / -1; }
-.field label, .field legend { font: 400 11.5px/1.4 var(--font-label); text-transform: uppercase; letter-spacing: .09em; padding: 0; }
-.field input[type="text"], .field input[type="email"] { width: 100%; height: 52px; padding: 0 16px; border: 1px solid var(--line); border-radius: 10px; background: var(--panel); color: var(--fg); font: 400 16px/1 var(--font-text); }
+.field label, .field legend { font: 400 12px/1.4 var(--font-label); text-transform: uppercase; letter-spacing: .09em; padding: 0; }
+.field input[type="text"], .field input[type="email"] { width: 100%; height: 52px; padding: 0 16px; border: 1px solid var(--muted); border-radius: 10px; background: var(--panel); color: var(--fg); font: 400 16px/1 var(--font-text); }
 .field input::placeholder { color: var(--muted); }
 .field input:focus-visible { outline: 2px solid var(--fg); outline-offset: 1px; }
 .field input[aria-invalid="true"] { border: 2px solid var(--fg); }
 fieldset.field { border: 0; margin: 0; padding: 0; min-width: 0; }
 .choice { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin-top: 8px; }
-.choice label { position: relative; display: flex; align-items: center; justify-content: center; min-height: 52px; padding: 8px 12px; border: 1px solid var(--line); border-radius: 10px; cursor: pointer; text-align: center; transition: background-color .2s, color .2s; }
+.choice label { position: relative; display: flex; align-items: center; justify-content: center; min-height: 52px; padding: 8px 12px; border: 1px solid var(--muted); border-radius: 10px; cursor: pointer; text-align: center; transition: background-color .2s, color .2s, border-color .2s; }
+@media (hover: hover) { .choice label:hover { border-color: var(--fg); background: var(--panel); } }
 .choice input { position: absolute; opacity: 0; inset: 0; width: 100%; height: 100%; margin: 0; cursor: pointer; }
 .choice label:has(input:checked) { background: var(--fg); color: var(--bg); border-color: var(--fg); }
 .choice label:has(input:focus-visible) { outline: 2px solid var(--fg); outline-offset: 3px; }
 .error { font-size: 14px; line-height: 1.4; }
 .error::before { content: "! "; font-weight: 600; }
 .form__foot { display: flex; flex-wrap: wrap; align-items: center; gap: 14px 24px; }
-.form__status { flex: 1 1 260px; font-size: 15px; }
+.form__status { flex: 1 1 260px; font-size: 16px; }
+.form__status.is-done { flex-basis: 100%; padding: 18px 20px; border: 1px solid var(--fg); border-radius: 10px; color: var(--fg); font-size: 17px; }
 @media (max-width: 980px) { .join { grid-template-columns: minmax(0, 1fr); } }
 @media (max-width: 560px) { .form { grid-template-columns: minmax(0, 1fr); } }
 
@@ -201,7 +217,7 @@ fieldset.field { border: 0; margin: 0; padding: 0; min-width: 0; }
 .footer__word { font: 400 clamp(52px, 16.6vw, 262px)/.86 var(--font-display); text-transform: uppercase; letter-spacing: -0.03em; white-space: nowrap; margin-top: clamp(40px, 6vw, 80px); }
 .footer__row { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: end; gap: 28px 48px; }
 .footer__links { display: flex; flex-wrap: wrap; gap: 4px 28px; }
-.footer__links a { display: inline-flex; align-items: center; min-height: 44px; text-decoration: none; font: 400 11.5px/1 var(--font-label); text-transform: uppercase; letter-spacing: .09em; color: var(--muted); }
+.footer__links a { display: inline-flex; align-items: center; min-height: 44px; text-decoration: none; font: 400 12px/1 var(--font-label); text-transform: uppercase; letter-spacing: .09em; color: var(--muted); }
 .footer__links a:hover { color: var(--fg); }
 .footer__legal { margin-top: 28px; padding-top: 20px; border-top: 1px solid var(--line); }
 
@@ -219,6 +235,10 @@ fieldset.field { border: 0; margin: 0; padding: 0; min-width: 0; }
   <div class="wrap nav__bar">
     <a class="skip" href="#main">Skip to content</a>
     <a class="nav__logo" href="#top" aria-label="Smallfold, back to the top">Smallfold</a>
+    <button class="nav__toggle" type="button" aria-expanded="false" aria-controls="menu" aria-label="Menu">
+      <svg class="bars" width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><path d="M2 6h14M2 12h14" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+      <svg class="x" width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><path d="M4 4l10 10M14 4 4 14" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+    </button>
     <nav class="nav__links" id="menu" aria-label="Main">
       <a href="#creators">Creators</a>
       <a href="#steps">How it works</a>
@@ -226,9 +246,6 @@ fieldset.field { border: 0; margin: 0; padding: 0; min-width: 0; }
       <a href="#questions">Questions</a>
     </nav>
     <a class="btn" href="#join">Join<span class="nav__long">&nbsp;Smallfold</span></a>
-    <button class="nav__toggle" type="button" aria-expanded="false" aria-controls="menu" aria-label="Menu">
-      <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><path d="M2 6h14M2 12h14" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
-    </button>
   </div>
 </header>
 
@@ -239,10 +256,11 @@ fieldset.field { border: 0; margin: 0; padding: 0; min-width: 0; }
       <div class="hero__top">
         <p class="label label--muted" data-in style="--i:0">Sponsorship marketplace for YouTube</p>
         <h1 class="display d-xl" id="hero-h" data-in style="--i:1">Sponsors for small YouTube channels</h1>
+        <a class="circle" href="#join" data-in style="--i:2"><span>Join as a<br>creator or<br>a brand</span></a>
       </div>
       <div class="hero__mid">
         <div data-in style="--i:2">
-          <p class="lead">Brands post what they want to sponsor. You apply with your channel, agree the fee, publish the video and get paid through Smallfold.</p>
+          <p class="lead">Brands post what they want to sponsor. You apply with your channel, publish the video and get paid through Smallfold.</p>
           <div class="hero__actions">
             <a class="btn" href="#join">Join Smallfold</a>
             <a class="link" href="#steps">See how a sponsorship runs <svg class="arrow" viewBox="0 0 12 12" aria-hidden="true"><path d="M1 6h9M6.5 2.5 10 6l-3.5 3.5" fill="none" stroke="currentColor" stroke-width="1.3"/></svg></a>
@@ -260,17 +278,16 @@ fieldset.field { border: 0; margin: 0; padding: 0; min-width: 0; }
         </div>
       </div>
       <div class="hero__stage" data-in style="--i:4">
-        <a class="circle" href="#join"><span>Join as a<br>creator or<br>a brand</span></a>
         <div class="window" role="img" aria-label="The Smallfold app showing a creator's list of open sponsorships: what each brand wants in the video, the fee and the status of the application">
           <div class="window__bar" aria-hidden="true"><span class="window__dots"><i></i><i></i><i></i></span><span class="label">Sponsorships open to your channel</span></div>
           <div class="table-scroll" aria-hidden="true">
             <table class="rows">
-              <thead><tr><th>Sponsorship</th><th>In the video</th><th class="hide-s">Publish by</th><th class="num">Fee</th><th>Status</th></tr></thead>
+              <thead><tr><th>Sponsorship</th><th class="hide-s">In the video</th><th class="hide-s">Publish by</th><th class="num">Fee</th><th>Status</th></tr></thead>
               <tbody>
-                <tr><td>Oat drink launch</td><td>60-second mention, link in the description</td><td class="hide-s">14 March</td><td class="num">$180</td><td><span class="chip chip--on">Approved</span></td></tr>
-                <tr><td>Trail shoes, spring</td><td>One dedicated review video</td><td class="hide-s">21 March</td><td class="num">$320</td><td><span class="chip">Applied</span></td></tr>
-                <tr><td>Budgeting app</td><td>45-second mention</td><td class="hide-s">28 March</td><td class="num">$150</td><td><span class="chip">Open</span></td></tr>
-                <tr><td>Refill soap kit</td><td>Mention and a pinned comment</td><td class="hide-s">2 April</td><td class="num">$90</td><td><span class="chip">Open</span></td></tr>
+                <tr><td>Oat drink launch<span class="sub">60-second mention</span></td><td class="hide-s">60-second mention, link in the description</td><td class="hide-s">14 March</td><td class="num">$180</td><td><span class="chip chip--on">Approved</span></td></tr>
+                <tr><td>Gaming headset<span class="sub">One review video</span></td><td class="hide-s">One video that reviews the headset</td><td class="hide-s">21 March</td><td class="num">$320</td><td><span class="chip">Applied</span></td></tr>
+                <tr><td>Budgeting app<span class="sub">45-second mention</span></td><td class="hide-s">45-second mention</td><td class="hide-s">28 March</td><td class="num">$150</td><td><span class="chip">Open</span></td></tr>
+                <tr><td>Refill soap kit<span class="sub">Mention, pinned comment</span></td><td class="hide-s">Mention and a pinned comment</td><td class="hide-s">2 April</td><td class="num">$90</td><td><span class="chip">Open</span></td></tr>
               </tbody>
             </table>
           </div>
@@ -286,13 +303,13 @@ fieldset.field { border: 0; margin: 0; padding: 0; min-width: 0; }
         <p class="label label--muted">For creators</p>
         <div class="chapter__body">
           <h2 class="display d-lg" id="creators-h">A sponsor for your next video</h2>
-          <p class="lead">You do not need a manager or a media kit. Every sponsorship on Smallfold is a brief from a brand: read it, and apply if it fits your audience.</p>
+          <p class="lead">You do not need a manager or an agency. Every sponsorship on Smallfold comes as a brief: a short note from a brand that says what it wants in your video. Read it, and apply if it fits your audience.</p>
         </div>
       </div>
       <ul class="cols">
         <li><p class="label label--muted">In every brief</p><h3>What the brand wants</h3><p>A short mention, a dedicated video or a link in the description. The brief says which.</p></li>
-        <li><p class="label label--muted">In every brief</p><h3>What it pays</h3><p>The fee is written in the brief before you apply, so you know what the work is worth.</p></li>
-        <li><p class="label label--muted">In every brief</p><h3>When it is due</h3><p>Each brief has a publish-by date. You agree it with the brand in one message thread.</p></li>
+        <li><p class="label label--muted">In every brief</p><h3>What it pays</h3><p>The brand states its fee in the brief, so you know what the work pays before you apply.</p></li>
+        <li><p class="label label--muted">In every brief</p><h3>When it is due</h3><p>Each brief has a publish-by date. You confirm it with the brand in one message thread.</p></li>
       </ul>
     </div>
   </section>
@@ -308,9 +325,9 @@ fieldset.field { border: 0; margin: 0; padding: 0; min-width: 0; }
       </div>
       <ol class="steps">
         <li><h3>Join with your channel</h3><p class="muted">Sign up as a creator and add your YouTube channel.</p></li>
-        <li><h3>Apply to a sponsorship</h3><p class="muted">Pick the briefs that suit what you make and apply.</p></li>
-        <li><h3>Agree and publish</h3><p class="muted">Settle the fee and the date with the brand, then publish the video.</p></li>
-        <li><h3>Get paid</h3><p class="muted">The brand pays your fee through Smallfold when the deal is done.</p></li>
+        <li><h3>Apply to a sponsorship</h3><p class="muted">Read the briefs from brands and apply to the ones that suit what you make.</p></li>
+        <li><h3>Confirm and publish</h3><p class="muted">When the brand approves you, confirm the fee and the date, then publish the video.</p></li>
+        <li><h3>Get paid</h3><p class="muted">The brand pays your fee through Smallfold once the video is published.</p></li>
       </ol>
     </div>
   </section>
@@ -334,11 +351,11 @@ fieldset.field { border: 0; margin: 0; padding: 0; min-width: 0; }
           <div class="window__bar" aria-hidden="true"><span class="window__dots"><i></i><i></i><i></i></span><span class="label">Oat drink launch · applications</span></div>
           <div class="table-scroll" aria-hidden="true">
             <table class="rows">
-              <thead><tr><th>Channel</th><th class="num">Subscribers</th><th>Status</th></tr></thead>
+              <thead><tr><th>Channel</th><th class="num"><span class="hide-s">Subscribers</span><span class="show-s">Subs</span></th><th>Status</th></tr></thead>
               <tbody>
                 <tr><td>Home baking channel</td><td class="num">12,400</td><td><span class="chip chip--on">Approved</span></td></tr>
-                <tr><td>Trail running channel</td><td class="num">8,900</td><td><span class="chip">Fee offered</span></td></tr>
-                <tr><td>Plant care channel</td><td class="num">31,200</td><td><span class="chip">Applied</span></td></tr>
+                <tr><td>Trail running channel</td><td class="num">8,900</td><td><span class="chip">In review</span></td></tr>
+                <tr><td>Indie games channel</td><td class="num">31,200</td><td><span class="chip">Applied</span></td></tr>
                 <tr><td>Budget cooking channel</td><td class="num">4,700</td><td><span class="chip">Applied</span></td></tr>
                 <tr><td>Home coffee channel</td><td class="num">1,900</td><td><span class="chip">Applied</span></td></tr>
               </tbody>
@@ -372,9 +389,9 @@ fieldset.field { border: 0; margin: 0; padding: 0; min-width: 0; }
       </div>
       <div class="faq" style="margin-top: clamp(40px, 5vw, 72px)">
         <div class="faq__item"><h3>What does Smallfold cost?</h3><p>Smallfold takes a commission on each deal between a brand and a creator. No deal, no commission.</p></div>
-        <div class="faq__item"><h3>Is my channel big enough?</h3><p>Yes, if it has between 1,000 and 50,000 subscribers. Smallfold is built for channels of that size.</p></div>
+        <div class="faq__item"><h3>Is my channel big enough?</h3><p>Yes, if it has between 1,000 and 50,000 subscribers. A channel with fewer than 1,000 cannot join yet: come back when you reach 1,000.</p></div>
         <div class="faq__item"><h3>How do I find a sponsor?</h3><p>Join as a creator, add your channel and apply to the open sponsorships that fit your audience. The brand approves the channels it wants to work with.</p></div>
-        <div class="faq__item"><h3>How do I get paid?</h3><p>Through Smallfold. The brand pays your fee there when the deal is done, and Smallfold keeps its commission.</p></div>
+        <div class="faq__item"><h3>How do I get paid?</h3><p>Through Smallfold. The brand pays your fee there once your video is published.</p></div>
         <div class="faq__item"><h3>Who are the sponsors?</h3><p>Larger companies that want small creators to advertise their products.</p></div>
         <div class="faq__item"><h3>How do I join?</h3><p>Fill in the form below and say whether you are a creator or a brand.</p></div>
       </div>
@@ -393,8 +410,8 @@ fieldset.field { border: 0; margin: 0; padding: 0; min-width: 0; }
         <fieldset class="field field--full">
           <legend>I am a</legend>
           <div class="choice label">
-            <label><input type="radio" name="role" value="creator" required>Creator with a YouTube channel</label>
-            <label><input type="radio" name="role" value="brand">Brand looking for creators</label>
+            <label><input type="radio" name="role" value="creator" required aria-describedby="role-err">Creator with a YouTube channel</label>
+            <label><input type="radio" name="role" value="brand" aria-describedby="role-err">Brand looking for creators</label>
           </div>
           <p class="error" id="role-err" hidden>Choose creator or brand.</p>
         </fieldset>
@@ -432,12 +449,12 @@ fieldset.field { border: 0; margin: 0; padding: 0; min-width: 0; }
 <style>.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }</style>
 <script>
 (function () {
-  // the phone menu
-  var toggle = document.querySelector('.nav__toggle'), menu = document.getElementById('menu');
-  function setMenu(open) { menu.classList.toggle('is-open', open); toggle.setAttribute('aria-expanded', String(open)); document.body.style.overflow = open ? 'hidden' : ''; }
+  // the phone menu: opens under the bar, closes on any link in the bar, Escape returns to its button
+  var toggle = document.querySelector('.nav__toggle'), menu = document.getElementById('menu'), bar = document.querySelector('.nav__bar');
+  function setMenu(open) { menu.classList.toggle('is-open', open); toggle.setAttribute('aria-expanded', String(open)); toggle.setAttribute('aria-label', open ? 'Close menu' : 'Menu'); document.body.style.overflow = open ? 'hidden' : ''; }
   toggle.addEventListener('click', function () { setMenu(toggle.getAttribute('aria-expanded') !== 'true'); });
-  menu.addEventListener('click', function (e) { if (e.target.closest('a')) setMenu(false); });
-  addEventListener('keydown', function (e) { if (e.key === 'Escape') setMenu(false); });
+  bar.addEventListener('click', function (e) { if (e.target.closest('a')) setMenu(false); });
+  addEventListener('keydown', function (e) { if (e.key === 'Escape' && toggle.getAttribute('aria-expanded') === 'true') { setMenu(false); toggle.focus(); } });
 
   // the nav marks the section on screen
   var links = [].slice.call(document.querySelectorAll('.nav__links a'));
@@ -448,33 +465,44 @@ fieldset.field { border: 0; margin: 0; padding: 0; min-width: 0; }
     document.querySelectorAll('main > section[id]').forEach(function (s) { io.observe(s); });
   }
 
-  // the form: the label follows the role; errors sit under their fields; nothing is sent from this page yet
+  // the form: the label follows the role; each error sits under its field and clears as it is fixed;
+  // nothing is sent from this page yet, and the page says so
   var form = document.getElementById('join-form'), status = document.getElementById('form-status');
-  var channel = document.getElementById('f-channel'), channelLabel = document.getElementById('channel-label'), channelErr = document.getElementById('channel-err');
+  var nameEl = document.getElementById('f-name'), email = document.getElementById('f-email'), channel = document.getElementById('f-channel');
+  var channelLabel = document.getElementById('channel-label'), channelErr = document.getElementById('channel-err');
+  var radios = [].slice.call(form.querySelectorAll('input[name="role"]')), tried = false;
+  function role() { var r = form.querySelector('input[name="role"]:checked'); return r ? r.value : ''; }
+  var rules = [
+    { el: radios[0], err: 'role-err', ok: function () { return !!role(); }, mark: radios },
+    { el: nameEl, err: 'name-err', ok: function () { return nameEl.value.trim().length > 0; } },
+    { el: email, err: 'email-err', ok: function () { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value.trim()); } },
+    { el: channel, err: 'channel-err', ok: function () { var v = channel.value.trim(); return role() === 'creator' ? /(youtube\.com|youtu\.be)\/\S+|^@\S{2,}/i.test(v) : v.length > 1; } }
+  ];
+  function validate(show) {
+    var bad = [];
+    rules.forEach(function (r) {
+      var ok = r.ok(); if (!ok) bad.push(r);
+      if (show) { document.getElementById(r.err).hidden = ok; (r.mark || [r.el]).forEach(function (i) { i.setAttribute('aria-invalid', String(!ok)); }); }
+    });
+    return bad;
+  }
+  function say(bad) { status.classList.remove('is-done'); status.textContent = !bad.length ? '' : bad.length === 1 ? 'One field needs fixing.' : bad.length + ' fields need fixing.'; }
   form.addEventListener('change', function (e) {
     if (e.target.name !== 'role') return;
     var creator = e.target.value === 'creator';
     channelLabel.textContent = creator ? 'Link to your YouTube channel' : 'Company name';
-    channelErr.textContent = creator ? 'Paste the link to your YouTube channel.' : "Write your company's name.";
+    channelErr.textContent = creator ? 'Paste the link to your YouTube channel, like youtube.com/@yourchannel.' : "Write your company's name.";
     channel.setAttribute('autocomplete', creator ? 'url' : 'organization');
-    document.getElementById('role-err').hidden = true;
+    if (tried) say(validate(true));
   });
-  function check(input, errId, ok) { var err = document.getElementById(errId); err.hidden = ok; if (input) input.setAttribute('aria-invalid', String(!ok)); return ok; }
+  form.addEventListener('input', function () { if (tried) say(validate(true)); });
   form.addEventListener('submit', function (e) {
-    e.preventDefault();
-    var role = form.querySelector('input[name="role"]:checked');
-    var name = document.getElementById('f-name'), email = document.getElementById('f-email');
-    var okRole = check(null, 'role-err', !!role);
-    var okName = check(name, 'name-err', name.value.trim().length > 1);
-    var okEmail = check(email, 'email-err', /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value.trim()));
-    var okChannel = check(channel, 'channel-err', channel.value.trim().length > 1);
-    var bad = [okRole, okName, okEmail, okChannel].filter(function (x) { return !x; }).length;
-    if (bad) {
-      status.textContent = bad === 1 ? 'One field needs fixing.' : bad + ' fields need fixing.';
-      (okRole ? (okName ? (okEmail ? channel : email) : name) : form.querySelector('input[name="role"]')).focus();
-      return;
-    }
-    status.textContent = 'Thanks. Sign-up is not connected yet on this preview, so nothing was sent.';
+    e.preventDefault(); tried = true;
+    var bad = validate(true);
+    if (bad.length) { say(bad); bad[0].el.focus(); return; }
+    status.classList.add('is-done');
+    status.textContent = 'Thanks. This preview is not connected to sign-up yet, so nothing was sent.';
+    status.scrollIntoView({ block: 'nearest' });
   });
 })();
 </script>
