@@ -75,7 +75,8 @@ a:hover > .arrow, button:hover > .arrow { transform: translateX(3px); }
 .skip:focus { top: 10px; }
 
 /* header */
-.nav { position: fixed; inset: 0 0 auto; z-index: 20; height: var(--nav); border-bottom: 1px solid var(--line); }
+.nav { position: fixed; inset: 0 0 auto; z-index: 20; height: var(--nav); border-bottom: 1px solid var(--line); transition: background-color .5s var(--ease), border-color .5s var(--ease); }
+.js .nav.is-top { background-color: transparent; border-bottom-color: transparent; }
 .nav__bar { height: 100%; display: flex; align-items: center; gap: 32px; }
 .nav__logo { font: 400 22px/1 var(--font-display); text-transform: uppercase; letter-spacing: .02em; text-decoration: none; min-height: 44px; display: inline-flex; align-items: center; }
 .nav__links { display: flex; gap: clamp(16px, 2.4vw, 36px); margin-inline: auto; }
@@ -95,19 +96,35 @@ a:hover > .arrow, button:hover > .arrow { transform: translateX(3px); }
 }
 @media (max-width: 420px) { .nav__long { display: none; } .nav__logo { font-size: 19px; } .nav .btn { padding: 0 14px; } }
 
-/* hero */
-.hero { padding-top: calc(var(--nav) + clamp(32px, 5vw, 64px)); padding-bottom: 0; overflow: hidden; }
-.hero__top { position: relative; display: grid; gap: clamp(20px, 2.4vw, 32px); }
-.stats { display: flex; gap: clamp(24px, 4vw, 64px); }
-.hero__side { display: grid; gap: clamp(24px, 3vw, 40px); padding-bottom: 6px; }
-.stat__num { font: 400 clamp(34px, 3.6vw, 56px)/1 var(--font-display); letter-spacing: -0.02em; white-space: nowrap; }
-.stat .label { display: block; margin-top: 10px; max-width: 13em; }
-.hero__mid { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: clamp(24px, 4vw, 64px); align-items: end; margin-top: clamp(32px, 4.5vw, 64px); }
-.hero__actions { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 28px; margin-top: 28px; }
-.facts { display: flex; flex-wrap: wrap; gap: 14px clamp(24px, 4vw, 56px); padding-top: 20px; border-top: 1px solid var(--line); }
-.facts li { display: grid; gap: 6px; }
-.facts .tag { justify-self: start; }
-.hero__stage { position: relative; margin-top: clamp(40px, 5vw, 72px); }
+/* hero: one screen with a headline, a sentence and two actions; the ribbon of lines moves behind them */
+.hero { overflow: hidden; }
+.hero__screen { position: relative; min-height: 100vh; min-height: 100svh; display: grid; grid-template-rows: minmax(0, 1fr) auto; padding-top: var(--nav); }
+.hero__flow { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none;
+  -webkit-mask-image: linear-gradient(to bottom, #000 0, #000 84%, transparent 97%); mask-image: linear-gradient(to bottom, #000 0, #000 84%, transparent 97%); }
+.hero__center { position: relative; display: grid; justify-items: center; align-content: center; text-align: center; gap: clamp(18px, 2.8vh, 30px); padding-block: clamp(20px, 4vh, 48px) clamp(120px, 23vh, 230px); }
+.d-hero { font-size: clamp(40px, min(7.6vw, 12.2vh), 116px); max-width: 11.5em; }
+.hero h1 .w { display: inline-block; overflow: hidden; vertical-align: top; padding: .08em .03em .12em; margin: -.08em -.03em -.12em; }
+.hero h1 .w > span { display: inline-block; }
+.hero__center .lead { max-width: 30em; text-wrap: balance; }
+.hero__actions { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 12px 28px; }
+.hero__foot { position: relative; display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); align-items: end; gap: 12px 24px; padding-bottom: 20px; color: var(--muted); }
+.hero__foot > :last-child { text-align: right; }
+.scroll { display: inline-flex; flex-direction: column; align-items: center; gap: 10px; min-width: 44px; min-height: 44px; text-decoration: none; color: var(--fg); }
+.scroll i { position: relative; width: 1px; height: 34px; background: var(--line); overflow: hidden; }
+.scroll i::after { content: ""; position: absolute; inset: 0; background: var(--fg); transform: translateY(-101%); animation: drip 2.6s var(--ease) infinite; }
+@keyframes drip { 0% { transform: translateY(-101%); } 55% { transform: translateY(0); } 100% { transform: translateY(101%); } }
+.hero__stage { position: relative; padding-top: clamp(48px, 7vw, 104px); scroll-margin-top: var(--nav); }
+@media (max-width: 1000px) { .hero__foot .long { display: none; } }
+@media (max-width: 900px) {
+  .hero__foot { grid-template-columns: minmax(0, 1fr); justify-items: center; text-align: center; gap: 6px; padding-bottom: 18px; }
+  .hero__foot > :last-child { text-align: center; }
+  .scroll { display: none; }
+}
+@media (max-width: 700px) {
+  .hero__center { padding-bottom: clamp(110px, 21vh, 190px); }
+  .d-hero { font-size: clamp(36px, 11.3vw, 64px); }
+}
+@media (max-height: 620px) { .hero__center { padding-bottom: 96px; gap: 16px; } }
 .window { border: 1px solid var(--line-on-cream); border-bottom: 0; border-radius: 14px 14px 0 0; background: var(--cream); color: var(--ink); overflow: hidden; }
 .window__bar { display: flex; align-items: center; gap: 14px; padding: 14px 20px; border-bottom: 1px solid var(--line-on-cream); }
 .window__dots { display: inline-flex; gap: 6px; } .window__dots i { width: 9px; height: 9px; border-radius: 50%; background: rgba(14, 14, 14, .22); }
@@ -122,16 +139,6 @@ a:hover > .arrow, button:hover > .arrow { transform: translateX(3px); }
 .chip { display: inline-block; padding: 4px 10px; border: 1px solid rgba(14, 14, 14, .45); border-radius: 999px; font: 400 12px/1.4 var(--font-label); text-transform: uppercase; letter-spacing: .04em; white-space: nowrap; }
 .chip--on { background: var(--ink); color: var(--cream); border-color: var(--ink); }
 .table-scroll { overflow-x: auto; }
-.circle { position: absolute; right: 0; bottom: 6px; width: 168px; height: 168px; border-radius: 50%; border: 1px solid var(--cream); background: var(--ink); color: var(--cream);
-  display: grid; place-items: center; text-align: center; text-decoration: none; padding: 20px; font: 400 12px/1.6 var(--font-label); text-transform: uppercase; letter-spacing: .09em;
-  transition: background-color .3s var(--ease), color .3s var(--ease), transform .4s var(--ease); }
-@media (hover: hover) { .circle:hover { background: var(--cream); color: var(--ink); transform: rotate(-6deg); } }
-.hero__top h1 { max-width: calc(100% - 190px); }
-@media (max-width: 980px) {
-  .hero__mid { grid-template-columns: minmax(0, 1fr); }
-  .circle { display: none; }
-  .hero__top h1 { max-width: none; }
-}
 @media (max-width: 640px) {
   .rows .hide-s { display: none; }
   .rows { font-size: 14px; }
@@ -185,12 +192,6 @@ a:hover > .arrow, button:hover > .arrow { transform: translateX(3px); }
 .offer .chip { justify-self: start; padding: 9px 20px; }
 @media (max-width: 520px) { .offer__rows > div { grid-template-columns: minmax(0, 1fr); } }
 
-/* the range, set large */
-.range { text-align: left; }
-.range__num { font: 400 clamp(34px, 11.6vw, 196px)/.9 var(--font-display); letter-spacing: -0.035em; white-space: nowrap; }
-.range__foot { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 20px 48px; margin-top: clamp(24px, 3vw, 40px); padding-top: 20px; border-top: 1px solid var(--line); }
-.range__foot p { max-width: 30em; }
-
 /* questions */
 .faq { display: grid; }
 .faq__item { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: 8px clamp(24px, 4vw, 64px); padding: 26px 0; border-top: 1px solid var(--line); }
@@ -233,10 +234,17 @@ fieldset.field { border: 0; margin: 0; padding: 0; min-width: 0; }
 .footer__links a:hover { color: var(--fg); }
 .footer__legal { margin-top: 28px; padding-top: 20px; border-top: 1px solid var(--line); }
 
-/* the hero arrives once on load; everything is readable without it */
+/* motion: the first screen arrives once on load, and each block below rises as it comes into view.
+   Everything is readable without it: these rules need the js class, and reduced motion turns them off. */
 @media (prefers-reduced-motion: no-preference) {
-  .js .hero [data-in] { opacity: 0; transform: translateY(18px); }
-  .js.is-in .hero [data-in] { opacity: 1; transform: none; transition: opacity .8s var(--ease), transform .9s var(--ease); transition-delay: calc(var(--i, 0) * 90ms); }
+  .js .hero [data-in] { opacity: 0; transform: translateY(22px); }
+  .js.is-in .hero [data-in] { opacity: 1; transform: none; transition: opacity 1.1s var(--ease), transform 1.3s var(--ease); transition-delay: calc(var(--i, 0) * 95ms); }
+  .js .hero h1 .w > span { transform: translateY(115%); }
+  .js.is-in .hero h1 .w > span { transform: none; transition: transform 1.35s var(--ease); transition-delay: calc(140ms + var(--i, 0) * 95ms); }
+  .js .hero__flow { opacity: 0; }
+  .js.is-in .hero__flow { opacity: 1; transition: opacity 1.6s ease; }
+  .rv { opacity: 0; transform: translateY(34px); transition: opacity 1.1s var(--ease), transform 1.3s var(--ease); transition-delay: calc(var(--d, 0) * 95ms); }
+  .rv.is-seen { opacity: 1; transform: none; }
 }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { transition: none !important; animation: none !important; } html { scroll-behavior: auto; } }
 </style>
@@ -263,33 +271,26 @@ fieldset.field { border: 0; margin: 0; padding: 0; min-width: 0; }
 
 <main id="main">
   <!-- HERO -->
-  <section class="section hero on-ink" id="top" aria-labelledby="hero-h">
-    <div class="wrap">
-      <div class="hero__top">
+  <section class="hero on-ink" id="top" aria-labelledby="hero-h">
+    <div class="hero__screen">
+      <canvas class="hero__flow" aria-hidden="true"></canvas>
+      <div class="wrap hero__center">
         <p class="label label--muted" data-in style="--i:0">Sponsorship marketplace for YouTube</p>
-        <h1 class="display d-xl" id="hero-h" data-in style="--i:1">Sponsors for small YouTube channels</h1>
-        <a class="circle" href="#join" data-in style="--i:2"><span>Join as a<br>creator or<br>a brand</span></a>
-      </div>
-      <div class="hero__mid">
-        <div data-in style="--i:2">
-          <p class="lead">Brands post sponsorship offers. You apply with your channel, publish the video and keep the whole fee.</p>
-          <div class="hero__actions">
-            <a class="btn" href="#join">Join Smallfold</a>
-            <a class="link" href="#steps">See how a sponsorship runs <svg class="arrow" viewBox="0 0 12 12" aria-hidden="true"><path d="M1 6h9M6.5 2.5 10 6l-3.5 3.5" fill="none" stroke="currentColor" stroke-width="1.3"/></svg></a>
-          </div>
-        </div>
-        <div class="hero__side" data-in style="--i:3">
-          <dl class="stats">
-            <div class="stat"><dt class="stat__num">1,000</dt><dd class="label label--muted">subscribers to join</dd></div>
-            <div class="stat"><dt class="stat__num">50,000</dt><dd class="label label--muted">subscribers at most</dd></div>
-          </dl>
-          <ul class="facts label">
-            <li><span class="tag">For</span><span>YouTube creators and brands</span></li>
-            <li><span class="tag">Cost</span><span>10% per deal, paid by the brand</span></li>
-          </ul>
+        <h1 class="display d-hero" id="hero-h">Sponsors for small YouTube channels</h1>
+        <script>(function(){var h=document.getElementById('hero-h'),t=h.textContent.trim();h.setAttribute('aria-label',t);h.innerHTML=t.split(/\s+/).map(function(w,i){return '<span class="w" aria-hidden="true"><span style="--i:'+i+'">'+w+'</span></span>'}).join(' ')})()</script>
+        <p class="lead" data-in style="--i:7">Brands post sponsorship offers. You apply with your channel, publish the video and keep the whole fee.</p>
+        <div class="hero__actions" data-in style="--i:9">
+          <a class="btn" href="#join">Join Smallfold</a>
+          <a class="link" href="#steps">See how a sponsorship runs <svg class="arrow" viewBox="0 0 12 12" aria-hidden="true"><path d="M1 6h9M6.5 2.5 10 6l-3.5 3.5" fill="none" stroke="currentColor" stroke-width="1.3"/></svg></a>
         </div>
       </div>
-      <div class="hero__stage" data-in style="--i:4">
+      <div class="wrap hero__foot label" data-in style="--i:12">
+        <span><span class="long">For channels with </span>1,000 to 50,000 subscribers</span>
+        <a class="scroll" href="#offers"><span>Scroll</span><i aria-hidden="true"></i></a>
+        <span>10% per deal, paid by the brand</span>
+      </div>
+    </div>
+    <div class="wrap hero__stage" id="offers">
         <div class="window" role="img" aria-label="An example of the list a creator sees in Smallfold: four open sponsorships, each with what the brand wants in the video, the publish-by date and the fee">
           <div class="window__bar" aria-hidden="true"><span class="window__dots"><i></i><i></i><i></i></span><span class="label">Example sponsorships</span></div>
           <div class="table-scroll" aria-hidden="true">
@@ -304,7 +305,6 @@ fieldset.field { border: 0; margin: 0; padding: 0; min-width: 0; }
             </table>
           </div>
         </div>
-      </div>
     </div>
   </section>
 
@@ -463,6 +463,74 @@ fieldset.field { border: 0; margin: 0; padding: 0; min-width: 0; }
 
 <style>.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }</style>
 <script>
+(function () {
+  // the ribbon: thin lines that twist and drift like a folded cloth, drawn in from the left on load.
+  // It follows the pointer a little, stops when the first screen is out of view, and is one still frame under reduced motion.
+  var cv = document.querySelector('.hero__flow');
+  if (!cv || !cv.getContext) return;
+  var ctx = cv.getContext('2d'), still = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var w = 0, h = 0, n = 0, t0 = 0, seen = true, running = false, px = .5, py = .5, tx = .5, ty = .5;
+  function ease(x) { return 1 - Math.pow(1 - x, 4); }
+  function size() {
+    var r = cv.getBoundingClientRect(), dpr = Math.min(window.devicePixelRatio || 1, 2);
+    w = r.width; h = r.height; cv.width = Math.round(w * dpr); cv.height = Math.round(h * dpr);
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0); n = w < 700 ? 22 : 34;
+    if (still || !running) draw(still ? 40000 : performance.now() - t0);
+  }
+  function draw(ms) {
+    var t = ms / 1000, grow = still ? 1 : ease(Math.min(1, t / 3.2));
+    var small = w < 700, mid = h * (small ? .825 : .775) + (py - .5) * 26, spread = Math.min(h * .16, small ? 100 : 150), amp = Math.min(h * .05, small ? 30 : 46);
+    var step = small ? 9 : 13, tail = Math.max(160, w * .22);
+    ctx.clearRect(0, 0, w, h); ctx.lineWidth = 1;
+    for (var i = 0; i < n; i++) {
+      var u = i / (n - 1), s = u - .5, first = true;
+      var reach = still ? 1 : ease(Math.max(0, Math.min(1, (t - u * .55) / 2.3))), end = (w + 30 + tail) * reach;
+      var a = .09 + .33 * Math.pow(Math.sin(u * Math.PI), 1.4);
+      if (reach < 1) {
+        var g = ctx.createLinearGradient(Math.max(0, end - tail), 0, Math.max(1, end), 0);
+        g.addColorStop(0, 'rgba(241,239,235,' + a.toFixed(3) + ')'); g.addColorStop(1, 'rgba(241,239,235,0)');
+        ctx.strokeStyle = g;
+      } else ctx.strokeStyle = 'rgba(241,239,235,' + a.toFixed(3) + ')';
+      ctx.beginPath();
+      for (var x = -20; x <= Math.min(end, w + 30); x += step) {
+        var k = x / Math.max(w, 900);
+        var y = mid + s * spread * (.3 + .7 * grow) * Math.sin(k * 4.4 + t * .2 + (px - .5) * 1.2)
+          + amp * grow * Math.sin(k * 5.2 - t * .31 + u * 1.9)
+          + amp * .42 * grow * Math.sin(k * 10.6 + t * .17 + u * 4.3 + px * 1.6);
+        if (first) { ctx.moveTo(x, y); first = false; } else ctx.lineTo(x, y);
+      }
+      ctx.stroke();
+    }
+  }
+  function loop(now) {
+    if (!seen) { running = false; return; }
+    px += (tx - px) * .035; py += (ty - py) * .035;
+    draw(now - t0); requestAnimationFrame(loop);
+  }
+  function start() { if (still || running) return; running = true; requestAnimationFrame(loop); }
+  t0 = performance.now(); size(); start();
+  addEventListener('resize', size);
+  addEventListener('pointermove', function (e) { tx = e.clientX / innerWidth; ty = e.clientY / innerHeight; }, { passive: true });
+  if ('IntersectionObserver' in window) new IntersectionObserver(function (en) { seen = en[0].isIntersecting; if (seen) start(); }).observe(cv);
+})();
+(function () {
+  // the header is clear over the first screen and takes its ground once the page moves
+  var nav = document.querySelector('.nav');
+  function top() { nav.classList.toggle('is-top', scrollY < 12); }
+  top(); addEventListener('scroll', top, { passive: true });
+
+  // each block below the first screen rises as it comes into view; without this script nothing is hidden
+  if ('IntersectionObserver' in window && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    var seenIO = new IntersectionObserver(function (entries) {
+      entries.forEach(function (en) { if (en.isIntersecting) { en.target.classList.add('is-seen'); seenIO.unobserve(en.target); } });
+    }, { rootMargin: '0px 0px -7% 0px', threshold: .08 });
+    [].forEach.call(document.querySelectorAll('.hero__stage, .chapter, .split > *, .steps > li, .faq__item, .join > *, .footer__row, .footer__word'), function (el) {
+      var i = [].indexOf.call(el.parentNode.children, el);
+      el.style.setProperty('--d', el.matches('.steps > li, .split > *, .join > *') ? Math.min(i, 3) : 0);
+      el.classList.add('rv'); seenIO.observe(el);
+    });
+  }
+})();
 (function () {
   // the phone menu: opens under the bar, closes on any link in the bar, Escape returns to its button
   var toggle = document.querySelector('.nav__toggle'), menu = document.getElementById('menu'), bar = document.querySelector('.nav__bar');
