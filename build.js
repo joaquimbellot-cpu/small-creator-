@@ -441,6 +441,19 @@ function buildSite(outDir) {
   copyDir(path.join(SRC, 'assets'), path.join(outDir, 'assets'));
   for (const [file, text] of output) fs.writeFileSync(path.join(outDir, file), text);
 
+  // Sitemap: only once the site's address is known (seo.json, "siteUrl"). It lists every page
+  // except the style guide, and robots.txt then points search engines to it.
+  const siteUrl = String((content.seo && content.seo.siteUrl) || '').trim();
+  if (siteUrl) {
+    const base = siteUrl.endsWith('/') ? siteUrl : siteUrl + '/';
+    const urls = pageFiles
+      .filter((fileName) => PAGES[fileName] && PAGES[fileName] !== 'styleguide')
+      .map((fileName) => `  <url><loc>${base}${fileName === 'index.html' ? '' : fileName}</loc></url>`);
+    fs.writeFileSync(path.join(outDir, 'sitemap.xml'),
+      `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.join('\n')}\n</urlset>\n`);
+    fs.appendFileSync(path.join(outDir, 'robots.txt'), `\nSitemap: ${base}sitemap.xml\n`);
+  }
+
   return {
     pages: pageFiles.length,
     missing: [...env.missing.values()],

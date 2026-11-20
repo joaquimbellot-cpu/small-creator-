@@ -401,6 +401,7 @@ legend {
   letter-spacing: var(--track-heading);
   text-align: center;
   text-wrap: balance;
+  text-wrap: pretty; /* where supported: no single short word alone on the last line of a long paragraph */
 }
 
 /* Lead paragraph under a title. */
@@ -526,9 +527,13 @@ legend {
   transition: transform var(--dur-hover) var(--ease);
 }
 
+/* The ring is the blue for ink, and the gap inside it is filled with ink, so the
+   ring keeps its contrast whether the link sits over cream, ink or the hero photo
+   (the blue for ink alone is only 1.9:1 against cream). */
 .skip-link:focus {
   transform: none;
   outline-color: var(--accent-on-ink);
+  box-shadow: 0 0 0 var(--focus-offset) var(--ink);
 }
 
 /* Focus is always visible: a ring in the pen blue around whatever has the keyboard. */
@@ -1022,6 +1027,13 @@ main:focus {
   margin: 0;
 }
 
+/* Responsive: the text of a row ran about 90 characters wide once it moved under the
+   title on a tablet; it keeps to the width of running text. (The title is left free,
+   so that a split row still pushes its value to the right end.) */
+.row > * + * {
+  max-width: var(--measure);
+}
+
 .row > :first-child {
   flex: 1 1 var(--w-row-title);
 }
@@ -1069,6 +1081,7 @@ main:focus {
 
 .step > * + * {
   margin-top: var(--s-3);
+  max-width: var(--measure); /* Responsive: stacked step text ran ~90 characters wide on tablets */
 }
 
 /* Numbers show only where order matters: write <ol class="steps"> for those,
@@ -2313,6 +2326,21 @@ html.menu-open {
   overflow-wrap: anywhere;
 }
 
+/* Responsive: on a phone held sideways the menu ran a screen and a half; less air, smaller links. */
+@media (max-height: 500px) {
+  .site-menu__nav {
+    padding-block: var(--s-5);
+  }
+
+  .site-menu__link {
+    font-size: var(--t-h2);
+  }
+
+  .site-menu__foot {
+    gap: var(--s-5);
+  }
+}
+
 /* On a phone the Apply button is as wide as the screen allows. */
 @media (max-width: 520px) {
   .site-menu__cta {
@@ -2438,6 +2466,7 @@ html.menu-open {
   display: inline-flex;
   align-items: center;
   min-height: var(--tap);
+  min-width: var(--tap); /* Responsive: "Apply" was 42px wide, under the 44px tap size */
   text-decoration: underline;
   text-decoration-color: transparent;
   text-underline-offset: .6em;
@@ -2923,6 +2952,15 @@ main section[id] {
   margin-top: var(--s-4);
 }
 
+/* Responsive: the standalone email links were about 26px tall; 44px for a finger, and may break on a small screen. */
+.page-head__contact > a,
+.contact-ways__value > a {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--tap);
+  overflow-wrap: anywhere;
+}
+
 /* Page head with a picture: the text first, the picture under it on a phone. */
 .page-head__grid {
   display: grid;
@@ -3034,6 +3072,15 @@ main section[id] {
   max-width: var(--measure);
 }
 
+/* Responsive: on a low screen (a phone held sideways) the 4:5 picture was taller than the
+   screen; its width is capped so that it stays within about 80% of the screen's height. */
+.differences__media {
+  width: 100%;
+  max-width: calc(80vh * 4 / 5);
+  max-width: calc(80svh * 4 / 5);
+  justify-self: center;
+}
+
 /* How a match is made: the head above the drawing on a phone. */
 .process__top {
   display: grid;
@@ -3046,6 +3093,15 @@ main section[id] {
 .process__threads > canvas {
   width: 100%;
   height: auto;
+}
+
+/* Responsive: on a phone held sideways the 3:2 drawing filled more than a screen; it now
+   stays within about 70% of the screen's height, centred in its column. */
+.process__threads {
+  width: 100%;
+  max-width: calc(70vh * 3 / 2);
+  max-width: calc(70svh * 3 / 2);
+  margin-inline: auto;
 }
 
 /* The four steps, under the head and the drawing. */
@@ -3135,11 +3191,18 @@ main section[id] {
     gap: var(--s-6);
   }
 
-  /* The three lines of an example tile run across the tile. */
+  /* The lines of an example tile run across the tile. Responsive: three columns were
+     cramped (about 120px each at 600px), so channel and sponsor sit side by side and
+     the video runs across the tile under them. */
   .examples__lines {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .examples__line:last-child {
+    grid-column: 1 / -1;
   }
 }
+
 
 /* Wide screens. */
 @media (min-width: 861px) {
@@ -3196,6 +3259,27 @@ main section[id] {
   .examples__grid {
     grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: var(--s-5);
+  }
+}
+
+/* Responsive: at 861 to 1100px a text of four columns was about 240px wide and broke
+   the titles into short lines; there the picture takes six columns and the text five,
+   with one column of air between them. */
+@media (min-width: 861px) and (max-width: 1100px) {
+  .differences__media {
+    grid-column: 1 / span 6;
+  }
+
+  .differences__text {
+    grid-column: 8 / span 5;
+  }
+
+  .differences__item:nth-child(even) .differences__media {
+    grid-column: 7 / span 6;
+  }
+
+  .differences__item:nth-child(even) .differences__text {
+    grid-column: 1 / span 5;
   }
 }
 
@@ -3399,6 +3483,14 @@ main section[id] {
   }
 }
 
+/* Responsive: on a low window the column is taller than the room under the header, so its
+   last step could not be reached while it stuck; there it scrolls with the page. */
+@media (min-width: 861px) and (max-height: 640px) {
+  .apply__next {
+    position: static;
+  }
+}
+
 /* ---------- Forms (apply.html and brands.html) ---------- */
 
 /* The parts of a form, one under the other. */
@@ -3452,6 +3544,7 @@ main section[id] {
 /* The sections of text, under a hairline. */
 .legal__body {
   display: grid;
+  grid-template-columns: minmax(0, 1fr); /* long words wrap inside the column instead of widening it */
   gap: var(--s-7);
   margin-top: var(--s-8);
   padding-top: var(--s-8);
@@ -3469,12 +3562,142 @@ main section[id] {
  * Owner: Animation agent.
  *
  * Belongs here: the styles for the motion hooks in docs/design-brief.md, section 7:
- * [data-intro], [data-reveal], [data-reveal="words"], [data-reveal="lines"],
- * [data-parallax] and [data-threads].
+ * [data-reveal], [data-reveal="words"], [data-reveal="lines"], [data-parallax]
+ * and [data-threads]. ([data-intro] is played by hero.css.)
  *
  * Rule: hidden starting states apply only under html.js AND
  * @media (prefers-reduced-motion: no-preference), so every page stays complete
- * and readable with JavaScript off and with reduced motion on.
+ * and readable with JavaScript off and with reduced motion on. They are also
+ * screen-only, so a printed page always shows everything.
  *
- * Empty for now.
+ * Classes set by motion.js:
+ *   html.mo-on    motion.js is running; it alone reveals what waits
+ *   html.mo-off   motion.js stopped (an error, or reduced motion switched on): nothing is hidden or moving
+ *   .is-in        a block or a heading is playing its entrance
+ *   .is-done      the entrance is over; no motion rule applies any more
+ *   .is-split     a heading is cut into masked words for its line-by-line rise
+ *   .is-scrub     the statement's words follow the scroll
+ *   .is-live      the threads canvas is drawing in place of the picture
+ *
+ * Only opacity, transform, clip-path and colour move.
  */
+
+/* Motion values of this file, built from the tokens. */
+:root {
+  --mo-rise: calc(var(--s-5) + var(--s-1)); /* 28px: how far a block rises */
+  --mo-step: 90ms;                          /* stagger between data-reveal-delay steps */
+  --mo-line: 120ms;                         /* stagger between the lines of a heading */
+  --mo-wait: 3s;                            /* failsafe: shown anyway if motion.js never runs */
+}
+
+/* The stagger of siblings, read by both kinds of entrance. */
+[data-reveal-delay="1"] { --mo-d: 1; }
+[data-reveal-delay="2"] { --mo-d: 2; }
+[data-reveal-delay="3"] { --mo-d: 3; }
+[data-reveal-delay="4"] { --mo-d: 4; }
+
+/* A block fades in and rises. */
+@keyframes mo-up {
+  from { opacity: 0; transform: translateY(var(--mo-rise)); }
+}
+
+/* A word of a heading rises from below its mask. */
+@keyframes mo-rise {
+  from { transform: translateY(130%); }
+}
+
+/* The plain fade of the failsafe. */
+@keyframes mo-show {
+  from { opacity: 0; }
+}
+
+/* The threads canvas lies exactly over the picture it replaces (overrides the
+   in-flow size that sections.css gives a canvas there). */
+[data-threads] {
+  position: relative;
+}
+
+html.js [data-threads] > canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  pointer-events: none;
+}
+
+@media screen and (prefers-reduced-motion: no-preference) {
+  /* Before motion.js runs: blocks and headings wait, and show by themselves
+     after --mo-wait if it never does (a script error earlier in the bundle). */
+  html.js:not(.mo-on):not(.mo-off) [data-reveal]:not([data-reveal="words"]) {
+    animation: mo-show var(--dur-enter) var(--ease) var(--mo-wait) both;
+  }
+
+  /* Waiting for the screen: hidden, in place, at full size. */
+  html.mo-on [data-reveal]:not([data-reveal="words"]):not(.is-in):not(.is-done) {
+    opacity: 0;
+  }
+
+  /* A block's entrance. */
+  html.mo-on [data-reveal].is-in:not(.is-split) {
+    animation: mo-up var(--dur-enter-long) var(--ease) calc(var(--mo-d, 0) * var(--mo-step)) both;
+  }
+
+  /* A heading's words: each is a mask (clip-path, so the baseline and the line
+     box stay as they were) around a word that rises with its line. The mask
+     reaches a little past the line box for descenders and overhangs. */
+  html.mo-on .is-split .mo-m {
+    display: inline-block;
+    clip-path: inset(-.2em -.12em -.22em);
+  }
+
+  html.mo-on .is-split .mo-m > span {
+    display: inline-block;
+  }
+
+  html.mo-on .is-split.is-in .mo-m > span {
+    animation: mo-rise var(--dur-enter-long) var(--ease) calc(var(--mo-l, 0) * var(--mo-line) + var(--mo-d, 0) * var(--mo-step)) both;
+  }
+
+  /* The statement: words not yet reached by the scroll are faint, and darken
+     softly as they are reached (and lighten again when scrolling back). */
+  html.mo-on .is-scrub .mo-word {
+    color: var(--faint);
+    transition: color var(--dur-hover-slow) var(--ease);
+  }
+
+  html.mo-on .is-scrub .mo-word.is-lit {
+    color: var(--fg);
+  }
+
+  /* The band picture drifts; motion.js sets the offset and the slight zoom that keeps its edges covered. */
+  html.mo-on [data-parallax] {
+    transform: translate3d(0, var(--mo-y, 0px), 0) scale(var(--mo-s, 1));
+  }
+
+  html.mo-on [data-parallax].is-drift {
+    will-change: transform;
+  }
+
+  /* The threads: the canvas fades in over the picture, which stays in the page
+     (and for screen readers) but is hidden from sight. */
+  html.mo-on [data-threads] > img,
+  html.mo-on [data-threads] > canvas {
+    transition: opacity var(--dur-enter) var(--ease);
+  }
+
+  html.mo-on [data-threads].is-live > canvas {
+    opacity: 1;
+  }
+
+  html.mo-on [data-threads].is-live > img {
+    opacity: 0;
+  }
+}
+
+/* Paper: never the canvas, always the drawing. */
+@media print {
+  [data-threads] > canvas {
+    display: none;
+  }
+}

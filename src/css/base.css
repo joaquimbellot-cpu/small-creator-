@@ -218,6 +218,7 @@ legend {
   letter-spacing: var(--track-heading);
   text-align: center;
   text-wrap: balance;
+  text-wrap: pretty; /* where supported: no single short word alone on the last line of a long paragraph */
 }
 
 /* Lead paragraph under a title. */

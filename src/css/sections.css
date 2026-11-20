@@ -648,6 +648,7 @@ main section[id] {
 /* The sections of text, under a hairline. */
 .legal__body {
   display: grid;
+  grid-template-columns: minmax(0, 1fr); /* long words wrap inside the column instead of widening it */
   gap: var(--s-7);
   margin-top: var(--s-8);
   padding-top: var(--s-8);
