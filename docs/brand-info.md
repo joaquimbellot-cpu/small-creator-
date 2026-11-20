@@ -122,6 +122,12 @@ The owner has to sign up for that service once; until then the forms must say pl
 | How and when creators are paid | Says only that the commission comes out of the fee once a deal is done |
 | Names of real sponsors, proof of paid creators | Shows none; examples are labelled as examples |
 | Which other platforms come later, and when | Says "other platforms later" at most |
+| The site's address (domain) | No canonical links or sitemap until `seo.siteUrl` is set |
+| Which form service delivers the forms | Both forms say they are not connected; Privacy has a blank for the service's name |
+
+The full list of questions for the owner is in `docs/open-questions.md`.
+
+Spelling: the site is written in American English, so the visible word is "inquiry". The page anchor stays `#enquiry`.
 
 ## 11. Carried over from the earlier site, to confirm
 

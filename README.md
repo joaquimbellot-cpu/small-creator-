@@ -50,22 +50,78 @@ If the build says a file "is not valid JSON", a quotation mark or a comma went
 missing in that file. A text in square brackets, such as `[lead: one sentence, max 22 words]`,
 is a placeholder that still has to be written.
 
-To add the phone number later, type it between the quotation marks of `"phone": ""`
-in `src/content/site.json`. It appears on the site once it is filled in.
+## Things to fill in before the site goes public
+
+All of these are empty or marked today, and the site says so honestly until you fill them in.
+
+### The phone number
+
+In `src/content/site.json`, under `"contact"`, fill in two lines:
+
+- `"phone"`: the number as people should read it, for example `"+1 555 010 0000"`.
+- `"phoneHref"`: the same number with no spaces or brackets, for example `"+15550100000"`.
+  This is what a phone dials when the number is tapped.
+
+The number then appears in the menu, the footer and on the Contact page.
+
+### The forms (applications and brand inquiries)
+
+The two forms do not send anything yet, and each one shows a notice saying so. To make
+them deliver to your email inbox:
+
+1. Sign up for a form service that gives you a web address to post forms to. The forms
+   were built and tested for the way [Formspree](https://formspree.io) works, but have
+   not been tried against the live service.
+2. Create one form there for the address you want the messages sent to, and copy the
+   form's address. It looks like `https://formspree.io/f/abcdwxyz`.
+3. In `src/content/site.json`, under `"forms"`, paste it between the quotation marks of
+   `"endpoint": ""`.
+4. Run `node build.js`, put the site online, and send yourself one test application and
+   one test inquiry. Each arrives with its own subject line ("New creator application",
+   "New brand inquiry").
+
+Once the address is filled in, the "not connected" notices disappear by themselves.
+The Privacy page has a blank for the name of the service: fill that in too.
+
+### The site's address
+
+When you know the address the site will live at, open `src/content/seo.json` and fill in
+`"siteUrl"` with the full address ending in a slash, for example `"https://www.example.com/"`.
+After the next build, search engines get the correct page addresses and a sitemap, and
+links shared on social media show the Smallfold picture.
+
+### The legal pages
+
+`src/content/privacy.json` and `src/content/terms.json` are drafts. Every blank is written
+like `<mark class="blank">(legal name to be added)</mark>` and shows on the page in a dashed
+frame. Replace the whole thing, from `<mark` to `</mark>`, with the real text. Have the
+owner or a lawyer check both pages, then remove the draft notice by deleting the
+`draftNotice` text. In these two files only, a paragraph may contain HTML, so write `&amp;`
+for an ampersand.
 
 ## Change an image
 
-1. Put the new picture in `src/assets/img/` under the same file name as the old one
-   (for example `hero.jpg`), in the same pixel size.
-2. Open `src/content/images.json` and update the entry: `alt` (a short description
-   for people who cannot see the picture), `credit` and `creditUrl`. If the size
-   changed, update `width` and `height` too.
-3. Run `node build.js`.
+Each picture exists twice in `src/assets/img/`: the full one (for example `about.jpg`)
+and a smaller copy for phones (`about-small.jpg`).
+
+1. Save the new picture under the same file name as the old one, in the same pixel size.
+   `src/content/images.json` lists the size of every picture (`width`, `height`).
+2. Save a smaller copy under the `-small` name, at the width given by `widthSmall`.
+3. In `src/content/images.json`, update the entry: `alt` (a short description for people
+   who cannot see the picture), and `credit`, `creditUrl` and `licence` if the picture
+   came from someone else. If a size changed, update `width`, `height` and `widthSmall`.
+4. Add the picture to the table in `docs/image-credits.md`.
+5. Run `node build.js`.
+
+The home page's first picture has two shapes: `hero.jpg` (wide, for desktops) and
+`hero-tall.jpg` (upright, for phones). Replace both, and both `-small` copies. Keep the
+middle of the picture calm and dark enough for the headline that sits on it.
 
 ## Where everything lives
 
 ```
-docs/              brand-info.md (every brand fact) and design-brief.md (the design rules)
+docs/              brand-info.md (every brand fact), design-brief.md (the design rules),
+                   open-questions.md (what the owner still has to decide), image-credits.md
 src/content/       all words and image descriptions, as .json files
 src/pages/         one .html file per page (only the part between header and footer)
 src/partials/      pieces shared by pages: layout, head, header, footer, hero, closing, logo
@@ -87,6 +143,8 @@ node build.js                 build src/ into site/
 node build.js --out <dir>     build into another folder
 node build.js --strict        exit with code 1 if a template asks for a key that does not exist
 node build.js --serve [port]  build, serve (default port 8000) and rebuild when src/ changes
+                              (another port: node build.js --serve 8080)
+node build.js --styleguide    also build styleguide.html, the reference page for every component
 node build.js --self-test     run the tests of the template engine
 ```
 
@@ -97,8 +155,10 @@ node build.js --self-test     run the tests of the template engine
 - The `PAGES` list at the top of `build.js` gives every page file an id
   (`index.html` is `home`, `how-it-works.html` is `how`, and so on).
 - The stylesheets in `src/css/` are joined, in the order listed above, into
-  `site/assets/site.css`. The scripts in `src/js/` are joined into `site/assets/site.js`.
-  Nothing is minified.
+  `site/assets/site.css`, without their comments. The scripts in `src/js/` are joined into
+  `site/assets/site.js`. Nothing else is minified.
+- The style guide page is left out unless you ask for it with `--styleguide`.
+- When `seo.siteUrl` is filled in, the build also writes `sitemap.xml` and adds it to `robots.txt`.
 - `src/assets/` is copied to `site/assets/`, and `src/static/` to the top of `site/`.
 - Every link and file path is relative, with no leading slash (`assets/img/hero.jpg`,
   `apply.html`), so the site works from any folder.

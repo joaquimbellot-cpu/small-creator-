@@ -19,7 +19,7 @@
       {{#if site.contact.phone}}
       <div class="contact-ways__item" data-reveal data-reveal-delay="1">
         <h2 class="label label--muted">{{contact.phone.title}}</h2>
-        <p class="contact-ways__value"><a class="text-link" href="tel:{{site.contact.phoneHref}}">{{site.contact.phone}}</a></p>
+        <p class="contact-ways__value"><a class="text-link" href="tel:{{#if site.contact.phoneHref}}{{site.contact.phoneHref}}{{else}}{{site.contact.phone}}{{/if}}">{{site.contact.phone}}</a></p>
         <p class="muted">{{contact.phone.text}}</p>
       </div>
       {{/if}}

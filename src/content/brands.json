@@ -88,6 +88,7 @@
         "error": "Check the number, or leave this field empty."
       }
     },
+    "subject": "New brand inquiry",
     "submit": "Send inquiry",
     "privacy": "We use these details to reply to your inquiry and to suggest channels.",
     "success": "Your inquiry is with us. We will write back by email."

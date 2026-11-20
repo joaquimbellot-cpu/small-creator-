@@ -462,7 +462,11 @@
     const endpoint = (form.dataset.endpoint || '').trim();
     if (!endpoint) {
       const notice = form.querySelector('[data-form-notice]');
-      if (notice) notice.focus();
+      if (notice) {
+        notice.classList.add('notice--alert'); // the frame thickens, so pressing the button visibly does something
+        notice.scrollIntoView({ block: 'center' });
+        notice.focus();
+      }
       return;
     }
     send(form, endpoint);

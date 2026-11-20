@@ -51,12 +51,8 @@
           <p class="field__error" id="apply-subscribers-error"></p>
         </div>
         <input type="text" name="_gotcha" tabindex="-1" autocomplete="off" aria-hidden="true" hidden>
+        <input type="hidden" name="_subject" value="{{apply.form.subject}}">
         <p class="small muted form__privacy">{{apply.form.privacy}}</p>
-        {{#unless site.forms.endpoint}}
-        <noscript>
-          <p class="notice">{{site.forms.notConnected}} <a class="text-link" href="mailto:{{site.contact.email}}">{{site.contact.email}}</a></p>
-        </noscript>
-        {{/unless}}
         <div class="form__status" role="status" data-form-status></div>
         <div class="form__status" role="alert" data-form-alert></div>
         <p class="form__actions"><button class="btn form__submit" type="submit">{{apply.form.submit}}</button></p>

@@ -646,6 +646,17 @@ main section[id] {
 }
 
 /* The sections of text, under a hairline. */
+/* A blank the owner still has to fill in: a dashed frame, so it cannot be mistaken for finished text. */
+.legal mark.blank {
+  padding: 0 var(--s-1);
+  border: var(--hairline) dashed var(--fg-muted);
+  border-radius: var(--r-sm);
+  background: none;
+  color: inherit;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+}
+
 .legal__body {
   display: grid;
   grid-template-columns: minmax(0, 1fr); /* long words wrap inside the column instead of widening it */

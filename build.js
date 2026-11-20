@@ -397,8 +397,12 @@ function buildSite(outDir) {
     if (!pageFiles.includes(fileName)) warnings.push(`src/pages/${fileName} is listed in PAGES but does not exist`);
   }
 
+  let built = 0;
   for (const fileName of pageFiles) {
     let id = PAGES[fileName];
+    // The style guide is a reference for whoever edits the site, not a page for visitors.
+    if (id === 'styleguide' && !INCLUDE_STYLEGUIDE) continue;
+    built++;
     if (!id) {
       id = path.basename(fileName, '.html');
       warnings.push(`src/pages/${fileName} is not listed in PAGES; using the id "${id}"`);
@@ -432,7 +436,12 @@ function buildSite(outDir) {
   }
 
   // One stylesheet and one script.
-  output.set('assets/site.css', bundle('css', CSS_ORDER, '.css', warnings));
+  // The stylesheet's comments stay in src/css for whoever edits it; visitors do not download them.
+  const css = bundle('css', CSS_ORDER, '.css', warnings)
+    .replace(/\/\*[\s\S]*?\*\//g, '')
+    .replace(/[ \t]+$/gm, '')
+    .replace(/\n{2,}/g, '\n');
+  output.set('assets/site.css', css.trimStart());
   output.set('assets/site.js', bundle('js', JS_ORDER, '.js', warnings));
 
   // Write: empty the out folder, copy the files that stay as they are, then the built files.
@@ -455,7 +464,7 @@ function buildSite(outDir) {
   }
 
   return {
-    pages: pageFiles.length,
+    pages: built,
     missing: [...env.missing.values()],
     warnings,
     placeholders: countPlaceholders(content),
@@ -678,13 +687,17 @@ function selfTest() {
  * 6. Command line
  * ------------------------------------------------------------------ */
 
-const USAGE = `Usage: node build.js [--out <dir>] [--strict] [--serve [port]] [--self-test]
+const USAGE = `Usage: node build.js [--out <dir>] [--strict] [--serve [port]] [--styleguide] [--self-test]
 
   (no options)     build src/ into site/
   --out <dir>      build into another folder
   --strict         exit with code 1 if a template asks for a missing key
   --serve [port]   build, serve the site (default port 8000), rebuild on changes
+  --styleguide     also build the style guide page (styleguide.html), a reference for editors
   --self-test      test the template engine`;
+
+// Set by --styleguide: also build src/pages/styleguide.html.
+let INCLUDE_STYLEGUIDE = false;
 
 function parseArgs(argv) {
   const options = { out: DEFAULT_OUT, strict: false, serve: false, port: 8000, selfTest: false };
@@ -697,6 +710,8 @@ function parseArgs(argv) {
     } else if (arg === '--serve') {
       options.serve = true;
       if (/^\d+$/.test(argv[i + 1] || '')) options.port = Number(argv[++i]);
+    } else if (arg === '--styleguide') {
+      INCLUDE_STYLEGUIDE = true;
     } else if (arg === '--self-test') {
       options.selfTest = true;
     } else if (arg === '--help' || arg === '-h') {

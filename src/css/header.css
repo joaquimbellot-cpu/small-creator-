@@ -219,6 +219,13 @@ html.js .site-header__inner {
   display: none;
 }
 
+/* Menu and Close are the only way into and out of the phone menu: a full 44px square each. */
+.site-header .site-header__toggle,
+.site-menu [data-menu-close] {
+  width: var(--tap);
+  min-height: var(--tap);
+}
+
 @media (max-width: 860px) {
   /* With JavaScript the links and Apply move into the menu. */
   html.js .site-nav,

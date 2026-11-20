@@ -34,7 +34,7 @@
           {{#if site.contact.phone}}
           <div>
             <dt class="label label--muted">{{site.contact.phoneLabel}}</dt>
-            <dd><a class="site-menu__contact-link text-link" href="tel:{{site.contact.phoneHref}}">{{site.contact.phone}}</a></dd>
+            <dd><a class="site-menu__contact-link text-link" href="tel:{{#if site.contact.phoneHref}}{{site.contact.phoneHref}}{{else}}{{site.contact.phone}}{{/if}}">{{site.contact.phone}}</a></dd>
           </div>
           {{/if}}
         </dl>
