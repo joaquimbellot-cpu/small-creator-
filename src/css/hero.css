@@ -23,7 +23,7 @@
 .hero {
   --hero-max: calc(var(--wrap) + var(--s-10)); /* tallest the first screen gets: a 1440px monitor is filled, a taller one is not */
   --hero-pad: var(--s-6);               /* air between the header and the text, and the same below */
-  --hero-title: 7.6em;                  /* widest line of the headline: sets it in two even lines */
+  --hero-title: 7.2em;                  /* widest line of the headline: sets these words in two even lines */
   --hero-lead: 23em;                    /* widest line of the sentence */
   --hero-wash: .4;                      /* share of the veil that lies over the whole picture */
 

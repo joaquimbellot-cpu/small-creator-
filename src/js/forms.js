@@ -19,13 +19,15 @@
  *   [data-validate]                 email, phone, channel or subscribers
  *   [data-min] [data-max]           the range of the subscriber count
  *   [data-error-range]              the message for a count outside that range
+ *   [data-form-notice]              the "not connected" notice above the first field;
+ *                                   in the page only while the endpoint is empty
  *   [data-form-summary]             live region for the summary line
- *   [data-form-status]              live region for "not connected" and "sent"
+ *   [data-form-status]              live region for "sent"
  *   [data-form-alert]               live region for "did not send"
- *   template[data-form-template]    summary, not-connected, success, error
+ *   template[data-form-template]    summary, success, error
  *
- * Without this script a form with an empty endpoint has method="dialog", which
- * sends nothing, and the page shows a <noscript> note instead.
+ * While the endpoint is empty a form has method="dialog", which sends nothing
+ * even without this script, and a <noscript> note beside the button says so.
  */
 (function () {
   'use strict';
@@ -169,10 +171,11 @@
       return;
     }
 
-    // No endpoint: say that the form is not connected, and keep what was typed.
+    // No endpoint: move to the notice that says the form is not connected, and keep what was typed.
     const endpoint = (form.dataset.endpoint || '').trim();
     if (!endpoint) {
-      say(form, 'status', 'not-connected');
+      const notice = form.querySelector('[data-form-notice]');
+      if (notice) notice.focus();
       return;
     }
     send(form, endpoint);

@@ -546,6 +546,13 @@ main section[id] {
   margin-top: 0;
 }
 
+/* The "not connected" notice above the first field. When the script moves to
+   it, it stops with a little air above it. */
+.form > .form__notice {
+  margin-bottom: var(--s-6);
+  scroll-margin-top: var(--s-6);
+}
+
 /* A little more air above the line about the use of the details. */
 .form > .form__privacy {
   margin-top: var(--s-6);

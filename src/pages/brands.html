@@ -65,6 +65,9 @@
     </div>
     <div class="split__body" data-reveal data-reveal-delay="1">
       <form class="form" method="{{#if site.forms.endpoint}}post{{else}}dialog{{/if}}"{{#if site.forms.endpoint}} action="{{site.forms.endpoint}}"{{/if}} aria-labelledby="enquiry-title" data-form data-endpoint="{{site.forms.endpoint}}" data-errors-one="{{site.forms.errorsOne}}" data-errors-many="{{site.forms.errorsMany}}" data-sending="{{site.forms.sending}}">
+        {{#unless site.forms.endpoint}}
+        <p class="notice form__notice" tabindex="-1" data-form-notice>{{site.forms.notConnected}} <a class="text-link" href="mailto:{{site.contact.email}}">{{site.contact.email}}</a></p>
+        {{/unless}}
         <div class="form__summary" role="alert" data-form-summary></div>
         <div class="field">
           <label class="field__label" for="enquiry-company">{{brands.form.fields.company.label}}</label>
@@ -105,14 +108,15 @@
         </div>
         <input type="text" name="_gotcha" tabindex="-1" autocomplete="off" aria-hidden="true" hidden>
         <p class="small muted form__privacy">{{brands.form.privacy}}</p>
+        {{#unless site.forms.endpoint}}
         <noscript>
           <p class="notice">{{site.forms.notConnected}} <a class="text-link" href="mailto:{{site.contact.email}}">{{site.contact.email}}</a></p>
         </noscript>
+        {{/unless}}
         <div class="form__status" role="status" data-form-status></div>
         <div class="form__status" role="alert" data-form-alert></div>
         <p class="form__actions"><button class="btn form__submit" type="submit">{{brands.form.submit}}</button></p>
         <template data-form-template="summary"><p class="notice notice--alert"></p></template>
-        <template data-form-template="not-connected"><p class="notice">{{site.forms.notConnected}} <a class="text-link" href="mailto:{{site.contact.email}}">{{site.contact.email}}</a></p></template>
         <template data-form-template="success"><p class="notice">{{brands.form.success}}</p></template>
         <template data-form-template="error"><p class="notice notice--alert">{{site.forms.error}} <a class="text-link" href="mailto:{{site.contact.email}}">{{site.contact.email}}</a></p></template>
       </form>
