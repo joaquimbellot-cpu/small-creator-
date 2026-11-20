@@ -56,6 +56,15 @@ main section[id] {
   margin-top: var(--s-4);
 }
 
+/* Responsive: the standalone email links were about 26px tall; 44px for a finger, and may break on a small screen. */
+.page-head__contact > a,
+.contact-ways__value > a {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--tap);
+  overflow-wrap: anywhere;
+}
+
 /* Page head with a picture: the text first, the picture under it on a phone. */
 .page-head__grid {
   display: grid;
@@ -167,6 +176,15 @@ main section[id] {
   max-width: var(--measure);
 }
 
+/* Responsive: on a low screen (a phone held sideways) the 4:5 picture was taller than the
+   screen; its width is capped so that it stays within about 80% of the screen's height. */
+.differences__media {
+  width: 100%;
+  max-width: calc(80vh * 4 / 5);
+  max-width: calc(80svh * 4 / 5);
+  justify-self: center;
+}
+
 /* How a match is made: the head above the drawing on a phone. */
 .process__top {
   display: grid;
@@ -179,6 +197,15 @@ main section[id] {
 .process__threads > canvas {
   width: 100%;
   height: auto;
+}
+
+/* Responsive: on a phone held sideways the 3:2 drawing filled more than a screen; it now
+   stays within about 70% of the screen's height, centred in its column. */
+.process__threads {
+  width: 100%;
+  max-width: calc(70vh * 3 / 2);
+  max-width: calc(70svh * 3 / 2);
+  margin-inline: auto;
 }
 
 /* The four steps, under the head and the drawing. */
@@ -268,11 +295,18 @@ main section[id] {
     gap: var(--s-6);
   }
 
-  /* The three lines of an example tile run across the tile. */
+  /* The lines of an example tile run across the tile. Responsive: three columns were
+     cramped (about 120px each at 600px), so channel and sponsor sit side by side and
+     the video runs across the tile under them. */
   .examples__lines {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .examples__line:last-child {
+    grid-column: 1 / -1;
   }
 }
+
 
 /* Wide screens. */
 @media (min-width: 861px) {
@@ -329,6 +363,27 @@ main section[id] {
   .examples__grid {
     grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: var(--s-5);
+  }
+}
+
+/* Responsive: at 861 to 1100px a text of four columns was about 240px wide and broke
+   the titles into short lines; there the picture takes six columns and the text five,
+   with one column of air between them. */
+@media (min-width: 861px) and (max-width: 1100px) {
+  .differences__media {
+    grid-column: 1 / span 6;
+  }
+
+  .differences__text {
+    grid-column: 8 / span 5;
+  }
+
+  .differences__item:nth-child(even) .differences__media {
+    grid-column: 7 / span 6;
+  }
+
+  .differences__item:nth-child(even) .differences__text {
+    grid-column: 1 / span 5;
   }
 }
 
@@ -529,6 +584,14 @@ main section[id] {
   .apply__next {
     position: sticky;
     top: calc(var(--header-h, var(--s-8)) + var(--s-6));
+  }
+}
+
+/* Responsive: on a low window the column is taller than the room under the header, so its
+   last step could not be reached while it stuck; there it scrolls with the page. */
+@media (min-width: 861px) and (max-height: 640px) {
+  .apply__next {
+    position: static;
   }
 }
 

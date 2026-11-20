@@ -3,12 +3,142 @@
  * Owner: Animation agent.
  *
  * Belongs here: the styles for the motion hooks in docs/design-brief.md, section 7:
- * [data-intro], [data-reveal], [data-reveal="words"], [data-reveal="lines"],
- * [data-parallax] and [data-threads].
+ * [data-reveal], [data-reveal="words"], [data-reveal="lines"], [data-parallax]
+ * and [data-threads]. ([data-intro] is played by hero.css.)
  *
  * Rule: hidden starting states apply only under html.js AND
  * @media (prefers-reduced-motion: no-preference), so every page stays complete
- * and readable with JavaScript off and with reduced motion on.
+ * and readable with JavaScript off and with reduced motion on. They are also
+ * screen-only, so a printed page always shows everything.
  *
- * Empty for now.
+ * Classes set by motion.js:
+ *   html.mo-on    motion.js is running; it alone reveals what waits
+ *   html.mo-off   motion.js stopped (an error, or reduced motion switched on): nothing is hidden or moving
+ *   .is-in        a block or a heading is playing its entrance
+ *   .is-done      the entrance is over; no motion rule applies any more
+ *   .is-split     a heading is cut into masked words for its line-by-line rise
+ *   .is-scrub     the statement's words follow the scroll
+ *   .is-live      the threads canvas is drawing in place of the picture
+ *
+ * Only opacity, transform, clip-path and colour move.
  */
+
+/* Motion values of this file, built from the tokens. */
+:root {
+  --mo-rise: calc(var(--s-5) + var(--s-1)); /* 28px: how far a block rises */
+  --mo-step: 90ms;                          /* stagger between data-reveal-delay steps */
+  --mo-line: 120ms;                         /* stagger between the lines of a heading */
+  --mo-wait: 3s;                            /* failsafe: shown anyway if motion.js never runs */
+}
+
+/* The stagger of siblings, read by both kinds of entrance. */
+[data-reveal-delay="1"] { --mo-d: 1; }
+[data-reveal-delay="2"] { --mo-d: 2; }
+[data-reveal-delay="3"] { --mo-d: 3; }
+[data-reveal-delay="4"] { --mo-d: 4; }
+
+/* A block fades in and rises. */
+@keyframes mo-up {
+  from { opacity: 0; transform: translateY(var(--mo-rise)); }
+}
+
+/* A word of a heading rises from below its mask. */
+@keyframes mo-rise {
+  from { transform: translateY(130%); }
+}
+
+/* The plain fade of the failsafe. */
+@keyframes mo-show {
+  from { opacity: 0; }
+}
+
+/* The threads canvas lies exactly over the picture it replaces (overrides the
+   in-flow size that sections.css gives a canvas there). */
+[data-threads] {
+  position: relative;
+}
+
+html.js [data-threads] > canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  pointer-events: none;
+}
+
+@media screen and (prefers-reduced-motion: no-preference) {
+  /* Before motion.js runs: blocks and headings wait, and show by themselves
+     after --mo-wait if it never does (a script error earlier in the bundle). */
+  html.js:not(.mo-on):not(.mo-off) [data-reveal]:not([data-reveal="words"]) {
+    animation: mo-show var(--dur-enter) var(--ease) var(--mo-wait) both;
+  }
+
+  /* Waiting for the screen: hidden, in place, at full size. */
+  html.mo-on [data-reveal]:not([data-reveal="words"]):not(.is-in):not(.is-done) {
+    opacity: 0;
+  }
+
+  /* A block's entrance. */
+  html.mo-on [data-reveal].is-in:not(.is-split) {
+    animation: mo-up var(--dur-enter-long) var(--ease) calc(var(--mo-d, 0) * var(--mo-step)) both;
+  }
+
+  /* A heading's words: each is a mask (clip-path, so the baseline and the line
+     box stay as they were) around a word that rises with its line. The mask
+     reaches a little past the line box for descenders and overhangs. */
+  html.mo-on .is-split .mo-m {
+    display: inline-block;
+    clip-path: inset(-.2em -.12em -.22em);
+  }
+
+  html.mo-on .is-split .mo-m > span {
+    display: inline-block;
+  }
+
+  html.mo-on .is-split.is-in .mo-m > span {
+    animation: mo-rise var(--dur-enter-long) var(--ease) calc(var(--mo-l, 0) * var(--mo-line) + var(--mo-d, 0) * var(--mo-step)) both;
+  }
+
+  /* The statement: words not yet reached by the scroll are faint, and darken
+     softly as they are reached (and lighten again when scrolling back). */
+  html.mo-on .is-scrub .mo-word {
+    color: var(--faint);
+    transition: color var(--dur-hover-slow) var(--ease);
+  }
+
+  html.mo-on .is-scrub .mo-word.is-lit {
+    color: var(--fg);
+  }
+
+  /* The band picture drifts; motion.js sets the offset and the slight zoom that keeps its edges covered. */
+  html.mo-on [data-parallax] {
+    transform: translate3d(0, var(--mo-y, 0px), 0) scale(var(--mo-s, 1));
+  }
+
+  html.mo-on [data-parallax].is-drift {
+    will-change: transform;
+  }
+
+  /* The threads: the canvas fades in over the picture, which stays in the page
+     (and for screen readers) but is hidden from sight. */
+  html.mo-on [data-threads] > img,
+  html.mo-on [data-threads] > canvas {
+    transition: opacity var(--dur-enter) var(--ease);
+  }
+
+  html.mo-on [data-threads].is-live > canvas {
+    opacity: 1;
+  }
+
+  html.mo-on [data-threads].is-live > img {
+    opacity: 0;
+  }
+}
+
+/* Paper: never the canvas, always the drawing. */
+@media print {
+  [data-threads] > canvas {
+    display: none;
+  }
+}

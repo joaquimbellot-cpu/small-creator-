@@ -5,9 +5,45 @@
 {{#if page.is.styleguide}}
 <meta name="robots" content="noindex">
 {{/if}}
+{{#if seo.siteUrl}}
+<link rel="canonical" href="{{seo.siteUrl}}{{#unless page.isHome}}{{page.file}}{{/unless}}">
+{{/if}}
+<meta name="theme-color" content="#0E0E0E">
 <script>document.documentElement.classList.add('js');</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@500;600&amp;family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;1,6..72,300;1,6..72,400&amp;display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@500;600&amp;family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;1,6..72,300&amp;display=swap">
+{{#if page.isHome}}
+<link rel="preload" as="image" media="(orientation: portrait)" imagesrcset="{{images.heroTall.srcSmall}} {{images.heroTall.widthSmall}}w, {{images.heroTall.src}} {{images.heroTall.width}}w" imagesizes="max(100vw, 80vh)" fetchpriority="high">
+<link rel="preload" as="image" media="(orientation: landscape)" imagesrcset="{{images.hero.srcSmall}} {{images.hero.widthSmall}}w, {{images.hero.src}} {{images.hero.width}}w" imagesizes="max(100vw, 178vh)" fetchpriority="high">
+{{/if}}
 <link rel="stylesheet" href="assets/site.css">
 <link rel="icon" href="assets/logo/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="assets/logo/apple-touch-icon.png">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="{{site.brand.name}}">
+<meta property="og:locale" content="en_US">
+<meta property="og:title" content="{{page.title}}">
+<meta property="og:description" content="{{page.description}}">
+{{#if seo.siteUrl}}
+<meta property="og:url" content="{{seo.siteUrl}}{{#unless page.isHome}}{{page.file}}{{/unless}}">
+{{/if}}
+<meta property="og:image" content="{{seo.siteUrl}}{{images.og.src}}">
+<meta property="og:image:type" content="image/jpeg">
+<meta property="og:image:width" content="{{images.og.width}}">
+<meta property="og:image:height" content="{{images.og.height}}">
+<meta property="og:image:alt" content="{{images.og.alt}}">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image:alt" content="{{images.og.alt}}">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "name": "{{{site.brand.name}}}",
+  "description": "{{{site.brand.descriptor}}}",
+  "email": "{{{site.contact.email}}}",
+  "contactPoint": { "@type": "ContactPoint", "contactType": "customer support", "email": "{{{site.contact.email}}}", "availableLanguage": "English" }{{#if seo.siteUrl}},
+  "url": "{{{seo.siteUrl}}}",
+  "logo": "{{{seo.siteUrl}}}assets/logo/apple-touch-icon.png"{{/if}}
+}
+</script>

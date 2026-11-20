@@ -11,7 +11,7 @@
 <section class="section about-story">
   <div class="wrap about-story__grid">
     <figure class="media media--3x2 about-story__media" data-reveal>
-      <img src="{{images.about.src}}" srcset="{{images.about.srcSmall}} {{images.about.widthSmall}}w, {{images.about.src}} {{images.about.width}}w" sizes="(min-width: 861px) 55vw, 100vw" width="{{images.about.width}}" height="{{images.about.height}}" alt="{{images.about.alt}}">
+      <img src="{{images.about.src}}" srcset="{{images.about.srcSmall}} {{images.about.widthSmall}}w, {{images.about.src}} {{images.about.width}}w" sizes="(min-width: 861px) min(55vw, 740px), 100vw" width="{{images.about.width}}" height="{{images.about.height}}" alt="{{images.about.alt}}" fetchpriority="high">
     </figure>
     <div class="about-story__text">
       <p class="label label--muted" data-reveal>{{about.story.label}}</p>

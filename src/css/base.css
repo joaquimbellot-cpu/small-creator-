@@ -343,9 +343,13 @@ legend {
   transition: transform var(--dur-hover) var(--ease);
 }
 
+/* The ring is the blue for ink, and the gap inside it is filled with ink, so the
+   ring keeps its contrast whether the link sits over cream, ink or the hero photo
+   (the blue for ink alone is only 1.9:1 against cream). */
 .skip-link:focus {
   transform: none;
   outline-color: var(--accent-on-ink);
+  box-shadow: 0 0 0 var(--focus-offset) var(--ink);
 }
 
 /* Focus is always visible: a ring in the pen blue around whatever has the keyboard. */

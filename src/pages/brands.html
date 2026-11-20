@@ -7,7 +7,7 @@
       <p class="page-head__action" data-reveal data-reveal-delay="2"><a class="btn" href="{{brands.head.cta.href}}">{{brands.head.cta.label}} {{> icons/arrow-down}}</a></p>
     </div>
     <figure class="media media--3x2 page-head__media" data-reveal data-reveal-delay="1">
-      <img src="{{images.brands.src}}" srcset="{{images.brands.srcSmall}} {{images.brands.widthSmall}}w, {{images.brands.src}} {{images.brands.width}}w" sizes="(min-width: 861px) 55vw, 100vw" width="{{images.brands.width}}" height="{{images.brands.height}}" alt="{{images.brands.alt}}">
+      <img src="{{images.brands.src}}" srcset="{{images.brands.srcSmall}} {{images.brands.widthSmall}}w, {{images.brands.src}} {{images.brands.width}}w" sizes="(min-width: 861px) min(55vw, 740px), 100vw" width="{{images.brands.width}}" height="{{images.brands.height}}" alt="{{images.brands.alt}}" fetchpriority="high">
     </figure>
   </div>
 </section>

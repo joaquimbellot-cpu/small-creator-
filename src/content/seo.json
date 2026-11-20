@@ -1,45 +1,46 @@
 {
+  "siteUrlHelp": "Once the domain is known, type the full address of the home page here, starting with https:// and ending with a slash, for example https://www.your-domain.com/ . While it is empty, no canonical link or og:url is printed and image links stay relative.",
   "siteUrl": "",
   "pages": {
     "home": {
-      "title": "[title: browser tab title for the Home page, max 60 characters]",
-      "description": "[description: search result summary for the Home page, max 155 characters]"
+      "title": "Sponsors chosen for small YouTube channels | Smallfold",
+      "description": "Smallfold finds sponsors for small YouTube channels of 1,000 to 50,000 subscribers. A person looks at each channel and chooses a sponsor that suits it."
     },
     "how": {
-      "title": "[title: browser tab title for the How it works page, max 60 characters]",
-      "description": "[description: search result summary for the How it works page, max 155 characters]"
+      "title": "How it works: from your application to a deal | Smallfold",
+      "description": "You apply, we choose a sponsor for your channel, and you decide whether to accept. Joining is free, and our commission applies only once a deal is done."
     },
     "brands": {
-      "title": "[title: browser tab title for the For brands page, max 60 characters]",
-      "description": "[description: search result summary for the For brands page, max 155 characters]"
+      "title": "For brands: sponsor small YouTube channels | Smallfold",
+      "description": "A person chooses small YouTube channels that suit what you want to promote. You pay exactly the agreed fee and nothing extra. Send a short inquiry."
     },
     "about": {
-      "title": "[title: browser tab title for the About page, max 60 characters]",
-      "description": "[description: search result summary for the About page, max 155 characters]"
+      "title": "About Smallfold: why we look at small YouTube channels",
+      "description": "Smallfold was started by a YouTube creator with a small channel who found that sponsors only looked at big ones. So we look at the small ones."
     },
     "questions": {
-      "title": "[title: browser tab title for the Questions page, max 60 characters]",
-      "description": "[description: search result summary for the Questions page, max 155 characters]"
+      "title": "Questions about joining, sponsors and commission | Smallfold",
+      "description": "Answers on who can join Smallfold, how a sponsor is chosen for your channel, your right to say no, and when our commission is taken from your fee."
     },
     "contact": {
-      "title": "[title: browser tab title for the Contact page, max 60 characters]",
-      "description": "[description: search result summary for the Contact page, max 155 characters]"
+      "title": "Contact Smallfold by email, for creators and brands",
+      "description": "Smallfold is online only, so the way to reach us is email. Creators can apply to join, and brands can send a short inquiry from the For brands page."
     },
     "apply": {
-      "title": "[title: browser tab title for the Apply page, max 60 characters]",
-      "description": "[description: search result summary for the Apply page, max 155 characters]"
+      "title": "Apply to join Smallfold: free for small YouTube channels",
+      "description": "Apply with a link to your YouTube channel, what it is about and your subscriber count. Joining is free, and we reply within 2 working days."
     },
     "privacy": {
-      "title": "[title: browser tab title for the Privacy page, max 60 characters]",
-      "description": "[description: search result summary for the Privacy page, max 155 characters]"
+      "title": "Privacy policy (draft): how Smallfold handles your details",
+      "description": "Draft privacy policy for Smallfold: which details this website collects, what we use them for and what you can ask of us."
     },
     "terms": {
-      "title": "[title: browser tab title for the Terms page, max 60 characters]",
-      "description": "[description: search result summary for the Terms page, max 155 characters]"
+      "title": "Terms of service (draft) for creators and brands | Smallfold",
+      "description": "Draft terms of service for Smallfold: what we do, who can apply, what it costs, and what the creator and the sponsor each decide."
     },
     "styleguide": {
-      "title": "[title: browser tab title for the style guide, max 60 characters]",
-      "description": "[description: one line saying this is the internal style guide, max 155 characters]"
+      "title": "Style guide: Smallfold website colours, type and components",
+      "description": "Internal style guide for the Smallfold website: colours, type, components and the markup to copy for each. It is not a page for visitors."
     }
   }
 }

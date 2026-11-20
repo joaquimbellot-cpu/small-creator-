@@ -457,6 +457,13 @@
   margin: 0;
 }
 
+/* Responsive: the text of a row ran about 90 characters wide once it moved under the
+   title on a tablet; it keeps to the width of running text. (The title is left free,
+   so that a split row still pushes its value to the right end.) */
+.row > * + * {
+  max-width: var(--measure);
+}
+
 .row > :first-child {
   flex: 1 1 var(--w-row-title);
 }
@@ -504,6 +511,7 @@
 
 .step > * + * {
   margin-top: var(--s-3);
+  max-width: var(--measure); /* Responsive: stacked step text ran ~90 characters wide on tablets */
 }
 
 /* Numbers show only where order matters: write <ol class="steps"> for those,

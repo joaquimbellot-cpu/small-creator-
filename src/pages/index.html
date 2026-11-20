@@ -17,12 +17,12 @@
       <li class="differences__item">
         <figure class="media media--4x5 differences__media" data-reveal>
           {{#if @first}}
-          <img src="{{images.difference1.src}}" srcset="{{images.difference1.srcSmall}} {{images.difference1.widthSmall}}w, {{images.difference1.src}} {{images.difference1.width}}w" sizes="(min-width: 861px) 40vw, (min-width: 561px) 45vw, 100vw" width="{{images.difference1.width}}" height="{{images.difference1.height}}" alt="{{images.difference1.alt}}" loading="lazy">
+          <img src="{{images.difference1.src}}" srcset="{{images.difference1.srcSmall}} {{images.difference1.widthSmall}}w, {{images.difference1.src}} {{images.difference1.width}}w" sizes="(min-width: 861px) min(40vw, 540px), (min-width: 561px) 45vw, 100vw" width="{{images.difference1.width}}" height="{{images.difference1.height}}" alt="{{images.difference1.alt}}" loading="lazy" decoding="async">
           {{else}}
           {{#if @last}}
-          <img src="{{images.difference3.src}}" srcset="{{images.difference3.srcSmall}} {{images.difference3.widthSmall}}w, {{images.difference3.src}} {{images.difference3.width}}w" sizes="(min-width: 861px) 40vw, (min-width: 561px) 45vw, 100vw" width="{{images.difference3.width}}" height="{{images.difference3.height}}" alt="{{images.difference3.alt}}" loading="lazy">
+          <img src="{{images.difference3.src}}" srcset="{{images.difference3.srcSmall}} {{images.difference3.widthSmall}}w, {{images.difference3.src}} {{images.difference3.width}}w" sizes="(min-width: 861px) min(40vw, 540px), (min-width: 561px) 45vw, 100vw" width="{{images.difference3.width}}" height="{{images.difference3.height}}" alt="{{images.difference3.alt}}" loading="lazy" decoding="async">
           {{else}}
-          <img src="{{images.difference2.src}}" srcset="{{images.difference2.srcSmall}} {{images.difference2.widthSmall}}w, {{images.difference2.src}} {{images.difference2.width}}w" sizes="(min-width: 861px) 40vw, (min-width: 561px) 45vw, 100vw" width="{{images.difference2.width}}" height="{{images.difference2.height}}" alt="{{images.difference2.alt}}" loading="lazy">
+          <img src="{{images.difference2.src}}" srcset="{{images.difference2.srcSmall}} {{images.difference2.widthSmall}}w, {{images.difference2.src}} {{images.difference2.width}}w" sizes="(min-width: 861px) min(40vw, 540px), (min-width: 561px) 45vw, 100vw" width="{{images.difference2.width}}" height="{{images.difference2.height}}" alt="{{images.difference2.alt}}" loading="lazy" decoding="async">
           {{/if}}
           {{/if}}
         </figure>
@@ -46,7 +46,7 @@
           <p class="lead muted" data-reveal data-reveal-delay="1">{{home.process.lead}}</p>
         </div>
         <div class="threads process__threads" data-threads>
-          <img src="{{images.threads.src}}" alt="{{images.threads.alt}}" width="{{images.threads.width}}" height="{{images.threads.height}}" loading="lazy">
+          <img src="{{images.threads.src}}" alt="{{images.threads.alt}}" width="{{images.threads.width}}" height="{{images.threads.height}}" loading="lazy" decoding="async">
         </div>
       </div>
       <ol class="steps process__steps">
@@ -124,7 +124,7 @@
 </section>
 
 <section class="band home-band">
-  <img src="{{images.band.src}}" srcset="{{images.band.srcSmall}} {{images.band.widthSmall}}w, {{images.band.src}} {{images.band.width}}w" sizes="100vw" width="{{images.band.width}}" height="{{images.band.height}}" alt="{{images.band.alt}}" loading="lazy" data-parallax>
+  <img src="{{images.band.src}}" srcset="{{images.band.srcSmall}} {{images.band.widthSmall}}w, {{images.band.src}} {{images.band.width}}w" sizes="100vw" width="{{images.band.width}}" height="{{images.band.height}}" alt="{{images.band.alt}}" loading="lazy" decoding="async" data-parallax>
   <p class="h2" data-reveal="lines">{{home.band.text}}</p>
 </section>
 

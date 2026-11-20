@@ -34,9 +34,9 @@
       <a class="tile contact-paths__tile" href="{{link.href}}" data-reveal data-reveal-delay="{{@number}}">
         <div class="media media--3x2">
           {{#if @first}}
-          <img src="{{images.about.src}}" srcset="{{images.about.srcSmall}} {{images.about.widthSmall}}w, {{images.about.src}} {{images.about.width}}w" sizes="(min-width: 861px) 46vw, 100vw" width="{{images.about.width}}" height="{{images.about.height}}" alt="" loading="lazy">
+          <img src="{{images.about.src}}" srcset="{{images.about.srcSmall}} {{images.about.widthSmall}}w, {{images.about.src}} {{images.about.width}}w" sizes="(min-width: 861px) 46vw, 100vw" width="{{images.about.width}}" height="{{images.about.height}}" alt="" decoding="async">
           {{else}}
-          <img src="{{images.brands.src}}" srcset="{{images.brands.srcSmall}} {{images.brands.widthSmall}}w, {{images.brands.src}} {{images.brands.width}}w" sizes="(min-width: 861px) 46vw, 100vw" width="{{images.brands.width}}" height="{{images.brands.height}}" alt="" loading="lazy">
+          <img src="{{images.brands.src}}" srcset="{{images.brands.srcSmall}} {{images.brands.widthSmall}}w, {{images.brands.src}} {{images.brands.width}}w" sizes="(min-width: 861px) 46vw, 100vw" width="{{images.brands.width}}" height="{{images.brands.height}}" alt="" decoding="async">
           {{/if}}
         </div>
         <h2 class="h3">{{title}}</h2>
