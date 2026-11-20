@@ -53,13 +53,15 @@
     var y = Math.max(0, window.pageYOffset);
     var moved = y - lastY;
     var atTop = y <= topZone;
+    // A move counts once it is more than jitter; the first step out of the top zone always counts.
+    var counts = Math.abs(moved) >= JITTER || lastY <= topZone;
 
     if (atTop || pinned()) {
       hidden = false;
-    } else if (Math.abs(moved) >= JITTER) {
+    } else if (counts) {
       hidden = moved > 0;
     }
-    if (atTop || Math.abs(moved) >= JITTER) lastY = y;
+    if (atTop || counts) lastY = y;
 
     // A bar that leaves the top stays clear while it slides away; see 'transitionend' below.
     if (atTop) {

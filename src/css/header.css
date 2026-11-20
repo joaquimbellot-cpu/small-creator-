@@ -4,9 +4,10 @@
  *
  * The fixed site header (src/partials/header.html): the bar with the logo, the
  * tiny uppercase links and the Apply button; its clear state over the home hero
- * and its solid cream state everywhere else; the slide out of view on the way
- * down the page; and the full-screen ink menu for 860px and below
- * (docs/design-brief.md, section 8). Every value comes from tokens.css.
+ * (cream text, Apply as an outline) and its solid cream state everywhere else
+ * (Apply filled); the slide out of view on the way down the page; and the
+ * full-screen ink menu for 860px and below (docs/design-brief.md, section 8).
+ * Every value comes from tokens.css.
  *
  * For the other stylesheets:
  *   --header-h                 the room the bar takes at the top of the page
@@ -96,6 +97,29 @@ html.js [data-page="home"] .site-header:not(.is-solid) {
 /* Over the photo the gap inside the focus ring is filled with ink, as on .on-photo. */
 html.js [data-page="home"] .site-header:not(.is-solid) .site-header__inner :focus-visible {
   box-shadow: 0 0 0 var(--focus-offset) var(--bg);
+}
+
+/* In the clear state Apply is quiet: an outline only, like .btn--ghost, so the
+   hero's own button is the one filled button on the first screen. Only the fill
+   and the colour of the label change (the button's own 200ms transition makes
+   it smooth); the border, the size, the focus ring and the tap area stay. */
+html.js [data-page="home"] .site-header:not(.is-solid) .site-header__cta {
+  background-color: transparent;
+  color: var(--fg);
+}
+
+/* Hover fills it, as a ghost button does. */
+@media (hover: hover) {
+  html.js [data-page="home"] .site-header:not(.is-solid) .site-header__cta:hover {
+    background-color: var(--fg);
+    color: var(--bg);
+  }
+}
+
+/* Pressed: the dimmed fill of every button. */
+html.js [data-page="home"] .site-header:not(.is-solid) .site-header__cta:active {
+  background-color: var(--fg-muted);
+  color: var(--bg);
 }
 
 /* Scrolling down: the bar slides up and out of view. */

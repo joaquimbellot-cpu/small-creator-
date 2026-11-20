@@ -1960,9 +1960,10 @@ legend.field__label {
  *
  * The fixed site header (src/partials/header.html): the bar with the logo, the
  * tiny uppercase links and the Apply button; its clear state over the home hero
- * and its solid cream state everywhere else; the slide out of view on the way
- * down the page; and the full-screen ink menu for 860px and below
- * (docs/design-brief.md, section 8). Every value comes from tokens.css.
+ * (cream text, Apply as an outline) and its solid cream state everywhere else
+ * (Apply filled); the slide out of view on the way down the page; and the
+ * full-screen ink menu for 860px and below (docs/design-brief.md, section 8).
+ * Every value comes from tokens.css.
  *
  * For the other stylesheets:
  *   --header-h                 the room the bar takes at the top of the page
@@ -2054,6 +2055,29 @@ html.js [data-page="home"] .site-header:not(.is-solid) .site-header__inner :focu
   box-shadow: 0 0 0 var(--focus-offset) var(--bg);
 }
 
+/* In the clear state Apply is quiet: an outline only, like .btn--ghost, so the
+   hero's own button is the one filled button on the first screen. Only the fill
+   and the colour of the label change (the button's own 200ms transition makes
+   it smooth); the border, the size, the focus ring and the tap area stay. */
+html.js [data-page="home"] .site-header:not(.is-solid) .site-header__cta {
+  background-color: transparent;
+  color: var(--fg);
+}
+
+/* Hover fills it, as a ghost button does. */
+@media (hover: hover) {
+  html.js [data-page="home"] .site-header:not(.is-solid) .site-header__cta:hover {
+    background-color: var(--fg);
+    color: var(--bg);
+  }
+}
+
+/* Pressed: the dimmed fill of every button. */
+html.js [data-page="home"] .site-header:not(.is-solid) .site-header__cta:active {
+  background-color: var(--fg-muted);
+  color: var(--bg);
+}
+
 /* Scrolling down: the bar slides up and out of view. */
 .site-header.is-hidden {
   transform: translateY(-100%);
@@ -2068,6 +2092,7 @@ html.js [data-page="home"] .site-header:not(.is-solid) .site-header__inner :focu
   padding-block: var(--s-2);
 }
 
+/* With JavaScript: one row, as tall as the bar. */
 html.js .site-header__inner {
   flex-wrap: nowrap;
   height: 100%;
@@ -2091,6 +2116,7 @@ html.js .site-header__inner {
 
 /* ---------- The links of the bar (desktop) ---------- */
 
+/* One row; without JavaScript on a narrow screen the links may run on to a second line. */
 .site-nav__list {
   display: flex;
   flex-wrap: wrap;
@@ -2219,6 +2245,7 @@ html.menu-open {
   border-bottom: var(--hairline) solid transparent;
 }
 
+/* The links take the room that is left, which pushes the foot to the bottom of the screen. */
 .site-menu__nav {
   flex: 1 0 auto;
   padding-block: var(--s-7);
@@ -2247,17 +2274,19 @@ html.menu-open {
   font-style: italic;
 }
 
+/* Hover: a hairline under the words. */
 @media (hover: hover) {
   .site-menu__link:hover {
     text-decoration-color: currentColor;
   }
 }
 
+/* Pressed. */
 .site-menu__link:active {
   color: var(--fg-muted);
 }
 
-/* Apply, then the contact details under a hairline. */
+/* Apply, then the contact details. */
 .site-menu__foot {
   display: grid;
   flex: none;
@@ -2265,6 +2294,7 @@ html.menu-open {
   justify-items: start;
 }
 
+/* Email, and the phone number once there is one, under a hairline: a small label above each. */
 .site-menu__contact {
   display: grid;
   gap: var(--s-4);
@@ -2467,15 +2497,17 @@ html.menu-open {
 
 /* ---------- Smaller screens ---------- */
 
-/* 860px and below: the line and contact details above, the groups below. */
-@media (max-width: 860px) {
+/* Below 1024px the three groups are cramped in half the width: the line and
+   contact details go above, the groups below, across the whole width. */
+@media (max-width: 1023px) {
   .site-footer__top {
     grid-template-columns: minmax(0, 1fr);
     gap: var(--s-7);
   }
 }
 
-/* Phones: two columns. The first group stands beside the other two. */
+/* Phones: two columns of links, the first group beside the other two, and the
+   address a size smaller so that it stays on one line. */
 @media (max-width: 520px) {
   .site-footer__groups {
     grid-template-columns: repeat(2, minmax(0, 1fr));

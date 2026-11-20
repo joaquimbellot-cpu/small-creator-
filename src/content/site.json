@@ -17,6 +17,7 @@
   "contact": {
     "email": "small.fold.sponsorship@gmail.com",
     "phone": "",
+    "phoneHref": "",
     "emailLabel": "Email",
     "phoneLabel": "Phone"
   },
