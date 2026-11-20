@@ -22,7 +22,7 @@
       "channel": {
         "label": "Link to your YouTube channel",
         "hint": "For example, https://www.youtube.com/@yourchannel",
-        "error": "Enter the full link, with https:// at the start."
+        "error": "Enter the link to your channel, such as youtube.com/@yourchannel."
       },
       "topic": {
         "label": "What your channel is about",

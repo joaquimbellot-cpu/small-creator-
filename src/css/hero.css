@@ -21,7 +21,7 @@
 /* ---------- 1. Settings ---------- */
 
 .hero {
-  --hero-max: var(--wrap);              /* the tallest the first screen gets, on a very tall monitor */
+  --hero-max: calc(var(--wrap) + var(--s-10)); /* the tallest the first screen gets: fills a 1440px-high monitor, not a taller one */
   --hero-pad: var(--s-6);               /* air between the header and the text, and the same below */
   --hero-title: 7.6em;                  /* widest line of the headline: sets it in two even lines */
   --hero-lead: 23em;                    /* widest line of the sentence */
@@ -76,11 +76,13 @@
 
 /* ---------- 3. Picture and veil ---------- */
 
-/* The picture fills the whole section, behind the text. */
+/* The picture fills the whole section, behind the text. Until it has loaded,
+   the stage is a shade lighter than the ink around it. */
 .hero__stage {
   position: absolute;
   inset: 0;
   z-index: -1;
+  background-color: var(--ink-soft);
 }
 
 .hero__stage picture,
