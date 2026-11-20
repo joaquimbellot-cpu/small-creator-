@@ -481,7 +481,7 @@
       // Sizes the canvas to its box at the screen's pixel density.
       function resize() {
         var width = box.clientWidth;
-        var dpr = Math.min(window.devicePixelRatio || 1, 3);
+        var dpr = Math.min(window.devicePixelRatio || 1, 2);
         scale = width / drawing.width;
         var w = Math.round(width * dpr);
         var h = Math.round(width * drawing.height / drawing.width * dpr);
