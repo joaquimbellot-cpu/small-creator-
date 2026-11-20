@@ -236,7 +236,7 @@ main section[id] {
 
 /* Example matches: on a phone, a sideways strip of cards from one edge of the screen to
    the other; each card stops at the gutter and the next one peeks in. */
-.examples__grid {
+.examples .examples__grid {
   display: grid;
   grid-auto-flow: column;
   grid-auto-columns: min(80%, 360px);
@@ -466,7 +466,7 @@ main section[id] {
   }
 
   /* Example matches: three cards in a row, no strip. */
-  .examples__grid {
+  .examples .examples__grid {
     grid-auto-flow: row;
     grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: var(--s-5);
