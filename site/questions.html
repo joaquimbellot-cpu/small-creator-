@@ -14,9 +14,9 @@
 </head>
 <body class="on-cream" data-page="questions">
 <a class="skip-link" href="#main">Skip to content</a>
-<header class="site-header on-cream">
+<header class="site-header" data-header>
   <div class="wrap site-header__inner">
-    <a class="site-header__logo" href="index.html" aria-label="Smallfold, home"><span class="logo"><svg class="logo__symbol" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.25" aria-hidden="true" focusable="false"><rect x="4.5" y="4.5" width="15" height="15"/></svg><span class="logo__word">Smallfold</span></span></a>
+    <a class="site-header__logo" href="index.html" aria-label="Smallfold, home"><span class="logo"><svg class="logo__symbol" width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false"><path d="M13.5 3.75H3.75V20.25H20.25V10.5" stroke="currentColor" stroke-width="1.5"/><path d="M13.5 3V10.5H21Z" fill="#2B44D6" style="fill:var(--accent-fg, #2B44D6)"/></svg><span class="logo__word">Smallfold</span></span></a>
     <nav class="site-nav" aria-label="Menu">
       <ul class="site-nav__list">
         <li><a class="site-nav__link label" href="how-it-works.html">How it works</a></li>
@@ -25,66 +25,171 @@
         <li><a class="site-nav__link label" href="questions.html" aria-current="page">Questions</a></li>
       </ul>
     </nav>
-    <a class="btn btn--small" href="apply.html">Apply</a>
+    <a class="btn btn--small site-header__cta" href="apply.html">Apply</a>
+    <button class="btn btn--ghost btn--small btn--icon site-header__toggle" type="button" aria-haspopup="dialog" aria-expanded="false" aria-controls="site-menu" data-menu-open><svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="8" cy="8" r="1.5" fill="currentColor" stroke="none"/><circle cx="16" cy="8" r="1.5" fill="currentColor" stroke="none"/><circle cx="8" cy="16" r="1.5" fill="currentColor" stroke="none"/><circle cx="16" cy="16" r="1.5" fill="currentColor" stroke="none"/></svg><span class="sr-only">Menu</span></button>
   </div>
+  <dialog class="site-menu on-ink" id="site-menu" aria-label="Menu" data-menu>
+    <div class="wrap site-menu__inner">
+      <div class="site-menu__top">
+        <a class="site-header__logo" href="index.html" aria-label="Smallfold, home"><span class="logo"><svg class="logo__symbol" width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false"><path d="M13.5 3.75H3.75V20.25H20.25V10.5" stroke="currentColor" stroke-width="1.5"/><path d="M13.5 3V10.5H21Z" fill="#2B44D6" style="fill:var(--accent-fg, #2B44D6)"/></svg><span class="logo__word">Smallfold</span></span></a>
+        <button class="btn btn--ghost btn--small btn--icon" type="button" data-menu-close><svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M6 6l12 12M18 6 6 18"/></svg><span class="sr-only">Close</span></button>
+      </div>
+      <nav class="site-menu__nav" aria-label="Menu">
+        <ul class="site-menu__list">
+          <li><a class="site-menu__link" href="how-it-works.html">How it works</a></li>
+          <li><a class="site-menu__link" href="brands.html">For brands</a></li>
+          <li><a class="site-menu__link" href="about.html">About</a></li>
+          <li><a class="site-menu__link" href="questions.html" aria-current="page">Questions</a></li>
+        </ul>
+      </nav>
+      <div class="site-menu__foot">
+        <a class="btn site-menu__cta" href="apply.html">Apply</a>
+        <dl class="site-menu__contact">
+          <div>
+            <dt class="label label--muted">Email</dt>
+            <dd><a class="site-menu__contact-link text-link" href="mailto:small.fold.sponsorship@gmail.com">small.fold.sponsorship@gmail.com</a></dd>
+          </div>
+        </dl>
+      </div>
+    </div>
+  </dialog>
 </header>
 <main id="main" tabindex="-1">
-<!-- Questions (stub). Owner: Content Sections agent.
-     Words: src/content/questions.json. -->
-<section class="section">
+<section class="section page-head">
   <div class="wrap">
-    <p class="label label--muted">[label: small label above the page title, 1 to 3 words]</p>
-    <h1 class="h1">[title: page title for Questions, max 6 words]</h1>
-    <p class="lead">[lead: one sentence, and where to ask anything that is not answered here, max 24 words]</p>
+    <div class="page-head__inner">
+      <p class="label label--muted" data-reveal>Questions</p>
+      <h1 class="h1" data-reveal="lines">Questions and answers</h1>
+      <p class="lead" data-reveal data-reveal-delay="1">If your question is not answered here, write to us by email.</p>
+      <p class="page-head__contact" data-reveal data-reveal-delay="2"><a class="text-link" href="mailto:small.fold.sponsorship@gmail.com">small.fold.sponsorship@gmail.com</a></p>
+    </div>
   </div>
 </section>
 
-<!--
-  Planned sections, in order (docs/design-brief.md, section 9):
-  1. Page head (questions.head)
-  2. Questions in groups, as an accordion (questions.groups)
-  3. Closing section (the "closing" partial)
--->
+<section class="section faq">
+  <div class="wrap faq__groups">
+    <div class="faq__group">
+      <h2 class="h2 faq__title" data-reveal="lines">Joining</h2>
+      <div class="accordion faq__list" data-reveal>
+        <details class="accordion__item">
+          <summary>Who can join Smallfold? <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M12 5v14M5 12h14"/></svg><svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M5 12h14"/></svg></summary>
+          <p>Creators with a YouTube channel of 1,000 to 50,000 subscribers. A channel with fewer than 1,000 subscribers cannot join yet.</p>
+        </details>
+        <details class="accordion__item">
+          <summary>How do I apply? <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M12 5v14M5 12h14"/></svg><svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M5 12h14"/></svg></summary>
+          <p>Fill out the application form. We ask for your name, your email, a link to your channel, what it is about and your subscriber count. A phone number is optional.</p>
+        </details>
+        <details class="accordion__item">
+          <summary>What happens after I apply? <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M12 5v14M5 12h14"/></svg><svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M5 12h14"/></svg></summary>
+          <p>We reply within 2 working days. A person looks at your channel and chooses a sponsor that suits it, and we suggest that sponsor to you.</p>
+        </details>
+        <details class="accordion__item">
+          <summary>Which platforms do you work with? <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M12 5v14M5 12h14"/></svg><svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M5 12h14"/></svg></summary>
+          <p>YouTube, for now. Other platforms will come later.</p>
+        </details>
+        <details class="accordion__item">
+          <summary>How do I contact you? <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M12 5v14M5 12h14"/></svg><svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M5 12h14"/></svg></summary>
+          <p>Write to us by email. The address is on the contact page and at the bottom of every page.</p>
+        </details>
+      </div>
+    </div>
+    <div class="faq__group">
+      <h2 class="h2 faq__title" data-reveal="lines">Sponsors and matches</h2>
+      <div class="accordion faq__list" data-reveal>
+        <details class="accordion__item">
+          <summary>Do I have to look for sponsors myself? <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M12 5v14M5 12h14"/></svg><svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M5 12h14"/></svg></summary>
+          <p>No. Finding the sponsor is our work. Your part is to apply, and to say yes or no to what we suggest.</p>
+        </details>
+        <details class="accordion__item">
+          <summary>How do you choose a sponsor for my channel? <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M12 5v14M5 12h14"/></svg><svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M5 12h14"/></svg></summary>
+          <p>By hand. A person looks at your channel and picks a sponsor that suits it. There is no automatic list and no algorithm.</p>
+        </details>
+        <details class="accordion__item">
+          <summary>Can I say no to a sponsor? <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M12 5v14M5 12h14"/></svg><svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M5 12h14"/></svg></summary>
+          <p>Yes. You can turn down any sponsor we suggest. The final say is yours.</p>
+        </details>
+        <details class="accordion__item">
+          <summary>Does the sponsor have a say? <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M12 5v14M5 12h14"/></svg><svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M5 12h14"/></svg></summary>
+          <p>Yes. A sponsor approves each channel we suggest to it. A deal goes ahead only when you and the sponsor both say yes.</p>
+        </details>
+        <details class="accordion__item">
+          <summary>I represent a brand. How do I start? <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M12 5v14M5 12h14"/></svg><svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M5 12h14"/></svg></summary>
+          <p>Send a short inquiry from the For brands page. Tell us what you want to promote and your budget range.</p>
+        </details>
+      </div>
+    </div>
+    <div class="faq__group">
+      <h2 class="h2 faq__title" data-reveal="lines">Commission</h2>
+      <div class="accordion faq__list" data-reveal>
+        <details class="accordion__item">
+          <summary>What does Smallfold cost? <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M12 5v14M5 12h14"/></svg><svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M5 12h14"/></svg></summary>
+          <p>Joining is free. We take a commission from your fee once a deal is done. It is 10% on a sponsorship under $500, 8% from $500 to $1,999, and 5% at $2,000 or more.</p>
+        </details>
+        <details class="accordion__item">
+          <summary>When is the commission charged? <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M12 5v14M5 12h14"/></svg><svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M5 12h14"/></svg></summary>
+          <p>Only once a deal is done. If there is no deal, there is no commission.</p>
+        </details>
+        <details class="accordion__item">
+          <summary>Do sponsors pay extra because of the commission? <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M12 5v14M5 12h14"/></svg><svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M5 12h14"/></svg></summary>
+          <p>No. The sponsor pays exactly the agreed fee and nothing extra. The commission comes out of your fee.</p>
+        </details>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section closing">
+  <div class="wrap">
+    <div class="closing__inner">
+      <h2 class="h2" data-reveal="lines">Tell us about your channel</h2>
+      <p class="lead" data-reveal data-reveal-delay="1">It starts with a short application, and joining is free.</p>
+      <p class="closing__action" data-reveal data-reveal-delay="2"><a class="btn" href="apply.html">Apply <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M4 12h16M14 6l6 6-6 6"/></svg></a></p>
+      <p class="small muted" data-reveal data-reveal-delay="3">We reply within 2 working days.</p>
+    </div>
+  </div>
+</section>
 
 </main>
 <footer class="site-footer on-ink">
   <div class="wrap">
     <div class="site-footer__top">
-      <div class="site-footer__about">
-        <a class="site-footer__logo" href="index.html" aria-label="Smallfold, home"><span class="logo"><svg class="logo__symbol" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.25" aria-hidden="true" focusable="false"><rect x="4.5" y="4.5" width="15" height="15"/></svg><span class="logo__word">Smallfold</span></span></a>
-        <p class="lead">[line: one short sentence about Smallfold for the footer, max 18 words]</p>
-        <p>
-          <span class="label label--muted">[emailLabel: label shown before the email address, 1 or 2 words]</span><br>
-          <a class="text-link" href="mailto:small.fold.sponsorship@gmail.com">small.fold.sponsorship@gmail.com</a>
-        </p>
+      <div class="site-footer__intro">
+        <p class="site-footer__line">Sponsors for small YouTube channels, matched by hand.</p>
+        <dl class="site-footer__contact">
+          <div>
+            <dt class="label label--muted">Email</dt>
+            <dd><a class="site-footer__contact-link text-link" href="mailto:small.fold.sponsorship@gmail.com">small.fold.sponsorship@gmail.com</a></dd>
+          </div>
+        </dl>
       </div>
       <div class="site-footer__groups">
-        <div class="site-footer__group">
-          <h2 class="label label--muted">Smallfold</h2>
+        <nav class="site-footer__group" aria-labelledby="site-footer-nav-1">
+          <h2 class="site-footer__title label label--muted" id="site-footer-nav-1">Smallfold</h2>
           <ul class="site-footer__links">
-            <li><a class="site-footer__link" href="how-it-works.html">How it works</a></li>
-            <li><a class="site-footer__link" href="brands.html">For brands</a></li>
-            <li><a class="site-footer__link" href="about.html">About</a></li>
-            <li><a class="site-footer__link" href="questions.html">Questions</a></li>
+            <li><a class="site-footer__link label" href="how-it-works.html">How it works</a></li>
+            <li><a class="site-footer__link label" href="brands.html">For brands</a></li>
+            <li><a class="site-footer__link label" href="about.html">About</a></li>
+            <li><a class="site-footer__link label" href="questions.html">Questions</a></li>
           </ul>
-        </div>
-        <div class="site-footer__group">
-          <h2 class="label label--muted">Get in touch</h2>
+        </nav>
+        <nav class="site-footer__group" aria-labelledby="site-footer-nav-2">
+          <h2 class="site-footer__title label label--muted" id="site-footer-nav-2">Get in touch</h2>
           <ul class="site-footer__links">
-            <li><a class="site-footer__link" href="apply.html">Apply</a></li>
-            <li><a class="site-footer__link" href="contact.html">Contact</a></li>
+            <li><a class="site-footer__link label" href="apply.html">Apply</a></li>
+            <li><a class="site-footer__link label" href="contact.html">Contact</a></li>
           </ul>
-        </div>
-        <div class="site-footer__group">
-          <h2 class="label label--muted">Legal</h2>
+        </nav>
+        <nav class="site-footer__group" aria-labelledby="site-footer-nav-3">
+          <h2 class="site-footer__title label label--muted" id="site-footer-nav-3">Legal</h2>
           <ul class="site-footer__links">
-            <li><a class="site-footer__link" href="privacy.html">Privacy</a></li>
-            <li><a class="site-footer__link" href="terms.html">Terms</a></li>
+            <li><a class="site-footer__link label" href="privacy.html">Privacy</a></li>
+            <li><a class="site-footer__link label" href="terms.html">Terms</a></li>
           </ul>
-        </div>
+        </nav>
       </div>
     </div>
-    <p class="small muted">© 2026 Smallfold</p>
+    <p class="site-footer__wordmark" aria-hidden="true"><span>Smallfold</span></p>
+    <p class="site-footer__copyright small muted">© 2026 Smallfold</p>
   </div>
 </footer>
 <script src="assets/site.js" defer></script>

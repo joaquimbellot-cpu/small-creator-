@@ -6,30 +6,39 @@
  * Every design value of the site, defined once. Source: docs/design-brief.md,
  * sections 3 (colour), 4 (type), 5 (space, shape, grid) and 7 (easing).
  * All other stylesheets use these variables and never hard-code a value.
+ *
+ * To change a colour, a size or a distance for the whole site, change it here.
  */
 
 :root {
   /* Colour (brief, section 3) */
   --cream: #F1EFEB;                       /* brand colour, the page ground */
   --ink: #0E0E0E;                         /* brand colour, text on cream, dark grounds */
-  --paper: #FAF8F4;                       /* raised surfaces on cream */
-  --cream-deep: #E5E1D8;                  /* tiles, chips, image placeholders */
+  --paper: #FAF8F4;                       /* raised surfaces on cream: tiles, form fields */
+  --cream-deep: #E5E1D8;                  /* a deeper cream for a block of a page's own; no component reads it */
   --ink-soft: #1A1A19;                    /* raised surfaces on ink */
-  --muted: #5C5A55;                       /* secondary text on cream */
-  --muted-on-ink: #A9A59C;                /* secondary text on ink */
-  --faint: #B9B5AC;                       /* unrevealed words and decorative marks only */
+  --muted: #5C5A55;                       /* secondary text on cream (contrast 6.0) */
+  --muted-on-ink: #A9A59C;                /* secondary text on ink (contrast 7.9) */
+  --faint: #B9B5AC;                       /* unrevealed words and decorative marks only, never text to read */
   --line: rgba(14, 14, 14, .14);          /* hairlines on cream */
   --line-on-ink: rgba(241, 239, 235, .18); /* hairlines on ink */
-  --accent: #2B44D6;                      /* pen blue on cream or paper */
-  --accent-on-ink: #A8B4FF;               /* the same accent on ink */
+  --accent: #2B44D6;                      /* pen blue on cream or paper (contrast 6.3) */
+  --accent-on-ink: #A8B4FF;               /* the same accent on ink (contrast 9.8) */
+
+  /* The dark veil laid over a photo that carries text. At this strength cream
+     text keeps a contrast of 4.5 on any photo, even a white one. It is the only
+     place where the site darkens a picture. */
+  --veil: rgba(14, 14, 14, .64);
 
   /* Type (brief, section 4) */
   --font-serif: "Newsreader", Georgia, "Times New Roman", serif;
   --font-sans: "Instrument Sans", "Helvetica Neue", Arial, sans-serif;
+  --font-mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace; /* code samples in the style guide only */
 
   --w-heading: 300;
   --w-text: 400;
   --w-label: 500;
+  --w-label-strong: 600;                  /* the label of a form field that has an error */
 
   --t-hero: clamp(2.75rem, 6.2vw, 5.5rem);
   --t-h1: clamp(2.4rem, 4.6vw, 4rem);
@@ -40,6 +49,7 @@
   --t-body: 1.125rem;
   --t-small: 1rem;
   --t-label: .75rem;
+  --t-logo: 1.375rem;                     /* the wordmark in the header */
 
   --lh-hero: 1.02;
   --lh-h1: 1.06;
@@ -80,9 +90,29 @@
   --r: 8px;                               /* buttons, fields, tiles */
   --r-lg: 14px;                           /* inset panels, photos that are not full-bleed */
 
+  /* Lines */
+  --hairline: 1px;                        /* rules and borders */
+  --stroke: 2px;                          /* the focus ring, the border of a field with an error */
+  --focus-offset: 3px;                    /* gap between a control and its focus ring */
+
+  /* Sizes of controls (brief, section 6) */
+  --tap: 44px;                            /* smallest area a finger can tap */
+  --h-btn: 48px;                          /* button */
+  --h-btn-small: 40px;                    /* small button */
+  --h-field: 52px;                        /* form field, choice tile */
+  --icon: 24px;                           /* an icon on its own */
+  --icon-small: 16px;                     /* an icon inside a button or a link */
+  --mark: 20px;                           /* the radio and checkbox mark, the error mark */
+  --w-choice: 224px;                      /* narrowest a choice tile gets before the tiles stack */
+  --w-row-title: 200px;                   /* a row of the hairline list: its title needs this much room... */
+  --w-row-text: 320px;                    /* ...and its text this much, to sit side by side */
+  --h-band: 720px;                        /* tallest a photo band gets */
+  --w-band-text: 900px;                   /* widest line of text on a photo band */
+
   /* Motion (brief, section 7) */
   --ease: cubic-bezier(.22, 1, .36, 1);
   --dur-hover: 200ms;
+  --dur-hover-slow: 500ms;                /* longer hover moves: the sliding underline, the photo in a tile */
   --dur-enter: 900ms;
   --dur-enter-long: 1300ms;
 }
@@ -95,10 +125,27 @@
   }
 }
 
+/* Reduced motion: every duration drops to almost nothing. */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --dur-hover: .01ms;
+    --dur-hover-slow: .01ms;
+    --dur-enter: .01ms;
+    --dur-enter-long: .01ms;
+  }
+}
+
 /*
  * Grounds. A section sits on cream, on ink or on a photograph. Each ground
  * sets the same six variables; components read only these six, so every
  * component works on every ground.
+ *
+ *   --bg         the ground itself
+ *   --fg         text, and the fill of a button
+ *   --fg-muted   secondary text, and the border of a form field
+ *   --rule       hairlines
+ *   --surface    raised blocks: tiles, fields, chips, notices
+ *   --accent-fg  the pen blue: focus ring, the chosen option, the current step
  */
 :root,
 .on-cream {
@@ -121,11 +168,13 @@
   --accent-fg: var(--accent-on-ink);
 }
 
-/* Text on a photograph: cream text over a dark veil (the veil is drawn by .band and the hero). */
-.on-photo {
+/* Text on a photograph: cream text over the dark veil. .band is always on a photo.
+   Secondary text stays close to full cream here, so it is readable on any picture. */
+.on-photo,
+.band {
   --bg: var(--ink);
   --fg: var(--cream);
-  --fg-muted: rgba(241, 239, 235, .82);
+  --fg-muted: rgba(241, 239, 235, .92);
   --rule: rgba(241, 239, 235, .32);
   --surface: rgba(14, 14, 14, .4);
   --accent-fg: var(--accent-on-ink);
@@ -138,6 +187,7 @@
  *
  * Reset, page defaults, the type classes, the layout helpers (.wrap, .section)
  * and the accessibility helpers. Components live in components.css.
+ * Every value comes from tokens.css.
  */
 
 /* ---------- Reset ---------- */
@@ -167,6 +217,8 @@ body {
   font-weight: var(--w-text);
   line-height: var(--lh-body);
   font-optical-sizing: auto;
+  /* Only the weights and italics that are really loaded are used; the browser never fakes one. */
+  font-synthesis: none;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   overflow-wrap: break-word;
@@ -214,16 +266,28 @@ h6 {
   text-wrap: balance;
 }
 
+/* Paragraphs avoid a single word alone on the last line, where the browser can. */
+p {
+  text-wrap: pretty;
+}
+
 a {
   color: inherit;
-  text-decoration-thickness: 1px;
+  text-decoration-thickness: var(--hairline);
   text-underline-offset: .18em;
 }
 
+/* Emphasis is the light italic. */
 em,
 i {
   font-style: italic;
   font-weight: var(--w-heading);
+}
+
+/* Newsreader is loaded in weights 300 and 400 only, so there is no bold. */
+b,
+strong {
+  font-weight: var(--w-text);
 }
 
 /* A list with a class is a layout list: no bullets. Plain lists in text keep theirs. */
@@ -233,9 +297,37 @@ ol[class] {
   padding: 0;
 }
 
+ul:not([class]),
+ol:not([class]) {
+  padding-left: 1.25em;
+}
+
+hr {
+  height: 0;
+  border: 0;
+  border-top: var(--hairline) solid var(--rule);
+}
+
 table {
   border-collapse: collapse;
   font-variant-numeric: tabular-nums;
+}
+
+/* A fieldset is used to group radio tiles; it has no frame of its own. */
+fieldset {
+  min-width: 0;
+  padding: 0;
+  border: 0;
+}
+
+legend {
+  padding: 0;
+}
+
+/* Selected text takes the colours of a button. */
+::selection {
+  background-color: var(--fg);
+  color: var(--bg);
 }
 
 [hidden] {
@@ -251,6 +343,19 @@ table {
   color: var(--fg);
 }
 
+/* Tells the browser which ground it is on, so its own parts (the list of a
+   select, autofill, scrollbars) come out light or dark to match. */
+.on-cream {
+  color-scheme: light;
+}
+
+.on-ink,
+.on-photo,
+.panel,
+.band {
+  color-scheme: dark;
+}
+
 /* ---------- Type classes (usable on any element) ---------- */
 
 .h-hero,
@@ -263,27 +368,32 @@ table {
   text-wrap: balance;
 }
 
+/* The hero line: the light italic. */
 .h-hero {
   font-size: var(--t-hero);
   line-height: var(--lh-hero);
   font-style: italic;
 }
 
+/* Page title. */
 .h1 {
   font-size: var(--t-h1);
   line-height: var(--lh-h1);
 }
 
+/* Section title. */
 .h2 {
   font-size: var(--t-h2);
   line-height: var(--lh-h2);
 }
 
+/* Item title. */
 .h3 {
   font-size: var(--t-h3);
   line-height: var(--lh-h3);
 }
 
+/* The centred statement paragraph. */
 .statement {
   font-size: var(--t-statement);
   line-height: var(--lh-statement);
@@ -293,27 +403,32 @@ table {
   text-wrap: balance;
 }
 
+/* Lead paragraph under a title. */
 .lead {
   max-width: var(--measure);
   font-size: var(--t-lead);
   line-height: var(--lh-lead);
 }
 
+/* Running text. */
 .body {
   max-width: var(--measure);
   font-size: var(--t-body);
   line-height: var(--lh-body);
 }
 
+/* Notes and hints. */
 .small {
   font-size: var(--t-small);
   line-height: var(--lh-small);
 }
 
+/* Secondary text. Add it to any of the classes above. */
 .muted {
   color: var(--fg-muted);
 }
 
+/* Uppercase sans label. Never smaller than 12px. */
 .label {
   font-family: var(--font-sans);
   font-size: var(--t-label);
@@ -353,6 +468,7 @@ table {
   padding-inline: var(--gutter);
 }
 
+/* The narrow text column. */
 .wrap--narrow {
   max-width: calc(var(--narrow) + 2 * var(--gutter));
 }
@@ -373,6 +489,7 @@ table {
 
 /* ---------- Accessibility helpers ---------- */
 
+/* For screen readers only: in the page, but not shown. */
 .sr-only {
   position: absolute;
   width: 1px;
@@ -386,7 +503,7 @@ table {
   border: 0;
 }
 
-/* Hidden until it receives keyboard focus. */
+/* The first link of every page. Hidden until it receives keyboard focus. */
 .skip-link {
   position: fixed;
   top: var(--s-2);
@@ -394,8 +511,8 @@ table {
   z-index: 1000;
   display: inline-flex;
   align-items: center;
-  min-height: 44px;
-  padding: 0 var(--s-4);
+  min-height: var(--tap);
+  padding: 0 var(--s-5);
   border-radius: var(--r);
   background-color: var(--ink);
   color: var(--cream);
@@ -406,6 +523,7 @@ table {
   text-transform: uppercase;
   text-decoration: none;
   transform: translateY(-200%);
+  transition: transform var(--dur-hover) var(--ease);
 }
 
 .skip-link:focus {
@@ -413,10 +531,17 @@ table {
   outline-color: var(--accent-on-ink);
 }
 
-/* Focus is always visible. */
+/* Focus is always visible: a ring in the pen blue around whatever has the keyboard. */
 :focus-visible {
-  outline: 2px solid var(--accent-fg);
-  outline-offset: 3px;
+  outline: var(--stroke) solid var(--accent-fg);
+  outline-offset: var(--focus-offset);
+}
+
+/* On a photograph the gap inside the ring is filled with ink, so the ring
+   stands out on any picture. (A solid band, not a shadow: it has no blur.) */
+.on-photo :focus-visible,
+.band :focus-visible {
+  box-shadow: 0 0 0 var(--focus-offset) var(--bg);
 }
 
 /* The skip link moves focus to <main>; no ring is needed around the whole page. */
@@ -442,98 +567,163 @@ main:focus {
  * components.css
  * Owner: Design System agent. (Responsive may add layout fixes.)
  *
- * FIRST VERSION of every class in the component contract (docs/design-brief.md,
- * section 6). Plain but working; the names are final, the looks are not.
+ * Every class in the component contract (docs/design-brief.md, section 6).
+ * The style guide (styleguide.html) shows each one live, with the markup to copy.
  *
- * Rule: a component reads only the six ground variables
- *   --bg  --fg  --fg-muted  --rule  --surface  --accent-fg
- * so it works on .on-cream, .on-ink and .on-photo alike.
+ * Rules of this file:
+ *   - A component reads only the six ground variables
+ *       --bg  --fg  --fg-muted  --rule  --surface  --accent-fg
+ *     so it works on .on-cream, .on-ink and .on-photo alike.
+ *   - Every size, distance and duration comes from tokens.css. (The few values
+ *     written in em follow the size of the text they belong to.)
+ *   - Flat fills and hairlines only: no shadows, no gradients.
+ *   - Hover styles sit inside @media (hover: hover), so they never stick on a
+ *     touch screen. Pressed (:active) styles work everywhere.
  *
- * Type classes, .wrap, .section, .sr-only and .skip-link are in base.css.
+ * Type classes, .wrap, .section, .sr-only, .skip-link and the focus ring are in base.css.
+ *
+ * Contents: icons, logo, buttons, links, chips, tile, panel, rows, steps,
+ * media, band, forms, notice, accordion, and the helpers of the style guide.
  */
 
 /* ---------- Icons (src/partials/icons) ---------- */
 
 .icon {
   flex: none;
-  width: 24px;
-  height: 24px;
+  width: var(--icon);
+  height: var(--icon);
 }
 
+/* Smaller inside a button or a link. The line is drawn thicker there so that it
+   still measures 1.25px on screen. */
 .btn .icon,
 .link .icon {
-  width: 16px;
-  height: 16px;
+  width: var(--icon-small);
+  height: var(--icon-small);
+  stroke-width: 1.875;
 }
 
 /* ---------- Logo (src/partials/logo.html) ---------- */
 
+/* The symbol and the wordmark on one line. The symbol follows the size of the word. */
 .logo {
   display: inline-flex;
   align-items: center;
-  gap: var(--s-2);
-  font-size: var(--t-h3);
+  gap: .24em;
+  font-size: var(--t-logo);
   line-height: 1;
-  letter-spacing: var(--track-heading);
 }
 
+/* Lifted a hair, so that the sheet stands on the baseline of the word. */
 .logo__symbol {
+  position: relative;
+  top: -.05em;
   flex: none;
-  width: 24px;
-  height: 24px;
+  width: 1.05em;
+  height: 1.05em;
+}
+
+.logo__word {
+  font-family: var(--font-serif);
+  font-weight: var(--w-text);
+  letter-spacing: var(--track-heading);
+  white-space: nowrap;
+}
+
+/* Large logo. Put the class on the logo itself or on an element around the logo partial. */
+.logo--large,
+.logo--large .logo {
+  font-size: var(--t-h1);
 }
 
 /* ---------- Buttons ---------- */
 
-/* 48px tall, filled with --fg. */
+/* 48px tall, filled with --fg. For the one main action of a section. */
 .btn {
+  position: relative;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: var(--s-2);
-  min-height: 48px;
-  padding: var(--s-2) var(--s-5);
-  border: 1px solid var(--fg);
+  min-height: var(--h-btn);
+  padding: var(--s-2) var(--s-6);
+  border: var(--hairline) solid var(--fg);
   border-radius: var(--r);
   background-color: var(--fg);
   color: var(--bg);
   font-family: var(--font-sans);
   font-size: var(--t-label);
   font-weight: var(--w-label);
-  line-height: 1.3;
+  line-height: var(--lh-label);
   letter-spacing: var(--track-label);
   text-align: center;
   text-transform: uppercase;
   text-decoration: none;
   cursor: pointer;
-  transition: background-color var(--dur-hover) var(--ease), color var(--dur-hover) var(--ease);
+  -webkit-tap-highlight-color: transparent;
+  transition:
+    background-color var(--dur-hover) var(--ease),
+    border-color var(--dur-hover) var(--ease),
+    color var(--dur-hover) var(--ease),
+    transform var(--dur-hover) var(--ease);
 }
 
-/* Outlined. */
+.btn .icon {
+  transition: transform var(--dur-hover) var(--ease);
+}
+
+/* Outlined. For a second action beside a filled button. */
 .btn--ghost {
   background-color: transparent;
   color: var(--fg);
 }
 
-/* 40px tall. The ::after keeps the tap target at 44px. */
+/* 40px tall, for the header. The ::after keeps the area a finger can tap at 44px. */
 .btn--small {
-  position: relative;
-  min-height: 40px;
-  padding: var(--s-1) var(--s-4);
+  min-height: var(--h-btn-small);
+  padding: var(--s-1) var(--s-5);
 }
 
 .btn--small::after {
   content: "";
   position: absolute;
-  inset: -3px 0;
+  top: 50%;
+  right: 0;
+  left: 0;
+  height: var(--tap);
+  transform: translateY(-50%);
 }
 
-.btn[disabled],
-.btn[aria-disabled="true"] {
-  opacity: .5;
-  cursor: not-allowed;
+/* As wide as its container, for the send button of a form on a phone. */
+.btn--block {
+  display: flex;
+  width: 100%;
 }
 
+/* A square button that holds one icon, such as Close. Its name goes in a .sr-only span. */
+.btn--icon {
+  width: var(--h-btn);
+  padding: 0;
+}
+
+.btn--icon.btn--small {
+  width: var(--h-btn-small);
+}
+
+.btn--icon.btn--small::after {
+  right: auto;
+  left: 50%;
+  width: var(--tap);
+  transform: translate(-50%, -50%);
+}
+
+.btn--icon .icon {
+  width: var(--icon);
+  height: var(--icon);
+  stroke-width: 1.25;
+}
+
+/* Hover: fill and text swap, and a trailing arrow moves a little to the right. */
 @media (hover: hover) {
   .btn:hover {
     background-color: transparent;
@@ -544,51 +734,179 @@ main:focus {
     background-color: var(--fg);
     color: var(--bg);
   }
+
+  .btn:hover .icon {
+    transform: translateX(var(--s-1));
+  }
+
+  .btn--icon:hover .icon {
+    transform: none;
+  }
+}
+
+/* Pressed, by a finger or a mouse: the fill dims and the button gives a little. */
+.btn:active {
+  border-color: var(--fg-muted);
+  background-color: var(--fg-muted);
+  color: var(--bg);
+  transform: scale(.98);
+}
+
+/* Disabled: a quiet grey block that does not react. */
+.btn[disabled],
+.btn[aria-disabled="true"] {
+  border-color: transparent;
+  background-color: var(--rule);
+  color: var(--fg-muted);
+  cursor: not-allowed;
+  transform: none;
+}
+
+.btn[disabled] .icon,
+.btn[aria-disabled="true"] .icon {
+  transform: none;
+}
+
+/* Busy (aria-busy="true"): a small turning ring before the label; clicks are ignored. */
+.btn[aria-busy="true"] {
+  pointer-events: none;
+}
+
+.btn[aria-busy="true"]::before {
+  content: "";
+  flex: none;
+  width: var(--icon-small);
+  height: var(--icon-small);
+  border: var(--hairline) solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  animation: btn-turn var(--dur-enter) linear infinite;
+}
+
+.btn[aria-busy="true"] .icon {
+  display: none;
+}
+
+@keyframes btn-turn {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* With reduced motion the ring stands still. */
+@media (prefers-reduced-motion: reduce) {
+  .btn[aria-busy="true"]::before {
+    animation: none;
+  }
 }
 
 /* ---------- Links ---------- */
 
-/* Uppercase underlined link, with an optional trailing icon. */
+/* Uppercase link on its own line, with a hairline under it and an optional
+   trailing icon. For "read more" links after a block of text. */
 .link {
+  position: relative;
   display: inline-flex;
   align-items: center;
   gap: var(--s-2);
-  min-height: 44px;
+  min-height: var(--tap);
+  padding-block: var(--s-3);
   font-family: var(--font-sans);
   font-size: var(--t-label);
   font-weight: var(--w-label);
   line-height: var(--lh-label);
   letter-spacing: var(--track-label);
   text-transform: uppercase;
-  text-decoration: underline;
-  text-decoration-thickness: 1px;
-  text-underline-offset: .4em;
+  text-decoration: none;
+  -webkit-tap-highlight-color: transparent;
+  transition: color var(--dur-hover) var(--ease);
+}
+
+/* A very short link is still at least 44px wide for a finger: this unseen
+   area is centred on the link. */
+.link::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 100%;
+  min-width: var(--tap);
+  transform: translateX(-50%);
+}
+
+/* The underline, drawn as a border so that it can slide. */
+.link::after {
+  content: "";
+  position: absolute;
+  right: 0;
+  bottom: var(--s-3);
+  left: 0;
+  border-bottom: var(--hairline) solid currentColor;
+}
+
+/* Hover: the underline slides out to the right and comes back in from the left. */
+@media (hover: hover) {
+  .link:hover::after {
+    animation: link-slide var(--dur-hover-slow) var(--ease);
+  }
+}
+
+@keyframes link-slide {
+  0% {
+    transform: scaleX(1);
+    transform-origin: right;
+  }
+
+  45% {
+    transform: scaleX(0);
+    transform-origin: right;
+  }
+
+  55% {
+    transform: scaleX(0);
+    transform-origin: left;
+  }
+
+  100% {
+    transform: scaleX(1);
+    transform-origin: left;
+  }
 }
 
 /* Underlined link inside running text. */
 .text-link {
   text-decoration: underline;
-  text-decoration-thickness: 1px;
+  text-decoration-thickness: var(--hairline);
   text-underline-offset: .18em;
   transition: color var(--dur-hover) var(--ease);
 }
 
+/* Hover: the underline thickens. */
 @media (hover: hover) {
-  .link:hover,
   .text-link:hover {
-    color: var(--accent-fg);
+    text-decoration-thickness: var(--stroke);
   }
+}
+
+/* Pressed. */
+.link:active,
+.text-link:active {
+  color: var(--fg-muted);
 }
 
 /* ---------- Chips ---------- */
 
+/* Small tag, for example "Example". Not a button. */
 .chip {
   display: inline-flex;
   align-items: center;
-  min-height: 24px;
+  min-height: var(--s-5);
   padding: 0 var(--s-2);
-  border: 1px solid var(--rule);
+  border: var(--hairline) solid var(--rule);
   border-radius: var(--r-sm);
+  background-color: var(--surface);
+  color: var(--fg);
   font-family: var(--font-sans);
   font-size: var(--t-label);
   font-weight: var(--w-label);
@@ -598,22 +916,70 @@ main:focus {
   white-space: nowrap;
 }
 
+/* The one tag on a screen that marks a choice. Use it rarely. */
 .chip--accent {
   border-color: currentColor;
   color: var(--accent-fg);
 }
 
-/* ---------- Tile and panel ---------- */
+/* ---------- Tile ---------- */
 
-/* Flat block for cards. */
+/* Flat block for a card. Its parts are stacked with one gap between them. */
 .tile {
-  padding: var(--s-5);
+  --pad: var(--s-5);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--s-3);
+  padding: var(--pad);
   border-radius: var(--r);
   background-color: var(--surface);
+  color: var(--fg);
   overflow: hidden;
 }
 
-/* Inset dark panel: a card laid on the page. Its ink ground is set in tokens.css. */
+@media (min-width: 861px) {
+  .tile {
+    --pad: var(--s-6);
+  }
+}
+
+/* The gap does the spacing, so the parts carry no margin of their own. */
+.tile > * {
+  margin: 0;
+}
+
+/* A tile can be a link as a whole. */
+.tile[href] {
+  text-decoration: none;
+}
+
+/* A photo as the first part of a tile runs to the edges of the tile. */
+.tile > .media:first-child {
+  align-self: stretch;
+  margin: calc(var(--pad) * -1) calc(var(--pad) * -1) var(--s-2);
+  border-radius: 0;
+}
+
+.tile .media > img {
+  transition: transform var(--dur-hover-slow) var(--ease);
+}
+
+/* Hover: the photo of a tile grows a little, and the underline of a .link in it slides. */
+@media (hover: hover) {
+  .tile:hover .media > img {
+    transform: scale(1.03);
+  }
+
+  .tile[href]:hover .link::after {
+    animation: link-slide var(--dur-hover-slow) var(--ease);
+  }
+}
+
+/* ---------- Panel ---------- */
+
+/* Inset dark panel: a card laid on the page. Always on ink (set in tokens.css).
+   Place it directly in <main>, not inside a .wrap. */
 .panel {
   margin-inline: var(--gutter);
   padding: var(--section-tight) var(--gutter);
@@ -624,6 +990,7 @@ main:focus {
 
 /* A .wrap inside a panel does not add a second gutter. */
 .panel > .wrap {
+  max-width: var(--wrap);
   padding-inline: 0;
 }
 
@@ -632,30 +999,61 @@ main:focus {
 .rows {
   margin: 0;
   padding: 0;
-  border-top: 1px solid var(--rule);
+  border-top: var(--hairline) solid var(--rule);
   list-style: none;
 }
 
+/* A row has two parts. They sit side by side, about one third and two thirds,
+   wherever both have room; in a narrow place (a phone, a narrow column) the
+   text moves under the title by itself. */
 .row {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
   gap: var(--s-2) var(--s-6);
   padding-block: var(--s-5);
-  border-bottom: 1px solid var(--rule);
+  border-bottom: var(--hairline) solid var(--rule);
   font-variant-numeric: tabular-nums;
 }
 
-@media (max-width: 860px) {
-  .row {
-    grid-template-columns: minmax(0, 1fr);
-  }
+.row > * {
+  flex: 2 1 var(--w-row-text);
+  min-width: 0;
+  margin: 0;
+}
+
+.row > :first-child {
+  flex: 1 1 var(--w-row-title);
+}
+
+/* The first row of a table-like list: two small column headings. */
+.row--head {
+  padding-block: var(--s-3);
+}
+
+/* Pairs of a name and a short value, such as a price list: the value always
+   sits at the right end of the line, on phones too. */
+.rows--split .row {
+  flex-wrap: nowrap;
+}
+
+.rows--split .row > * {
+  flex: 0 0 auto;
+  text-align: right;
+}
+
+.rows--split .row > :first-child {
+  flex: 1 1 auto;
+  text-align: left;
 }
 
 /* ---------- Steps: a sequence ---------- */
 
+/* Side by side on a wide screen (three or four steps), one under the other on a phone. */
 .steps {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(0, 1fr);
   gap: var(--s-6);
   margin: 0;
   padding: 0;
@@ -665,30 +1063,128 @@ main:focus {
 
 .step {
   padding-top: var(--s-4);
-  border-top: 1px solid var(--rule);
+  border-top: var(--hairline) solid var(--rule);
   counter-increment: step;
 }
 
-/* Numbers show only where order matters: use <ol class="steps"> for those. */
+.step > * + * {
+  margin-top: var(--s-3);
+}
+
+/* Numbers show only where order matters: write <ol class="steps"> for those,
+   and <ul class="steps"> for a set without an order. */
 ol.steps > .step::before {
   content: counter(step, decimal-leading-zero);
   display: block;
-  margin-bottom: var(--s-4);
+  margin-bottom: var(--s-6);
   color: var(--fg-muted);
   font-family: var(--font-sans);
   font-size: var(--t-label);
   font-weight: var(--w-label);
+  line-height: var(--lh-label);
   letter-spacing: var(--track-label);
   font-variant-numeric: tabular-nums;
 }
 
+/* The current step: its rule and its number take the pen blue. One per list. */
+.step--current,
+.step[aria-current="step"] {
+  border-top-color: var(--accent-fg);
+}
+
+ol.steps > .step--current::before,
+ol.steps > .step[aria-current="step"]::before {
+  color: var(--accent-fg);
+}
+
+/* Medium screens: four steps do not fit in one row, so they sit two by two. */
+@media (min-width: 861px) and (max-width: 1100px) {
+  .steps:not(.steps--stack, .steps--rows):has(> .step:nth-child(4)) {
+    grid-auto-flow: row;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    row-gap: var(--s-7);
+  }
+}
+
+/* Phones: one column. */
+@media (max-width: 860px) {
+  .steps {
+    grid-auto-flow: row;
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  ol.steps > .step::before {
+    margin-bottom: var(--s-3);
+  }
+}
+
+/* Two lists that run down the page at every width, set between hairlines:
+   .steps--stack for a narrow column: number, title and text one under the other;
+   .steps--rows  for steps told in detail across the page (see below). */
+.steps--stack,
+.steps--rows {
+  grid-auto-flow: row;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 0;
+  border-bottom: var(--hairline) solid var(--rule);
+}
+
+.steps--stack > .step,
+.steps--rows > .step {
+  padding-block: var(--s-5);
+}
+
+ol.steps--stack > .step::before,
+ol.steps--rows > .step::before {
+  margin-bottom: var(--s-3);
+}
+
+/* .steps--rows on a wide screen: each step is one line: number, title, then the text. */
+@media (min-width: 861px) {
+  .steps--rows > .step {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
+    gap: var(--s-2) var(--s-6);
+    align-items: baseline;
+  }
+
+  /* The title sits in the left column, everything after it in the right one. */
+  .steps--rows > .step > * {
+    grid-column: 2;
+    margin-top: 0;
+  }
+
+  .steps--rows > .step > :first-child {
+    grid-column: 1;
+  }
+
+  /* Numbered: one more narrow column at the left for the number. */
+  ol.steps--rows > .step {
+    grid-template-columns: var(--s-7) minmax(0, 1fr) minmax(0, 2fr);
+  }
+
+  ol.steps--rows > .step::before {
+    margin-bottom: 0;
+  }
+
+  ol.steps--rows > .step > * {
+    grid-column: 3;
+  }
+
+  ol.steps--rows > .step > :first-child {
+    grid-column: 2;
+  }
+}
+
 /* ---------- Media: fixed-ratio image frame ---------- */
 
+/* A photo that is not full-bleed sits in one of three ratios, with round corners.
+   The tint shows while the photo loads. */
 .media {
   position: relative;
   overflow: hidden;
   border-radius: var(--r-lg);
-  background-color: var(--surface);
+  background-color: var(--rule);
 }
 
 .media--16x9 {
@@ -713,7 +1209,8 @@ ol.steps > .step::before {
 
 /* ---------- Band: full-bleed photo with one centred line ---------- */
 
-/* Use with .on-photo. The first <img> (or <picture>) child is the photo. */
+/* Always on a photo (set in tokens.css). The first <img> (or <picture>) child
+   is the photo; everything after it is centred on top of it. */
 .band {
   position: relative;
   isolation: isolate;
@@ -721,9 +1218,11 @@ ol.steps > .step::before {
   place-content: center;
   justify-items: center;
   gap: var(--s-5);
-  min-height: min(80vh, 720px);
+  min-height: min(80vh, var(--h-band));
   padding: var(--section) var(--gutter);
   overflow: hidden;
+  background-color: var(--bg);
+  color: var(--fg);
   text-align: center;
 }
 
@@ -738,24 +1237,37 @@ ol.steps > .step::before {
   object-fit: cover;
 }
 
-/* The dark veil that keeps the text readable. */
+/* The dark veil that keeps the text readable on any photo. */
 .band::before {
   content: "";
   position: absolute;
   inset: 0;
   z-index: -1;
-  background-color: rgba(14, 14, 14, .45);
+  background-color: var(--veil);
+}
+
+/* The line stays in a column in the middle. The gap of the band spaces what follows it. */
+.band > :not(img, picture) {
+  max-width: min(100%, var(--w-band-text));
+  margin: 0;
 }
 
 /* ---------- Forms ---------- */
 
+/* One field: its label, the control, then a hint and an error message. */
 .field {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
   gap: var(--s-2);
 }
 
+/* The gap does the spacing between the parts of a field. */
+.field > * {
+  margin: 0;
+}
+
 .field__label {
+  display: block;
   font-family: var(--font-sans);
   font-size: var(--t-label);
   font-weight: var(--w-label);
@@ -764,49 +1276,99 @@ ol.steps > .step::before {
   text-transform: uppercase;
 }
 
+/* When the label is the <legend> of a group of choices. */
+legend.field__label {
+  margin-bottom: var(--s-2);
+}
+
 .field__hint {
   color: var(--fg-muted);
   font-size: var(--t-small);
   line-height: var(--lh-small);
 }
 
+/* The error message: full-strength text after a solid mark. An empty one takes no room. */
 .field__error {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--s-2);
+  color: var(--fg);
   font-size: var(--t-small);
   line-height: var(--lh-small);
 }
 
-/* Fields are 52px tall. */
+.field__error:empty {
+  display: none;
+}
+
+/* The mark before an error: a solid disc with an exclamation mark. It is a shape
+   as well as a tone, so an error is never told by colour alone. */
+.field__error::before,
+.notice--alert::before {
+  content: "!";
+  content: "!" / "";
+  flex: none;
+  width: var(--mark);
+  height: var(--mark);
+  margin-top: calc(var(--s-1) / 2);
+  border-radius: 50%;
+  background-color: var(--fg);
+  color: var(--bg);
+  font-family: var(--font-sans);
+  font-size: var(--t-label);
+  font-weight: var(--w-label-strong);
+  line-height: var(--mark);
+  text-align: center;
+}
+
+/* Text field, select and textarea. 52px tall, with a border that is easy to see. */
 .input,
 .select,
 .textarea {
   display: block;
   width: 100%;
-  min-height: 52px;
+  min-height: var(--h-field);
   padding: 0 var(--s-4);
-  border: 1px solid var(--rule);
+  border: var(--hairline) solid var(--fg-muted);
   border-radius: var(--r);
   background-color: var(--surface);
   color: var(--fg);
   font-family: var(--font-serif);
   font-size: var(--t-body);
   line-height: var(--lh-small);
+  text-overflow: ellipsis;
   appearance: none;
   -webkit-appearance: none;
+  transition: border-color var(--dur-hover) var(--ease);
 }
 
 .textarea {
-  min-height: 144px;
+  min-height: calc(var(--h-field) * 3);
   padding-block: var(--s-3);
   resize: vertical;
 }
 
-/* The arrow of the select, drawn in --muted. */
+/* The arrow of the select. It is drawn in white, and "difference" turns it into
+   the opposite of the field's colour: dark on cream, light on ink. */
 .select {
   padding-right: var(--s-7);
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%235C5A55' stroke-width='1.25' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23fff' stroke-width='1.25' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
   background-position: right var(--s-3) center;
-  background-size: 24px 24px;
+  background-size: var(--icon) var(--icon);
+  background-blend-mode: difference;
+  cursor: pointer;
+}
+
+/* While nothing is chosen (the empty first option), the prompt is muted like a placeholder. */
+.select:has(option[value=""]:checked) {
+  color: var(--fg-muted);
+}
+
+/* The opened list of a select. */
+.select option {
+  background-color: var(--bg);
+  color: var(--fg);
 }
 
 .input::placeholder,
@@ -815,89 +1377,269 @@ ol.steps > .step::before {
   opacity: 1;
 }
 
+@media (hover: hover) {
+  .input:hover,
+  .select:hover,
+  .textarea:hover {
+    border-color: var(--fg);
+  }
+}
+
+/* Focus: the border takes the pen blue, and the focus ring of base.css is added. */
 .input:focus,
 .select:focus,
 .textarea:focus {
   border-color: var(--accent-fg);
 }
 
+/* Error (aria-invalid="true"): a 2px border in the text colour. The padding
+   gives up 1px so that the text inside does not move. */
 .input[aria-invalid="true"],
 .select[aria-invalid="true"],
 .textarea[aria-invalid="true"] {
+  padding-inline: calc(var(--s-4) - var(--hairline));
+  border-width: var(--stroke);
   border-color: var(--fg);
 }
 
-/* A checkbox or radio button with its text. */
+.select[aria-invalid="true"] {
+  padding-right: calc(var(--s-7) - var(--hairline));
+}
+
+.textarea[aria-invalid="true"] {
+  padding-block: calc(var(--s-3) - var(--hairline));
+}
+
+/* The label of a field with an error is set heavier. */
+.field:has([aria-invalid="true"]) .field__label,
+.field[aria-invalid="true"] .field__label {
+  font-weight: var(--w-label-strong);
+}
+
+/* Disabled: a dashed border and muted text. */
+.input:disabled,
+.select:disabled,
+.textarea:disabled {
+  border-style: dashed;
+  border-color: var(--fg-muted);
+  color: var(--fg-muted);
+  cursor: not-allowed;
+}
+
+/* ---------- Choice: a radio button or checkbox as a large tile ---------- */
+
+/* The markup must be: <label class="choice"><input ...> <span>Text</span></label>.
+   The input is stretched over the whole tile and draws its frame; the span
+   draws the round or square mark. */
 .choice {
+  position: relative;
   display: flex;
   align-items: center;
-  gap: var(--s-3);
-  min-height: 44px;
+  min-height: var(--h-field);
+  padding: var(--s-3) var(--s-4);
   cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .choice input {
-  flex: none;
-  width: 20px;
-  height: 20px;
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
   margin: 0;
-  accent-color: var(--accent-fg);
+  border: var(--hairline) solid var(--fg-muted);
+  border-radius: var(--r);
+  background-color: var(--surface);
+  appearance: none;
+  -webkit-appearance: none;
+  cursor: pointer;
+  transition: border-color var(--dur-hover) var(--ease);
+}
+
+.choice span {
+  position: relative;
+  display: block;
+  padding-left: calc(var(--mark) + var(--s-3));
+}
+
+/* The empty mark: a ring for a radio button, a square for a checkbox. */
+.choice span::before {
+  content: "";
+  position: absolute;
+  top: var(--s-1);
+  left: 0;
+  width: var(--mark);
+  height: var(--mark);
+  border: var(--hairline) solid var(--fg-muted);
+  border-radius: 50%;
+}
+
+.choice input[type="checkbox"] + span::before {
+  border-radius: var(--r-sm);
+}
+
+/* Chosen: the frame turns to a 2px line in the text colour, and the mark is
+   filled in the pen blue: a dot for a radio button, a tick for a checkbox. */
+.choice input:checked {
+  border-width: var(--stroke);
+  border-color: var(--fg);
+}
+
+.choice input:checked + span::before {
+  border-color: var(--fg);
+}
+
+.choice input:checked + span::after {
+  content: "";
+  position: absolute;
+  top: calc(var(--s-1) + var(--mark) / 4);
+  left: calc(var(--mark) / 4);
+  border: calc(var(--mark) / 4) solid var(--accent-fg);
+  border-radius: 50%;
+}
+
+.choice input[type="checkbox"]:checked + span::after {
+  top: calc(var(--s-1) + var(--mark) * .15);
+  left: calc(var(--mark) * .35);
+  width: calc(var(--mark) * .3);
+  height: calc(var(--mark) * .5);
+  border-width: 0 var(--stroke) var(--stroke) 0;
+  border-radius: 0;
+  transform: rotate(45deg);
+}
+
+@media (hover: hover) {
+  .choice:hover input {
+    border-color: var(--fg);
+  }
+}
+
+/* Pressed. */
+.choice:active span {
+  color: var(--fg-muted);
+}
+
+.choice input:disabled {
+  border-style: dashed;
+  cursor: not-allowed;
+}
+
+.choice input:disabled + span {
+  color: var(--fg-muted);
+}
+
+/* A single checkbox with its text and no tile around it, for a line of consent. */
+.choice--plain {
+  min-height: var(--tap);
+  padding-inline: 0;
+}
+
+.choice--plain input,
+.choice--plain input:checked {
+  border-color: transparent;
+  background-color: transparent;
+}
+
+/* A group of choice tiles: side by side where there is room. */
+.choices {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, var(--w-choice)), 1fr));
+  gap: var(--s-2);
+}
+
+/* A group that always runs down the page. */
+.choices--stack {
+  grid-template-columns: minmax(0, 1fr);
 }
 
 /* ---------- Notice: framed note ---------- */
 
+/* For a message about the page itself, such as "this form is not connected yet". */
 .notice {
-  max-width: var(--measure);
+  position: relative;
   padding: var(--s-4) var(--s-5);
-  border: 1px solid var(--rule);
+  border: var(--hairline) solid var(--rule);
   border-radius: var(--r);
   background-color: var(--surface);
+  color: var(--fg);
   font-size: var(--t-small);
   line-height: var(--lh-small);
 }
 
-/* "This page is a draft." */
+.notice > * + * {
+  margin-top: var(--s-2);
+}
+
+/* "This page is a draft": a dashed frame. */
 .notice--draft {
   border-style: dashed;
   border-color: var(--fg);
 }
 
+/* Something went wrong: a 2px frame and the same mark as a field error. */
+.notice--alert {
+  padding-left: calc(var(--s-5) + var(--mark) + var(--s-3));
+  border-width: var(--stroke);
+  border-color: var(--fg);
+}
+
+.notice--alert::before {
+  position: absolute;
+  top: var(--s-4);
+  left: var(--s-5);
+}
+
 /* ---------- Accordion: questions built on <details> ---------- */
 
 .accordion {
-  border-top: 1px solid var(--rule);
+  border-top: var(--hairline) solid var(--rule);
 }
 
 .accordion__item {
-  border-bottom: 1px solid var(--rule);
+  border-bottom: var(--hairline) solid var(--rule);
 }
 
+/* The question. */
 .accordion__item > summary {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: var(--s-5);
-  min-height: 44px;
+  min-height: var(--tap);
   padding-block: var(--s-5);
   font-size: var(--t-h3);
   font-weight: var(--w-heading);
   line-height: var(--lh-h3);
+  letter-spacing: var(--track-heading);
   list-style: none;
   cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: color var(--dur-hover) var(--ease);
 }
 
 .accordion__item > summary::-webkit-details-marker {
   display: none;
 }
 
+.accordion__item[open] > summary {
+  padding-bottom: var(--s-3);
+}
+
 /* Everything after the question is the answer. */
 .accordion__item > :not(summary) {
   max-width: var(--measure);
-  padding-bottom: var(--s-5);
   color: var(--fg-muted);
 }
 
+.accordion__item > :last-child:not(summary) {
+  padding-bottom: var(--s-5);
+}
+
 /* With two icons in the summary, the first shows when closed and the second when open. */
+.accordion__item > summary .icon {
+  transition: transform var(--dur-hover) var(--ease);
+}
+
 .accordion__item > summary .icon + .icon,
 .accordion__item[open] > summary .icon {
   display: none;
@@ -907,77 +1649,683 @@ ol.steps > .step::before {
   display: block;
 }
 
+/* Hover: the plus of a closed question makes a quarter turn. */
+@media (hover: hover) {
+  .accordion__item:not([open]) > summary:hover .icon {
+    transform: rotate(90deg);
+  }
+}
+
+/* Pressed. */
+.accordion__item > summary:active {
+  color: var(--fg-muted);
+}
+
+
+/* =====================================================================
+   STYLE GUIDE ONLY
+
+   Everything below lays out src/pages/styleguide.html and nothing else.
+   A class that starts with "sg-" is not part of the component contract
+   and must not be used on the pages of the site.
+   ===================================================================== */
+
+/* A block of the guide. The offset keeps its title clear of the header after a jump. */
+.sg-block {
+  scroll-margin-top: var(--s-8);
+}
+
+.sg-block > * + * {
+  margin-top: var(--s-5);
+}
+
+.sg-head {
+  margin-bottom: var(--s-7);
+}
+
+/* One specimen: a title, one line on when to use it, the live frames, the markup, the notes. */
+.sg-item {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--s-4);
+}
+
+.sg-item > * {
+  margin: 0;
+}
+
+.sg-item + .sg-item {
+  margin-top: var(--s-8);
+}
+
+.sg-item__title code {
+  font-size: .8em;
+}
+
+/* Class names in a title or in the line under it stay in one piece. */
+.sg-head code,
+.sg-item__title code,
+.sg-item__use code {
+  white-space: nowrap;
+}
+
+.sg-item__use {
+  max-width: var(--measure);
+}
+
+/* Class names and code in the text of the guide. */
+.sg-intro code,
+.sg-block code {
+  font-family: var(--font-mono);
+  font-size: .85em;
+}
+
+/* The live frames, one per ground. */
+.sg-grounds {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--s-4);
+}
+
+.sg-ground {
+  padding: var(--s-5);
+  border: var(--hairline) solid var(--rule);
+  border-radius: var(--r-lg);
+}
+
+.sg-ground > .sg-ground__name {
+  margin-bottom: var(--s-5);
+}
+
+/* A frame on a photo borrows the band, without its height and its centring. */
+.sg-ground.band {
+  display: block;
+  justify-items: normal;
+  min-height: 0;
+  padding: var(--s-5);
+  text-align: left;
+}
+
+.sg-ground.band > :not(img, picture) {
+  max-width: none;
+}
+
+@media (min-width: 861px) {
+  .sg-ground,
+  .sg-ground.band {
+    padding: var(--s-6);
+  }
+
+  .sg-grounds--pair {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .sg-grounds--pair > .band {
+    grid-column: 1 / -1;
+  }
+
+  .sg-grounds--three {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+/* Small things side by side. */
+.sg-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--s-4) var(--s-5);
+}
+
+/* Things one under the other. */
+.sg-stack {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--s-5);
+  justify-items: start;
+}
+
+.sg-stack > * {
+  margin: 0;
+}
+
+.sg-stack > .field,
+.sg-stack > .notice,
+.sg-stack > .btn--block,
+.sg-stack > .choice,
+.sg-stack > hr {
+  justify-self: stretch;
+}
+
+/* Columns for tiles and photos. */
+.sg-cols {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, calc(var(--s-10) * 1.5)), 1fr));
+  gap: var(--s-4);
+}
+
+.sg-cols--media {
+  align-items: start;
+}
+
+/* The markup to copy. */
+.sg-code {
+  padding: var(--s-4) var(--s-5);
+  border: var(--hairline) solid var(--rule);
+  border-radius: var(--r);
+  background-color: var(--surface);
+  color: var(--fg);
+  font-family: var(--font-mono);
+  font-size: calc(var(--t-small) * .875);
+  line-height: var(--lh-body);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  tab-size: 2;
+}
+
+.sg-code code {
+  font-size: inherit;
+}
+
+/* Notes for the builders: a short list with a dash before each line. */
+.sg-notes {
+  display: grid;
+  gap: var(--s-2);
+  max-width: calc(var(--narrow) + var(--s-10));
+  color: var(--fg-muted);
+  font-size: var(--t-small);
+  line-height: var(--lh-small);
+}
+
+.sg-notes > li {
+  position: relative;
+  padding-left: var(--s-5);
+}
+
+.sg-notes > li::before {
+  content: "";
+  position: absolute;
+  top: .75em;
+  left: 0;
+  width: var(--s-3);
+  border-top: var(--hairline) solid currentColor;
+}
+
+.sg-intro .sg-notes {
+  margin-top: var(--s-6);
+}
+
+/* The list of contents. */
+.sg-toc {
+  margin-top: var(--s-7);
+  padding-top: var(--s-3);
+  border-top: var(--hairline) solid var(--rule);
+}
+
+.sg-toc__list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(var(--s-10), 1fr));
+  gap: 0 var(--s-5);
+}
+
+/* The type classes: the name of the class beside a line set in it. */
+.sg-specs {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--s-6);
+}
+
+.sg-spec {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--s-2);
+}
+
+@media (min-width: 861px) {
+  .sg-spec {
+    grid-template-columns: var(--s-10) minmax(0, 1fr);
+    gap: var(--s-5);
+    align-items: baseline;
+  }
+}
+
+/* The icons with their file names. */
+.sg-icons {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(var(--s-9), 1fr));
+  gap: var(--s-5) var(--s-4);
+}
+
+.sg-icon {
+  display: grid;
+  gap: var(--s-2);
+  justify-items: start;
+}
+
+/* The dashed boxes that show the two content widths. */
+.sg-outline {
+  padding: var(--s-4);
+  border: var(--hairline) dashed var(--fg-muted);
+  border-radius: var(--r);
+}
+
+/* The colour tokens. */
+.sg-swatches {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(calc(var(--s-10) * 1.25), 1fr));
+  gap: var(--s-6) var(--s-4);
+}
+
+.sg-swatch {
+  display: grid;
+  gap: var(--s-1);
+  align-content: start;
+}
+
+.sg-swatch__chip {
+  height: var(--s-8);
+  margin-bottom: var(--s-2);
+  border: var(--hairline) solid var(--rule);
+  border-radius: var(--r);
+  overflow: hidden;
+}
+
+.sg-swatch__chip--cream { background-color: var(--cream); }
+.sg-swatch__chip--paper { background-color: var(--paper); }
+.sg-swatch__chip--cream-deep { background-color: var(--cream-deep); }
+.sg-swatch__chip--ink { background-color: var(--ink); }
+.sg-swatch__chip--ink-soft { background-color: var(--ink-soft); }
+.sg-swatch__chip--muted { background-color: var(--muted); }
+.sg-swatch__chip--muted-on-ink { background-color: var(--muted-on-ink); }
+.sg-swatch__chip--faint { background-color: var(--faint); }
+.sg-swatch__chip--line { background-color: var(--line); }
+.sg-swatch__chip--accent { background-color: var(--accent); }
+.sg-swatch__chip--accent-on-ink { background-color: var(--accent-on-ink); }
+.sg-swatch__chip--veil { background-color: var(--veil); }
+
+/* The hairline for ink is shown on ink. */
+.sg-swatch__chip--line-on-ink { background-color: var(--ink); }
+
+.sg-swatch__chip--line-on-ink::after {
+  content: "";
+  display: block;
+  height: 100%;
+  background-color: var(--line-on-ink);
+}
+
 /* ===== src/css/header.css ===== */
 /*
  * header.css
  * Owner: Header and Footer agent. (Responsive may add layout fixes.)
  *
- * Belongs here: the fixed site header, its transparent state over the home hero,
- * the solid cream bar after scrolling, hide on scroll down and return on scroll up,
- * and the full-screen ink menu for 860px and below (docs/design-brief.md, section 8).
+ * The fixed site header (src/partials/header.html): the bar with the logo, the
+ * tiny uppercase links and the Apply button; its clear state over the home hero
+ * and its solid cream state everywhere else; the slide out of view on the way
+ * down the page; and the full-screen ink menu for 860px and below
+ * (docs/design-brief.md, section 8). Every value comes from tokens.css.
  *
- * Below is only the minimum that makes the Foundation's simple header usable.
- * Replace it freely.
+ * For the other stylesheets:
+ *   --header-h                 the room the bar takes at the top of the page
+ *                              (64px; 56px at 860px and below; 0 without JavaScript)
+ *
+ * Hooks set by src/js/nav.js:
+ *   .site-header.is-solid      home only: the page has left the top, the bar is solid cream
+ *   .site-header.is-hidden     the bar has slid out of view
+ *   html.menu-open             the phone menu is open and the page behind does not scroll
  */
 
+/* ---------- The height of the bar, defined once ---------- */
+
+/* The small button with 12px of air above and below it: 64px. */
+:root {
+  --header-h: calc(var(--h-btn-small) + var(--s-5));
+}
+
+/* Phones and small tablets: 8px of air, 56px. */
+@media (max-width: 860px) {
+  :root {
+    --header-h: calc(var(--h-btn-small) + var(--s-4));
+  }
+}
+
+/* Without JavaScript the bar stands in the flow of the page, so no room is kept for it. */
+:root:not(.js) {
+  --header-h: 0px;
+}
+
+/* Every page except home starts below the fixed bar. On home the hero runs under it. */
+body:not([data-page="home"]) main {
+  padding-top: var(--header-h);
+}
+
+/* A jump to a part of a page stops below the bar, not under it. */
+html {
+  scroll-padding-top: var(--header-h);
+}
+
+/* ---------- The bar ---------- */
+
+/* The solid cream bar with a hairline: the six ground variables, as .on-cream sets them.
+   This plain version is also what a visitor without JavaScript gets: it sticks to
+   the top of the window and never hides. */
 .site-header {
+  --bg: var(--cream);
+  --fg: var(--ink);
+  --fg-muted: var(--muted);
+  --rule: var(--line);
+  --surface: var(--paper);
+  --accent-fg: var(--accent);
   position: sticky;
   top: 0;
   z-index: 100;
-  border-bottom: 1px solid var(--rule);
+  border-bottom: var(--hairline) solid var(--rule);
+  background-color: var(--bg);
+  color: var(--fg);
+  transition:
+    transform var(--dur-hover-slow) var(--ease),
+    background-color var(--dur-hover) var(--ease),
+    border-color var(--dur-hover) var(--ease),
+    color var(--dur-hover) var(--ease);
 }
 
+/* With JavaScript the bar is fixed, exactly --header-h tall. */
+html.js .site-header {
+  position: fixed;
+  right: 0;
+  left: 0;
+  height: var(--header-h);
+}
+
+/* Home, at the top of the page: a clear bar with cream text over the hero photo.
+   The six ground variables, as .on-photo sets them. */
+html.js [data-page="home"] .site-header:not(.is-solid) {
+  --bg: var(--ink);
+  --fg: var(--cream);
+  --fg-muted: var(--cream);
+  --rule: var(--line-on-ink);
+  --surface: var(--ink-soft);
+  --accent-fg: var(--accent-on-ink);
+  border-bottom-color: transparent;
+  background-color: transparent;
+}
+
+/* Over the photo the gap inside the focus ring is filled with ink, as on .on-photo. */
+html.js [data-page="home"] .site-header:not(.is-solid) .site-header__inner :focus-visible {
+  box-shadow: 0 0 0 var(--focus-offset) var(--bg);
+}
+
+/* Scrolling down: the bar slides up and out of view. */
+.site-header.is-hidden {
+  transform: translateY(-100%);
+}
+
+/* Logo left, everything else right. Without JavaScript the row may wrap. */
 .site-header__inner {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 0 var(--s-5);
-  min-height: 64px;
+  gap: 0 var(--s-6);
   padding-block: var(--s-2);
 }
 
+html.js .site-header__inner {
+  flex-wrap: nowrap;
+  height: 100%;
+  padding-block: 0;
+}
+
+/* The logo as a link to the home page, 44px tall for a finger. */
 .site-header__logo {
   display: inline-flex;
   align-items: center;
-  min-height: 44px;
+  min-height: var(--tap);
   margin-right: auto;
   text-decoration: none;
+  -webkit-tap-highlight-color: transparent;
 }
+
+/* The fold of the symbol changes colour with the ground, at the pace of the bar. */
+.site-header__logo .logo__symbol path {
+  transition: fill var(--dur-hover) var(--ease);
+}
+
+/* ---------- The links of the bar (desktop) ---------- */
 
 .site-nav__list {
   display: flex;
   flex-wrap: wrap;
-  gap: 0 var(--s-5);
+  align-items: center;
+  gap: 0 var(--s-6);
 }
 
+/* Tiny uppercase links, muted until pointed at. The hairline under a link is
+   there all along, without colour, so nothing moves when it shows. */
 .site-nav__link {
   display: inline-flex;
   align-items: center;
-  min-height: 44px;
+  min-height: var(--tap);
   color: var(--fg-muted);
-  text-decoration: none;
+  white-space: nowrap;
+  text-decoration: underline;
+  text-decoration-color: transparent;
+  text-underline-offset: .6em;
+  -webkit-tap-highlight-color: transparent;
+  transition:
+    color var(--dur-hover) var(--ease),
+    text-decoration-color var(--dur-hover) var(--ease);
 }
 
+/* The page the visitor is on: full colour and the hairline. */
 .site-nav__link[aria-current="page"] {
   color: var(--fg);
+  text-decoration-color: currentColor;
 }
 
+/* Hover: from muted to full. */
 @media (hover: hover) {
   .site-nav__link:hover {
     color: var(--fg);
+    text-decoration-color: currentColor;
   }
 }
 
-/* Phones: the links move to a second row and the bar scrolls away, until the real menu exists. */
+/* Pressed. */
+.site-nav__link:active {
+  color: var(--fg-muted);
+}
+
+/* A little less air between the links on small laptops and tablets held sideways. */
+@media (max-width: 1100px) {
+  .site-header__inner,
+  .site-nav__list {
+    column-gap: var(--s-5);
+  }
+}
+
+/* ---------- 860px and below: one Menu button ---------- */
+
+/* The square button with four dots. It is of use only with JavaScript. */
+.site-header__toggle {
+  display: none;
+}
+
 @media (max-width: 860px) {
-  .site-header {
+  /* With JavaScript the links and Apply move into the menu. */
+  html.js .site-nav,
+  html.js .site-header__cta {
+    display: none;
+  }
+
+  html.js .site-header__toggle {
+    display: inline-flex;
+  }
+
+  /* Without JavaScript the links stay: on a second row under the logo and
+     Apply, and the bar scrolls away with the page instead of sticking. */
+  html:not(.js) .site-header {
     position: static;
   }
 
-  .site-nav {
+  html:not(.js) .site-nav {
     order: 3;
     width: 100%;
   }
+}
+
+/* ---------- The menu: a full-screen ink panel ---------- */
+
+/* A <dialog> opened as a modal by nav.js: the page behind cannot be reached
+   until it is closed. These rules undo the browser's small centred box. */
+.site-menu {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  max-width: none;
+  height: 100%;
+  max-height: none;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+/* The panel covers the whole window, so the layer behind it stays clear. */
+.site-menu::backdrop {
+  background-color: transparent;
+}
+
+/* While the menu is open the page behind does not scroll. */
+html.menu-open {
+  overflow: hidden;
+}
+
+/* Top row, links, then Apply and the email at the foot of the screen. */
+.site-menu__inner {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+  padding-bottom: max(var(--s-6), env(safe-area-inset-bottom));
+}
+
+/* The same height and hairline as the bar, so the logo and the button do not
+   move when the menu opens: the four dots become a cross in place. */
+.site-menu__top {
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: space-between;
+  height: var(--header-h);
+  border-bottom: var(--hairline) solid transparent;
+}
+
+.site-menu__nav {
+  flex: 1 0 auto;
+  padding-block: var(--s-7);
+}
+
+/* The links in large serif type, one to a line. */
+.site-menu__link {
+  display: block;
+  padding-block: var(--s-2);
+  font-size: var(--t-h1);
+  font-weight: var(--w-heading);
+  line-height: var(--lh-h1);
+  letter-spacing: var(--track-heading);
+  text-decoration: underline;
+  text-decoration-color: transparent;
+  text-decoration-thickness: var(--hairline);
+  text-underline-offset: .18em;
+  -webkit-tap-highlight-color: transparent;
+  transition:
+    color var(--dur-hover) var(--ease),
+    text-decoration-color var(--dur-hover) var(--ease);
+}
+
+/* The page the visitor is on is set in the light italic. */
+.site-menu__link[aria-current="page"] {
+  font-style: italic;
+}
+
+@media (hover: hover) {
+  .site-menu__link:hover {
+    text-decoration-color: currentColor;
+  }
+}
+
+.site-menu__link:active {
+  color: var(--fg-muted);
+}
+
+/* Apply, then the contact details under a hairline. */
+.site-menu__foot {
+  display: grid;
+  flex: none;
+  gap: var(--s-6);
+  justify-items: start;
+}
+
+.site-menu__contact {
+  display: grid;
+  gap: var(--s-4);
+  width: 100%;
+  padding-top: var(--s-5);
+  border-top: var(--hairline) solid var(--rule);
+}
+
+/* The address itself is the link; 44px tall for a finger, and a hair below
+   its label so the focus ring does not touch it. */
+.site-menu__contact-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--tap);
+  margin-top: var(--s-1);
+  overflow-wrap: anywhere;
+}
+
+/* On a phone the Apply button is as wide as the screen allows. */
+@media (max-width: 520px) {
+  .site-menu__cta {
+    width: 100%;
+  }
+}
+
+/* Opening: the panel fades in and its contents rise a little. Closing: a quick
+   fade. Only where motion is welcome; without support the menu simply appears. */
+@media (prefers-reduced-motion: no-preference) {
+  .site-menu {
+    opacity: 0;
+    transition-property: opacity, display, overlay;
+    transition-duration: var(--dur-hover);
+    transition-timing-function: var(--ease);
+    transition-behavior: allow-discrete;
+  }
+
+  .site-menu[open] {
+    opacity: 1;
+    transition-duration: var(--dur-hover-slow);
+  }
+
+  .site-menu__nav,
+  .site-menu__foot {
+    transition: transform var(--dur-hover-slow) var(--ease);
+  }
+
+  @starting-style {
+    .site-menu[open] {
+      opacity: 0;
+    }
+
+    .site-menu[open] .site-menu__nav,
+    .site-menu[open] .site-menu__foot {
+      transform: translateY(var(--s-5));
+    }
+  }
+}
+
+/* A menu that is fading out no longer takes taps. */
+.site-menu:not([open]) {
+  pointer-events: none;
 }
 
 /* ===== src/css/footer.css ===== */
@@ -985,106 +2333,1103 @@ ol.steps > .step::before {
  * footer.css
  * Owner: Header and Footer agent. (Responsive may add layout fixes.)
  *
- * Belongs here: the ink footer with the short line about Smallfold, the contact
- * email, the three link groups, the very large wordmark in --ink-soft and the
- * copyright line (docs/design-brief.md, section 8).
- *
- * Below is only the minimum that makes the Foundation's simple footer usable.
- * Replace it freely.
+ * The ink footer (src/partials/footer.html), in this order: the short line about
+ * Smallfold, the contact details, the three groups of links, the wordmark set
+ * very large and barely visible, and the copyright line
+ * (docs/design-brief.md, section 8). Every value comes from tokens.css.
  */
 
+/* ---------- The footer ---------- */
+
+/* A section's worth of air above; the bottom clears a phone's home bar. */
 .site-footer {
-  padding-block: var(--s-8) var(--s-6);
+  padding-top: var(--section);
+  padding-bottom: max(var(--s-6), env(safe-area-inset-bottom));
 }
 
+/* Left: the line and the contact details. Right: the groups of links. */
 .site-footer__top {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-  gap: var(--s-7);
-  padding-bottom: var(--s-8);
+  gap: var(--s-8) var(--s-7);
 }
 
-.site-footer__about {
+/* ---------- The line and the contact details ---------- */
+
+/* The line about Smallfold, in the light serif. */
+.site-footer__line {
+  max-width: 15em;
+  font-size: var(--t-statement);
+  font-weight: var(--w-heading);
+  line-height: var(--lh-statement);
+  letter-spacing: var(--track-heading);
+  text-wrap: balance;
+}
+
+/* Email, and the phone number once there is one: a small label above each. */
+.site-footer__contact {
   display: grid;
   gap: var(--s-4);
-  align-content: start;
-  justify-items: start;
+  margin-top: var(--s-7);
 }
 
-.site-footer__logo {
+/* The address itself is the link, so it can be selected and copied. 44px tall
+   for a finger, a hair below its label so the focus ring does not touch it;
+   a long address may break rather than run off a small screen. */
+.site-footer__contact-link {
   display: inline-flex;
   align-items: center;
-  min-height: 44px;
-  text-decoration: none;
+  min-height: var(--tap);
+  margin-top: var(--s-1);
+  font-size: var(--t-lead);
+  line-height: var(--lh-lead);
+  overflow-wrap: anywhere;
 }
+
+/* ---------- The groups of links ---------- */
 
 .site-footer__groups {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: var(--s-6);
-}
-
-.site-footer__group {
-  display: grid;
-  gap: var(--s-2);
+  gap: var(--s-7) var(--s-5);
   align-content: start;
 }
 
+/* The title of a group: a small muted heading, on the line of the first link's row. */
+.site-footer__title {
+  display: flex;
+  align-items: center;
+  min-height: var(--tap);
+}
+
+/* Links in the label style, each 44px tall. The hairline under a link is there
+   all along, without colour, so nothing moves when it shows. */
 .site-footer__link {
   display: inline-flex;
   align-items: center;
-  min-height: 44px;
-  text-decoration: none;
+  min-height: var(--tap);
+  text-decoration: underline;
+  text-decoration-color: transparent;
+  text-underline-offset: .6em;
+  -webkit-tap-highlight-color: transparent;
+  transition:
+    color var(--dur-hover) var(--ease),
+    text-decoration-color var(--dur-hover) var(--ease);
 }
 
+/* Hover: the hairline shows. */
 @media (hover: hover) {
   .site-footer__link:hover {
-    text-decoration: underline;
+    text-decoration-color: currentColor;
   }
 }
 
+/* Pressed. */
+.site-footer__link:active {
+  color: var(--fg-muted);
+}
+
+/* ---------- The wordmark, very large and barely visible ---------- */
+
+/* Decoration only: dark on dark, not read aloud, not selectable. The frame
+   measures its own width and cuts off anything wider, so the word can never
+   make the page scroll sideways. */
+.site-footer__wordmark {
+  container-type: inline-size;
+  margin-top: var(--section);
+  overflow: hidden;
+  color: var(--ink-soft);
+  pointer-events: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+/* The word fills the width of the frame: its nine letters are 4.16 times the
+   type size wide, so the type size is a little under a quarter of the width.
+   The first size, in vw, is for browsers that do not know cqw. */
+.site-footer__wordmark span {
+  display: block;
+  padding-top: .08em;
+  font-size: min(21vw, calc(var(--wrap) * .24));
+  font-size: 23.9cqw;
+  line-height: .78;
+  letter-spacing: var(--track-heading);
+  white-space: nowrap;
+}
+
+/* ---------- The copyright line ---------- */
+
+.site-footer__copyright {
+  margin-top: var(--s-6);
+  padding-top: var(--s-5);
+  border-top: var(--hairline) solid var(--rule);
+}
+
+/* ---------- Smaller screens ---------- */
+
+/* 860px and below: the line and contact details above, the groups below. */
 @media (max-width: 860px) {
   .site-footer__top {
     grid-template-columns: minmax(0, 1fr);
+    gap: var(--s-7);
   }
 }
 
+/* Phones: two columns. The first group stands beside the other two. */
 @media (max-width: 520px) {
   .site-footer__groups {
-    grid-template-columns: minmax(0, 1fr);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--s-5);
+  }
+
+  .site-footer__group:first-child {
+    grid-row: span 2;
+  }
+
+  .site-footer__contact-link {
+    font-size: var(--t-body);
+    line-height: var(--lh-body);
   }
 }
 
 /* ===== src/css/hero.css ===== */
 /*
  * hero.css
- * Owner: Hero agent. (Responsive may add layout fixes.)
+ * Owner: Hero agent. (Responsive may add layout fixes; the Animation agent may tune the timings.)
  *
- * Belongs here: the home hero (src/partials/hero.html): the full-bleed photo,
- * the dark veil, the centred tagline, sentence, Apply button and range note,
- * and the structure of the [data-intro] opening, where the photo grows from a
- * framed card to full-bleed and the text rises line by line
- * (docs/design-brief.md, sections 7 and 9).
+ * The first screen of the home page (src/partials/hero.html): one full-bleed
+ * picture under a dark veil and, centred on it, the headline, one sentence, one
+ * button and one small note. The headline is the only focal point: everything
+ * else stays small and quiet, and nothing else belongs on this screen.
  *
- * Empty for now: the hero stub borrows the .band component from components.css.
+ * Also here: the opening on the hook [data-intro] (docs/design-brief.md, section 7).
+ * hero.js only chooses which opening plays and says so with data-hero on <html>;
+ * every movement is a CSS animation in part 5, so it ends by itself.
+ *
+ *   1. Settings
+ *   2. Layout
+ *   3. Picture and veil
+ *   4. Text
+ *   5. Opening
  */
+
+/* ---------- 1. Settings ---------- */
+
+.hero {
+  --hero-max: calc(var(--wrap) + var(--s-10)); /* tallest the first screen gets: a 1440px monitor is filled, a taller one is not */
+  --hero-pad: var(--s-6);               /* air between the header and the text, and the same below */
+  --hero-title: 7.2em;                  /* widest line of the headline: sets these words in two even lines */
+  --hero-lead: 23em;                    /* widest line of the sentence */
+  --hero-wash: .4;                      /* share of the veil that lies over the whole picture */
+
+  /* The opening. The framed card the picture grows from: its distance from
+     the top and from the sides, and the size of the picture inside it. */
+  --hero-card: 25% 28%;
+  --hero-card-zoom: .74;
+
+  --hero-wait: calc(var(--dur-hover-slow) * 5);               /* 2.5s: after this, CSS shows everything by itself */
+  --hero-mark: calc(var(--dur-hover) * 1.5);                  /* the symbol comes, and later goes */
+  --hero-grow: calc(var(--dur-enter-long) - var(--dur-hover) * .75); /* the card grows to the full screen */
+  --hero-grow-at: calc(var(--dur-hover) * .5);                /* ...a moment after it has appeared */
+  --hero-rise: var(--dur-enter);                              /* one line of the headline rises */
+  --hero-rise-at: calc(var(--dur-hover) * 1.25);              /* ...starting while the card is still growing */
+  --hero-step: calc(var(--dur-hover) * .5);                   /* pause between lines, and between the parts after them */
+  --hero-soft: var(--dur-hover-slow);                         /* the sentence, the button and the note come in */
+}
+
+/* Upright screens show the tall picture, so the card is upright too. */
+@media (orientation: portrait) {
+  .hero {
+    --hero-wash: .2;
+    --hero-card: 27% 16%;
+    --hero-card-zoom: .84;
+  }
+}
+
+/* Low screens (a phone held sideways, a small laptop window): less air. */
+@media (max-height: 620px) {
+  .hero {
+    --hero-pad: var(--s-4);
+  }
+}
+
+/* ---------- 2. Layout ---------- */
+
+/* About one screen tall. The fixed header lies on top, so the text keeps clear
+   of it, by the same distance above and below: the text stays in the middle. */
+.hero {
+  position: relative;
+  isolation: isolate;
+  display: grid;
+  place-items: center;
+  min-height: min(100vh, var(--hero-max));
+  min-height: min(100svh, var(--hero-max));
+  padding: calc(var(--header-h, 64px) + var(--hero-pad)) var(--gutter);
+  overflow: hidden;
+  text-align: center;
+}
+
+/* ---------- 3. Picture and veil ---------- */
+
+/* The picture fills the whole section, behind the text. */
+.hero__stage {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+}
+
+.hero__stage picture,
+.hero__photo {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.hero__photo {
+  object-fit: cover;
+}
+
+/* Both layers of the veil lie on top of the picture. */
+.hero__stage::before,
+.hero__stage::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
+
+/* A wash of the veil over the whole picture, so that nothing in it is brighter than the headline. */
+.hero__stage::before {
+  background-color: var(--veil);
+  opacity: var(--hero-wash);
+}
+
+/* The full veil where words are: under the header and behind the text. It thins
+   out toward the sides and the bottom, where the paper and the window light show. */
+.hero__stage::after {
+  background-image:
+    linear-gradient(to bottom, var(--veil) var(--header-h, 64px), transparent 45%),
+    radial-gradient(ellipse 62% 66% at 50% 50%, var(--veil) 58%, transparent 100%);
+}
+
+/* On an upright screen the text is as wide as the screen, so the veil is too. */
+@media (orientation: portrait) {
+  .hero__stage::after {
+    background-image:
+      linear-gradient(to bottom, var(--veil) var(--header-h, 64px), transparent 45%),
+      radial-gradient(ellipse 140% 52% at 50% 50%, var(--veil) 62%, transparent 100%);
+  }
+}
+
+/* ---------- 4. Text ---------- */
+
+/* One calm column in the middle. */
+.hero__text {
+  display: grid;
+  justify-items: center;
+  width: 100%;
+  max-width: var(--w-band-text);
+}
+
+.hero__title {
+  max-width: var(--hero-title);
+}
+
+.hero__lead {
+  max-width: var(--hero-lead);
+  margin-top: var(--s-6);
+  text-wrap: balance;
+}
+
+.hero__cta {
+  margin-top: var(--s-7);
+}
+
+.hero__note {
+  margin-top: var(--s-5);
+}
+
+@media (max-width: 860px) {
+  .hero__lead {
+    margin-top: var(--s-5);
+  }
+
+  .hero__cta {
+    margin-top: var(--s-6);
+  }
+}
+
+/* The symbol belongs to the opening only. */
+.hero__mark {
+  display: none;
+}
+
+/* ---------- 5. Opening ---------- */
+
+/*
+ * States, set by hero.js as data-hero on <html>:
+ *   (none)    the script has not chosen yet: ink only
+ *   "intro"   first home view of a session: the symbol alone on ink
+ *   "open"    the picture grows from a framed card, the headline rises line by line
+ *   "return"  later views in the session: a short rise of the text
+ *   "done"    settled: no rule below applies any more
+ *
+ * Nothing is hidden by a plain declaration. Every hidden start is the first
+ * frame of an animation, so each state ends in the finished hero by itself,
+ * even if the script stops. All of it needs html.js and no reduced motion.
+ * Only opacity, transform and clip-path move.
+ */
+
+/* The same fade under two names: a state that swaps one for the other starts a
+   new animation, instead of carrying on with the old one's clock. */
+@keyframes hero-wait {
+  from { opacity: 0; }
+}
+
+@keyframes hero-show {
+  from { opacity: 0; }
+}
+
+@keyframes hero-mark-in {
+  from { opacity: 0; transform: scale(.9); }
+}
+
+@keyframes hero-mark-out {
+  to { opacity: 0; transform: scale(1.1); }
+}
+
+@keyframes hero-card {
+  from { clip-path: inset(var(--hero-card) round var(--r-lg)); }
+  to { clip-path: inset(0 round 0); }
+}
+
+@keyframes hero-photo {
+  from { transform: scale(var(--hero-card-zoom)); }
+}
+
+@keyframes hero-rise {
+  from { transform: translateY(140%); }
+}
+
+@keyframes hero-soft {
+  from { opacity: 0; transform: translateY(var(--s-4)); }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  /* Waiting (no state yet, or the symbol is showing): the picture and the text
+     are held back. This is the failsafe: if no state follows, they fade in by
+     themselves after --hero-wait. */
+  html.js:not([data-hero]) .hero[data-intro] .hero__stage,
+  html.js:not([data-hero]) .hero[data-intro] .hero__text > *,
+  html.js[data-hero="intro"] .hero__stage,
+  html.js[data-hero="intro"] .hero__text > * {
+    animation: hero-wait var(--dur-hover-slow) linear var(--hero-wait) both;
+  }
+
+  /* The header waits too, so that the symbol stands alone, and comes back with
+     the text. (.site-header belongs to header.css; only its opacity is animated
+     here, and only while the opening plays. It lives outside .hero, so its
+     three rules repeat the times instead of reading the settings above.) */
+  html.js:not([data-hero]) body[data-page="home"] .site-header,
+  html.js[data-hero="intro"] .site-header {
+    animation: hero-wait var(--dur-hover-slow) linear calc(var(--dur-hover-slow) * 5) both;
+  }
+
+  /* "intro": the symbol, alone in the middle of the ink. */
+  html.js[data-hero="intro"] .hero__mark,
+  html.js[data-hero="open"] .hero__mark {
+    position: absolute;
+    inset: 0;
+    display: block;
+    width: var(--s-7);
+    height: var(--s-7);
+    margin: auto;
+  }
+
+  html.js[data-hero="intro"] .hero__mark {
+    animation: hero-mark-in var(--hero-mark) var(--ease) both;
+  }
+
+  /* "open": the symbol dissolves into the card, which stands for a moment and then grows. */
+  html.js[data-hero="open"] .hero__mark {
+    animation: hero-mark-out var(--hero-mark) var(--ease) both;
+  }
+
+  html.js[data-hero="open"] .hero__stage {
+    animation:
+      hero-show var(--hero-mark) linear both,
+      hero-card var(--hero-grow) var(--ease) var(--hero-grow-at) both;
+  }
+
+  html.js[data-hero="open"] .hero__photo {
+    animation: hero-photo var(--hero-grow) var(--ease) var(--hero-grow-at) both;
+  }
+
+  /* The card starts as a clear photograph; the full veil arrives with the words. */
+  html.js[data-hero="open"] .hero__stage::after {
+    animation: hero-show var(--hero-grow) var(--ease) var(--hero-grow-at) both;
+  }
+
+  /* The headline: hero.js wraps each word in a mask (.hero__w) and numbers its
+     line (--hero-line). The words of a line rise together from behind the mask. */
+  .hero__w {
+    display: inline-block;
+    clip-path: inset(-.3em -.4em -.24em);
+  }
+
+  .hero__w > span {
+    display: inline-block;
+  }
+
+  html.js[data-hero="open"] .hero__w > span {
+    animation: hero-rise var(--hero-rise) var(--ease) calc(var(--hero-rise-at) + var(--hero-line, 0) * var(--hero-step)) both;
+  }
+
+  /* Then, softly, the sentence, the button and the note. */
+  html.js[data-hero="open"] .hero__lead,
+  html.js[data-hero="open"] .hero__cta,
+  html.js[data-hero="open"] .hero__note {
+    animation: hero-soft var(--hero-soft) var(--ease) both;
+  }
+
+  html.js[data-hero="open"] .hero__lead {
+    animation-delay: calc(var(--hero-rise-at) + var(--hero-step) * 3);
+  }
+
+  html.js[data-hero="open"] .hero__cta {
+    animation-delay: calc(var(--hero-rise-at) + var(--hero-step) * 4);
+  }
+
+  html.js[data-hero="open"] .hero__note {
+    animation-delay: calc(var(--hero-rise-at) + var(--hero-step) * 5);
+  }
+
+  html.js[data-hero="open"] .site-header {
+    animation: hero-show var(--dur-hover-slow) linear calc(var(--dur-hover) * 2.5) both;
+  }
+
+  /* "return": no intro. The picture is there at once and the text rises a little. */
+  html.js[data-hero="return"] .hero__stage,
+  html.js[data-hero="return"] .site-header {
+    animation: hero-show var(--dur-hover) linear both;
+  }
+
+  html.js[data-hero="return"] .hero__text > * {
+    animation: hero-soft var(--hero-soft) var(--ease) both;
+  }
+
+  html.js[data-hero="return"] .hero__lead {
+    animation-delay: var(--hero-step);
+  }
+
+  html.js[data-hero="return"] .hero__cta {
+    animation-delay: calc(var(--hero-step) * 2);
+  }
+
+  html.js[data-hero="return"] .hero__note {
+    animation-delay: calc(var(--hero-step) * 3);
+  }
+}
 
 /* ===== src/css/sections.css ===== */
 /*
  * sections.css
  * Owner: Content Sections agent. (Responsive may add layout fixes.)
  *
- * Belongs here: the layout of the page sections built in src/pages/*.html and
- * src/partials/closing.html: page heads, the statement, the three differences
- * beside a 4:5 photo, the "how a match is made" panel, example tiles, commission
- * rows, the photo band, question lists, form layouts, legal pages and the
- * closing section (docs/design-brief.md, section 9).
+ * The layout of the page sections built in src/pages/*.html and
+ * src/partials/closing.html (docs/design-brief.md, section 9).
  *
- * Use the component classes from components.css and add only layout here;
- * do not restyle the components.
+ * Arrangement only: grids, columns, gaps and widths. The look of every part
+ * comes from the component classes of components.css and is not changed here.
+ * Every distance comes from tokens.css. Phones first: one column by default,
+ * a first step at 561px and the wide layout from 861px.
  *
- * Empty for now.
+ * Contents: shared patterns (section head, page head, split, commission notes,
+ * closing), home, how it works, for brands, about, questions, contact, apply,
+ * forms, privacy and terms.
  */
+
+/* ---------- Shared patterns ---------- */
+
+/* A link to a section of a page stops with a little air above the section.
+   (header.css already keeps the jump clear of the fixed header.) */
+main section[id] {
+  scroll-margin-top: var(--s-5);
+}
+
+/* Section head: the label, title and lead above the content of a section. */
+.section-head {
+  margin-bottom: var(--s-7);
+}
+
+/* A section head set in the middle of the page. */
+.section-head--center {
+  text-align: center;
+}
+
+/* Its lead is centred as a block too. */
+.section-head--center .lead {
+  margin-inline: auto;
+}
+
+/* Page head: the label, title and lead at the top of every page except home,
+   in a centred column a little wider than the narrow one. */
+.page-head__inner {
+  max-width: calc(var(--narrow) + 2 * var(--s-9));
+  margin-inline: auto;
+  text-align: center;
+}
+
+/* The lead of a page head is centred as a block too. */
+.page-head__inner .lead {
+  margin-inline: auto;
+}
+
+/* The email address under the lead of the questions page. */
+.page-head__contact {
+  margin-top: var(--s-4);
+}
+
+/* Page head with a picture: the text first, the picture under it on a phone. */
+.page-head__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--s-7);
+}
+
+/* The button of a page head, under the lead. */
+.page-head__action {
+  margin-top: var(--s-6);
+}
+
+/* Split: the head of a section and its content, one under the other on a phone. */
+.split {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--s-7);
+}
+
+/* Commission: the three notes under the rows. */
+.commission__notes {
+  display: grid;
+  gap: var(--s-3);
+  margin-top: var(--s-6);
+}
+
+/* One note: a tick, then the sentence. */
+.commission__note {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--s-3);
+}
+
+/* The link under the notes. */
+.commission__more {
+  margin-top: var(--s-5);
+}
+
+/* Closing section: one centred column under a hairline. */
+.closing__inner {
+  display: grid;
+  justify-items: center;
+  gap: var(--s-5);
+  padding-top: var(--section);
+  border-top: var(--hairline) solid var(--rule);
+  text-align: center;
+}
+
+/* The gap does the spacing between the parts of the closing section. */
+.closing__inner > * {
+  margin: 0;
+}
+
+/* A little more air above the button. */
+.closing__action {
+  padding-top: var(--s-3);
+}
+
+/* Wide screens. */
+@media (min-width: 861px) {
+  /* More room between a section head and its content. */
+  .section-head {
+    margin-bottom: var(--s-8);
+  }
+
+  /* The picture of a page head sits beside the text. */
+  .page-head__grid {
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+    gap: var(--s-8);
+    align-items: center;
+  }
+
+  /* Split: the head on the left, the content on the right. */
+  .split {
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+    gap: var(--s-8);
+    align-items: start;
+  }
+}
+
+/* ---------- Home ---------- */
+
+/* Statement: one paragraph alone on the screen, with more air than a usual section. */
+.home-statement {
+  padding-block: var(--s-9);
+}
+
+/* Its column is a little wider than the narrow one. */
+.home-statement__text {
+  max-width: calc(var(--narrow) + 2 * var(--s-9));
+  margin-inline: auto;
+}
+
+/* Three differences: one under the other, with generous space between them. */
+.differences__list {
+  display: grid;
+  gap: var(--s-8);
+}
+
+/* One difference: the picture above the text on a phone. */
+.differences__item {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--s-5);
+}
+
+/* The text of a difference never runs wider than a line of running text. */
+.differences__text {
+  max-width: var(--measure);
+}
+
+/* How a match is made: the head above the drawing on a phone. */
+.process__top {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--s-6);
+}
+
+/* The drawing fills its column and keeps its own shape. */
+.process__threads > img,
+.process__threads > canvas {
+  width: 100%;
+  height: auto;
+}
+
+/* The four steps, under the head and the drawing. */
+.process__steps {
+  margin-top: var(--s-7);
+}
+
+/* The link under the steps. */
+.process__more {
+  margin-top: var(--s-6);
+}
+
+/* Example matches: one tile under the other on a phone. */
+.examples__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--s-4);
+}
+
+/* The three labelled lines of a tile, as wide as the tile. */
+.examples__lines {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--s-5);
+  align-self: stretch;
+  padding-top: var(--s-3);
+}
+
+/* One line: its label, then its words. */
+.examples__line {
+  display: grid;
+  gap: var(--s-2);
+  align-content: start;
+}
+
+/* The gap does the spacing between a label and its words. */
+.examples__line > * {
+  margin: 0;
+}
+
+/* The note under the tiles. */
+.examples__note {
+  margin-top: var(--s-5);
+}
+
+/* Questions: an answer never runs wider than a line of running text. */
+.home-questions__answer {
+  max-width: var(--measure);
+}
+
+/* The link under the questions. */
+.home-questions__more {
+  margin-top: var(--s-5);
+}
+
+/* Small tablets and up. */
+@media (min-width: 561px) {
+  /* A difference: the picture beside the text. */
+  .differences__item {
+    grid-template-columns: minmax(0, 5fr) minmax(0, 6fr);
+    gap: var(--s-6);
+    align-items: center;
+  }
+
+  /* Every second difference has its picture on the right. */
+  .differences__item:nth-child(even) {
+    grid-template-columns: minmax(0, 6fr) minmax(0, 5fr);
+  }
+
+  /* Its picture takes the second column... */
+  .differences__item:nth-child(even) .differences__media {
+    grid-column: 2;
+  }
+
+  /* ...and its text the first one, on the same line. */
+  .differences__item:nth-child(even) .differences__text {
+    grid-column: 1;
+    grid-row: 1;
+  }
+}
+
+/* Small tablets only. */
+@media (min-width: 561px) and (max-width: 860px) {
+  /* The four steps of the panel sit two by two. */
+  .process__steps {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--s-6);
+  }
+
+  /* The three lines of an example tile run across the tile. */
+  .examples__lines {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+/* Wide screens. */
+@media (min-width: 861px) {
+  /* The statement gets the most air of all. */
+  .home-statement {
+    padding-block: var(--s-10);
+  }
+
+  /* About one difference per screen. */
+  .differences__list {
+    gap: var(--s-9);
+  }
+
+  /* The differences are set on twelve columns. */
+  .differences__item,
+  .differences__item:nth-child(even) {
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    column-gap: var(--s-6);
+  }
+
+  /* A picture of five columns, one column in from the side. */
+  .differences__media {
+    grid-column: 2 / span 5;
+  }
+
+  /* A text of four columns, with a column of air between it and the picture. */
+  .differences__text {
+    grid-column: 8 / span 4;
+  }
+
+  /* Every second difference is the mirror image: the picture on the right... */
+  .differences__item:nth-child(even) .differences__media {
+    grid-column: 7 / span 5;
+  }
+
+  /* ...and the text on the left. */
+  .differences__item:nth-child(even) .differences__text {
+    grid-column: 2 / span 4;
+  }
+
+  /* The head of the panel beside the drawing. */
+  .process__top {
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+    gap: var(--s-8);
+    align-items: center;
+  }
+
+  /* More room above the steps. */
+  .process__steps {
+    margin-top: var(--s-8);
+  }
+
+  /* Three example tiles in a row. */
+  .examples__grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--s-5);
+  }
+}
+
+/* ---------- How it works ---------- */
+
+/* The four steps in detail: more air in each row than the list gives by itself. */
+.how-steps__list > .step {
+  padding-block: var(--s-6);
+}
+
+/* Wide screens. */
+@media (min-width: 861px) {
+  /* Still more air, and a third, empty row that takes up the room a title of
+     two lines needs, so that the two texts beside it stay together. */
+  .how-steps__list > .step {
+    grid-template-rows: auto auto 1fr;
+    padding-block: var(--s-7);
+  }
+
+  /* The title stands beside both texts. */
+  .how-steps__list > .step > :first-child {
+    grid-row: 1 / span 3;
+  }
+}
+
+/* ---------- For brands ---------- */
+
+/* The three points: a text never runs wider than a line of running text. */
+.brands-points__text {
+  max-width: var(--measure);
+}
+
+/* The price statement: one centred column between two hairlines. */
+.brands-price__inner {
+  max-width: calc(var(--narrow) + 2 * var(--s-9));
+  margin-inline: auto;
+  padding-block: var(--section-tight);
+  border-block: var(--hairline) solid var(--rule);
+  text-align: center;
+}
+
+/* Its sentence is centred as a block too. */
+.brands-price__inner .lead {
+  margin-inline: auto;
+}
+
+/* ---------- About ---------- */
+
+/* The story: the picture above the text on a phone. */
+.about-story__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--s-7);
+}
+
+/* Platforms: the text follows the title closely on a phone. */
+.about-platforms__grid {
+  gap: var(--s-5);
+}
+
+/* Wide screens. */
+@media (min-width: 861px) {
+  /* The story: the picture on the left, the text beside it. */
+  .about-story__grid {
+    grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+    gap: var(--s-8);
+    align-items: center;
+  }
+
+  /* Platforms: the usual gap between the two columns of a split. */
+  .about-platforms__grid {
+    gap: var(--s-8);
+  }
+
+  /* The text ends on the last line of the title. */
+  .about-platforms__text {
+    align-self: end;
+  }
+}
+
+/* ---------- Questions ---------- */
+
+/* The groups of questions, one under the other. */
+.faq__groups {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--s-8);
+}
+
+/* One group: its title above its questions on a phone. */
+.faq__group {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--s-5);
+}
+
+/* Wide screens. */
+@media (min-width: 861px) {
+  /* More room between the groups. */
+  .faq__groups {
+    gap: var(--s-9);
+  }
+
+  /* The title of a group on the left, its questions on the right. */
+  .faq__group {
+    grid-template-columns: minmax(0, 4fr) minmax(0, 8fr);
+    gap: var(--s-8);
+    align-items: start;
+  }
+}
+
+/* ---------- Contact ---------- */
+
+/* The ways to reach us, between two hairlines: one block for the email, and
+   a second one for the phone once there is a number. */
+.contact-ways__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--s-7);
+  padding-block: var(--section-tight);
+  border-block: var(--hairline) solid var(--rule);
+  text-align: center;
+}
+
+/* One block: its name, the address or number, then a sentence. */
+.contact-ways__item {
+  display: grid;
+  justify-items: center;
+  gap: var(--s-3);
+}
+
+/* The gap does the spacing between the parts of a block. */
+.contact-ways__item > * {
+  margin: 0;
+}
+
+/* The address itself. On a phone it is set small enough to stay on one line. */
+.contact-ways__value {
+  font-size: var(--t-body);
+  line-height: var(--lh-h3);
+}
+
+/* The two paths, as tiles: one under the other on a phone. */
+.contact-paths__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--s-4);
+}
+
+/* Small tablets and up. */
+@media (min-width: 561px) {
+  /* The address is set larger. */
+  .contact-ways__value {
+    font-size: var(--t-h3);
+  }
+}
+
+/* Wide screens. */
+@media (min-width: 861px) {
+  /* The blocks sit side by side, however many there are. */
+  .contact-ways__grid {
+    grid-auto-flow: column;
+    grid-auto-columns: minmax(0, 1fr);
+    grid-template-columns: none;
+  }
+
+  /* The two tiles sit side by side. */
+  .contact-paths__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--s-5);
+  }
+}
+
+/* ---------- Apply ---------- */
+
+/* The form first, "what happens next" under it on a phone. */
+.apply__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--s-8);
+}
+
+/* The three steps, under the title of "what happens next". */
+.apply__steps {
+  margin-top: var(--s-6);
+}
+
+/* Wide screens. */
+@media (min-width: 861px) {
+  /* "What happens next" beside the form. */
+  .apply__grid {
+    grid-template-columns: minmax(0, 7fr) minmax(0, 4fr);
+    gap: var(--s-9);
+    align-items: start;
+  }
+
+  /* It stays in view, below the fixed header, while the form scrolls. */
+  .apply__next {
+    position: sticky;
+    top: calc(var(--header-h, var(--s-8)) + var(--s-6));
+  }
+}
+
+/* ---------- Forms (apply.html and brands.html) ---------- */
+
+/* The parts of a form, one under the other. */
+.form > * + * {
+  margin-top: var(--s-5);
+}
+
+/* The places where the script puts its messages take no room while they are empty. */
+.form > .form__summary:empty,
+.form > .form__status:empty,
+.form > .form__summary:empty + * {
+  margin-top: 0;
+}
+
+/* The "not connected" notice above the first field. When the script moves to
+   it, it stops with a little air above it. */
+.form > .form__notice {
+  margin-bottom: var(--s-6);
+  scroll-margin-top: var(--s-6);
+}
+
+/* A little more air above the line about the use of the details. */
+.form > .form__privacy {
+  margin-top: var(--s-6);
+}
+
+/* When the script moves to a field that needs fixing, the page stops with the
+   label of the field and the summary of errors in view above it. */
+.form .input,
+.form .select,
+.form .textarea {
+  scroll-margin-top: var(--s-10);
+  scroll-margin-bottom: var(--s-8);
+}
+
+/* Phones: the send button is as wide as the form. */
+@media (max-width: 560px) {
+  .form__submit {
+    display: flex;
+    width: 100%;
+  }
+}
+
+/* ---------- Privacy and Terms ---------- */
+
+/* The title, lead and date, under the draft notice. */
+.legal__head {
+  margin-top: var(--s-7);
+}
+
+/* The sections of text, under a hairline. */
+.legal__body {
+  display: grid;
+  gap: var(--s-7);
+  margin-top: var(--s-8);
+  padding-top: var(--s-8);
+  border-top: var(--hairline) solid var(--rule);
+}
+
+/* The heading and the paragraphs of one section. */
+.legal__section > * + * {
+  margin-top: var(--s-4);
+}
 
 /* ===== src/css/motion.css ===== */
 /*

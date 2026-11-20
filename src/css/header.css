@@ -112,6 +112,7 @@ html.js [data-page="home"] .site-header:not(.is-solid) .site-header__inner :focu
   padding-block: var(--s-2);
 }
 
+/* With JavaScript: one row, as tall as the bar. */
 html.js .site-header__inner {
   flex-wrap: nowrap;
   height: 100%;
@@ -135,6 +136,7 @@ html.js .site-header__inner {
 
 /* ---------- The links of the bar (desktop) ---------- */
 
+/* One row; without JavaScript on a narrow screen the links may run on to a second line. */
 .site-nav__list {
   display: flex;
   flex-wrap: wrap;
@@ -263,6 +265,7 @@ html.menu-open {
   border-bottom: var(--hairline) solid transparent;
 }
 
+/* The links take the room that is left, which pushes the foot to the bottom of the screen. */
 .site-menu__nav {
   flex: 1 0 auto;
   padding-block: var(--s-7);
@@ -291,17 +294,19 @@ html.menu-open {
   font-style: italic;
 }
 
+/* Hover: a hairline under the words. */
 @media (hover: hover) {
   .site-menu__link:hover {
     text-decoration-color: currentColor;
   }
 }
 
+/* Pressed. */
 .site-menu__link:active {
   color: var(--fg-muted);
 }
 
-/* Apply, then the contact details under a hairline. */
+/* Apply, then the contact details. */
 .site-menu__foot {
   display: grid;
   flex: none;
@@ -309,6 +314,7 @@ html.menu-open {
   justify-items: start;
 }
 
+/* Email, and the phone number once there is one, under a hairline: a small label above each. */
 .site-menu__contact {
   display: grid;
   gap: var(--s-4);
