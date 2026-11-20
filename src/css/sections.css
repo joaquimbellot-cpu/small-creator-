@@ -1,0 +1,15 @@
+/*
+ * sections.css
+ * Owner: Content Sections agent. (Responsive may add layout fixes.)
+ *
+ * Belongs here: the layout of the page sections built in src/pages/*.html and
+ * src/partials/closing.html: page heads, the statement, the three differences
+ * beside a 4:5 photo, the "how a match is made" panel, example tiles, commission
+ * rows, the photo band, question lists, form layouts, legal pages and the
+ * closing section (docs/design-brief.md, section 9).
+ *
+ * Use the component classes from components.css and add only layout here;
+ * do not restyle the components.
+ *
+ * Empty for now.
+ */

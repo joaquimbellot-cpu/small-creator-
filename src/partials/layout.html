@@ -1,0 +1,15 @@
+<!doctype html>
+<html lang="en">
+<head>
+{{> head}}
+</head>
+<body class="on-cream" data-page="{{page.id}}">
+<a class="skip-link" href="#main">{{site.labels.skip}}</a>
+{{> header}}
+<main id="main" tabindex="-1">
+{{{body}}}
+</main>
+{{> footer}}
+<script src="assets/site.js" defer></script>
+</body>
+</html>

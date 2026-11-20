@@ -1,0 +1,131 @@
+/*
+ * tokens.css
+ * Owner: Design System agent. (SEO and Accessibility may fix colour contrast here.)
+ *
+ * Every design value of the site, defined once. Source: docs/design-brief.md,
+ * sections 3 (colour), 4 (type), 5 (space, shape, grid) and 7 (easing).
+ * All other stylesheets use these variables and never hard-code a value.
+ */
+
+:root {
+  /* Colour (brief, section 3) */
+  --cream: #F1EFEB;                       /* brand colour, the page ground */
+  --ink: #0E0E0E;                         /* brand colour, text on cream, dark grounds */
+  --paper: #FAF8F4;                       /* raised surfaces on cream */
+  --cream-deep: #E5E1D8;                  /* tiles, chips, image placeholders */
+  --ink-soft: #1A1A19;                    /* raised surfaces on ink */
+  --muted: #5C5A55;                       /* secondary text on cream */
+  --muted-on-ink: #A9A59C;                /* secondary text on ink */
+  --faint: #B9B5AC;                       /* unrevealed words and decorative marks only */
+  --line: rgba(14, 14, 14, .14);          /* hairlines on cream */
+  --line-on-ink: rgba(241, 239, 235, .18); /* hairlines on ink */
+  --accent: #2B44D6;                      /* pen blue on cream or paper */
+  --accent-on-ink: #A8B4FF;               /* the same accent on ink */
+
+  /* Type (brief, section 4) */
+  --font-serif: "Newsreader", Georgia, "Times New Roman", serif;
+  --font-sans: "Instrument Sans", "Helvetica Neue", Arial, sans-serif;
+
+  --w-heading: 300;
+  --w-text: 400;
+  --w-label: 500;
+
+  --t-hero: clamp(2.75rem, 6.2vw, 5.5rem);
+  --t-h1: clamp(2.4rem, 4.6vw, 4rem);
+  --t-h2: clamp(2rem, 3.6vw, 3.25rem);
+  --t-h3: clamp(1.375rem, 1.8vw, 1.625rem);
+  --t-statement: clamp(1.625rem, 2.9vw, 2.5rem);
+  --t-lead: clamp(1.1875rem, 1.5vw, 1.375rem);
+  --t-body: 1.125rem;
+  --t-small: 1rem;
+  --t-label: .75rem;
+
+  --lh-hero: 1.02;
+  --lh-h1: 1.06;
+  --lh-h2: 1.1;
+  --lh-h3: 1.25;
+  --lh-statement: 1.22;
+  --lh-lead: 1.45;
+  --lh-body: 1.55;
+  --lh-small: 1.5;
+  --lh-label: 1.4;
+
+  --track-heading: -0.01em;
+  --track-label: .07em;
+  --measure: 34em;                        /* widest line of running text */
+
+  /* Space (brief, section 5) */
+  --s-1: 4px;
+  --s-2: 8px;
+  --s-3: 12px;
+  --s-4: 16px;
+  --s-5: 24px;
+  --s-6: 32px;
+  --s-7: 48px;
+  --s-8: 72px;
+  --s-9: 112px;
+  --s-10: 160px;
+
+  --section: var(--s-9);                  /* space between sections */
+  --section-tight: var(--s-8);
+
+  /* The gutter is never smaller than a phone's safe area at the sides. */
+  --gutter: max(clamp(20px, 4vw, 56px), env(safe-area-inset-left), env(safe-area-inset-right));
+  --wrap: 1320px;                         /* content width */
+  --narrow: 720px;                        /* narrow text column */
+
+  /* Shape */
+  --r-sm: 4px;                            /* chips */
+  --r: 8px;                               /* buttons, fields, tiles */
+  --r-lg: 14px;                           /* inset panels, photos that are not full-bleed */
+
+  /* Motion (brief, section 7) */
+  --ease: cubic-bezier(.22, 1, .36, 1);
+  --dur-hover: 200ms;
+  --dur-enter: 900ms;
+  --dur-enter-long: 1300ms;
+}
+
+/* Phones and small tablets: 860px and below. */
+@media (max-width: 860px) {
+  :root {
+    --section: var(--s-8);
+    --section-tight: var(--s-7);
+  }
+}
+
+/*
+ * Grounds. A section sits on cream, on ink or on a photograph. Each ground
+ * sets the same six variables; components read only these six, so every
+ * component works on every ground.
+ */
+:root,
+.on-cream {
+  --bg: var(--cream);
+  --fg: var(--ink);
+  --fg-muted: var(--muted);
+  --rule: var(--line);
+  --surface: var(--paper);
+  --accent-fg: var(--accent);
+}
+
+/* .panel is the inset dark panel; it is always on ink. */
+.on-ink,
+.panel {
+  --bg: var(--ink);
+  --fg: var(--cream);
+  --fg-muted: var(--muted-on-ink);
+  --rule: var(--line-on-ink);
+  --surface: var(--ink-soft);
+  --accent-fg: var(--accent-on-ink);
+}
+
+/* Text on a photograph: cream text over a dark veil (the veil is drawn by .band and the hero). */
+.on-photo {
+  --bg: var(--ink);
+  --fg: var(--cream);
+  --fg-muted: rgba(241, 239, 235, .82);
+  --rule: rgba(241, 239, 235, .32);
+  --surface: rgba(14, 14, 14, .4);
+  --accent-fg: var(--accent-on-ink);
+}

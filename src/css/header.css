@@ -1,0 +1,71 @@
+/*
+ * header.css
+ * Owner: Header and Footer agent. (Responsive may add layout fixes.)
+ *
+ * Belongs here: the fixed site header, its transparent state over the home hero,
+ * the solid cream bar after scrolling, hide on scroll down and return on scroll up,
+ * and the full-screen ink menu for 860px and below (docs/design-brief.md, section 8).
+ *
+ * Below is only the minimum that makes the Foundation's simple header usable.
+ * Replace it freely.
+ */
+
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  border-bottom: 1px solid var(--rule);
+}
+
+.site-header__inner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0 var(--s-5);
+  min-height: 64px;
+  padding-block: var(--s-2);
+}
+
+.site-header__logo {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  margin-right: auto;
+  text-decoration: none;
+}
+
+.site-nav__list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 var(--s-5);
+}
+
+.site-nav__link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  color: var(--fg-muted);
+  text-decoration: none;
+}
+
+.site-nav__link[aria-current="page"] {
+  color: var(--fg);
+}
+
+@media (hover: hover) {
+  .site-nav__link:hover {
+    color: var(--fg);
+  }
+}
+
+/* Phones: the links move to a second row and the bar scrolls away, until the real menu exists. */
+@media (max-width: 860px) {
+  .site-header {
+    position: static;
+  }
+
+  .site-nav {
+    order: 3;
+    width: 100%;
+  }
+}

@@ -1,0 +1,60 @@
+{
+  "head": {
+    "label": "[label: small label above the page title, 1 to 3 words]",
+    "title": "[title: page title for Questions, max 6 words]",
+    "lead": "[lead: one sentence, and where to ask anything that is not answered here, max 24 words]"
+  },
+  "groups": [
+    {
+      "title": "[title: group 1, for example joining, max 4 words]",
+      "items": [
+        {
+          "q": "[q: question, max 12 words]",
+          "a": "[a: answer, 1 to 3 sentences, max 50 words]"
+        },
+        {
+          "q": "[q: question, max 12 words]",
+          "a": "[a: answer, 1 to 3 sentences, max 50 words]"
+        },
+        {
+          "q": "[q: question, max 12 words]",
+          "a": "[a: answer, 1 to 3 sentences, max 50 words]"
+        }
+      ]
+    },
+    {
+      "title": "[title: group 2, for example sponsors and deals, max 4 words]",
+      "items": [
+        {
+          "q": "[q: question, max 12 words]",
+          "a": "[a: answer, 1 to 3 sentences, max 50 words]"
+        },
+        {
+          "q": "[q: question, max 12 words]",
+          "a": "[a: answer, 1 to 3 sentences, max 50 words]"
+        },
+        {
+          "q": "[q: question, max 12 words]",
+          "a": "[a: answer, 1 to 3 sentences, max 50 words]"
+        }
+      ]
+    },
+    {
+      "title": "[title: group 3, for example money, max 4 words]",
+      "items": [
+        {
+          "q": "[q: question, max 12 words]",
+          "a": "[a: answer, 1 to 3 sentences, max 50 words]"
+        },
+        {
+          "q": "[q: question, max 12 words]",
+          "a": "[a: answer, 1 to 3 sentences, max 50 words]"
+        },
+        {
+          "q": "[q: question, max 12 words]",
+          "a": "[a: answer, 1 to 3 sentences, max 50 words]"
+        }
+      ]
+    }
+  ]
+}

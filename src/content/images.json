@@ -1,0 +1,82 @@
+{
+  "hero": {
+    "src": "assets/img/hero.jpg",
+    "width": 2400,
+    "height": 1350,
+    "alt": "[alt]",
+    "credit": "",
+    "creditUrl": ""
+  },
+  "heroTall": {
+    "src": "assets/img/hero-tall.jpg",
+    "width": 1200,
+    "height": 1500,
+    "alt": "[alt]",
+    "credit": "",
+    "creditUrl": ""
+  },
+  "band": {
+    "src": "assets/img/band.jpg",
+    "width": 2400,
+    "height": 1200,
+    "alt": "[alt]",
+    "credit": "",
+    "creditUrl": ""
+  },
+  "difference1": {
+    "src": "assets/img/difference-1.jpg",
+    "width": 1200,
+    "height": 1500,
+    "alt": "[alt]",
+    "credit": "",
+    "creditUrl": ""
+  },
+  "difference2": {
+    "src": "assets/img/difference-2.jpg",
+    "width": 1200,
+    "height": 1500,
+    "alt": "[alt]",
+    "credit": "",
+    "creditUrl": ""
+  },
+  "difference3": {
+    "src": "assets/img/difference-3.jpg",
+    "width": 1200,
+    "height": 1500,
+    "alt": "[alt]",
+    "credit": "",
+    "creditUrl": ""
+  },
+  "brands": {
+    "src": "assets/img/brands.jpg",
+    "width": 1800,
+    "height": 1200,
+    "alt": "[alt]",
+    "credit": "",
+    "creditUrl": ""
+  },
+  "about": {
+    "src": "assets/img/about.jpg",
+    "width": 1800,
+    "height": 1200,
+    "alt": "[alt]",
+    "credit": "",
+    "creditUrl": ""
+  },
+  "threads": {
+    "src": "assets/illustrations/threads.svg",
+    "width": 1200,
+    "height": 800,
+    "alt": "[alt]",
+    "credit": "",
+    "creditUrl": ""
+  },
+  "og": {
+    "src": "assets/img/og.jpg",
+    "width": 1200,
+    "height": 630,
+    "alt": "[alt]",
+    "credit": "",
+    "creditUrl": ""
+  }
+}

@@ -1,0 +1,94 @@
+{
+  "head": {
+    "label": "[label: small label above the page title, 1 to 3 words]",
+    "title": "[title: page title for brands, max 9 words]",
+    "lead": "[lead: what Smallfold offers a brand, one sentence, max 24 words]",
+    "cta": {
+      "label": "[label: button that jumps to the enquiry form, max 3 words]",
+      "href": "#enquiry"
+    }
+  },
+  "points": {
+    "label": "[label: small label above the section, 1 to 3 words]",
+    "title": "[title: section title for the three points for brands, max 8 words]",
+    "items": [
+      {
+        "title": "[title: point 1, max 6 words]",
+        "text": "[text: point 1, 1 or 2 sentences, max 30 words]"
+      },
+      {
+        "title": "[title: point 2, max 6 words]",
+        "text": "[text: point 2, 1 or 2 sentences, max 30 words]"
+      },
+      {
+        "title": "[title: point 3, max 6 words]",
+        "text": "[text: point 3, 1 or 2 sentences, max 30 words]"
+      }
+    ]
+  },
+  "steps": {
+    "label": "[label: small label above the section, 1 to 3 words]",
+    "title": "[title: section title, how it works for a brand, max 8 words]",
+    "items": [
+      {
+        "title": "[title: step 1, max 5 words]",
+        "text": "[text: step 1 in one sentence, max 24 words]"
+      },
+      {
+        "title": "[title: step 2, max 5 words]",
+        "text": "[text: step 2 in one sentence, max 24 words]"
+      },
+      {
+        "title": "[title: step 3, max 5 words]",
+        "text": "[text: step 3 in one sentence, max 24 words]"
+      }
+    ]
+  },
+  "price": {
+    "label": "[label: small label above the section, 1 to 3 words]",
+    "title": "[title: the brand pays the agreed fee and nothing more, max 10 words]",
+    "text": "[text: explains that the commission comes out of the creator's fee, 1 or 2 sentences, max 35 words]"
+  },
+  "form": {
+    "label": "[label: small label above the form, 1 to 3 words]",
+    "title": "[title: title of the enquiry form, max 6 words]",
+    "lead": "[lead: what to send and what happens next, one sentence, max 24 words]",
+    "fields": {
+      "company": {
+        "label": "[label: company field, 1 to 3 words]",
+        "error": "[error: company is empty, max 8 words]"
+      },
+      "promote": {
+        "label": "[label: what you want to promote, max 6 words]",
+        "hint": "[hint: what to write here, max 12 words]",
+        "error": "[error: this field is empty, max 10 words]"
+      },
+      "budget": {
+        "label": "[label: budget range field, 1 to 3 words]",
+        "placeholder": "[placeholder: first empty choice of the list, max 4 words]",
+        "options": [
+          "[option 1: lowest budget range]",
+          "[option 2: middle budget range]",
+          "[option 3: highest budget range]",
+          "[option 4: not sure yet]"
+        ],
+        "error": "[error: no budget range chosen, max 8 words]"
+      },
+      "name": {
+        "label": "[label: name of the contact person, 1 to 3 words]",
+        "error": "[error: name is empty, max 8 words]"
+      },
+      "email": {
+        "label": "[label: email field, 1 or 2 words]",
+        "error": "[error: email is empty or not valid, max 10 words]"
+      },
+      "phone": {
+        "label": "[label: phone field, 1 or 2 words]",
+        "hint": "[hint: why a phone number can help, max 10 words]",
+        "error": "[error: phone number is not valid, max 10 words]"
+      }
+    },
+    "submit": "[submit: button that sends the enquiry, max 3 words]",
+    "privacy": "[privacy: one sentence on how the details are used, max 22 words]"
+  }
+}

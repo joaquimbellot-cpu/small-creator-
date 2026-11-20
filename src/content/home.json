@@ -1,0 +1,112 @@
+{
+  "hero": {
+    "title": "A sponsor chosen for your channel",
+    "lead": "[lead: what Smallfold does for a small channel, one sentence, max 22 words]",
+    "cta": "Apply",
+    "note": "[note: the channel size range, one line, max 10 words]"
+  },
+  "statement": {
+    "text": "[text: the statement paragraph, why Smallfold exists and how it works, one paragraph of 30 to 45 words]"
+  },
+  "differences": {
+    "label": "[label: small label above the section, 1 to 3 words]",
+    "title": "[title: section title for the three differences, max 8 words]",
+    "items": [
+      {
+        "title": "Matched by hand",
+        "text": "[text: a person looks at each channel and picks the sponsor, 1 or 2 sentences, max 35 words]"
+      },
+      {
+        "title": "Only small channels",
+        "text": "[text: only channels in our subscriber range, 1 or 2 sentences, max 35 words]"
+      },
+      {
+        "title": "You have the final say",
+        "text": "[text: a creator can turn down any suggested sponsor, 1 or 2 sentences, max 35 words]"
+      }
+    ]
+  },
+  "process": {
+    "label": "[label: small label above the section, 1 to 3 words]",
+    "title": "[title: section title, how a match is made, max 7 words]",
+    "lead": "[lead: one sentence introducing the four steps, max 22 words]",
+    "steps": [
+      {
+        "title": "[title: step 1, max 5 words]",
+        "text": "[text: step 1 in one sentence, max 22 words]"
+      },
+      {
+        "title": "[title: step 2, max 5 words]",
+        "text": "[text: step 2 in one sentence, max 22 words]"
+      },
+      {
+        "title": "[title: step 3, max 5 words]",
+        "text": "[text: step 3 in one sentence, max 22 words]"
+      },
+      {
+        "title": "[title: step 4, max 5 words]",
+        "text": "[text: step 4 in one sentence, max 22 words]"
+      }
+    ],
+    "link": {
+      "label": "[label: link to the How it works page, max 5 words]",
+      "href": "how-it-works.html"
+    }
+  },
+  "examples": {
+    "label": "[label: small label above the section, 1 to 3 words]",
+    "title": "[title: section title for the example matches, max 8 words]",
+    "note": "[note: says plainly that these are examples and not real deals, one sentence, max 20 words]",
+    "items": [
+      {
+        "channel": "[channel: example 1, the kind of channel, no real names, max 8 words]",
+        "sponsor": "[sponsor: example 1, the kind of sponsor, no real brand names, max 8 words]",
+        "video": "[video: example 1, the kind of sponsored video, no dollar amounts, max 14 words]"
+      },
+      {
+        "channel": "[channel: example 2, the kind of channel, no real names, max 8 words]",
+        "sponsor": "[sponsor: example 2, the kind of sponsor, no real brand names, max 8 words]",
+        "video": "[video: example 2, the kind of sponsored video, no dollar amounts, max 14 words]"
+      },
+      {
+        "channel": "[channel: example 3, the kind of channel, no real names, max 8 words]",
+        "sponsor": "[sponsor: example 3, the kind of sponsor, no real brand names, max 8 words]",
+        "video": "[video: example 3, the kind of sponsored video, no dollar amounts, max 14 words]"
+      }
+    ]
+  },
+  "commission": {
+    "label": "[label: small label above the section, 1 to 3 words]",
+    "title": "[title: section title for the commission, max 8 words]",
+    "lead": "[lead: when and how the commission applies, one sentence, max 24 words]",
+    "link": {
+      "label": "[label: link to the How it works page, max 5 words]",
+      "href": "how-it-works.html"
+    }
+  },
+  "band": {
+    "text": "[text: the single line set on the photo band, max 10 words]"
+  },
+  "questions": {
+    "label": "[label: small label above the section, 1 to 3 words]",
+    "title": "[title: section title for the three questions, max 6 words]",
+    "items": [
+      {
+        "q": "[q: question 1, max 12 words]",
+        "a": "[a: answer 1, 1 to 3 sentences, max 45 words]"
+      },
+      {
+        "q": "[q: question 2, max 12 words]",
+        "a": "[a: answer 2, 1 to 3 sentences, max 45 words]"
+      },
+      {
+        "q": "[q: question 3, max 12 words]",
+        "a": "[a: answer 3, 1 to 3 sentences, max 45 words]"
+      }
+    ],
+    "link": {
+      "label": "[label: link to the Questions page, max 4 words]",
+      "href": "questions.html"
+    }
+  }
+}

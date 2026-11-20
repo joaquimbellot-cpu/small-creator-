@@ -1,0 +1,59 @@
+{
+  "head": {
+    "label": "[label: small label above the page title, 1 to 3 words]",
+    "title": "[title: page title for Apply, max 8 words]",
+    "lead": "[lead: who can apply and that joining is free, one sentence, max 24 words]"
+  },
+  "form": {
+    "fields": {
+      "name": {
+        "label": "[label: name field, 1 or 2 words]",
+        "error": "[error: name is empty, max 8 words]"
+      },
+      "email": {
+        "label": "[label: email field, 1 or 2 words]",
+        "error": "[error: email is empty or not valid, max 10 words]"
+      },
+      "phone": {
+        "label": "[label: phone field, 1 or 2 words]",
+        "hint": "[hint: why a phone number can help, max 10 words]",
+        "error": "[error: phone number is not valid, max 10 words]"
+      },
+      "channel": {
+        "label": "[label: link to the YouTube channel, max 5 words]",
+        "hint": "[hint: what the link should look like, max 10 words]",
+        "error": "[error: channel link is empty or not a link, max 10 words]"
+      },
+      "topic": {
+        "label": "[label: what the channel is about, max 6 words]",
+        "hint": "[hint: what to write here, max 12 words]",
+        "error": "[error: this field is empty, max 10 words]"
+      },
+      "subscribers": {
+        "label": "[label: subscriber count field, 1 to 3 words]",
+        "hint": "[hint: the subscriber range Smallfold works with, max 12 words]",
+        "error": "[error: subscriber count is empty or not a number, max 10 words]"
+      }
+    },
+    "submit": "[submit: button that sends the application, max 3 words]",
+    "privacy": "[privacy: one sentence on how the details are used, max 22 words]"
+  },
+  "next": {
+    "label": "[label: small label above the list, 1 to 3 words]",
+    "title": "[title: what happens next, max 5 words]",
+    "items": [
+      {
+        "title": "[title: step 1 after applying, max 6 words]",
+        "text": "[text: step 1, one sentence, max 22 words]"
+      },
+      {
+        "title": "[title: step 2 after applying, max 6 words]",
+        "text": "[text: step 2, one sentence, max 22 words]"
+      },
+      {
+        "title": "[title: step 3 after applying, max 6 words]",
+        "text": "[text: step 3, one sentence, max 22 words]"
+      }
+    ]
+  }
+}

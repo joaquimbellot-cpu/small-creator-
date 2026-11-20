@@ -1,0 +1,304 @@
+/*
+ * base.css
+ * Owner: Design System agent. (SEO and Accessibility may fix focus styles here.)
+ *
+ * Reset, page defaults, the type classes, the layout helpers (.wrap, .section)
+ * and the accessibility helpers. Components live in components.css.
+ */
+
+/* ---------- Reset ---------- */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+* {
+  margin: 0;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+body {
+  min-height: 100vh;
+  min-height: 100dvh;
+  background-color: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-serif);
+  font-size: var(--t-body);
+  font-weight: var(--w-text);
+  line-height: var(--lh-body);
+  font-optical-sizing: auto;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-wrap: break-word;
+}
+
+img,
+picture,
+svg,
+video,
+canvas {
+  display: block;
+  max-width: 100%;
+}
+
+img,
+video {
+  height: auto;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+  color: inherit;
+  letter-spacing: inherit;
+}
+
+button {
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-size: inherit;
+  font-weight: var(--w-heading);
+  letter-spacing: var(--track-heading);
+  text-wrap: balance;
+}
+
+a {
+  color: inherit;
+  text-decoration-thickness: 1px;
+  text-underline-offset: .18em;
+}
+
+em,
+i {
+  font-style: italic;
+  font-weight: var(--w-heading);
+}
+
+/* A list with a class is a layout list: no bullets. Plain lists in text keep theirs. */
+ul[class],
+ol[class] {
+  list-style: none;
+  padding: 0;
+}
+
+table {
+  border-collapse: collapse;
+  font-variant-numeric: tabular-nums;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+/* ---------- Grounds: apply the six variables set in tokens.css ---------- */
+
+.on-cream,
+.on-ink,
+.on-photo {
+  background-color: var(--bg);
+  color: var(--fg);
+}
+
+/* ---------- Type classes (usable on any element) ---------- */
+
+.h-hero,
+.h1,
+.h2,
+.h3 {
+  font-family: var(--font-serif);
+  font-weight: var(--w-heading);
+  letter-spacing: var(--track-heading);
+  text-wrap: balance;
+}
+
+.h-hero {
+  font-size: var(--t-hero);
+  line-height: var(--lh-hero);
+  font-style: italic;
+}
+
+.h1 {
+  font-size: var(--t-h1);
+  line-height: var(--lh-h1);
+}
+
+.h2 {
+  font-size: var(--t-h2);
+  line-height: var(--lh-h2);
+}
+
+.h3 {
+  font-size: var(--t-h3);
+  line-height: var(--lh-h3);
+}
+
+.statement {
+  font-size: var(--t-statement);
+  line-height: var(--lh-statement);
+  font-weight: var(--w-heading);
+  letter-spacing: var(--track-heading);
+  text-align: center;
+  text-wrap: balance;
+}
+
+.lead {
+  max-width: var(--measure);
+  font-size: var(--t-lead);
+  line-height: var(--lh-lead);
+}
+
+.body {
+  max-width: var(--measure);
+  font-size: var(--t-body);
+  line-height: var(--lh-body);
+}
+
+.small {
+  font-size: var(--t-small);
+  line-height: var(--lh-small);
+}
+
+.muted {
+  color: var(--fg-muted);
+}
+
+.label {
+  font-family: var(--font-sans);
+  font-size: var(--t-label);
+  font-weight: var(--w-label);
+  font-style: normal;
+  line-height: var(--lh-label);
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
+}
+
+.label--muted {
+  color: var(--fg-muted);
+}
+
+/* ---------- Default rhythm between text blocks ----------
+ * Written with :where(), so these rules have no weight: any class rule wins. */
+
+:where(.label) + :where(.h-hero, .h1, .h2, .h3) {
+  margin-top: var(--s-4);
+}
+
+:where(.h-hero, .h1, .h2, .h3) + :where(p, .lead, .body) {
+  margin-top: var(--s-5);
+}
+
+:where(p, ul, ol) + :where(p, ul, ol) {
+  margin-top: var(--s-4);
+}
+
+/* ---------- Layout helpers ---------- */
+
+/* Centred content width with the gutter on both sides. */
+.wrap {
+  width: 100%;
+  max-width: calc(var(--wrap) + 2 * var(--gutter));
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+}
+
+.wrap--narrow {
+  max-width: calc(var(--narrow) + 2 * var(--gutter));
+}
+
+/* Vertical section spacing. */
+.section {
+  padding-block: var(--section);
+}
+
+.section--tight {
+  padding-block: var(--section-tight);
+}
+
+/* Two sections on the page ground in a row share one gap instead of two. */
+.section:not(.on-ink, .on-photo) + .section:not(.on-ink, .on-photo) {
+  padding-top: 0;
+}
+
+/* ---------- Accessibility helpers ---------- */
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Hidden until it receives keyboard focus. */
+.skip-link {
+  position: fixed;
+  top: var(--s-2);
+  left: var(--s-2);
+  z-index: 1000;
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 var(--s-4);
+  border-radius: var(--r);
+  background-color: var(--ink);
+  color: var(--cream);
+  font-family: var(--font-sans);
+  font-size: var(--t-label);
+  font-weight: var(--w-label);
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
+  text-decoration: none;
+  transform: translateY(-200%);
+}
+
+.skip-link:focus {
+  transform: none;
+  outline-color: var(--accent-on-ink);
+}
+
+/* Focus is always visible. */
+:focus-visible {
+  outline: 2px solid var(--accent-fg);
+  outline-offset: 3px;
+}
+
+/* The skip link moves focus to <main>; no ring is needed around the whole page. */
+main:focus {
+  outline: none;
+}
+
+/* ---------- Reduced motion ---------- */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

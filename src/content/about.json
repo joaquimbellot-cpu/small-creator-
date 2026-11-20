@@ -1,0 +1,38 @@
+{
+  "head": {
+    "label": "[label: small label above the page title, 1 to 3 words]",
+    "title": "[title: page title for About, max 9 words]",
+    "lead": "[lead: what Smallfold is, one sentence, max 24 words]"
+  },
+  "story": {
+    "label": "[label: small label above the story, 1 to 3 words]",
+    "title": "[title: title of the story, max 8 words]",
+    "paragraphs": [
+      "[paragraph 1: the story exactly as given in brand-info.md, section 1, with no added detail, max 40 words]",
+      "[paragraph 2: what Smallfold does about it today, 1 to 3 sentences, max 50 words]"
+    ]
+  },
+  "beliefs": {
+    "label": "[label: small label above the section, 1 to 3 words]",
+    "title": "[title: section title for the three beliefs, max 8 words]",
+    "items": [
+      {
+        "title": "[title: belief 1, matched by hand, max 6 words]",
+        "text": "[text: belief 1, 1 or 2 sentences, max 35 words]"
+      },
+      {
+        "title": "[title: belief 2, only small channels, max 6 words]",
+        "text": "[text: belief 2, 1 or 2 sentences, max 35 words]"
+      },
+      {
+        "title": "[title: belief 3, the creator has the final say, max 6 words]",
+        "text": "[text: belief 3, 1 or 2 sentences, max 35 words]"
+      }
+    ]
+  },
+  "platforms": {
+    "label": "[label: small label above the section, 1 to 3 words]",
+    "title": "[title: YouTube now, other platforms later, max 8 words]",
+    "text": "[text: one or two sentences, no platform names and no dates, max 30 words]"
+  }
+}

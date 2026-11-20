@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>[title: browser tab title for the Home page, max 60 characters]</title>
+<meta name="description" content="[description: search result summary for the Home page, max 155 characters]">
+<script>document.documentElement.classList.add('js');</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@500;600&amp;family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;1,6..72,300;1,6..72,400&amp;display=swap">
+<link rel="stylesheet" href="assets/site.css">
+<link rel="icon" href="assets/logo/favicon.svg" type="image/svg+xml">
+</head>
+<body class="on-cream" data-page="home">
+<a class="skip-link" href="#main">Skip to content</a>
+<header class="site-header on-cream">
+  <div class="wrap site-header__inner">
+    <a class="site-header__logo" href="index.html" aria-label="Smallfold, home"><span class="logo"><svg class="logo__symbol" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.25" aria-hidden="true" focusable="false"><rect x="4.5" y="4.5" width="15" height="15"/></svg><span class="logo__word">Smallfold</span></span></a>
+    <nav class="site-nav" aria-label="Menu">
+      <ul class="site-nav__list">
+        <li><a class="site-nav__link label" href="how-it-works.html">How it works</a></li>
+        <li><a class="site-nav__link label" href="brands.html">For brands</a></li>
+        <li><a class="site-nav__link label" href="about.html">About</a></li>
+        <li><a class="site-nav__link label" href="questions.html">Questions</a></li>
+      </ul>
+    </nav>
+    <a class="btn btn--small" href="apply.html">Apply</a>
+  </div>
+</header>
+<main id="main" tabindex="-1">
+<!-- Home (stub). Owner: Content Sections agent. The hero partial belongs to the Hero agent.
+     Words: src/content/home.json and site.json. Images: src/content/images.json. -->
+<!-- Hero stub. Owner: Hero agent. It borrows the .band component until hero.css exists. -->
+<section class="hero band on-photo" data-intro>
+  <img src="assets/img/hero.jpg" width="2400" height="1350" alt="[alt]">
+  <h1 class="h-hero">A sponsor chosen for your channel</h1>
+  <p class="lead">[lead: what Smallfold does for a small channel, one sentence, max 22 words]</p>
+  <a class="btn" href="apply.html">Apply</a>
+  <p class="small">[note: the channel size range, one line, max 10 words]</p>
+</section>
+
+<!--
+  Planned sections, in order (docs/design-brief.md, section 9):
+  1. Hero: photo, tagline, one sentence, Apply, range note (the "hero" partial, above)
+  2. Statement paragraph with the word reveal (home.statement)
+  3. Three differences, text beside a 4:5 photo (home.differences, images.difference1 to 3)
+  4. "How a match is made": inset ink panel with the threads drawing and the four steps (home.process, images.threads)
+  5. Example matches: three tiles, each tagged "Example", no amounts (home.examples, site.labels.example)
+  6. Commission as hairline rows (home.commission, site.commission)
+  7. Photo band with one line (home.band, images.band)
+  8. Three questions with a link to all (home.questions)
+  9. Closing section (the "closing" partial, below)
+-->
+
+<!-- Closing section, the same on every page that ends with it. Owner: Content Sections agent. -->
+<section class="section closing">
+  <div class="wrap">
+    <h2 class="h2">[title: the closing line shown at the end of every page, max 9 words]</h2>
+    <p class="lead">[lead: one sentence inviting creators to apply, max 20 words]</p>
+    <p><a class="btn" href="apply.html">Apply</a></p>
+    <p class="small muted">[note: how soon we reply to an application, one sentence, max 8 words]</p>
+  </div>
+</section>
+
+</main>
+<footer class="site-footer on-ink">
+  <div class="wrap">
+    <div class="site-footer__top">
+      <div class="site-footer__about">
+        <a class="site-footer__logo" href="index.html" aria-label="Smallfold, home"><span class="logo"><svg class="logo__symbol" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.25" aria-hidden="true" focusable="false"><rect x="4.5" y="4.5" width="15" height="15"/></svg><span class="logo__word">Smallfold</span></span></a>
+        <p class="lead">[line: one short sentence about Smallfold for the footer, max 18 words]</p>
+        <p>
+          <span class="label label--muted">[emailLabel: label shown before the email address, 1 or 2 words]</span><br>
+          <a class="text-link" href="mailto:small.fold.sponsorship@gmail.com">small.fold.sponsorship@gmail.com</a>
+        </p>
+      </div>
+      <div class="site-footer__groups">
+        <div class="site-footer__group">
+          <h2 class="label label--muted">Smallfold</h2>
+          <ul class="site-footer__links">
+            <li><a class="site-footer__link" href="how-it-works.html">How it works</a></li>
+            <li><a class="site-footer__link" href="brands.html">For brands</a></li>
+            <li><a class="site-footer__link" href="about.html">About</a></li>
+            <li><a class="site-footer__link" href="questions.html">Questions</a></li>
+          </ul>
+        </div>
+        <div class="site-footer__group">
+          <h2 class="label label--muted">Get in touch</h2>
+          <ul class="site-footer__links">
+            <li><a class="site-footer__link" href="apply.html">Apply</a></li>
+            <li><a class="site-footer__link" href="contact.html">Contact</a></li>
+          </ul>
+        </div>
+        <div class="site-footer__group">
+          <h2 class="label label--muted">Legal</h2>
+          <ul class="site-footer__links">
+            <li><a class="site-footer__link" href="privacy.html">Privacy</a></li>
+            <li><a class="site-footer__link" href="terms.html">Terms</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <p class="small muted">© 2026 Smallfold</p>
+  </div>
+</footer>
+<script src="assets/site.js" defer></script>
+</body>
+</html>

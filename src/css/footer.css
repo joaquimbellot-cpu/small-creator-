@@ -1,0 +1,73 @@
+/*
+ * footer.css
+ * Owner: Header and Footer agent. (Responsive may add layout fixes.)
+ *
+ * Belongs here: the ink footer with the short line about Smallfold, the contact
+ * email, the three link groups, the very large wordmark in --ink-soft and the
+ * copyright line (docs/design-brief.md, section 8).
+ *
+ * Below is only the minimum that makes the Foundation's simple footer usable.
+ * Replace it freely.
+ */
+
+.site-footer {
+  padding-block: var(--s-8) var(--s-6);
+}
+
+.site-footer__top {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: var(--s-7);
+  padding-bottom: var(--s-8);
+}
+
+.site-footer__about {
+  display: grid;
+  gap: var(--s-4);
+  align-content: start;
+  justify-items: start;
+}
+
+.site-footer__logo {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  text-decoration: none;
+}
+
+.site-footer__groups {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--s-6);
+}
+
+.site-footer__group {
+  display: grid;
+  gap: var(--s-2);
+  align-content: start;
+}
+
+.site-footer__link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  text-decoration: none;
+}
+
+@media (hover: hover) {
+  .site-footer__link:hover {
+    text-decoration: underline;
+  }
+}
+
+@media (max-width: 860px) {
+  .site-footer__top {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 520px) {
+  .site-footer__groups {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "title": "[title: page title for Terms, max 4 words]",
+  "lead": "[lead: what this page covers, one sentence, max 22 words]",
+  "draftNotice": "[draftNotice: says this page is a draft and must be checked before the site goes public, max 30 words]",
+  "updated": "[updated: the date of this draft, one short line]",
+  "sections": [
+    {
+      "heading": "[heading: section 1, max 6 words]",
+      "paragraphs": [
+        "[paragraph: section 1, first paragraph, with a marked blank for the legal name and country, max 60 words]",
+        "[paragraph: section 1, second paragraph, max 60 words]"
+      ]
+    },
+    {
+      "heading": "[heading: section 2, max 6 words]",
+      "paragraphs": [
+        "[paragraph: section 2, first paragraph, max 60 words]",
+        "[paragraph: section 2, second paragraph, max 60 words]"
+      ]
+    },
+    {
+      "heading": "[heading: section 3, max 6 words]",
+      "paragraphs": [
+        "[paragraph: section 3, first paragraph, max 60 words]",
+        "[paragraph: section 3, second paragraph, max 60 words]"
+      ]
+    }
+  ]
+}

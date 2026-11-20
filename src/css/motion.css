@@ -1,0 +1,14 @@
+/*
+ * motion.css
+ * Owner: Animation agent.
+ *
+ * Belongs here: the styles for the motion hooks in docs/design-brief.md, section 7:
+ * [data-intro], [data-reveal], [data-reveal="words"], [data-reveal="lines"],
+ * [data-parallax] and [data-threads].
+ *
+ * Rule: hidden starting states apply only under html.js AND
+ * @media (prefers-reduced-motion: no-preference), so every page stays complete
+ * and readable with JavaScript off and with reduced motion on.
+ *
+ * Empty for now.
+ */

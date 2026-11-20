@@ -125,7 +125,7 @@ Hover states: buttons swap fill and text; `.link` underlines slide; tiles scale 
 
 ## 9. Pages
 
-Every page ends with the same closing section: one line, the Apply button, and "We reply within 2 working days."
+Home, How it works, About and Questions end with the same closing section: one line, the Apply button, and "We reply within 2 working days." The other pages end with their own form or links.
 
 | Page | File | Sections, in order |
 |---|---|---|

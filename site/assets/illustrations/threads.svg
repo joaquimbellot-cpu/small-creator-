@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="800" viewBox="0 0 1200 800" fill="none" stroke="#8F8B82" stroke-width="1.25" stroke-linecap="round">
+  <!-- Placeholder for the "chosen by hand" threads drawing. Owner: Imagery agent. -->
+  <path d="M0 120 C 300 60, 700 260, 1200 150"/>
+  <path d="M0 220 C 320 300, 760 120, 1200 260"/>
+  <path d="M0 330 C 280 250, 820 420, 1200 340"/>
+  <path d="M0 470 C 340 560, 700 380, 1200 480"/>
+  <path d="M0 580 C 300 500, 780 660, 1200 570"/>
+  <path d="M0 690 C 360 760, 740 600, 1200 680"/>
+  <path d="M0 400 C 300 480, 800 300, 1200 410" stroke="#2B44D6"/>
+</svg>

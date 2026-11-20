@@ -1,0 +1,12 @@
+/*
+ * hero.css
+ * Owner: Hero agent. (Responsive may add layout fixes.)
+ *
+ * Belongs here: the home hero (src/partials/hero.html): the full-bleed photo,
+ * the dark veil, the centred tagline, sentence, Apply button and range note,
+ * and the structure of the [data-intro] opening, where the photo grows from a
+ * framed card to full-bleed and the text rises line by line
+ * (docs/design-brief.md, sections 7 and 9).
+ *
+ * Empty for now: the hero stub borrows the .band component from components.css.
+ */

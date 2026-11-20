@@ -1,0 +1,52 @@
+{
+  "head": {
+    "label": "[label: small label above the page title, 1 to 3 words]",
+    "title": "[title: page title for How it works, max 8 words]",
+    "lead": "[lead: the whole process in one sentence, max 24 words]"
+  },
+  "steps": [
+    {
+      "title": "[title: step 1, max 5 words]",
+      "text": "[text: step 1, what happens, 1 or 2 sentences, max 35 words]",
+      "detail": "[detail: step 1, one extra practical fact, one sentence, max 20 words]"
+    },
+    {
+      "title": "[title: step 2, max 5 words]",
+      "text": "[text: step 2, what happens, 1 or 2 sentences, max 35 words]",
+      "detail": "[detail: step 2, one extra practical fact, one sentence, max 20 words]"
+    },
+    {
+      "title": "[title: step 3, max 5 words]",
+      "text": "[text: step 3, what happens, 1 or 2 sentences, max 35 words]",
+      "detail": "[detail: step 3, one extra practical fact, one sentence, max 20 words]"
+    },
+    {
+      "title": "[title: step 4, max 5 words]",
+      "text": "[text: step 4, what happens, 1 or 2 sentences, max 35 words]",
+      "detail": "[detail: step 4, one extra practical fact, one sentence, max 20 words]"
+    }
+  ],
+  "after": {
+    "label": "[label: small label above the section, 1 to 3 words]",
+    "title": "[title: section title, what happens after you apply, max 8 words]",
+    "items": [
+      {
+        "title": "[title: point 1, max 6 words]",
+        "text": "[text: point 1, 1 or 2 sentences, max 30 words]"
+      },
+      {
+        "title": "[title: point 2, max 6 words]",
+        "text": "[text: point 2, 1 or 2 sentences, max 30 words]"
+      },
+      {
+        "title": "[title: point 3, max 6 words]",
+        "text": "[text: point 3, 1 or 2 sentences, max 30 words]"
+      }
+    ]
+  },
+  "commission": {
+    "label": "[label: small label above the section, 1 to 3 words]",
+    "title": "[title: section title for the commission, max 8 words]",
+    "lead": "[lead: who pays the commission and when, 1 or 2 sentences, max 30 words]"
+  }
+}

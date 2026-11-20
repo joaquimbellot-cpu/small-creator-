@@ -1,0 +1,1103 @@
+/* ===== src/css/tokens.css ===== */
+/*
+ * tokens.css
+ * Owner: Design System agent. (SEO and Accessibility may fix colour contrast here.)
+ *
+ * Every design value of the site, defined once. Source: docs/design-brief.md,
+ * sections 3 (colour), 4 (type), 5 (space, shape, grid) and 7 (easing).
+ * All other stylesheets use these variables and never hard-code a value.
+ */
+
+:root {
+  /* Colour (brief, section 3) */
+  --cream: #F1EFEB;                       /* brand colour, the page ground */
+  --ink: #0E0E0E;                         /* brand colour, text on cream, dark grounds */
+  --paper: #FAF8F4;                       /* raised surfaces on cream */
+  --cream-deep: #E5E1D8;                  /* tiles, chips, image placeholders */
+  --ink-soft: #1A1A19;                    /* raised surfaces on ink */
+  --muted: #5C5A55;                       /* secondary text on cream */
+  --muted-on-ink: #A9A59C;                /* secondary text on ink */
+  --faint: #B9B5AC;                       /* unrevealed words and decorative marks only */
+  --line: rgba(14, 14, 14, .14);          /* hairlines on cream */
+  --line-on-ink: rgba(241, 239, 235, .18); /* hairlines on ink */
+  --accent: #2B44D6;                      /* pen blue on cream or paper */
+  --accent-on-ink: #A8B4FF;               /* the same accent on ink */
+
+  /* Type (brief, section 4) */
+  --font-serif: "Newsreader", Georgia, "Times New Roman", serif;
+  --font-sans: "Instrument Sans", "Helvetica Neue", Arial, sans-serif;
+
+  --w-heading: 300;
+  --w-text: 400;
+  --w-label: 500;
+
+  --t-hero: clamp(2.75rem, 6.2vw, 5.5rem);
+  --t-h1: clamp(2.4rem, 4.6vw, 4rem);
+  --t-h2: clamp(2rem, 3.6vw, 3.25rem);
+  --t-h3: clamp(1.375rem, 1.8vw, 1.625rem);
+  --t-statement: clamp(1.625rem, 2.9vw, 2.5rem);
+  --t-lead: clamp(1.1875rem, 1.5vw, 1.375rem);
+  --t-body: 1.125rem;
+  --t-small: 1rem;
+  --t-label: .75rem;
+
+  --lh-hero: 1.02;
+  --lh-h1: 1.06;
+  --lh-h2: 1.1;
+  --lh-h3: 1.25;
+  --lh-statement: 1.22;
+  --lh-lead: 1.45;
+  --lh-body: 1.55;
+  --lh-small: 1.5;
+  --lh-label: 1.4;
+
+  --track-heading: -0.01em;
+  --track-label: .07em;
+  --measure: 34em;                        /* widest line of running text */
+
+  /* Space (brief, section 5) */
+  --s-1: 4px;
+  --s-2: 8px;
+  --s-3: 12px;
+  --s-4: 16px;
+  --s-5: 24px;
+  --s-6: 32px;
+  --s-7: 48px;
+  --s-8: 72px;
+  --s-9: 112px;
+  --s-10: 160px;
+
+  --section: var(--s-9);                  /* space between sections */
+  --section-tight: var(--s-8);
+
+  /* The gutter is never smaller than a phone's safe area at the sides. */
+  --gutter: max(clamp(20px, 4vw, 56px), env(safe-area-inset-left), env(safe-area-inset-right));
+  --wrap: 1320px;                         /* content width */
+  --narrow: 720px;                        /* narrow text column */
+
+  /* Shape */
+  --r-sm: 4px;                            /* chips */
+  --r: 8px;                               /* buttons, fields, tiles */
+  --r-lg: 14px;                           /* inset panels, photos that are not full-bleed */
+
+  /* Motion (brief, section 7) */
+  --ease: cubic-bezier(.22, 1, .36, 1);
+  --dur-hover: 200ms;
+  --dur-enter: 900ms;
+  --dur-enter-long: 1300ms;
+}
+
+/* Phones and small tablets: 860px and below. */
+@media (max-width: 860px) {
+  :root {
+    --section: var(--s-8);
+    --section-tight: var(--s-7);
+  }
+}
+
+/*
+ * Grounds. A section sits on cream, on ink or on a photograph. Each ground
+ * sets the same six variables; components read only these six, so every
+ * component works on every ground.
+ */
+:root,
+.on-cream {
+  --bg: var(--cream);
+  --fg: var(--ink);
+  --fg-muted: var(--muted);
+  --rule: var(--line);
+  --surface: var(--paper);
+  --accent-fg: var(--accent);
+}
+
+/* .panel is the inset dark panel; it is always on ink. */
+.on-ink,
+.panel {
+  --bg: var(--ink);
+  --fg: var(--cream);
+  --fg-muted: var(--muted-on-ink);
+  --rule: var(--line-on-ink);
+  --surface: var(--ink-soft);
+  --accent-fg: var(--accent-on-ink);
+}
+
+/* Text on a photograph: cream text over a dark veil (the veil is drawn by .band and the hero). */
+.on-photo {
+  --bg: var(--ink);
+  --fg: var(--cream);
+  --fg-muted: rgba(241, 239, 235, .82);
+  --rule: rgba(241, 239, 235, .32);
+  --surface: rgba(14, 14, 14, .4);
+  --accent-fg: var(--accent-on-ink);
+}
+
+/* ===== src/css/base.css ===== */
+/*
+ * base.css
+ * Owner: Design System agent. (SEO and Accessibility may fix focus styles here.)
+ *
+ * Reset, page defaults, the type classes, the layout helpers (.wrap, .section)
+ * and the accessibility helpers. Components live in components.css.
+ */
+
+/* ---------- Reset ---------- */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+* {
+  margin: 0;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+body {
+  min-height: 100vh;
+  min-height: 100dvh;
+  background-color: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-serif);
+  font-size: var(--t-body);
+  font-weight: var(--w-text);
+  line-height: var(--lh-body);
+  font-optical-sizing: auto;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-wrap: break-word;
+}
+
+img,
+picture,
+svg,
+video,
+canvas {
+  display: block;
+  max-width: 100%;
+}
+
+img,
+video {
+  height: auto;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+  color: inherit;
+  letter-spacing: inherit;
+}
+
+button {
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-size: inherit;
+  font-weight: var(--w-heading);
+  letter-spacing: var(--track-heading);
+  text-wrap: balance;
+}
+
+a {
+  color: inherit;
+  text-decoration-thickness: 1px;
+  text-underline-offset: .18em;
+}
+
+em,
+i {
+  font-style: italic;
+  font-weight: var(--w-heading);
+}
+
+/* A list with a class is a layout list: no bullets. Plain lists in text keep theirs. */
+ul[class],
+ol[class] {
+  list-style: none;
+  padding: 0;
+}
+
+table {
+  border-collapse: collapse;
+  font-variant-numeric: tabular-nums;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+/* ---------- Grounds: apply the six variables set in tokens.css ---------- */
+
+.on-cream,
+.on-ink,
+.on-photo {
+  background-color: var(--bg);
+  color: var(--fg);
+}
+
+/* ---------- Type classes (usable on any element) ---------- */
+
+.h-hero,
+.h1,
+.h2,
+.h3 {
+  font-family: var(--font-serif);
+  font-weight: var(--w-heading);
+  letter-spacing: var(--track-heading);
+  text-wrap: balance;
+}
+
+.h-hero {
+  font-size: var(--t-hero);
+  line-height: var(--lh-hero);
+  font-style: italic;
+}
+
+.h1 {
+  font-size: var(--t-h1);
+  line-height: var(--lh-h1);
+}
+
+.h2 {
+  font-size: var(--t-h2);
+  line-height: var(--lh-h2);
+}
+
+.h3 {
+  font-size: var(--t-h3);
+  line-height: var(--lh-h3);
+}
+
+.statement {
+  font-size: var(--t-statement);
+  line-height: var(--lh-statement);
+  font-weight: var(--w-heading);
+  letter-spacing: var(--track-heading);
+  text-align: center;
+  text-wrap: balance;
+}
+
+.lead {
+  max-width: var(--measure);
+  font-size: var(--t-lead);
+  line-height: var(--lh-lead);
+}
+
+.body {
+  max-width: var(--measure);
+  font-size: var(--t-body);
+  line-height: var(--lh-body);
+}
+
+.small {
+  font-size: var(--t-small);
+  line-height: var(--lh-small);
+}
+
+.muted {
+  color: var(--fg-muted);
+}
+
+.label {
+  font-family: var(--font-sans);
+  font-size: var(--t-label);
+  font-weight: var(--w-label);
+  font-style: normal;
+  line-height: var(--lh-label);
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
+}
+
+.label--muted {
+  color: var(--fg-muted);
+}
+
+/* ---------- Default rhythm between text blocks ----------
+ * Written with :where(), so these rules have no weight: any class rule wins. */
+
+:where(.label) + :where(.h-hero, .h1, .h2, .h3) {
+  margin-top: var(--s-4);
+}
+
+:where(.h-hero, .h1, .h2, .h3) + :where(p, .lead, .body) {
+  margin-top: var(--s-5);
+}
+
+:where(p, ul, ol) + :where(p, ul, ol) {
+  margin-top: var(--s-4);
+}
+
+/* ---------- Layout helpers ---------- */
+
+/* Centred content width with the gutter on both sides. */
+.wrap {
+  width: 100%;
+  max-width: calc(var(--wrap) + 2 * var(--gutter));
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+}
+
+.wrap--narrow {
+  max-width: calc(var(--narrow) + 2 * var(--gutter));
+}
+
+/* Vertical section spacing. */
+.section {
+  padding-block: var(--section);
+}
+
+.section--tight {
+  padding-block: var(--section-tight);
+}
+
+/* Two sections on the page ground in a row share one gap instead of two. */
+.section:not(.on-ink, .on-photo) + .section:not(.on-ink, .on-photo) {
+  padding-top: 0;
+}
+
+/* ---------- Accessibility helpers ---------- */
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Hidden until it receives keyboard focus. */
+.skip-link {
+  position: fixed;
+  top: var(--s-2);
+  left: var(--s-2);
+  z-index: 1000;
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 var(--s-4);
+  border-radius: var(--r);
+  background-color: var(--ink);
+  color: var(--cream);
+  font-family: var(--font-sans);
+  font-size: var(--t-label);
+  font-weight: var(--w-label);
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
+  text-decoration: none;
+  transform: translateY(-200%);
+}
+
+.skip-link:focus {
+  transform: none;
+  outline-color: var(--accent-on-ink);
+}
+
+/* Focus is always visible. */
+:focus-visible {
+  outline: 2px solid var(--accent-fg);
+  outline-offset: 3px;
+}
+
+/* The skip link moves focus to <main>; no ring is needed around the whole page. */
+main:focus {
+  outline: none;
+}
+
+/* ---------- Reduced motion ---------- */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ===== src/css/components.css ===== */
+/*
+ * components.css
+ * Owner: Design System agent. (Responsive may add layout fixes.)
+ *
+ * FIRST VERSION of every class in the component contract (docs/design-brief.md,
+ * section 6). Plain but working; the names are final, the looks are not.
+ *
+ * Rule: a component reads only the six ground variables
+ *   --bg  --fg  --fg-muted  --rule  --surface  --accent-fg
+ * so it works on .on-cream, .on-ink and .on-photo alike.
+ *
+ * Type classes, .wrap, .section, .sr-only and .skip-link are in base.css.
+ */
+
+/* ---------- Icons (src/partials/icons) ---------- */
+
+.icon {
+  flex: none;
+  width: 24px;
+  height: 24px;
+}
+
+.btn .icon,
+.link .icon {
+  width: 16px;
+  height: 16px;
+}
+
+/* ---------- Logo (src/partials/logo.html) ---------- */
+
+.logo {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-2);
+  font-size: var(--t-h3);
+  line-height: 1;
+  letter-spacing: var(--track-heading);
+}
+
+.logo__symbol {
+  flex: none;
+  width: 24px;
+  height: 24px;
+}
+
+/* ---------- Buttons ---------- */
+
+/* 48px tall, filled with --fg. */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--s-2);
+  min-height: 48px;
+  padding: var(--s-2) var(--s-5);
+  border: 1px solid var(--fg);
+  border-radius: var(--r);
+  background-color: var(--fg);
+  color: var(--bg);
+  font-family: var(--font-sans);
+  font-size: var(--t-label);
+  font-weight: var(--w-label);
+  line-height: 1.3;
+  letter-spacing: var(--track-label);
+  text-align: center;
+  text-transform: uppercase;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background-color var(--dur-hover) var(--ease), color var(--dur-hover) var(--ease);
+}
+
+/* Outlined. */
+.btn--ghost {
+  background-color: transparent;
+  color: var(--fg);
+}
+
+/* 40px tall. The ::after keeps the tap target at 44px. */
+.btn--small {
+  position: relative;
+  min-height: 40px;
+  padding: var(--s-1) var(--s-4);
+}
+
+.btn--small::after {
+  content: "";
+  position: absolute;
+  inset: -3px 0;
+}
+
+.btn[disabled],
+.btn[aria-disabled="true"] {
+  opacity: .5;
+  cursor: not-allowed;
+}
+
+@media (hover: hover) {
+  .btn:hover {
+    background-color: transparent;
+    color: var(--fg);
+  }
+
+  .btn--ghost:hover {
+    background-color: var(--fg);
+    color: var(--bg);
+  }
+}
+
+/* ---------- Links ---------- */
+
+/* Uppercase underlined link, with an optional trailing icon. */
+.link {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-2);
+  min-height: 44px;
+  font-family: var(--font-sans);
+  font-size: var(--t-label);
+  font-weight: var(--w-label);
+  line-height: var(--lh-label);
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: .4em;
+}
+
+/* Underlined link inside running text. */
+.text-link {
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: .18em;
+  transition: color var(--dur-hover) var(--ease);
+}
+
+@media (hover: hover) {
+  .link:hover,
+  .text-link:hover {
+    color: var(--accent-fg);
+  }
+}
+
+/* ---------- Chips ---------- */
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  min-height: 24px;
+  padding: 0 var(--s-2);
+  border: 1px solid var(--rule);
+  border-radius: var(--r-sm);
+  font-family: var(--font-sans);
+  font-size: var(--t-label);
+  font-weight: var(--w-label);
+  line-height: 1;
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.chip--accent {
+  border-color: currentColor;
+  color: var(--accent-fg);
+}
+
+/* ---------- Tile and panel ---------- */
+
+/* Flat block for cards. */
+.tile {
+  padding: var(--s-5);
+  border-radius: var(--r);
+  background-color: var(--surface);
+  overflow: hidden;
+}
+
+/* Inset dark panel: a card laid on the page. Its ink ground is set in tokens.css. */
+.panel {
+  margin-inline: var(--gutter);
+  padding: var(--section-tight) var(--gutter);
+  border-radius: var(--r-lg);
+  background-color: var(--bg);
+  color: var(--fg);
+}
+
+/* A .wrap inside a panel does not add a second gutter. */
+.panel > .wrap {
+  padding-inline: 0;
+}
+
+/* ---------- Rows: hairline list, title left, text right ---------- */
+
+.rows {
+  margin: 0;
+  padding: 0;
+  border-top: 1px solid var(--rule);
+  list-style: none;
+}
+
+.row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
+  gap: var(--s-2) var(--s-6);
+  padding-block: var(--s-5);
+  border-bottom: 1px solid var(--rule);
+  font-variant-numeric: tabular-nums;
+}
+
+@media (max-width: 860px) {
+  .row {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* ---------- Steps: a sequence ---------- */
+
+.steps {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: var(--s-6);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: step;
+}
+
+.step {
+  padding-top: var(--s-4);
+  border-top: 1px solid var(--rule);
+  counter-increment: step;
+}
+
+/* Numbers show only where order matters: use <ol class="steps"> for those. */
+ol.steps > .step::before {
+  content: counter(step, decimal-leading-zero);
+  display: block;
+  margin-bottom: var(--s-4);
+  color: var(--fg-muted);
+  font-family: var(--font-sans);
+  font-size: var(--t-label);
+  font-weight: var(--w-label);
+  letter-spacing: var(--track-label);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------- Media: fixed-ratio image frame ---------- */
+
+.media {
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--r-lg);
+  background-color: var(--surface);
+}
+
+.media--16x9 {
+  aspect-ratio: 16 / 9;
+}
+
+.media--3x2 {
+  aspect-ratio: 3 / 2;
+}
+
+.media--4x5 {
+  aspect-ratio: 4 / 5;
+}
+
+.media > img,
+.media > video,
+.media > picture > img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* ---------- Band: full-bleed photo with one centred line ---------- */
+
+/* Use with .on-photo. The first <img> (or <picture>) child is the photo. */
+.band {
+  position: relative;
+  isolation: isolate;
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: var(--s-5);
+  min-height: min(80vh, 720px);
+  padding: var(--section) var(--gutter);
+  overflow: hidden;
+  text-align: center;
+}
+
+.band > img,
+.band > picture,
+.band > picture > img {
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* The dark veil that keeps the text readable. */
+.band::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background-color: rgba(14, 14, 14, .45);
+}
+
+/* ---------- Forms ---------- */
+
+.field {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--s-2);
+}
+
+.field__label {
+  font-family: var(--font-sans);
+  font-size: var(--t-label);
+  font-weight: var(--w-label);
+  line-height: var(--lh-label);
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
+}
+
+.field__hint {
+  color: var(--fg-muted);
+  font-size: var(--t-small);
+  line-height: var(--lh-small);
+}
+
+.field__error {
+  font-size: var(--t-small);
+  line-height: var(--lh-small);
+}
+
+/* Fields are 52px tall. */
+.input,
+.select,
+.textarea {
+  display: block;
+  width: 100%;
+  min-height: 52px;
+  padding: 0 var(--s-4);
+  border: 1px solid var(--rule);
+  border-radius: var(--r);
+  background-color: var(--surface);
+  color: var(--fg);
+  font-family: var(--font-serif);
+  font-size: var(--t-body);
+  line-height: var(--lh-small);
+  appearance: none;
+  -webkit-appearance: none;
+}
+
+.textarea {
+  min-height: 144px;
+  padding-block: var(--s-3);
+  resize: vertical;
+}
+
+/* The arrow of the select, drawn in --muted. */
+.select {
+  padding-right: var(--s-7);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%235C5A55' stroke-width='1.25' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right var(--s-3) center;
+  background-size: 24px 24px;
+}
+
+.input::placeholder,
+.textarea::placeholder {
+  color: var(--fg-muted);
+  opacity: 1;
+}
+
+.input:focus,
+.select:focus,
+.textarea:focus {
+  border-color: var(--accent-fg);
+}
+
+.input[aria-invalid="true"],
+.select[aria-invalid="true"],
+.textarea[aria-invalid="true"] {
+  border-color: var(--fg);
+}
+
+/* A checkbox or radio button with its text. */
+.choice {
+  display: flex;
+  align-items: center;
+  gap: var(--s-3);
+  min-height: 44px;
+  cursor: pointer;
+}
+
+.choice input {
+  flex: none;
+  width: 20px;
+  height: 20px;
+  margin: 0;
+  accent-color: var(--accent-fg);
+}
+
+/* ---------- Notice: framed note ---------- */
+
+.notice {
+  max-width: var(--measure);
+  padding: var(--s-4) var(--s-5);
+  border: 1px solid var(--rule);
+  border-radius: var(--r);
+  background-color: var(--surface);
+  font-size: var(--t-small);
+  line-height: var(--lh-small);
+}
+
+/* "This page is a draft." */
+.notice--draft {
+  border-style: dashed;
+  border-color: var(--fg);
+}
+
+/* ---------- Accordion: questions built on <details> ---------- */
+
+.accordion {
+  border-top: 1px solid var(--rule);
+}
+
+.accordion__item {
+  border-bottom: 1px solid var(--rule);
+}
+
+.accordion__item > summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s-5);
+  min-height: 44px;
+  padding-block: var(--s-5);
+  font-size: var(--t-h3);
+  font-weight: var(--w-heading);
+  line-height: var(--lh-h3);
+  list-style: none;
+  cursor: pointer;
+}
+
+.accordion__item > summary::-webkit-details-marker {
+  display: none;
+}
+
+/* Everything after the question is the answer. */
+.accordion__item > :not(summary) {
+  max-width: var(--measure);
+  padding-bottom: var(--s-5);
+  color: var(--fg-muted);
+}
+
+/* With two icons in the summary, the first shows when closed and the second when open. */
+.accordion__item > summary .icon + .icon,
+.accordion__item[open] > summary .icon {
+  display: none;
+}
+
+.accordion__item[open] > summary .icon + .icon {
+  display: block;
+}
+
+/* ===== src/css/header.css ===== */
+/*
+ * header.css
+ * Owner: Header and Footer agent. (Responsive may add layout fixes.)
+ *
+ * Belongs here: the fixed site header, its transparent state over the home hero,
+ * the solid cream bar after scrolling, hide on scroll down and return on scroll up,
+ * and the full-screen ink menu for 860px and below (docs/design-brief.md, section 8).
+ *
+ * Below is only the minimum that makes the Foundation's simple header usable.
+ * Replace it freely.
+ */
+
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  border-bottom: 1px solid var(--rule);
+}
+
+.site-header__inner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0 var(--s-5);
+  min-height: 64px;
+  padding-block: var(--s-2);
+}
+
+.site-header__logo {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  margin-right: auto;
+  text-decoration: none;
+}
+
+.site-nav__list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 var(--s-5);
+}
+
+.site-nav__link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  color: var(--fg-muted);
+  text-decoration: none;
+}
+
+.site-nav__link[aria-current="page"] {
+  color: var(--fg);
+}
+
+@media (hover: hover) {
+  .site-nav__link:hover {
+    color: var(--fg);
+  }
+}
+
+/* Phones: the links move to a second row and the bar scrolls away, until the real menu exists. */
+@media (max-width: 860px) {
+  .site-header {
+    position: static;
+  }
+
+  .site-nav {
+    order: 3;
+    width: 100%;
+  }
+}
+
+/* ===== src/css/footer.css ===== */
+/*
+ * footer.css
+ * Owner: Header and Footer agent. (Responsive may add layout fixes.)
+ *
+ * Belongs here: the ink footer with the short line about Smallfold, the contact
+ * email, the three link groups, the very large wordmark in --ink-soft and the
+ * copyright line (docs/design-brief.md, section 8).
+ *
+ * Below is only the minimum that makes the Foundation's simple footer usable.
+ * Replace it freely.
+ */
+
+.site-footer {
+  padding-block: var(--s-8) var(--s-6);
+}
+
+.site-footer__top {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: var(--s-7);
+  padding-bottom: var(--s-8);
+}
+
+.site-footer__about {
+  display: grid;
+  gap: var(--s-4);
+  align-content: start;
+  justify-items: start;
+}
+
+.site-footer__logo {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  text-decoration: none;
+}
+
+.site-footer__groups {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--s-6);
+}
+
+.site-footer__group {
+  display: grid;
+  gap: var(--s-2);
+  align-content: start;
+}
+
+.site-footer__link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  text-decoration: none;
+}
+
+@media (hover: hover) {
+  .site-footer__link:hover {
+    text-decoration: underline;
+  }
+}
+
+@media (max-width: 860px) {
+  .site-footer__top {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 520px) {
+  .site-footer__groups {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* ===== src/css/hero.css ===== */
+/*
+ * hero.css
+ * Owner: Hero agent. (Responsive may add layout fixes.)
+ *
+ * Belongs here: the home hero (src/partials/hero.html): the full-bleed photo,
+ * the dark veil, the centred tagline, sentence, Apply button and range note,
+ * and the structure of the [data-intro] opening, where the photo grows from a
+ * framed card to full-bleed and the text rises line by line
+ * (docs/design-brief.md, sections 7 and 9).
+ *
+ * Empty for now: the hero stub borrows the .band component from components.css.
+ */
+
+/* ===== src/css/sections.css ===== */
+/*
+ * sections.css
+ * Owner: Content Sections agent. (Responsive may add layout fixes.)
+ *
+ * Belongs here: the layout of the page sections built in src/pages/*.html and
+ * src/partials/closing.html: page heads, the statement, the three differences
+ * beside a 4:5 photo, the "how a match is made" panel, example tiles, commission
+ * rows, the photo band, question lists, form layouts, legal pages and the
+ * closing section (docs/design-brief.md, section 9).
+ *
+ * Use the component classes from components.css and add only layout here;
+ * do not restyle the components.
+ *
+ * Empty for now.
+ */
+
+/* ===== src/css/motion.css ===== */
+/*
+ * motion.css
+ * Owner: Animation agent.
+ *
+ * Belongs here: the styles for the motion hooks in docs/design-brief.md, section 7:
+ * [data-intro], [data-reveal], [data-reveal="words"], [data-reveal="lines"],
+ * [data-parallax] and [data-threads].
+ *
+ * Rule: hidden starting states apply only under html.js AND
+ * @media (prefers-reduced-motion: no-preference), so every page stays complete
+ * and readable with JavaScript off and with reduced motion on.
+ *
+ * Empty for now.
+ */

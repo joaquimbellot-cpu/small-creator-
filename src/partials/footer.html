@@ -1,0 +1,33 @@
+<footer class="site-footer on-ink">
+  <div class="wrap">
+    <div class="site-footer__top">
+      <div class="site-footer__about">
+        <a class="site-footer__logo" href="index.html" aria-label="{{site.labels.home}}">{{> logo}}</a>
+        <p class="lead">{{site.footer.line}}</p>
+        <p>
+          <span class="label label--muted">{{site.contact.emailLabel}}</span><br>
+          <a class="text-link" href="mailto:{{site.contact.email}}">{{site.contact.email}}</a>
+        </p>
+        {{#if site.contact.phone}}
+        <p>
+          <span class="label label--muted">{{site.contact.phoneLabel}}</span><br>
+          <a class="text-link" href="tel:{{site.contact.phone}}">{{site.contact.phone}}</a>
+        </p>
+        {{/if}}
+      </div>
+      <div class="site-footer__groups">
+        {{#each site.footer.groups}}
+        <div class="site-footer__group">
+          <h2 class="label label--muted">{{title}}</h2>
+          <ul class="site-footer__links">
+            {{#each links}}
+            <li><a class="site-footer__link" href="{{href}}">{{label}}</a></li>
+            {{/each}}
+          </ul>
+        </div>
+        {{/each}}
+      </div>
+    </div>
+    <p class="small muted">{{site.footer.copyright}}</p>
+  </div>
+</footer>

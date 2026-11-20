@@ -1,0 +1,45 @@
+{
+  "siteUrl": "",
+  "pages": {
+    "home": {
+      "title": "[title: browser tab title for the Home page, max 60 characters]",
+      "description": "[description: search result summary for the Home page, max 155 characters]"
+    },
+    "how": {
+      "title": "[title: browser tab title for the How it works page, max 60 characters]",
+      "description": "[description: search result summary for the How it works page, max 155 characters]"
+    },
+    "brands": {
+      "title": "[title: browser tab title for the For brands page, max 60 characters]",
+      "description": "[description: search result summary for the For brands page, max 155 characters]"
+    },
+    "about": {
+      "title": "[title: browser tab title for the About page, max 60 characters]",
+      "description": "[description: search result summary for the About page, max 155 characters]"
+    },
+    "questions": {
+      "title": "[title: browser tab title for the Questions page, max 60 characters]",
+      "description": "[description: search result summary for the Questions page, max 155 characters]"
+    },
+    "contact": {
+      "title": "[title: browser tab title for the Contact page, max 60 characters]",
+      "description": "[description: search result summary for the Contact page, max 155 characters]"
+    },
+    "apply": {
+      "title": "[title: browser tab title for the Apply page, max 60 characters]",
+      "description": "[description: search result summary for the Apply page, max 155 characters]"
+    },
+    "privacy": {
+      "title": "[title: browser tab title for the Privacy page, max 60 characters]",
+      "description": "[description: search result summary for the Privacy page, max 155 characters]"
+    },
+    "terms": {
+      "title": "[title: browser tab title for the Terms page, max 60 characters]",
+      "description": "[description: search result summary for the Terms page, max 155 characters]"
+    },
+    "styleguide": {
+      "title": "[title: browser tab title for the style guide, max 60 characters]",
+      "description": "[description: one line saying this is the internal style guide, max 155 characters]"
+    }
+  }
+}
