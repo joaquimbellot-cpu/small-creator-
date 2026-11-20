@@ -14,7 +14,7 @@
   --cream: #F1EFEB;                       /* brand colour, the page ground */
   --ink: #0E0E0E;                         /* brand colour, text on cream, dark grounds */
   --paper: #FAF8F4;                       /* raised surfaces on cream: tiles, form fields */
-  --cream-deep: #E5E1D8;                  /* a deeper cream, for a builder's own blocks */
+  --cream-deep: #E5E1D8;                  /* a deeper cream for a block of a page's own; no component reads it */
   --ink-soft: #1A1A19;                    /* raised surfaces on ink */
   --muted: #5C5A55;                       /* secondary text on cream (contrast 6.0) */
   --muted-on-ink: #A9A59C;                /* secondary text on ink (contrast 7.9) */
@@ -102,6 +102,11 @@
   --icon: 24px;                           /* an icon on its own */
   --icon-small: 16px;                     /* an icon inside a button or a link */
   --mark: 20px;                           /* the radio and checkbox mark, the error mark */
+  --w-choice: 224px;                      /* narrowest a choice tile gets before the tiles stack */
+  --w-row-title: 200px;                   /* a row of the hairline list: its title needs this much room... */
+  --w-row-text: 320px;                    /* ...and its text this much, to sit side by side */
+  --h-band: 720px;                        /* tallest a photo band gets */
+  --w-band-text: 900px;                   /* widest line of text on a photo band */
 
   /* Motion (brief, section 7) */
   --ease: cubic-bezier(.22, 1, .36, 1);
@@ -116,6 +121,16 @@
   :root {
     --section: var(--s-8);
     --section-tight: var(--s-7);
+  }
+}
+
+/* Reduced motion: every duration drops to almost nothing. */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --dur-hover: .01ms;
+    --dur-hover-slow: .01ms;
+    --dur-enter: .01ms;
+    --dur-enter-long: .01ms;
   }
 }
 

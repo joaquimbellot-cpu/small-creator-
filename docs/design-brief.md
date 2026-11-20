@@ -98,6 +98,8 @@ Every builder uses these names. The Design System agent styles them; nobody else
 | `.accordion`, `.accordion__item` | Questions list built on `<details>` |
 | `.sr-only`, `.skip-link` | Accessibility helpers |
 
+The Design System agent added modifiers to these (for example `.btn--block`, `.rows--split`, `.steps--rows`, `.choices`, `.notice--alert`, `a.tile`). The full, current list with markup to copy is the style guide page, `src/pages/styleguide.html`, which is the reference for builders.
+
 All tap targets are at least 44px. Focus is always visible: a 2px outline in `--accent-fg`, offset 3px.
 
 ## 7. Motion

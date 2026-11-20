@@ -2,98 +2,163 @@
  * components.css
  * Owner: Design System agent. (Responsive may add layout fixes.)
  *
- * FIRST VERSION of every class in the component contract (docs/design-brief.md,
- * section 6). Plain but working; the names are final, the looks are not.
+ * Every class in the component contract (docs/design-brief.md, section 6).
+ * The style guide (styleguide.html) shows each one live, with the markup to copy.
  *
- * Rule: a component reads only the six ground variables
- *   --bg  --fg  --fg-muted  --rule  --surface  --accent-fg
- * so it works on .on-cream, .on-ink and .on-photo alike.
+ * Rules of this file:
+ *   - A component reads only the six ground variables
+ *       --bg  --fg  --fg-muted  --rule  --surface  --accent-fg
+ *     so it works on .on-cream, .on-ink and .on-photo alike.
+ *   - Every size, distance and duration comes from tokens.css. (The few values
+ *     written in em follow the size of the text they belong to.)
+ *   - Flat fills and hairlines only: no shadows, no gradients.
+ *   - Hover styles sit inside @media (hover: hover), so they never stick on a
+ *     touch screen. Pressed (:active) styles work everywhere.
  *
- * Type classes, .wrap, .section, .sr-only and .skip-link are in base.css.
+ * Type classes, .wrap, .section, .sr-only, .skip-link and the focus ring are in base.css.
+ *
+ * Contents: icons, logo, buttons, links, chips, tile, panel, rows, steps,
+ * media, band, forms, notice, accordion, and the helpers of the style guide.
  */
 
 /* ---------- Icons (src/partials/icons) ---------- */
 
 .icon {
   flex: none;
-  width: 24px;
-  height: 24px;
+  width: var(--icon);
+  height: var(--icon);
 }
 
+/* Smaller inside a button or a link. The line is drawn thicker there so that it
+   still measures 1.25px on screen. */
 .btn .icon,
 .link .icon {
-  width: 16px;
-  height: 16px;
+  width: var(--icon-small);
+  height: var(--icon-small);
+  stroke-width: 1.875;
 }
 
 /* ---------- Logo (src/partials/logo.html) ---------- */
 
+/* The symbol and the wordmark on one line. The symbol follows the size of the word. */
 .logo {
   display: inline-flex;
   align-items: center;
-  gap: var(--s-2);
-  font-size: var(--t-h3);
+  gap: .24em;
+  font-size: var(--t-logo);
   line-height: 1;
-  letter-spacing: var(--track-heading);
 }
 
+/* Lifted a hair, so that the sheet stands on the baseline of the word. */
 .logo__symbol {
+  position: relative;
+  top: -.05em;
   flex: none;
-  width: 24px;
-  height: 24px;
+  width: 1.05em;
+  height: 1.05em;
+}
+
+.logo__word {
+  font-family: var(--font-serif);
+  font-weight: var(--w-text);
+  letter-spacing: var(--track-heading);
+  white-space: nowrap;
+}
+
+/* Large logo. Put the class on the logo itself or on an element around the logo partial. */
+.logo--large,
+.logo--large .logo {
+  font-size: var(--t-h1);
 }
 
 /* ---------- Buttons ---------- */
 
-/* 48px tall, filled with --fg. */
+/* 48px tall, filled with --fg. For the one main action of a section. */
 .btn {
+  position: relative;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: var(--s-2);
-  min-height: 48px;
-  padding: var(--s-2) var(--s-5);
-  border: 1px solid var(--fg);
+  min-height: var(--h-btn);
+  padding: var(--s-2) var(--s-6);
+  border: var(--hairline) solid var(--fg);
   border-radius: var(--r);
   background-color: var(--fg);
   color: var(--bg);
   font-family: var(--font-sans);
   font-size: var(--t-label);
   font-weight: var(--w-label);
-  line-height: 1.3;
+  line-height: var(--lh-label);
   letter-spacing: var(--track-label);
   text-align: center;
   text-transform: uppercase;
   text-decoration: none;
   cursor: pointer;
-  transition: background-color var(--dur-hover) var(--ease), color var(--dur-hover) var(--ease);
+  -webkit-tap-highlight-color: transparent;
+  transition:
+    background-color var(--dur-hover) var(--ease),
+    border-color var(--dur-hover) var(--ease),
+    color var(--dur-hover) var(--ease),
+    transform var(--dur-hover) var(--ease);
 }
 
-/* Outlined. */
+.btn .icon {
+  transition: transform var(--dur-hover) var(--ease);
+}
+
+/* Outlined. For a second action beside a filled button. */
 .btn--ghost {
   background-color: transparent;
   color: var(--fg);
 }
 
-/* 40px tall. The ::after keeps the tap target at 44px. */
+/* 40px tall, for the header. The ::after keeps the area a finger can tap at 44px. */
 .btn--small {
-  position: relative;
-  min-height: 40px;
-  padding: var(--s-1) var(--s-4);
+  min-height: var(--h-btn-small);
+  padding: var(--s-1) var(--s-5);
 }
 
 .btn--small::after {
   content: "";
   position: absolute;
-  inset: -3px 0;
+  top: 50%;
+  right: 0;
+  left: 0;
+  height: var(--tap);
+  transform: translateY(-50%);
 }
 
-.btn[disabled],
-.btn[aria-disabled="true"] {
-  opacity: .5;
-  cursor: not-allowed;
+/* As wide as its container, for the send button of a form on a phone. */
+.btn--block {
+  display: flex;
+  width: 100%;
 }
 
+/* A square button that holds one icon, such as Close. Its name goes in a .sr-only span. */
+.btn--icon {
+  width: var(--h-btn);
+  padding: 0;
+}
+
+.btn--icon.btn--small {
+  width: var(--h-btn-small);
+}
+
+.btn--icon.btn--small::after {
+  right: auto;
+  left: 50%;
+  width: var(--tap);
+  transform: translate(-50%, -50%);
+}
+
+.btn--icon .icon {
+  width: var(--icon);
+  height: var(--icon);
+  stroke-width: 1.25;
+}
+
+/* Hover: fill and text swap, and a trailing arrow moves a little to the right. */
 @media (hover: hover) {
   .btn:hover {
     background-color: transparent;
@@ -104,51 +169,179 @@
     background-color: var(--fg);
     color: var(--bg);
   }
+
+  .btn:hover .icon {
+    transform: translateX(var(--s-1));
+  }
+
+  .btn--icon:hover .icon {
+    transform: none;
+  }
+}
+
+/* Pressed, by a finger or a mouse: the fill dims and the button gives a little. */
+.btn:active {
+  border-color: var(--fg-muted);
+  background-color: var(--fg-muted);
+  color: var(--bg);
+  transform: scale(.98);
+}
+
+/* Disabled: a quiet grey block that does not react. */
+.btn[disabled],
+.btn[aria-disabled="true"] {
+  border-color: transparent;
+  background-color: var(--rule);
+  color: var(--fg-muted);
+  cursor: not-allowed;
+  transform: none;
+}
+
+.btn[disabled] .icon,
+.btn[aria-disabled="true"] .icon {
+  transform: none;
+}
+
+/* Busy (aria-busy="true"): a small turning ring before the label; clicks are ignored. */
+.btn[aria-busy="true"] {
+  pointer-events: none;
+}
+
+.btn[aria-busy="true"]::before {
+  content: "";
+  flex: none;
+  width: var(--icon-small);
+  height: var(--icon-small);
+  border: var(--hairline) solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  animation: btn-turn var(--dur-enter) linear infinite;
+}
+
+.btn[aria-busy="true"] .icon {
+  display: none;
+}
+
+@keyframes btn-turn {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* With reduced motion the ring stands still. */
+@media (prefers-reduced-motion: reduce) {
+  .btn[aria-busy="true"]::before {
+    animation: none;
+  }
 }
 
 /* ---------- Links ---------- */
 
-/* Uppercase underlined link, with an optional trailing icon. */
+/* Uppercase link on its own line, with a hairline under it and an optional
+   trailing icon. For "read more" links after a block of text. */
 .link {
+  position: relative;
   display: inline-flex;
   align-items: center;
   gap: var(--s-2);
-  min-height: 44px;
+  min-height: var(--tap);
+  padding-block: var(--s-3);
   font-family: var(--font-sans);
   font-size: var(--t-label);
   font-weight: var(--w-label);
   line-height: var(--lh-label);
   letter-spacing: var(--track-label);
   text-transform: uppercase;
-  text-decoration: underline;
-  text-decoration-thickness: 1px;
-  text-underline-offset: .4em;
+  text-decoration: none;
+  -webkit-tap-highlight-color: transparent;
+  transition: color var(--dur-hover) var(--ease);
+}
+
+/* A very short link is still at least 44px wide for a finger: this unseen
+   area is centred on the link. */
+.link::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 100%;
+  min-width: var(--tap);
+  transform: translateX(-50%);
+}
+
+/* The underline, drawn as a border so that it can slide. */
+.link::after {
+  content: "";
+  position: absolute;
+  right: 0;
+  bottom: var(--s-3);
+  left: 0;
+  border-bottom: var(--hairline) solid currentColor;
+}
+
+/* Hover: the underline slides out to the right and comes back in from the left. */
+@media (hover: hover) {
+  .link:hover::after {
+    animation: link-slide var(--dur-hover-slow) var(--ease);
+  }
+}
+
+@keyframes link-slide {
+  0% {
+    transform: scaleX(1);
+    transform-origin: right;
+  }
+
+  45% {
+    transform: scaleX(0);
+    transform-origin: right;
+  }
+
+  55% {
+    transform: scaleX(0);
+    transform-origin: left;
+  }
+
+  100% {
+    transform: scaleX(1);
+    transform-origin: left;
+  }
 }
 
 /* Underlined link inside running text. */
 .text-link {
   text-decoration: underline;
-  text-decoration-thickness: 1px;
+  text-decoration-thickness: var(--hairline);
   text-underline-offset: .18em;
   transition: color var(--dur-hover) var(--ease);
 }
 
+/* Hover: the underline thickens. */
 @media (hover: hover) {
-  .link:hover,
   .text-link:hover {
-    color: var(--accent-fg);
+    text-decoration-thickness: var(--stroke);
   }
+}
+
+/* Pressed. */
+.link:active,
+.text-link:active {
+  color: var(--fg-muted);
 }
 
 /* ---------- Chips ---------- */
 
+/* Small tag, for example "Example". Not a button. */
 .chip {
   display: inline-flex;
   align-items: center;
-  min-height: 24px;
+  min-height: var(--s-5);
   padding: 0 var(--s-2);
-  border: 1px solid var(--rule);
+  border: var(--hairline) solid var(--rule);
   border-radius: var(--r-sm);
+  background-color: var(--surface);
+  color: var(--fg);
   font-family: var(--font-sans);
   font-size: var(--t-label);
   font-weight: var(--w-label);
@@ -158,22 +351,70 @@
   white-space: nowrap;
 }
 
+/* The one tag on a screen that marks a choice. Use it rarely. */
 .chip--accent {
   border-color: currentColor;
   color: var(--accent-fg);
 }
 
-/* ---------- Tile and panel ---------- */
+/* ---------- Tile ---------- */
 
-/* Flat block for cards. */
+/* Flat block for a card. Its parts are stacked with one gap between them. */
 .tile {
-  padding: var(--s-5);
+  --pad: var(--s-5);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--s-3);
+  padding: var(--pad);
   border-radius: var(--r);
   background-color: var(--surface);
+  color: var(--fg);
   overflow: hidden;
 }
 
-/* Inset dark panel: a card laid on the page. Its ink ground is set in tokens.css. */
+@media (min-width: 861px) {
+  .tile {
+    --pad: var(--s-6);
+  }
+}
+
+/* The gap does the spacing, so the parts carry no margin of their own. */
+.tile > * {
+  margin: 0;
+}
+
+/* A tile can be a link as a whole. */
+.tile[href] {
+  text-decoration: none;
+}
+
+/* A photo as the first part of a tile runs to the edges of the tile. */
+.tile > .media:first-child {
+  align-self: stretch;
+  margin: calc(var(--pad) * -1) calc(var(--pad) * -1) var(--s-2);
+  border-radius: 0;
+}
+
+.tile .media > img {
+  transition: transform var(--dur-hover-slow) var(--ease);
+}
+
+/* Hover: the photo of a tile grows a little, and the underline of a .link in it slides. */
+@media (hover: hover) {
+  .tile:hover .media > img {
+    transform: scale(1.03);
+  }
+
+  .tile[href]:hover .link::after {
+    animation: link-slide var(--dur-hover-slow) var(--ease);
+  }
+}
+
+/* ---------- Panel ---------- */
+
+/* Inset dark panel: a card laid on the page. Always on ink (set in tokens.css).
+   Place it directly in <main>, not inside a .wrap. */
 .panel {
   margin-inline: var(--gutter);
   padding: var(--section-tight) var(--gutter);
@@ -184,6 +425,7 @@
 
 /* A .wrap inside a panel does not add a second gutter. */
 .panel > .wrap {
+  max-width: var(--wrap);
   padding-inline: 0;
 }
 
@@ -192,30 +434,61 @@
 .rows {
   margin: 0;
   padding: 0;
-  border-top: 1px solid var(--rule);
+  border-top: var(--hairline) solid var(--rule);
   list-style: none;
 }
 
+/* A row has two parts. They sit side by side, about one third and two thirds,
+   wherever both have room; in a narrow place (a phone, a narrow column) the
+   text moves under the title by itself. */
 .row {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
   gap: var(--s-2) var(--s-6);
   padding-block: var(--s-5);
-  border-bottom: 1px solid var(--rule);
+  border-bottom: var(--hairline) solid var(--rule);
   font-variant-numeric: tabular-nums;
 }
 
-@media (max-width: 860px) {
-  .row {
-    grid-template-columns: minmax(0, 1fr);
-  }
+.row > * {
+  flex: 2 1 var(--w-row-text);
+  min-width: 0;
+  margin: 0;
+}
+
+.row > :first-child {
+  flex: 1 1 var(--w-row-title);
+}
+
+/* The first row of a table-like list: two small column headings. */
+.row--head {
+  padding-block: var(--s-3);
+}
+
+/* Pairs of a name and a short value, such as a price list: the value always
+   sits at the right end of the line, on phones too. */
+.rows--split .row {
+  flex-wrap: nowrap;
+}
+
+.rows--split .row > * {
+  flex: 0 0 auto;
+  text-align: right;
+}
+
+.rows--split .row > :first-child {
+  flex: 1 1 auto;
+  text-align: left;
 }
 
 /* ---------- Steps: a sequence ---------- */
 
+/* Side by side on a wide screen (three or four steps), one under the other on a phone. */
 .steps {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(0, 1fr);
   gap: var(--s-6);
   margin: 0;
   padding: 0;
@@ -225,30 +498,128 @@
 
 .step {
   padding-top: var(--s-4);
-  border-top: 1px solid var(--rule);
+  border-top: var(--hairline) solid var(--rule);
   counter-increment: step;
 }
 
-/* Numbers show only where order matters: use <ol class="steps"> for those. */
+.step > * + * {
+  margin-top: var(--s-3);
+}
+
+/* Numbers show only where order matters: write <ol class="steps"> for those,
+   and <ul class="steps"> for a set without an order. */
 ol.steps > .step::before {
   content: counter(step, decimal-leading-zero);
   display: block;
-  margin-bottom: var(--s-4);
+  margin-bottom: var(--s-6);
   color: var(--fg-muted);
   font-family: var(--font-sans);
   font-size: var(--t-label);
   font-weight: var(--w-label);
+  line-height: var(--lh-label);
   letter-spacing: var(--track-label);
   font-variant-numeric: tabular-nums;
 }
 
+/* The current step: its rule and its number take the pen blue. One per list. */
+.step--current,
+.step[aria-current="step"] {
+  border-top-color: var(--accent-fg);
+}
+
+ol.steps > .step--current::before,
+ol.steps > .step[aria-current="step"]::before {
+  color: var(--accent-fg);
+}
+
+/* Medium screens: four steps do not fit in one row, so they sit two by two. */
+@media (min-width: 861px) and (max-width: 1100px) {
+  .steps:not(.steps--stack, .steps--rows):has(> .step:nth-child(4)) {
+    grid-auto-flow: row;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    row-gap: var(--s-7);
+  }
+}
+
+/* Phones: one column. */
+@media (max-width: 860px) {
+  .steps {
+    grid-auto-flow: row;
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  ol.steps > .step::before {
+    margin-bottom: var(--s-3);
+  }
+}
+
+/* Two lists that run down the page at every width, set between hairlines:
+   .steps--stack for a narrow column: number, title and text one under the other;
+   .steps--rows  for steps told in detail across the page (see below). */
+.steps--stack,
+.steps--rows {
+  grid-auto-flow: row;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 0;
+  border-bottom: var(--hairline) solid var(--rule);
+}
+
+.steps--stack > .step,
+.steps--rows > .step {
+  padding-block: var(--s-5);
+}
+
+ol.steps--stack > .step::before,
+ol.steps--rows > .step::before {
+  margin-bottom: var(--s-3);
+}
+
+/* .steps--rows on a wide screen: each step is one line: number, title, then the text. */
+@media (min-width: 861px) {
+  .steps--rows > .step {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
+    gap: var(--s-2) var(--s-6);
+    align-items: baseline;
+  }
+
+  /* The title sits in the left column, everything after it in the right one. */
+  .steps--rows > .step > * {
+    grid-column: 2;
+    margin-top: 0;
+  }
+
+  .steps--rows > .step > :first-child {
+    grid-column: 1;
+  }
+
+  /* Numbered: one more narrow column at the left for the number. */
+  ol.steps--rows > .step {
+    grid-template-columns: var(--s-7) minmax(0, 1fr) minmax(0, 2fr);
+  }
+
+  ol.steps--rows > .step::before {
+    margin-bottom: 0;
+  }
+
+  ol.steps--rows > .step > * {
+    grid-column: 3;
+  }
+
+  ol.steps--rows > .step > :first-child {
+    grid-column: 2;
+  }
+}
+
 /* ---------- Media: fixed-ratio image frame ---------- */
 
+/* A photo that is not full-bleed sits in one of three ratios, with round corners.
+   The tint shows while the photo loads. */
 .media {
   position: relative;
   overflow: hidden;
   border-radius: var(--r-lg);
-  background-color: var(--surface);
+  background-color: var(--rule);
 }
 
 .media--16x9 {
@@ -273,7 +644,8 @@ ol.steps > .step::before {
 
 /* ---------- Band: full-bleed photo with one centred line ---------- */
 
-/* Use with .on-photo. The first <img> (or <picture>) child is the photo. */
+/* Always on a photo (set in tokens.css). The first <img> (or <picture>) child
+   is the photo; everything after it is centred on top of it. */
 .band {
   position: relative;
   isolation: isolate;
@@ -281,9 +653,11 @@ ol.steps > .step::before {
   place-content: center;
   justify-items: center;
   gap: var(--s-5);
-  min-height: min(80vh, 720px);
+  min-height: min(80vh, var(--h-band));
   padding: var(--section) var(--gutter);
   overflow: hidden;
+  background-color: var(--bg);
+  color: var(--fg);
   text-align: center;
 }
 
@@ -298,24 +672,37 @@ ol.steps > .step::before {
   object-fit: cover;
 }
 
-/* The dark veil that keeps the text readable. */
+/* The dark veil that keeps the text readable on any photo. */
 .band::before {
   content: "";
   position: absolute;
   inset: 0;
   z-index: -1;
-  background-color: rgba(14, 14, 14, .45);
+  background-color: var(--veil);
+}
+
+/* The line stays in a column in the middle. The gap of the band spaces what follows it. */
+.band > :not(img, picture) {
+  max-width: min(100%, var(--w-band-text));
+  margin: 0;
 }
 
 /* ---------- Forms ---------- */
 
+/* One field: its label, the control, then a hint and an error message. */
 .field {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
   gap: var(--s-2);
 }
 
+/* The gap does the spacing between the parts of a field. */
+.field > * {
+  margin: 0;
+}
+
 .field__label {
+  display: block;
   font-family: var(--font-sans);
   font-size: var(--t-label);
   font-weight: var(--w-label);
@@ -324,49 +711,99 @@ ol.steps > .step::before {
   text-transform: uppercase;
 }
 
+/* When the label is the <legend> of a group of choices. */
+legend.field__label {
+  margin-bottom: var(--s-2);
+}
+
 .field__hint {
   color: var(--fg-muted);
   font-size: var(--t-small);
   line-height: var(--lh-small);
 }
 
+/* The error message: full-strength text after a solid mark. An empty one takes no room. */
 .field__error {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--s-2);
+  color: var(--fg);
   font-size: var(--t-small);
   line-height: var(--lh-small);
 }
 
-/* Fields are 52px tall. */
+.field__error:empty {
+  display: none;
+}
+
+/* The mark before an error: a solid disc with an exclamation mark. It is a shape
+   as well as a tone, so an error is never told by colour alone. */
+.field__error::before,
+.notice--alert::before {
+  content: "!";
+  content: "!" / "";
+  flex: none;
+  width: var(--mark);
+  height: var(--mark);
+  margin-top: calc(var(--s-1) / 2);
+  border-radius: 50%;
+  background-color: var(--fg);
+  color: var(--bg);
+  font-family: var(--font-sans);
+  font-size: var(--t-label);
+  font-weight: var(--w-label-strong);
+  line-height: var(--mark);
+  text-align: center;
+}
+
+/* Text field, select and textarea. 52px tall, with a border that is easy to see. */
 .input,
 .select,
 .textarea {
   display: block;
   width: 100%;
-  min-height: 52px;
+  min-height: var(--h-field);
   padding: 0 var(--s-4);
-  border: 1px solid var(--rule);
+  border: var(--hairline) solid var(--fg-muted);
   border-radius: var(--r);
   background-color: var(--surface);
   color: var(--fg);
   font-family: var(--font-serif);
   font-size: var(--t-body);
   line-height: var(--lh-small);
+  text-overflow: ellipsis;
   appearance: none;
   -webkit-appearance: none;
+  transition: border-color var(--dur-hover) var(--ease);
 }
 
 .textarea {
-  min-height: 144px;
+  min-height: calc(var(--h-field) * 3);
   padding-block: var(--s-3);
   resize: vertical;
 }
 
-/* The arrow of the select, drawn in --muted. */
+/* The arrow of the select. It is drawn in white, and "difference" turns it into
+   the opposite of the field's colour: dark on cream, light on ink. */
 .select {
   padding-right: var(--s-7);
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%235C5A55' stroke-width='1.25' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23fff' stroke-width='1.25' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
   background-position: right var(--s-3) center;
-  background-size: 24px 24px;
+  background-size: var(--icon) var(--icon);
+  background-blend-mode: difference;
+  cursor: pointer;
+}
+
+/* While nothing is chosen (the empty first option), the prompt is muted like a placeholder. */
+.select:has(option[value=""]:checked) {
+  color: var(--fg-muted);
+}
+
+/* The opened list of a select. */
+.select option {
+  background-color: var(--bg);
+  color: var(--fg);
 }
 
 .input::placeholder,
@@ -375,89 +812,269 @@ ol.steps > .step::before {
   opacity: 1;
 }
 
+@media (hover: hover) {
+  .input:hover,
+  .select:hover,
+  .textarea:hover {
+    border-color: var(--fg);
+  }
+}
+
+/* Focus: the border takes the pen blue, and the focus ring of base.css is added. */
 .input:focus,
 .select:focus,
 .textarea:focus {
   border-color: var(--accent-fg);
 }
 
+/* Error (aria-invalid="true"): a 2px border in the text colour. The padding
+   gives up 1px so that the text inside does not move. */
 .input[aria-invalid="true"],
 .select[aria-invalid="true"],
 .textarea[aria-invalid="true"] {
+  padding-inline: calc(var(--s-4) - var(--hairline));
+  border-width: var(--stroke);
   border-color: var(--fg);
 }
 
-/* A checkbox or radio button with its text. */
+.select[aria-invalid="true"] {
+  padding-right: calc(var(--s-7) - var(--hairline));
+}
+
+.textarea[aria-invalid="true"] {
+  padding-block: calc(var(--s-3) - var(--hairline));
+}
+
+/* The label of a field with an error is set heavier. */
+.field:has([aria-invalid="true"]) .field__label,
+.field[aria-invalid="true"] .field__label {
+  font-weight: var(--w-label-strong);
+}
+
+/* Disabled: a dashed border and muted text. */
+.input:disabled,
+.select:disabled,
+.textarea:disabled {
+  border-style: dashed;
+  border-color: var(--fg-muted);
+  color: var(--fg-muted);
+  cursor: not-allowed;
+}
+
+/* ---------- Choice: a radio button or checkbox as a large tile ---------- */
+
+/* The markup must be: <label class="choice"><input ...> <span>Text</span></label>.
+   The input is stretched over the whole tile and draws its frame; the span
+   draws the round or square mark. */
 .choice {
+  position: relative;
   display: flex;
   align-items: center;
-  gap: var(--s-3);
-  min-height: 44px;
+  min-height: var(--h-field);
+  padding: var(--s-3) var(--s-4);
   cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .choice input {
-  flex: none;
-  width: 20px;
-  height: 20px;
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
   margin: 0;
-  accent-color: var(--accent-fg);
+  border: var(--hairline) solid var(--fg-muted);
+  border-radius: var(--r);
+  background-color: var(--surface);
+  appearance: none;
+  -webkit-appearance: none;
+  cursor: pointer;
+  transition: border-color var(--dur-hover) var(--ease);
+}
+
+.choice span {
+  position: relative;
+  display: block;
+  padding-left: calc(var(--mark) + var(--s-3));
+}
+
+/* The empty mark: a ring for a radio button, a square for a checkbox. */
+.choice span::before {
+  content: "";
+  position: absolute;
+  top: var(--s-1);
+  left: 0;
+  width: var(--mark);
+  height: var(--mark);
+  border: var(--hairline) solid var(--fg-muted);
+  border-radius: 50%;
+}
+
+.choice input[type="checkbox"] + span::before {
+  border-radius: var(--r-sm);
+}
+
+/* Chosen: the frame turns to a 2px line in the text colour, and the mark is
+   filled in the pen blue: a dot for a radio button, a tick for a checkbox. */
+.choice input:checked {
+  border-width: var(--stroke);
+  border-color: var(--fg);
+}
+
+.choice input:checked + span::before {
+  border-color: var(--fg);
+}
+
+.choice input:checked + span::after {
+  content: "";
+  position: absolute;
+  top: calc(var(--s-1) + var(--mark) / 4);
+  left: calc(var(--mark) / 4);
+  border: calc(var(--mark) / 4) solid var(--accent-fg);
+  border-radius: 50%;
+}
+
+.choice input[type="checkbox"]:checked + span::after {
+  top: calc(var(--s-1) + var(--mark) * .15);
+  left: calc(var(--mark) * .35);
+  width: calc(var(--mark) * .3);
+  height: calc(var(--mark) * .5);
+  border-width: 0 var(--stroke) var(--stroke) 0;
+  border-radius: 0;
+  transform: rotate(45deg);
+}
+
+@media (hover: hover) {
+  .choice:hover input {
+    border-color: var(--fg);
+  }
+}
+
+/* Pressed. */
+.choice:active span {
+  color: var(--fg-muted);
+}
+
+.choice input:disabled {
+  border-style: dashed;
+  cursor: not-allowed;
+}
+
+.choice input:disabled + span {
+  color: var(--fg-muted);
+}
+
+/* A single checkbox with its text and no tile around it, for a line of consent. */
+.choice--plain {
+  min-height: var(--tap);
+  padding-inline: 0;
+}
+
+.choice--plain input,
+.choice--plain input:checked {
+  border-color: transparent;
+  background-color: transparent;
+}
+
+/* A group of choice tiles: side by side where there is room. */
+.choices {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, var(--w-choice)), 1fr));
+  gap: var(--s-2);
+}
+
+/* A group that always runs down the page. */
+.choices--stack {
+  grid-template-columns: minmax(0, 1fr);
 }
 
 /* ---------- Notice: framed note ---------- */
 
+/* For a message about the page itself, such as "this form is not connected yet". */
 .notice {
-  max-width: var(--measure);
+  position: relative;
   padding: var(--s-4) var(--s-5);
-  border: 1px solid var(--rule);
+  border: var(--hairline) solid var(--rule);
   border-radius: var(--r);
   background-color: var(--surface);
+  color: var(--fg);
   font-size: var(--t-small);
   line-height: var(--lh-small);
 }
 
-/* "This page is a draft." */
+.notice > * + * {
+  margin-top: var(--s-2);
+}
+
+/* "This page is a draft": a dashed frame. */
 .notice--draft {
   border-style: dashed;
   border-color: var(--fg);
 }
 
+/* Something went wrong: a 2px frame and the same mark as a field error. */
+.notice--alert {
+  padding-left: calc(var(--s-5) + var(--mark) + var(--s-3));
+  border-width: var(--stroke);
+  border-color: var(--fg);
+}
+
+.notice--alert::before {
+  position: absolute;
+  top: var(--s-4);
+  left: var(--s-5);
+}
+
 /* ---------- Accordion: questions built on <details> ---------- */
 
 .accordion {
-  border-top: 1px solid var(--rule);
+  border-top: var(--hairline) solid var(--rule);
 }
 
 .accordion__item {
-  border-bottom: 1px solid var(--rule);
+  border-bottom: var(--hairline) solid var(--rule);
 }
 
+/* The question. */
 .accordion__item > summary {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: var(--s-5);
-  min-height: 44px;
+  min-height: var(--tap);
   padding-block: var(--s-5);
   font-size: var(--t-h3);
   font-weight: var(--w-heading);
   line-height: var(--lh-h3);
+  letter-spacing: var(--track-heading);
   list-style: none;
   cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: color var(--dur-hover) var(--ease);
 }
 
 .accordion__item > summary::-webkit-details-marker {
   display: none;
 }
 
+.accordion__item[open] > summary {
+  padding-bottom: var(--s-3);
+}
+
 /* Everything after the question is the answer. */
 .accordion__item > :not(summary) {
   max-width: var(--measure);
-  padding-bottom: var(--s-5);
   color: var(--fg-muted);
 }
 
+.accordion__item > :last-child:not(summary) {
+  padding-bottom: var(--s-5);
+}
+
 /* With two icons in the summary, the first shows when closed and the second when open. */
+.accordion__item > summary .icon {
+  transition: transform var(--dur-hover) var(--ease);
+}
+
 .accordion__item > summary .icon + .icon,
 .accordion__item[open] > summary .icon {
   display: none;
@@ -465,4 +1082,308 @@ ol.steps > .step::before {
 
 .accordion__item[open] > summary .icon + .icon {
   display: block;
+}
+
+/* Hover: the plus of a closed question makes a quarter turn. */
+@media (hover: hover) {
+  .accordion__item:not([open]) > summary:hover .icon {
+    transform: rotate(90deg);
+  }
+}
+
+/* Pressed. */
+.accordion__item > summary:active {
+  color: var(--fg-muted);
+}
+
+
+/* =====================================================================
+   STYLE GUIDE ONLY
+
+   Everything below lays out src/pages/styleguide.html and nothing else.
+   A class that starts with "sg-" is not part of the component contract
+   and must not be used on the pages of the site.
+   ===================================================================== */
+
+/* A block of the guide. The offset keeps its title clear of the header after a jump. */
+.sg-block {
+  scroll-margin-top: var(--s-8);
+}
+
+.sg-block > * + * {
+  margin-top: var(--s-5);
+}
+
+.sg-head {
+  margin-bottom: var(--s-7);
+}
+
+/* One specimen: a title, one line on when to use it, the live frames, the markup, the notes. */
+.sg-item {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--s-4);
+}
+
+.sg-item > * {
+  margin: 0;
+}
+
+.sg-item + .sg-item {
+  margin-top: var(--s-8);
+}
+
+.sg-item__title code {
+  font-size: .8em;
+}
+
+/* Class names in a title or in the line under it stay in one piece. */
+.sg-head code,
+.sg-item__title code,
+.sg-item__use code {
+  white-space: nowrap;
+}
+
+.sg-item__use {
+  max-width: var(--measure);
+}
+
+/* Class names and code in the text of the guide. */
+.sg-intro code,
+.sg-block code {
+  font-family: var(--font-mono);
+  font-size: .85em;
+}
+
+/* The live frames, one per ground. */
+.sg-grounds {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--s-4);
+}
+
+.sg-ground {
+  padding: var(--s-5);
+  border: var(--hairline) solid var(--rule);
+  border-radius: var(--r-lg);
+}
+
+.sg-ground > .sg-ground__name {
+  margin-bottom: var(--s-5);
+}
+
+/* A frame on a photo borrows the band, without its height and its centring. */
+.sg-ground.band {
+  display: block;
+  justify-items: normal;
+  min-height: 0;
+  padding: var(--s-5);
+  text-align: left;
+}
+
+.sg-ground.band > :not(img, picture) {
+  max-width: none;
+}
+
+@media (min-width: 861px) {
+  .sg-ground,
+  .sg-ground.band {
+    padding: var(--s-6);
+  }
+
+  .sg-grounds--pair {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .sg-grounds--pair > .band {
+    grid-column: 1 / -1;
+  }
+
+  .sg-grounds--three {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+/* Small things side by side. */
+.sg-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--s-4) var(--s-5);
+}
+
+/* Things one under the other. */
+.sg-stack {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--s-5);
+  justify-items: start;
+}
+
+.sg-stack > * {
+  margin: 0;
+}
+
+.sg-stack > .field,
+.sg-stack > .notice,
+.sg-stack > .btn--block,
+.sg-stack > .choice,
+.sg-stack > hr {
+  justify-self: stretch;
+}
+
+/* Columns for tiles and photos. */
+.sg-cols {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, calc(var(--s-10) * 1.5)), 1fr));
+  gap: var(--s-4);
+}
+
+.sg-cols--media {
+  align-items: start;
+}
+
+/* The markup to copy. */
+.sg-code {
+  padding: var(--s-4) var(--s-5);
+  border: var(--hairline) solid var(--rule);
+  border-radius: var(--r);
+  background-color: var(--surface);
+  color: var(--fg);
+  font-family: var(--font-mono);
+  font-size: calc(var(--t-small) * .875);
+  line-height: var(--lh-body);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  tab-size: 2;
+}
+
+.sg-code code {
+  font-size: inherit;
+}
+
+/* Notes for the builders: a short list with a dash before each line. */
+.sg-notes {
+  display: grid;
+  gap: var(--s-2);
+  max-width: calc(var(--narrow) + var(--s-10));
+  color: var(--fg-muted);
+  font-size: var(--t-small);
+  line-height: var(--lh-small);
+}
+
+.sg-notes > li {
+  position: relative;
+  padding-left: var(--s-5);
+}
+
+.sg-notes > li::before {
+  content: "";
+  position: absolute;
+  top: .75em;
+  left: 0;
+  width: var(--s-3);
+  border-top: var(--hairline) solid currentColor;
+}
+
+.sg-intro .sg-notes {
+  margin-top: var(--s-6);
+}
+
+/* The list of contents. */
+.sg-toc {
+  margin-top: var(--s-7);
+  padding-top: var(--s-3);
+  border-top: var(--hairline) solid var(--rule);
+}
+
+.sg-toc__list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(var(--s-10), 1fr));
+  gap: 0 var(--s-5);
+}
+
+/* The type classes: the name of the class beside a line set in it. */
+.sg-specs {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--s-6);
+}
+
+.sg-spec {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--s-2);
+}
+
+@media (min-width: 861px) {
+  .sg-spec {
+    grid-template-columns: var(--s-10) minmax(0, 1fr);
+    gap: var(--s-5);
+    align-items: baseline;
+  }
+}
+
+/* The icons with their file names. */
+.sg-icons {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(var(--s-9), 1fr));
+  gap: var(--s-5) var(--s-4);
+}
+
+.sg-icon {
+  display: grid;
+  gap: var(--s-2);
+  justify-items: start;
+}
+
+/* The dashed boxes that show the two content widths. */
+.sg-outline {
+  padding: var(--s-4);
+  border: var(--hairline) dashed var(--fg-muted);
+  border-radius: var(--r);
+}
+
+/* The colour tokens. */
+.sg-swatches {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(calc(var(--s-10) * 1.25), 1fr));
+  gap: var(--s-6) var(--s-4);
+}
+
+.sg-swatch {
+  display: grid;
+  gap: var(--s-1);
+  align-content: start;
+}
+
+.sg-swatch__chip {
+  height: var(--s-8);
+  margin-bottom: var(--s-2);
+  border: var(--hairline) solid var(--rule);
+  border-radius: var(--r);
+  overflow: hidden;
+}
+
+.sg-swatch__chip--cream { background-color: var(--cream); }
+.sg-swatch__chip--paper { background-color: var(--paper); }
+.sg-swatch__chip--cream-deep { background-color: var(--cream-deep); }
+.sg-swatch__chip--ink { background-color: var(--ink); }
+.sg-swatch__chip--ink-soft { background-color: var(--ink-soft); }
+.sg-swatch__chip--muted { background-color: var(--muted); }
+.sg-swatch__chip--muted-on-ink { background-color: var(--muted-on-ink); }
+.sg-swatch__chip--faint { background-color: var(--faint); }
+.sg-swatch__chip--line { background-color: var(--line); }
+.sg-swatch__chip--accent { background-color: var(--accent); }
+.sg-swatch__chip--accent-on-ink { background-color: var(--accent-on-ink); }
+.sg-swatch__chip--veil { background-color: var(--veil); }
+
+/* The hairline for ink is shown on ink. */
+.sg-swatch__chip--line-on-ink { background-color: var(--ink); }
+
+.sg-swatch__chip--line-on-ink::after {
+  content: "";
+  display: block;
+  height: 100%;
+  background-color: var(--line-on-ink);
 }
