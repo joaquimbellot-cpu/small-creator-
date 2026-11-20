@@ -3,7 +3,7 @@
 This file is the single source of truth for every brand fact on the website.
 If a fact is not written here, it must not appear on the site. Ask the owner instead.
 
-Status: **awaiting the owner's confirmation** (interview finished 20 November 2026).
+Status: **confirmed by the owner on 20 November 2026**, including the three carried-over points in section 11.
 
 ## 1. The brand
 
