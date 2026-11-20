@@ -1,13 +1,18 @@
-<!-- Home hero. Owner: Hero agent. Styles: src/css/hero.css. Opening: src/js/hero.js.
+<!-- Home hero. Owner: Hero agent. Styles: src/css/hero.css. Opening and scroll: src/js/hero.js.
      One focal point, the headline; then one sentence, one button, one note. Add nothing else here.
-     Words: home.hero and site.cta. Pictures: images.hero (wide screens) and images.heroTall (upright screens). -->
+     The giant brand name and the symbol are decorative: they show only during the opening.
+     Words: home.hero, site.brand and site.cta. Pictures: images.hero (wide screens) and images.heroTall (upright screens).
+     The <picture> sources must match the preload in head.html exactly. -->
 <section class="hero on-photo" data-intro aria-labelledby="hero-title">
   <div class="hero__stage">
-    <picture>
-      <source media="(orientation: portrait)" srcset="{{images.heroTall.srcSmall}} {{images.heroTall.widthSmall}}w, {{images.heroTall.src}} {{images.heroTall.width}}w" sizes="max(100vw, 80vh)" width="{{images.heroTall.width}}" height="{{images.heroTall.height}}">
-      <img class="hero__photo" src="{{images.hero.src}}" srcset="{{images.hero.srcSmall}} {{images.hero.widthSmall}}w, {{images.hero.src}} {{images.hero.width}}w" sizes="max(100vw, 178vh)" width="{{images.hero.width}}" height="{{images.hero.height}}" alt="{{images.hero.alt}}" decoding="async" fetchpriority="high">
-    </picture>
+    <div class="hero__drift">
+      <picture>
+        <source media="(orientation: portrait)" srcset="{{images.heroTall.srcSmall}} {{images.heroTall.widthSmall}}w, {{images.heroTall.src}} {{images.heroTall.width}}w" sizes="max(100vw, 80vh)" width="{{images.heroTall.width}}" height="{{images.heroTall.height}}">
+        <img class="hero__photo" src="{{images.hero.src}}" srcset="{{images.hero.srcSmall}} {{images.hero.widthSmall}}w, {{images.hero.src}} {{images.hero.width}}w" sizes="max(100vw, 178vh)" width="{{images.hero.width}}" height="{{images.hero.height}}" alt="{{images.hero.alt}}" decoding="async" fetchpriority="high">
+      </picture>
+    </div>
   </div>
+  <div class="hero__brand" aria-hidden="true"><span class="hero__brand-word">{{site.brand.name}}</span></div>
   <img class="hero__mark" src="assets/logo/symbol-on-ink.svg" width="24" height="24" alt="" aria-hidden="true">
   <div class="hero__text">
     <h1 class="h-hero hero__title" id="hero-title">{{home.hero.title}}</h1>

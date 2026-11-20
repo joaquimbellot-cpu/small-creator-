@@ -7,15 +7,19 @@
  * button and one small note. The headline is the only focal point: everything
  * else stays small and quiet, and nothing else belongs on this screen.
  *
- * Also here: the opening on the hook [data-intro] (docs/design-brief.md, section 7).
- * hero.js only chooses which opening plays and says so with data-hero on <html>;
- * every movement is a CSS animation in part 5, so it ends by itself.
+ * Motion (docs/design-brief.md, section 7). hero.js chooses the opening and
+ * says so with data-hero on <html>; every movement of the opening is a CSS
+ * animation in part 6, so it ends by itself. Once settled ("done"), the picture
+ * drifts slowly, leans toward a fine pointer, and folds back into a card as the
+ * screen scrolls away (hero.js writes those transforms).
  *
  *   1. Settings
  *   2. Layout
  *   3. Picture and veil
  *   4. Text
- *   5. Opening
+ *   5. Opening-only parts: the symbol and the giant name
+ *   6. Opening
+ *   7. Settled: drift, lean, leaving
  */
 
 /* ---------- 1. Settings ---------- */
@@ -23,31 +27,51 @@
 .hero {
   --hero-max: calc(var(--wrap) + var(--s-10)); /* tallest the first screen gets: a 1440px monitor is filled, a taller one is not */
   --hero-pad: var(--s-6);               /* air between the header and the text, and the same below */
+  --hero-size: clamp(2.75rem, min(1rem + 6.4vw, 12.5vh), 7rem); /* the headline: larger than --t-hero, held down on low screens */
   --hero-title: 7.2em;                  /* widest line of the headline: sets these words in two even lines */
   --hero-lead: 23em;                    /* widest line of the sentence */
   --hero-wash: .4;                      /* share of the veil that lies over the whole picture */
 
-  /* The opening. The framed card the picture grows from: its distance from
-     the top and from the sides, and the size of the picture inside it. */
+  /* Settled life. */
+  --hero-lean: 12px;                    /* how far the picture leans toward the pointer; also its hidden margin */
+  --hero-lean-dur: calc(var(--dur-enter-long) + var(--dur-hover) * 1.5); /* 1.6s: the lean follows slowly */
+  --hero-drift-dur: 40s;                /* one way of the slow drift; it then turns back */
+  --hero-drift-to: scale(1.06) translate3d(-1.2%, -.8%, 0); /* where the drift goes */
+  --hero-drift-ease: cubic-bezier(.45, 0, .55, 1); /* even in and out, so the turn is never felt */
+
+  /* The opening. The framed card the picture comes in as: its distance from
+     the top and from the sides, the size of the picture inside it, and how far it rises. */
   --hero-card: 25% 28%;
   --hero-card-zoom: .74;
+  --hero-card-rise: 14vh;
+  --hero-brand: 21vw;                   /* the giant name: about nine tenths of the screen wide */
+  --hero-brand-lift: -9vh;              /* how far it lifts as it fades */
 
-  --hero-wait: calc(var(--dur-hover-slow) * 5);               /* 2.5s: after this, CSS shows everything by itself */
-  --hero-mark: calc(var(--dur-hover) * 1.5);                  /* the symbol comes, and later goes */
-  --hero-grow: calc(var(--dur-enter-long) - var(--dur-hover) * .75); /* the card grows to the full screen */
-  --hero-grow-at: calc(var(--dur-hover) * .5);                /* ...a moment after it has appeared */
-  --hero-rise: var(--dur-enter);                              /* one line of the headline rises */
-  --hero-rise-at: calc(var(--dur-hover) * 1.25);              /* ...starting while the card is still growing */
-  --hero-step: calc(var(--dur-hover) * .5);                   /* pause between lines, and between the parts after them */
-  --hero-soft: var(--dur-hover-slow);                         /* the sentence, the button and the note come in */
+  /* Times, from the moment the opening starts ("open"). Total about 2.4s, after 0.35s of the symbol alone. */
+  --hero-wait: calc(var(--dur-hover-slow) * 5);               /* 2.5s: with no state, CSS shows everything by itself */
+  --hero-mark: calc(var(--dur-hover) * 1.5);                  /* 0.3s: the symbol comes, and later goes */
+  --hero-letter: calc(var(--dur-hover) * .2);                 /* 40ms between the letters of the name */
+  --hero-word: var(--dur-enter);                              /* 0.9s: one letter rises from its mask */
+  --hero-card-at: calc(var(--dur-hover) * 1.25);              /* 0.25s: the card rises into the middle... */
+  --hero-card-in: var(--dur-enter);                           /* ...over 0.9s */
+  --hero-grow-at: calc(var(--dur-hover) * 4.75);              /* 0.95s: the card grows to the full screen... */
+  --hero-grow: calc(var(--dur-enter-long) - var(--dur-hover)); /* ...over 1.1s, and the veil deepens with it */
+  --hero-lift-at: calc(var(--dur-hover) * 5);                 /* 1s: the name lifts away and fades... */
+  --hero-lift: calc(var(--dur-hover) * 4);                    /* ...over 0.8s */
+  --hero-rise-at: calc(var(--dur-hover) * 6.5);               /* 1.3s: the first line of the headline rises... */
+  --hero-rise: calc(var(--dur-hover) * 4);                    /* ...over 0.8s */
+  --hero-step: calc(var(--dur-hover) * .6);                   /* 0.12s between lines, and between the parts after them */
+  --hero-soft: calc(var(--dur-hover) * 3);                    /* 0.6s: the sentence, the button and the note come in */
 }
 
 /* Upright screens show the tall picture, so the card is upright too. */
 @media (orientation: portrait) {
   .hero {
     --hero-wash: .2;
-    --hero-card: 27% 16%;
+    --hero-card: 26% 15%;
     --hero-card-zoom: .84;
+    --hero-card-rise: 10vh;
+    --hero-brand: 22vw;
   }
 }
 
@@ -71,31 +95,39 @@
   min-height: min(100svh, var(--hero-max));
   padding: calc(var(--header-h, 64px) + var(--hero-pad)) var(--gutter);
   overflow: hidden;
+  background-color: var(--ink);
   text-align: center;
 }
 
 /* ---------- 3. Picture and veil ---------- */
 
 /* The picture fills the whole section, behind the text. */
-.hero__stage {
+.hero__stage,
+.hero__drift {
   position: absolute;
   inset: 0;
+}
+
+.hero__stage {
   z-index: -1;
 }
 
-.hero__stage picture,
-.hero__photo {
+/* The picture is a little larger than the screen, hidden margin all round,
+   so that it can lean and drift without ever showing an edge. */
+.hero__stage picture {
   position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
+  inset: calc(var(--hero-lean) * -1);
+  max-width: none;
 }
 
 .hero__photo {
+  width: 100%;
+  max-width: none;
+  height: 100%;
   object-fit: cover;
 }
 
-/* Both layers of the veil lie on top of the picture. */
+/* Both layers of the veil lie on top of the picture, and stay still when it moves. */
 .hero__stage::before,
 .hero__stage::after {
   content: "";
@@ -111,11 +143,11 @@
 }
 
 /* The full veil where words are: under the header and behind the text. It thins
-   out toward the sides and the bottom, where the paper and the window light show. */
+   out toward the sides and the bottom, where the picture shows. */
 .hero__stage::after {
   background-image:
     linear-gradient(to bottom, var(--veil) var(--header-h, 64px), transparent 45%),
-    radial-gradient(ellipse 62% 66% at 50% 50%, var(--veil) 58%, transparent 100%);
+    radial-gradient(ellipse 62% 70% at 50% 50%, var(--veil) 60%, transparent 100%);
 }
 
 /* On an upright screen the text is as wide as the screen, so the veil is too. */
@@ -123,7 +155,7 @@
   .hero__stage::after {
     background-image:
       linear-gradient(to bottom, var(--veil) var(--header-h, 64px), transparent 45%),
-      radial-gradient(ellipse 140% 52% at 50% 50%, var(--veil) 62%, transparent 100%);
+      radial-gradient(ellipse 140% 54% at 50% 50%, var(--veil) 64%, transparent 100%);
   }
 }
 
@@ -131,6 +163,8 @@
 
 /* One calm column in the middle. */
 .hero__text {
+  position: relative;
+  z-index: 2;
   display: grid;
   justify-items: center;
   width: 100%;
@@ -139,6 +173,7 @@
 
 .hero__title {
   max-width: var(--hero-title);
+  font-size: var(--hero-size);
 }
 
 .hero__lead {
@@ -165,20 +200,52 @@
   }
 }
 
-/* The symbol belongs to the opening only. */
-.hero__mark {
+/* ---------- 5. Opening-only parts ---------- */
+
+/* The symbol and the giant name belong to the opening only. */
+.hero__mark,
+.hero__brand {
   display: none;
 }
 
-/* ---------- 5. Opening ---------- */
+/* The giant name, set across the screen in front of the card. Decorative. */
+.hero__brand {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  place-items: center;
+  color: var(--cream);
+  font-family: var(--font-serif);
+  font-size: var(--hero-brand);
+  font-weight: var(--w-heading);
+  line-height: 1;
+  letter-spacing: -0.03em;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+/* The mask the letters rise from: open above, cut at the foot of the line. */
+.hero__brand-word {
+  display: block;
+  padding: 0 .06em;
+  clip-path: inset(-.4em -.1em 0);
+}
+
+.hero__brand-word > span {
+  display: inline-block;
+}
+
+/* ---------- 6. Opening ---------- */
 
 /*
  * States, set by hero.js as data-hero on <html>:
  *   (none)    the script has not chosen yet: ink only
  *   "intro"   first home view of a session: the symbol alone on ink
- *   "open"    the picture grows from a framed card, the headline rises line by line
+ *   "open"    the giant name rises, the picture comes in as a card behind it,
+ *             grows to the full screen while the name lifts away, then the
+ *             headline rises line by line
  *   "return"  later views in the session: a short rise of the text
- *   "done"    settled: no rule below applies any more
+ *   "done"    settled: part 7 applies
  *
  * Nothing is hidden by a plain declaration. Every hidden start is the first
  * frame of an animation, so each state ends in the finished hero by itself,
@@ -202,6 +269,18 @@
 
 @keyframes hero-mark-out {
   to { opacity: 0; transform: scale(1.1); }
+}
+
+@keyframes hero-letter {
+  from { transform: translateY(105%); }
+}
+
+@keyframes hero-lift {
+  to { opacity: 0; transform: translateY(var(--hero-brand-lift)) scale(1.04); }
+}
+
+@keyframes hero-card-in {
+  from { opacity: 0; transform: translateY(var(--hero-card-rise)); }
 }
 
 @keyframes hero-card {
@@ -234,11 +313,15 @@
 
   /* The header waits too, so that the symbol stands alone, and comes back with
      the text. (.site-header belongs to header.css; only its opacity is animated
-     here, and only while the opening plays. It lives outside .hero, so its
-     three rules repeat the times instead of reading the settings above.) */
+     here, and only while the opening plays. It lives outside .hero, so these
+     rules repeat the times instead of reading the settings above.) */
   html.js:not([data-hero]) body[data-page="home"] .site-header,
   html.js[data-hero="intro"] .site-header {
     animation: hero-wait var(--dur-hover-slow) linear calc(var(--dur-hover-slow) * 5) both;
+  }
+
+  html.js[data-hero="open"] .site-header {
+    animation: hero-show var(--dur-hover-slow) linear calc(var(--dur-hover) * 6.5) both;
   }
 
   /* "intro": the symbol, alone in the middle of the ink. */
@@ -256,14 +339,29 @@
     animation: hero-mark-in var(--hero-mark) var(--ease) both;
   }
 
-  /* "open": the symbol dissolves into the card, which stands for a moment and then grows. */
   html.js[data-hero="open"] .hero__mark {
     animation: hero-mark-out var(--hero-mark) var(--ease) both;
   }
 
+  /* "open", 1: the giant name rises letter by letter from its mask (hero.js
+     wraps each letter and numbers it --hero-i), then lifts away and fades. */
+  html.js[data-hero="open"] .hero__brand {
+    display: grid;
+  }
+
+  html.js[data-hero="open"] .hero__brand-word {
+    animation: hero-lift var(--hero-lift) var(--ease) var(--hero-lift-at) both;
+  }
+
+  html.js[data-hero="open"] .hero__brand-word > span {
+    animation: hero-letter var(--hero-word) var(--ease) calc(var(--hero-i, 0) * var(--hero-letter)) both;
+  }
+
+  /* 2: the picture rises behind it as a framed card, stands a moment, then
+     grows to the full screen. */
   html.js[data-hero="open"] .hero__stage {
     animation:
-      hero-show var(--hero-mark) linear both,
+      hero-card-in var(--hero-card-in) var(--ease) var(--hero-card-at) both,
       hero-card var(--hero-grow) var(--ease) var(--hero-grow-at) both;
   }
 
@@ -271,13 +369,13 @@
     animation: hero-photo var(--hero-grow) var(--ease) var(--hero-grow-at) both;
   }
 
-  /* The card starts as a clear photograph; the full veil arrives with the words. */
+  /* The card carries only the light wash; the full veil deepens as it grows. */
   html.js[data-hero="open"] .hero__stage::after {
     animation: hero-show var(--hero-grow) var(--ease) var(--hero-grow-at) both;
   }
 
-  /* The headline: hero.js wraps each word in a mask (.hero__w) and numbers its
-     line (--hero-line). The words of a line rise together from behind the mask. */
+  /* 3: the headline. hero.js wraps each word in a mask (.hero__w) and numbers
+     its line (--hero-line). The words of a line rise together. */
   .hero__w {
     display: inline-block;
     clip-path: inset(-.3em -.4em -.24em);
@@ -291,7 +389,7 @@
     animation: hero-rise var(--hero-rise) var(--ease) calc(var(--hero-rise-at) + var(--hero-line, 0) * var(--hero-step)) both;
   }
 
-  /* Then, softly, the sentence, the button and the note. */
+  /* 4: softly, the sentence, the button and the note. */
   html.js[data-hero="open"] .hero__lead,
   html.js[data-hero="open"] .hero__cta,
   html.js[data-hero="open"] .hero__note {
@@ -299,19 +397,15 @@
   }
 
   html.js[data-hero="open"] .hero__lead {
-    animation-delay: calc(var(--hero-rise-at) + var(--hero-step) * 3);
+    animation-delay: calc(var(--hero-rise-at) + var(--hero-step) * 2);
   }
 
   html.js[data-hero="open"] .hero__cta {
-    animation-delay: calc(var(--hero-rise-at) + var(--hero-step) * 4);
+    animation-delay: calc(var(--hero-rise-at) + var(--hero-step) * 3);
   }
 
   html.js[data-hero="open"] .hero__note {
-    animation-delay: calc(var(--hero-rise-at) + var(--hero-step) * 5);
-  }
-
-  html.js[data-hero="open"] .site-header {
-    animation: hero-show var(--dur-hover-slow) linear calc(var(--dur-hover) * 2.5) both;
+    animation-delay: calc(var(--hero-rise-at) + var(--hero-step) * 4);
   }
 
   /* "return": no intro. The picture is there at once and the text rises a little. */
@@ -334,5 +428,43 @@
 
   html.js[data-hero="return"] .hero__note {
     animation-delay: calc(var(--hero-step) * 3);
+  }
+
+  /* ---------- 7. Settled ---------- */
+
+  /* Around the card the hero turns to cream, so that as the picture folds
+     back into a card on the way down, the page seems to arrive from below. */
+  html.js[data-hero="done"] .hero {
+    background-color: var(--cream);
+  }
+
+  /* hero.js scales the stage and lifts the text while the screen scrolls away. */
+  html.js[data-hero="done"] .hero__stage,
+  html.js[data-hero="done"] .hero__text {
+    will-change: transform;
+  }
+
+  /* Leaving: the card keeps its rounded corners. */
+  html.js[data-hero="done"] .hero.is-leaving .hero__stage {
+    clip-path: inset(0 round var(--r-lg));
+  }
+
+  /* Drift: a long, slow scale and shift, there and back. It starts where the
+     opening ends, so nothing jumps. Paused while off screen or in a hidden tab. */
+  @keyframes hero-drift {
+    to { transform: var(--hero-drift-to); }
+  }
+
+  html.js[data-hero="done"] .hero__drift {
+    animation: hero-drift var(--hero-drift-dur) var(--hero-drift-ease) infinite alternate;
+  }
+
+  html.js[data-hero="done"] .hero.is-still .hero__drift {
+    animation-play-state: paused;
+  }
+
+  /* Lean: hero.js moves the picture a few pixels toward a fine pointer; this eases it. */
+  html.js[data-hero="done"] .hero__stage picture {
+    transition: transform var(--hero-lean-dur) var(--ease);
   }
 }

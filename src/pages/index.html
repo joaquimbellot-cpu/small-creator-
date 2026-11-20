@@ -6,58 +6,75 @@
   </div>
 </section>
 
-<section class="section differences">
-  <div class="wrap">
-    <div class="section-head section-head--center">
-      <p class="label label--muted" data-reveal>{{home.differences.label}}</p>
-      <h2 class="h2" data-reveal="lines">{{home.differences.title}}</h2>
-    </div>
-    <ul class="differences__list">
-      {{#each home.differences.items}}
-      <li class="differences__item">
-        <figure class="media media--4x5 differences__media" data-reveal>
-          {{#if @first}}
-          <img src="{{images.difference1.src}}" srcset="{{images.difference1.srcSmall}} {{images.difference1.widthSmall}}w, {{images.difference1.src}} {{images.difference1.width}}w" sizes="(min-width: 861px) min(40vw, 540px), (min-width: 561px) 45vw, 100vw" width="{{images.difference1.width}}" height="{{images.difference1.height}}" alt="{{images.difference1.alt}}" loading="lazy" decoding="async">
-          {{else}}
-          {{#if @last}}
-          <img src="{{images.difference3.src}}" srcset="{{images.difference3.srcSmall}} {{images.difference3.widthSmall}}w, {{images.difference3.src}} {{images.difference3.width}}w" sizes="(min-width: 861px) min(40vw, 540px), (min-width: 561px) 45vw, 100vw" width="{{images.difference3.width}}" height="{{images.difference3.height}}" alt="{{images.difference3.alt}}" loading="lazy" decoding="async">
-          {{else}}
-          <img src="{{images.difference2.src}}" srcset="{{images.difference2.srcSmall}} {{images.difference2.widthSmall}}w, {{images.difference2.src}} {{images.difference2.width}}w" sizes="(min-width: 861px) min(40vw, 540px), (min-width: 561px) 45vw, 100vw" width="{{images.difference2.width}}" height="{{images.difference2.height}}" alt="{{images.difference2.alt}}" loading="lazy" decoding="async">
-          {{/if}}
-          {{/if}}
-        </figure>
-        <div class="differences__text" data-reveal data-reveal-delay="1">
-          <h3 class="h2">{{title}}</h3>
-          <p class="lead muted">{{text}}</p>
+<!-- Three differences. On wide screens motion.js pins it (data-showcase): the items on the left, one picture frame on the right. -->
+<section class="section differences" data-showcase>
+  <div class="differences__pin" data-showcase-pin>
+    <div class="wrap differences__inner">
+      <div class="differences__side">
+        <div class="section-head section-head--center differences__head">
+          <p class="label label--muted" data-reveal>{{home.differences.label}}</p>
+          <h2 class="h2" data-reveal="lines">{{home.differences.title}}</h2>
         </div>
-      </li>
-      {{/each}}
-    </ul>
+        <div class="differences__nav">
+          <span class="differences__bar" aria-hidden="true"><span class="differences__fill" data-showcase-bar></span></span>
+          <ul class="differences__list">
+            {{#each home.differences.items}}
+            <li class="differences__item" data-showcase-item>
+              <figure class="media media--4x5 differences__media" data-reveal>
+                {{#if @first}}
+                <img src="{{images.difference1.src}}" srcset="{{images.difference1.srcSmall}} {{images.difference1.widthSmall}}w, {{images.difference1.src}} {{images.difference1.width}}w" sizes="(min-width: 561px) 45vw, 100vw" width="{{images.difference1.width}}" height="{{images.difference1.height}}" alt="{{images.difference1.alt}}" loading="lazy" decoding="async">
+                {{else}}
+                {{#if @last}}
+                <img src="{{images.difference3.src}}" srcset="{{images.difference3.srcSmall}} {{images.difference3.widthSmall}}w, {{images.difference3.src}} {{images.difference3.width}}w" sizes="(min-width: 561px) 45vw, 100vw" width="{{images.difference3.width}}" height="{{images.difference3.height}}" alt="{{images.difference3.alt}}" loading="lazy" decoding="async">
+                {{else}}
+                <img src="{{images.difference2.src}}" srcset="{{images.difference2.srcSmall}} {{images.difference2.widthSmall}}w, {{images.difference2.src}} {{images.difference2.width}}w" sizes="(min-width: 561px) 45vw, 100vw" width="{{images.difference2.width}}" height="{{images.difference2.height}}" alt="{{images.difference2.alt}}" loading="lazy" decoding="async">
+                {{/if}}
+                {{/if}}
+              </figure>
+              <div class="differences__text" data-reveal data-reveal-delay="1">
+                <h3 class="h2 differences__title" data-showcase-title>{{title}}</h3>
+                <p class="lead muted differences__copy" data-showcase-copy>{{text}}</p>
+              </div>
+            </li>
+            {{/each}}
+          </ul>
+        </div>
+      </div>
+      <!-- The one frame of the pinned layout; shown only while pinned, when the pictures above are not. -->
+      <div class="differences__stage" data-reveal data-reveal-delay="1">
+        <div class="media media--4x5 differences__frame">
+          <img data-showcase-picture src="{{images.difference1.src}}" srcset="{{images.difference1.srcSmall}} {{images.difference1.widthSmall}}w, {{images.difference1.src}} {{images.difference1.width}}w" sizes="min(42vw, 600px)" width="{{images.difference1.width}}" height="{{images.difference1.height}}" alt="{{images.difference1.alt}}" loading="lazy" decoding="async">
+          <img data-showcase-picture src="{{images.difference2.src}}" srcset="{{images.difference2.srcSmall}} {{images.difference2.widthSmall}}w, {{images.difference2.src}} {{images.difference2.width}}w" sizes="min(42vw, 600px)" width="{{images.difference2.width}}" height="{{images.difference2.height}}" alt="{{images.difference2.alt}}" loading="lazy" decoding="async">
+          <img data-showcase-picture src="{{images.difference3.src}}" srcset="{{images.difference3.srcSmall}} {{images.difference3.widthSmall}}w, {{images.difference3.src}} {{images.difference3.width}}w" sizes="min(42vw, 600px)" width="{{images.difference3.width}}" height="{{images.difference3.height}}" alt="{{images.difference3.alt}}" loading="lazy" decoding="async">
+        </div>
+      </div>
+    </div>
   </div>
 </section>
 
+<!-- How a match is made. On wide screens motion.js pins it (data-process) and the chosen thread draws with the scroll. -->
 <section class="section process">
-  <div class="panel">
-    <div class="wrap">
-      <div class="process__top">
+  <div class="panel process__panel" data-process>
+    <div class="process__pin" data-process-pin>
+      <div class="wrap process__inner">
         <div class="process__head">
           <p class="label label--muted" data-reveal>{{home.process.label}}</p>
           <h2 class="h2" data-reveal="lines">{{home.process.title}}</h2>
           <p class="lead muted" data-reveal data-reveal-delay="1">{{home.process.lead}}</p>
         </div>
-        <div class="threads process__threads" data-threads>
+        <div class="threads process__threads" data-threads="fill">
           <img src="{{images.threads.src}}" alt="{{images.threads.alt}}" width="{{images.threads.width}}" height="{{images.threads.height}}" loading="lazy" decoding="async">
         </div>
+        <ol class="steps process__steps">
+          {{#each home.process.steps}}
+          <li class="step process__step" data-process-step data-reveal data-reveal-delay="{{@number}}">
+            <h3 class="h3">{{title}}</h3>
+            <p class="muted">{{text}}</p>
+          </li>
+          {{/each}}
+        </ol>
+        <p class="process__more"><a class="link" href="{{home.process.link.href}}">{{home.process.link.label}} {{> icons/arrow-right}}</a></p>
       </div>
-      <ol class="steps process__steps">
-        {{#each home.process.steps}}
-        <li class="step" data-reveal data-reveal-delay="{{@number}}">
-          <h3 class="h3">{{title}}</h3>
-          <p class="muted">{{text}}</p>
-        </li>
-        {{/each}}
-      </ol>
-      <p class="process__more"><a class="link" href="{{home.process.link.href}}">{{home.process.link.label}} {{> icons/arrow-right}}</a></p>
     </div>
   </div>
 </section>
@@ -66,11 +83,23 @@
   <div class="wrap">
     <div class="section-head">
       <p class="label label--muted" data-reveal>{{home.examples.label}}</p>
-      <h2 class="h2" data-reveal="lines">{{home.examples.title}}</h2>
+      <h2 class="h2" id="examples-title" data-reveal="lines">{{home.examples.title}}</h2>
     </div>
-    <ul class="examples__grid">
+    <!-- A sideways strip on phones: it can take keyboard focus so the arrow keys scroll it. -->
+    <ul class="examples__grid" role="region" aria-labelledby="examples-title" tabindex="0">
       {{#each home.examples.items}}
       <li class="tile examples__tile" data-reveal data-reveal-delay="{{@number}}">
+        <figure class="media media--4x5 examples__media">
+          {{#if @first}}
+          <img src="{{images.example1.src}}" srcset="{{images.example1.srcSmall}} {{images.example1.widthSmall}}w, {{images.example1.src}} {{images.example1.width}}w" sizes="(min-width: 861px) min(30vw, 440px), 80vw" width="{{images.example1.width}}" height="{{images.example1.height}}" alt="" loading="lazy" decoding="async">
+          {{else}}
+          {{#if @last}}
+          <img src="{{images.example3.src}}" srcset="{{images.example3.srcSmall}} {{images.example3.widthSmall}}w, {{images.example3.src}} {{images.example3.width}}w" sizes="(min-width: 861px) min(30vw, 440px), 80vw" width="{{images.example3.width}}" height="{{images.example3.height}}" alt="" loading="lazy" decoding="async">
+          {{else}}
+          <img src="{{images.example2.src}}" srcset="{{images.example2.srcSmall}} {{images.example2.widthSmall}}w, {{images.example2.src}} {{images.example2.width}}w" sizes="(min-width: 861px) min(30vw, 440px), 80vw" width="{{images.example2.width}}" height="{{images.example2.height}}" alt="" loading="lazy" decoding="async">
+          {{/if}}
+          {{/if}}
+        </figure>
         <span class="chip">{{site.labels.example}}</span>
         <dl class="examples__lines">
           <div class="examples__line">
@@ -94,25 +123,24 @@
 </section>
 
 <section class="section commission">
-  <div class="wrap split">
-    <div class="split__head">
+  <div class="wrap">
+    <div class="section-head section-head--center commission__head">
       <p class="label label--muted" data-reveal>{{home.commission.label}}</p>
       <h2 class="h2" data-reveal="lines">{{home.commission.title}}</h2>
       <p class="lead" data-reveal data-reveal-delay="1">{{home.commission.lead}}</p>
     </div>
-    <div class="split__body">
-      <dl class="rows rows--split" data-reveal>
-        <div class="row row--head">
-          <dt class="label label--muted">{{site.commission.sizeHead}}</dt>
-          <dd class="label label--muted">{{site.commission.rateHead}}</dd>
-        </div>
+    <div class="commission__table">
+      <p class="commission__heads" data-reveal><span class="label label--muted">{{site.commission.sizeHead}}</span> <span class="label label--muted">{{site.commission.rateHead}}</span></p>
+      <dl class="commission__rates">
         {{#each site.commission.tiers}}
-        <div class="row">
-          <dt class="h3">{{size}}</dt>
-          <dd class="h3">{{rate}}</dd>
+        <div class="commission__rate" data-reveal data-reveal-delay="{{@number}}">
+          <dt class="label label--muted commission__size">{{size}}</dt>
+          <dd class="commission__value"><span data-count>{{rate}}</span></dd>
         </div>
         {{/each}}
       </dl>
+    </div>
+    <div class="commission__foot">
       <ul class="commission__notes" data-reveal data-reveal-delay="1">
         {{#each site.commission.notes}}
         <li class="commission__note small muted">{{> icons/check}}<span>{{this}}</span></li>
@@ -125,9 +153,8 @@
 
 <section class="band home-band">
   <img src="{{images.band.src}}" srcset="{{images.band.srcSmall}} {{images.band.widthSmall}}w, {{images.band.src}} {{images.band.width}}w" sizes="100vw" width="{{images.band.width}}" height="{{images.band.height}}" alt="{{images.band.alt}}" loading="lazy" decoding="async" data-parallax>
-  <p class="h2" data-reveal="lines">{{home.band.text}}</p>
+  <p class="h2 home-band__line" data-reveal="lines">{{home.band.text}}</p>
 </section>
-
 <section class="section home-questions">
   <div class="wrap">
     <div class="section-head">

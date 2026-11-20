@@ -147,8 +147,12 @@ main section[id] {
 
 /* ---------- Home ---------- */
 
-/* Statement: one paragraph alone on the screen, with more air than a usual section. */
+/* Statement: one paragraph alone on a full screen, with the most air of the page. */
 .home-statement {
+  display: grid;
+  align-items: center;
+  min-height: 100vh;
+  min-height: 100svh;
   padding-block: var(--s-9);
 }
 
@@ -162,6 +166,9 @@ main section[id] {
 .differences__list {
   display: grid;
   gap: var(--s-8);
+  margin: 0;
+  padding: 0;
+  list-style: none;
 }
 
 /* One difference: the picture above the text on a phone. */
@@ -185,44 +192,73 @@ main section[id] {
   justify-self: center;
 }
 
-/* How a match is made: the head above the drawing on a phone. */
-.process__top {
+/* The progress line and the single frame belong to the pinned layout only (below). */
+.differences__bar,
+.differences__stage {
+  display: none;
+}
+
+/* How a match is made: the panel already keeps the gutter, so its column adds none. */
+.process__pin > .wrap {
+  max-width: var(--wrap);
+  padding-inline: 0;
+}
+
+/* The head, the drawing, the steps and the link, one under the other on a phone. */
+.process__inner {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
   gap: var(--s-6);
 }
 
-/* The drawing fills its column and keeps its own shape. */
+/* The drawing runs across the whole panel, to its edges. */
+.process__threads {
+  margin-inline: calc(var(--gutter) * -1);
+}
+
+/* The drawing keeps its own shape. */
 .process__threads > img,
 .process__threads > canvas {
+  display: block;
   width: 100%;
   height: auto;
 }
 
-/* Responsive: on a phone held sideways the 3:2 drawing filled more than a screen; it now
-   stays within about 70% of the screen's height, centred in its column. */
-.process__threads {
-  width: 100%;
-  max-width: calc(70vh * 3 / 2);
-  max-width: calc(70svh * 3 / 2);
-  margin-inline: auto;
-}
-
-/* The four steps, under the head and the drawing. */
+/* The four steps, under the drawing. */
 .process__steps {
-  margin-top: var(--s-7);
+  margin-top: var(--s-4);
 }
 
 /* The link under the steps. */
 .process__more {
-  margin-top: var(--s-6);
+  margin: 0;
 }
 
-/* Example matches: one tile under the other on a phone. */
+/* Example matches: on a phone, a sideways strip of cards from one edge of the screen to
+   the other; each card stops at the gutter and the next one peeks in. */
 .examples__grid {
   display: grid;
-  grid-template-columns: minmax(0, 1fr);
+  grid-auto-flow: column;
+  grid-auto-columns: min(80%, 360px);
   gap: var(--s-4);
+  margin: 0 calc(var(--gutter) * -1);
+  padding: 0 var(--gutter) var(--s-2);
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x mandatory;
+  scroll-padding-inline: var(--gutter);
+  scrollbar-width: none;
+  list-style: none;
+}
+
+/* The strip takes keyboard focus for its arrow keys; its ring is drawn inside the strip. */
+.examples__grid:focus-visible {
+  outline-offset: calc(var(--stroke) * -1);
+}
+
+/* A card stops at the start of the strip. */
+.examples__tile {
+  scroll-snap-align: start;
 }
 
 /* The three labelled lines of a tile, as wide as the tile. */
@@ -251,6 +287,48 @@ main section[id] {
   margin-top: var(--s-5);
 }
 
+/* Commission: the two column names over the rates. */
+.commission__heads {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--s-4);
+  margin: 0;
+  padding-block: var(--s-3);
+  border-top: var(--hairline) solid var(--rule);
+  border-bottom: var(--hairline) solid var(--rule);
+}
+
+/* The three rates: on a phone one row each, the size at the left and the rate at the right. */
+.commission__rates {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  margin: 0;
+}
+
+.commission__rate {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--s-4);
+  padding-block: var(--s-5);
+  border-bottom: var(--hairline) solid var(--rule);
+}
+
+.commission__rate > * {
+  margin: 0;
+}
+
+/* A rate is set very large, in the light serif of the hero line. */
+.commission__value {
+  font-family: var(--font-serif);
+  font-size: var(--t-hero);
+  font-weight: var(--w-heading);
+  line-height: 1;
+  letter-spacing: var(--track-heading);
+  font-variant-numeric: lining-nums tabular-nums;
+  white-space: nowrap;
+}
+
 /* Questions: an answer never runs wider than a line of running text. */
 .home-questions__answer {
   max-width: var(--measure);
@@ -259,6 +337,23 @@ main section[id] {
 /* The link under the questions. */
 .home-questions__more {
   margin-top: var(--s-5);
+}
+
+/* Band: taller than a usual band, its line set larger. */
+.home-band {
+  min-height: min(100vh, calc(var(--h-band) * 1.25));
+}
+
+.home-band__line {
+  font-size: var(--t-h1);
+  line-height: var(--lh-h1);
+  font-style: italic;
+}
+
+/* The closing line of the home page is set a size larger than on the other pages. */
+.home-questions + .closing .h2 {
+  font-size: var(--t-h1);
+  line-height: var(--lh-h1);
 }
 
 /* Small tablets and up. */
@@ -294,25 +389,28 @@ main section[id] {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: var(--s-6);
   }
+}
 
-  /* The lines of an example tile run across the tile. Responsive: three columns were
-     cramped (about 120px each at 600px), so channel and sponsor sit side by side and
-     the video runs across the tile under them. */
-  .examples__lines {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  .examples__line:last-child {
-    grid-column: 1 / -1;
+/* A phone held sideways: the drawing stays within about 70% of the screen's height. */
+@media (max-width: 860px) and (orientation: landscape) {
+  .process__threads {
+    width: 100%;
+    max-width: calc(70vh * 3 / 2);
+    max-width: calc(70svh * 3 / 2);
+    margin-inline: auto;
   }
 }
 
-
 /* Wide screens. */
 @media (min-width: 861px) {
-  /* The statement gets the most air of all. */
+  /* The statement gets the most air of all, and a larger size. */
   .home-statement {
     padding-block: var(--s-10);
+  }
+
+  .home-statement__text {
+    max-width: calc(var(--narrow) + 2 * var(--s-10));
+    font-size: var(--t-h2);
   }
 
   /* About one difference per screen. */
@@ -347,22 +445,78 @@ main section[id] {
     grid-column: 2 / span 4;
   }
 
-  /* The head of the panel beside the drawing. */
-  .process__top {
+  /* The panel's head beside the drawing, the steps and the link across under them. */
+  .process__inner {
     grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
-    gap: var(--s-8);
+    column-gap: var(--s-8);
     align-items: center;
   }
 
-  /* More room above the steps. */
-  .process__steps {
-    margin-top: var(--s-8);
+  .process__threads {
+    margin-inline: 0;
   }
 
-  /* Three example tiles in a row. */
+  .process__steps,
+  .process__more {
+    grid-column: 1 / -1;
+  }
+
+  .process__steps {
+    margin-top: var(--s-6);
+  }
+
+  /* Example matches: three cards in a row, no strip. */
   .examples__grid {
+    grid-auto-flow: row;
     grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: var(--s-5);
+    margin-inline: 0;
+    padding: 0;
+    overflow: visible;
+  }
+
+  /* Commission: the column names at the left, then three columns between hairlines. */
+  .commission__table {
+    display: grid;
+    grid-template-columns: minmax(0, 2fr) minmax(0, 9fr);
+    border-block: var(--hairline) solid var(--rule);
+  }
+
+  .commission__heads {
+    flex-direction: column;
+    padding: var(--s-6) var(--s-5) var(--s-6) 0;
+    border: 0;
+  }
+
+  .commission__rates {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .commission__rate {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--s-8);
+    padding: var(--s-6);
+    border-bottom: 0;
+    border-left: var(--hairline) solid var(--rule);
+  }
+
+  .commission__value {
+    font-size: calc(var(--t-hero) * 1.5);
+  }
+
+  /* The notes at the left, the link at the right, under the rates. */
+  .commission__foot {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: var(--s-6);
+  }
+
+  /* The line of the band, at the size of the hero line. */
+  .home-band__line {
+    font-size: var(--t-hero);
+    line-height: var(--lh-hero);
   }
 }
 
@@ -384,6 +538,206 @@ main section[id] {
 
   .differences__item:nth-child(even) .differences__text {
     grid-column: 1 / span 5;
+  }
+}
+
+/* ---------- Home, pinned by motion.js ----------
+ * On a wide screen, with motion allowed, motion.js gives two sections the class
+ * .is-pinned: the section becomes a tall track and its content holds still
+ * (position: sticky) while the visitor scrolls through it. Without the class,
+ * the layouts above apply unchanged. The media query here is the one in motion.js. */
+
+@media screen and (min-width: 861px) and (min-height: 600px) and (prefers-reduced-motion: no-preference) {
+  /* Three differences: the track is one screen plus most of a screen per difference. */
+  html.mo-on .differences.is-pinned {
+    height: calc(100vh + 3 * 70vh);
+    padding-block: 0;
+  }
+
+  html.mo-on .is-pinned > .differences__pin {
+    position: sticky;
+    top: 0;
+    display: grid;
+    align-items: center;
+    height: 100vh;
+    padding-block: calc(var(--header-h) + var(--s-4)) var(--s-6);
+  }
+
+  /* The items on the left, the one frame on the right. */
+  html.mo-on .is-pinned .differences__inner {
+    display: grid;
+    grid-template-columns: minmax(0, 5fr) minmax(0, 6fr);
+    column-gap: var(--s-8);
+    align-items: center;
+  }
+
+  html.mo-on .is-pinned .differences__head {
+    margin-bottom: var(--s-7);
+    text-align: left;
+  }
+
+  /* The titles, with the progress line at their left and room under them for one text. */
+  html.mo-on .is-pinned .differences__nav {
+    position: relative;
+    margin-bottom: calc(var(--mo-slot, 7em) + var(--s-5));
+    padding-left: var(--s-6);
+  }
+
+  html.mo-on .is-pinned .differences__bar {
+    display: block;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    width: var(--hairline);
+    background-color: var(--rule);
+  }
+
+  html.mo-on .is-pinned .differences__fill {
+    display: block;
+    position: absolute;
+    inset: 0;
+    background-color: var(--fg);
+    transform: scaleY(0);
+    transform-origin: top;
+  }
+
+  html.mo-on .is-pinned .differences__list {
+    gap: var(--s-2);
+  }
+
+  html.mo-on .is-pinned .differences__item {
+    display: block;
+  }
+
+  /* Each item's own picture gives way to the frame. */
+  html.mo-on .is-pinned .differences__media {
+    display: none;
+  }
+
+  html.mo-on .is-pinned .differences__text {
+    display: contents;
+  }
+
+  /* A title is muted until it is the current one. */
+  html.mo-on .is-pinned .differences__title {
+    margin: 0;
+    color: var(--fg-muted);
+    transition: color var(--dur-hover-slow) var(--ease);
+  }
+
+  html.mo-on .is-pinned .is-current .differences__title {
+    color: var(--fg);
+  }
+
+  /* The three texts share one place under the titles; only the current one is seen. */
+  html.mo-on .is-pinned .differences__copy {
+    position: absolute;
+    top: calc(100% + var(--s-5));
+    right: 0;
+    left: var(--s-6);
+    margin: 0;
+    transition: opacity var(--dur-enter) var(--ease), transform var(--dur-enter) var(--ease);
+  }
+
+  html.mo-on .is-pinned .differences__item:not(.is-current) .differences__copy {
+    opacity: 0;
+    transform: translateY(var(--s-3));
+  }
+
+  /* The frame: as tall as most of the screen, at the right. */
+  html.mo-on .is-pinned .differences__stage {
+    display: block;
+    justify-self: end;
+    width: min(100%, calc(72vh * 4 / 5));
+  }
+
+  /* Its three pictures lie on one another and cross-fade, the new one settling from a slight zoom. */
+  html.mo-on .is-pinned .differences__frame > img {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    transform: scale(1.06);
+    transition: opacity var(--dur-enter-long) var(--ease), transform var(--dur-enter-long) var(--ease);
+  }
+
+  html.mo-on .is-pinned .differences__frame > img.is-current {
+    opacity: 1;
+    transform: none;
+  }
+
+  /* How a match is made: the panel is the track, one screen plus one and a half. */
+  html.mo-on .process__panel.is-pinned {
+    height: calc(100vh + 150vh);
+    padding-block: 0;
+  }
+
+  html.mo-on .is-pinned > .process__pin {
+    position: sticky;
+    top: 0;
+    display: grid;
+    height: 100vh;
+  }
+
+  /* The head at the top, the drawing filling the middle, the steps along the bottom. */
+  html.mo-on .is-pinned .process__inner {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto minmax(0, 1fr) auto;
+    align-items: stretch;
+    row-gap: var(--s-6);
+    padding-block: calc(var(--header-h) + var(--s-4)) var(--s-7);
+  }
+
+  html.mo-on .is-pinned .process__head {
+    grid-row: 1;
+    grid-column: 1;
+  }
+
+  /* The link sits at the right of the head. */
+  html.mo-on .is-pinned .process__more {
+    grid-row: 1;
+    grid-column: 1;
+    align-self: end;
+    justify-self: end;
+  }
+
+  html.mo-on .is-pinned .process__threads {
+    position: relative;
+    grid-row: 2;
+    min-height: 0;
+    margin-inline: calc(var(--gutter) * -1);
+  }
+
+  html.mo-on .is-pinned .process__threads > img {
+    position: absolute;
+    inset: 0;
+    height: 100%;
+    object-fit: contain;
+  }
+
+  /* The four steps stay on one row, also where they would otherwise sit two by two. */
+  html.mo-on .is-pinned .process__steps.steps {
+    grid-row: 3;
+    grid-auto-flow: column;
+    grid-template-columns: none;
+    margin-top: 0;
+  }
+
+  html.mo-on .is-pinned ol.process__steps > .step::before {
+    margin-bottom: var(--s-4);
+  }
+}
+
+/* While motion.js follows the steps, a step is muted until the scroll reaches it. */
+@media screen and (prefers-reduced-motion: no-preference) {
+  html.mo-on .is-tracking .process__step > *,
+  html.mo-on .is-tracking .process__step::before {
+    transition: opacity var(--dur-enter) var(--ease), color var(--dur-enter) var(--ease);
+  }
+
+  html.mo-on .is-tracking .process__step:not(.is-on) > *,
+  html.mo-on .is-tracking .process__step:not(.is-on)::before {
+    opacity: .4;
   }
 }
 
