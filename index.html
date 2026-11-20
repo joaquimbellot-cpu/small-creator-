@@ -3,11 +3,11 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Smallfold: sponsors for small YouTube channels</title>
-<meta name="description" content="Smallfold is a sponsorship marketplace for YouTube channels with 1,000 to 50,000 subscribers. Brands post what they want to sponsor, creators apply and get paid.">
+<title>Smallfold: we find sponsors for small YouTube channels</title>
+<meta name="description" content="Smallfold finds sponsors for YouTube channels with 1,000 to 50,000 subscribers. Tell us about your channel, we look for a sponsor that fits it, and you keep the whole fee.">
 <meta property="og:type" content="website">
-<meta property="og:title" content="Smallfold: sponsors for small YouTube channels">
-<meta property="og:description" content="Brands post a sponsorship. Channels with 1,000 to 50,000 subscribers apply, publish the video and get paid.">
+<meta property="og:title" content="Smallfold: we find sponsors for small YouTube channels">
+<meta property="og:description" content="Tell us about your channel. We look for a sponsor that fits it, and you keep the whole fee.">
 <meta property="og:image" content="share.jpg">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
@@ -118,12 +118,11 @@ a:hover > .arrow, button:hover > .arrow { transform: translateX(3px); }
 .scroll i { position: relative; width: 1px; height: 44px; background: var(--line); overflow: hidden; }
 .scroll i::after { content: ""; position: absolute; inset: 0; background: var(--fg); transform: translateY(-101%); animation: drip 2.6s var(--ease) infinite; }
 @keyframes drip { 0% { transform: translateY(-101%); } 55% { transform: translateY(0); } 100% { transform: translateY(101%); } }
-.hero__facts { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 6px 32px; margin-bottom: 18px; color: var(--muted); }
-.hero__stage { position: relative; padding-top: clamp(48px, 7vw, 104px); scroll-margin-top: var(--nav); }
 @media (max-width: 700px) {
   .hero__center { padding-bottom: clamp(110px, 21vh, 190px); }
   .d-hero { font-size: clamp(36px, 11.3vw, 64px); }
 }
+@media (max-height: 780px) and (min-width: 701px) { .hero__center { padding-bottom: clamp(96px, 16vh, 124px); } }
 @media (max-height: 620px) { .hero__center { padding-bottom: 96px; gap: 16px; } }
 .window { border: 1px solid var(--line-on-cream); border-bottom: 0; border-radius: 14px 14px 0 0; background: var(--cream); color: var(--ink); overflow: hidden; }
 .window__bar { display: flex; align-items: center; gap: 14px; padding: 14px 20px; border-bottom: 1px solid var(--line-on-cream); }
@@ -275,33 +274,16 @@ fieldset.field { border: 0; margin: 0; padding: 0; min-width: 0; }
     <div class="hero__screen">
       <canvas class="hero__flow" aria-hidden="true"></canvas>
       <div class="wrap hero__center">
-        <h1 class="display d-hero" id="hero-h">Sponsors for small YouTube channels</h1>
+        <h1 class="display d-hero" id="hero-h">We find sponsors for small YouTube channels</h1>
         <script>(function(){var h=document.getElementById('hero-h'),t=h.textContent.trim();h.setAttribute('aria-label',t);h.innerHTML=t.split(/\s+/).map(function(w,i){return '<span class="w" aria-hidden="true"><span style="--i:'+i+'">'+w+'</span></span>'}).join(' ')})()</script>
-        <p class="hero__lead muted" data-in style="--i:7">Brands post sponsorship offers. You apply with your channel, publish the video and keep the whole fee.</p>
-        <div class="hero__actions" data-in style="--i:9">
+        <p class="hero__lead muted" data-in style="--i:9">Tell us about your channel. We look for a sponsor that fits it, and you keep the whole fee.</p>
+        <div class="hero__actions" data-in style="--i:11">
           <a class="btn" href="#join">Join Smallfold</a>
         </div>
       </div>
-      <div class="hero__foot" data-in style="--i:12">
-        <a class="scroll" href="#offers" aria-label="Scroll to the example sponsorships"><i aria-hidden="true"></i></a>
+      <div class="hero__foot" data-in style="--i:14">
+        <a class="scroll" href="#creators" aria-label="Scroll to the next section"><i aria-hidden="true"></i></a>
       </div>
-    </div>
-    <div class="wrap hero__stage" id="offers">
-        <p class="hero__facts label"><span>For channels with 1,000 to 50,000 subscribers</span><span>10% per deal, paid by the brand</span></p>
-        <div class="window" role="img" aria-label="An example of the list a creator sees in Smallfold: four open sponsorships, each with what the brand wants in the video, the publish-by date and the fee">
-          <div class="window__bar" aria-hidden="true"><span class="window__dots"><i></i><i></i><i></i></span><span class="label">Example sponsorships</span></div>
-          <div class="table-scroll" aria-hidden="true">
-            <table class="rows">
-              <thead><tr><th>Sponsorship</th><th class="hide-s">In the video</th><th class="hide-s">Publish by</th><th class="num">Fee</th><th>Status</th></tr></thead>
-              <tbody>
-                <tr><td>Oat drink launch<span class="sub">60-second mention</span></td><td class="hide-s">60-second mention, link in the description</td><td class="hide-s">14 March</td><td class="num">$180</td><td><span class="chip">Open</span></td></tr>
-                <tr><td>Gaming headset<span class="sub">One review video</span></td><td class="hide-s">One video that reviews the headset</td><td class="hide-s">21 March</td><td class="num">$320</td><td><span class="chip">Open</span></td></tr>
-                <tr><td>Study planner app<span class="sub">60-second mention</span></td><td class="hide-s">60-second mention, link in the description</td><td class="hide-s">28 March</td><td class="num">$240</td><td><span class="chip">Open</span></td></tr>
-                <tr><td>Travel backpack<span class="sub">Shown in one video</span></td><td class="hide-s">Shown and named in one travel video</td><td class="hide-s">2 April</td><td class="num">$150</td><td><span class="chip">Open</span></td></tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
     </div>
   </section>
 
@@ -311,28 +293,28 @@ fieldset.field { border: 0; margin: 0; padding: 0; min-width: 0; }
       <div class="chapter">
         <p class="label label--muted">For creators</p>
         <div class="chapter__body">
-          <h2 class="display d-lg" id="creators-h">A sponsor for your next video</h2>
-          <p class="lead">You do not need a manager or an agency. Every sponsorship on Smallfold is an offer from a brand. It says what the brand wants in your video and what it pays.</p>
+          <h2 class="display d-lg" id="creators-h">A sponsor chosen for your channel</h2>
+          <p class="lead">You do not need a manager or an agency, and you do not search through a list. You tell us about your channel, and we look for a sponsor that suits your videos and the people who watch them.</p>
         </div>
       </div>
       <div class="split">
         <ul class="points">
-          <li><h3>You read the whole offer first</h3><p class="muted">What the brand wants in the video, the fee and the date are in the offer before you apply.</p></li>
-          <li><h3>You keep the whole fee</h3><p class="muted">The brand pays Smallfold's 10% commission on top. Nothing is taken from your fee.</p></li>
-          <li><h3>You choose what you promote</h3><p class="muted">You pick the offers you apply to. No offer is assigned to you.</p></li>
+          <li><h3>We start with your channel</h3><p class="muted">We look at what you make and who watches it before we suggest a sponsor.</p></li>
+          <li><h3>You keep the whole fee</h3><p class="muted">The sponsor pays Smallfold's 10% commission on top. Nothing is taken from your fee.</p></li>
+          <li><h3>You decide</h3><p class="muted">You can say no to any sponsor we suggest. Nothing is agreed without you.</p></li>
         </ul>
-        <div class="window window--full offer" role="img" aria-label="An example offer: a study planner app wants a 60-second mention in one video and a link in the description, published by 28 March. The fee is 240 dollars. The creator receives the full 240 dollars and the brand pays 264 dollars, the fee plus 10 percent.">
-          <div class="window__bar" aria-hidden="true"><span class="window__dots"><i></i><i></i><i></i></span><span class="label">Example offer</span></div>
+        <div class="window window--full offer" role="img" aria-label="An example match: for a study skills channel with 9,000 subscribers, Smallfold suggests a study planner app as the sponsor, because the viewers are students who plan their revision. The sponsor wants a 60-second mention in one video and a link in the description. The fee is 240 dollars. The creator receives the full 240 dollars and the sponsor pays 264 dollars, the fee plus 10 percent.">
+          <div class="window__bar" aria-hidden="true"><span class="window__dots"><i></i><i></i><i></i></span><span class="label">Example match</span></div>
           <div class="offer__body" aria-hidden="true">
             <p class="offer__title">Study planner app</p>
             <dl class="offer__rows">
+              <div><dt>Your channel</dt><dd>Study skills, 9,000 subscribers</dd></div>
+              <div><dt>Why it fits</dt><dd>Your viewers are students who plan their revision</dd></div>
               <div><dt>In the video</dt><dd>A 60-second mention in one video, and a link in the description</dd></div>
-              <div><dt>Publish by</dt><dd>28 March</dd></div>
               <div><dt>Fee</dt><dd>$240</dd></div>
               <div class="is-strong"><dt>You receive</dt><dd>$240, the full fee</dd></div>
-              <div><dt>The brand pays</dt><dd>$264, the fee plus 10%</dd></div>
+              <div><dt>The sponsor pays</dt><dd>$264, the fee plus 10%</dd></div>
             </dl>
-            <span class="chip chip--on">Apply</span>
           </div>
         </div>
       </div>
@@ -345,14 +327,14 @@ fieldset.field { border: 0; margin: 0; padding: 0; min-width: 0; }
       <div class="chapter">
         <p class="label label--muted">How it works</p>
         <div class="chapter__body">
-          <h2 class="display d-lg" id="steps-h">A sponsorship in four steps</h2>
+          <h2 class="display d-lg" id="steps-h">How we find your sponsor</h2>
         </div>
       </div>
       <ol class="steps">
-        <li><h3>Join with your channel</h3><p class="muted">Sign up as a creator and add your YouTube channel.</p></li>
-        <li><h3>Apply to a sponsorship</h3><p class="muted">Read the offers from brands and apply to the ones that suit what you make.</p></li>
-        <li><h3>Confirm and publish</h3><p class="muted">When the brand approves you, confirm the fee and the date, then publish the video.</p></li>
-        <li><h3>Get paid</h3><p class="muted">The brand pays your fee through Smallfold once the video is published.</p></li>
+        <li><h3>Tell us about your channel</h3><p class="muted">Join as a creator and send us the link to your YouTube channel.</p></li>
+        <li><h3>We look for a sponsor</h3><p class="muted">We look at your videos and your audience, and find a sponsor that suits them.</p></li>
+        <li><h3>You say yes or no</h3><p class="muted">We tell you who the sponsor is, what they want in the video and what they pay. You decide.</p></li>
+        <li><h3>Publish and get paid</h3><p class="muted">You publish the video, and the sponsor pays your fee through Smallfold.</p></li>
       </ol>
     </div>
   </section>
@@ -367,10 +349,11 @@ fieldset.field { border: 0; margin: 0; padding: 0; min-width: 0; }
         </div>
       </div>
       <div class="faq" style="margin-top: clamp(40px, 5vw, 72px)">
-        <div class="faq__item"><h3>What does Smallfold cost?</h3><p>Smallfold takes a 10% commission on each deal, and the brand pays it. As a creator you keep the whole fee in the offer. No deal, no commission.</p></div>
+        <div class="faq__item"><h3>Do I look for the sponsor myself?</h3><p>No. You tell us about your channel and we look for a sponsor that suits it. You do not apply to a list of offers.</p></div>
+        <div class="faq__item"><h3>What does Smallfold cost?</h3><p>Nothing for creators. Smallfold takes a 10% commission on each deal, and the sponsor pays it. You keep the whole fee. No deal, no commission.</p></div>
         <div class="faq__item"><h3>Is my channel big enough?</h3><p>Yes, if it has between 1,000 and 50,000 subscribers. A channel with fewer than 1,000 cannot join yet: come back when you reach 1,000.</p></div>
-        <div class="faq__item"><h3>How do I get paid?</h3><p>Through Smallfold. The brand pays your fee there once your video is published.</p></div>
-        <div class="faq__item"><h3>Can I say no to a sponsorship?</h3><p>Yes. You choose which offers to apply to, and you can read each one in full first. Nothing is assigned to you.</p></div>
+        <div class="faq__item"><h3>Can I say no to a sponsor?</h3><p>Yes. We suggest a sponsor and you decide. Nothing is agreed without you.</p></div>
+        <div class="faq__item"><h3>How do I get paid?</h3><p>Through Smallfold. The sponsor pays your fee there once your video is published.</p></div>
       </div>
     </div>
   </section>
@@ -381,7 +364,7 @@ fieldset.field { border: 0; margin: 0; padding: 0; min-width: 0; }
       <div class="chapter__body">
         <p class="label label--muted">Join</p>
         <h2 class="display d-lg" id="join-h">Join as a creator or a brand</h2>
-        <p class="lead muted">Tell us which side you are on and where to reach you. We reply by email.</p>
+        <p class="lead muted">Tell us whether you are a creator or a brand, and where to reach you. We reply by email.</p>
       </div>
       <form class="form" id="join-form" novalidate>
         <fieldset class="field field--full">
@@ -415,27 +398,27 @@ fieldset.field { border: 0; margin: 0; padding: 0; min-width: 0; }
       <div class="chapter">
         <p class="label label--muted">For brands</p>
         <div class="chapter__body">
-          <h2 class="display d-lg" id="brands-h">Sponsor many small channels with one brief</h2>
+          <h2 class="display d-lg" id="brands-h">Small channels chosen for your brand</h2>
           <p><a class="link" href="#join">Join as a brand <svg class="arrow" viewBox="0 0 12 12" aria-hidden="true"><path d="M1 6h9M6.5 2.5 10 6l-3.5 3.5" fill="none" stroke="currentColor" stroke-width="1.3"/></svg></a></p>
         </div>
       </div>
       <div class="split">
         <ul class="points">
-          <li><h3>Post a sponsorship brief</h3><p class="muted">Say what you sell, what you want in the video and what you pay.</p></li>
-          <li><h3>Compare the channels that apply</h3><p class="muted">Each application shows the channel's topic and subscriber count.</p></li>
+          <li><h3>Tell us what you want to promote</h3><p class="muted">Say what you sell, who should see it and what you pay.</p></li>
+          <li><h3>We suggest channels that fit</h3><p class="muted">We choose small YouTube channels whose viewers suit your product. You approve each one.</p></li>
           <li><h3>Pay per finished deal</h3><p class="muted">You pay each creator's fee through Smallfold, plus a 10% commission on each deal.</p></li>
         </ul>
-        <div class="window window--full" role="img" aria-label="The Smallfold app showing a brand's list of channels that applied to its sponsorship, with each channel's topic, subscriber count and status">
-          <div class="window__bar" aria-hidden="true"><span class="window__dots"><i></i><i></i><i></i></span><span class="label">Oat drink launch · applications</span></div>
+        <div class="window window--full" role="img" aria-label="An example of the channels Smallfold suggests to a brand for an oat drink launch: five small channels, each with its topic, its subscriber count and whether the brand has approved it">
+          <div class="window__bar" aria-hidden="true"><span class="window__dots"><i></i><i></i><i></i></span><span class="label">Example · channels suggested for an oat drink</span></div>
           <div class="table-scroll" aria-hidden="true">
             <table class="rows">
               <thead><tr><th>Channel</th><th class="num"><span class="hide-s">Subscribers</span><span class="show-s">Subs</span></th><th>Status</th></tr></thead>
               <tbody>
                 <tr><td>Home baking channel</td><td class="num">12,400</td><td><span class="chip chip--on">Approved</span></td></tr>
-                <tr><td>Trail running channel</td><td class="num">8,900</td><td><span class="chip">In review</span></td></tr>
-                <tr><td>Indie games channel</td><td class="num">31,200</td><td><span class="chip">Applied</span></td></tr>
-                <tr><td>Budget cooking channel</td><td class="num">4,700</td><td><span class="chip">Applied</span></td></tr>
-                <tr><td>Study skills channel</td><td class="num">1,900</td><td><span class="chip">Applied</span></td></tr>
+                <tr><td>Trail running channel</td><td class="num">8,900</td><td><span class="chip">Suggested</span></td></tr>
+                <tr><td>Indie games channel</td><td class="num">31,200</td><td><span class="chip">Suggested</span></td></tr>
+                <tr><td>Budget cooking channel</td><td class="num">4,700</td><td><span class="chip">Suggested</span></td></tr>
+                <tr><td>Study skills channel</td><td class="num">1,900</td><td><span class="chip">Suggested</span></td></tr>
               </tbody>
             </table>
           </div>
@@ -448,7 +431,7 @@ fieldset.field { border: 0; margin: 0; padding: 0; min-width: 0; }
 <footer class="footer on-ink">
   <div class="wrap">
     <div class="footer__row">
-      <p class="lead" style="max-width: 22em">A sponsorship marketplace for YouTube channels with 1,000 to 50,000 subscribers.</p>
+      <p class="lead" style="max-width: 22em">We find sponsors for YouTube channels with 1,000 to 50,000 subscribers.</p>
       <nav class="footer__links" aria-label="Footer">
         <a href="#creators">Creators</a><a href="#steps">How it works</a><a href="#questions">Questions</a><a href="#join">Join Smallfold</a><a href="#brands">For brands</a>
       </nav>
@@ -521,7 +504,7 @@ fieldset.field { border: 0; margin: 0; padding: 0; min-width: 0; }
     var seenIO = new IntersectionObserver(function (entries) {
       entries.forEach(function (en) { if (en.isIntersecting) { en.target.classList.add('is-seen'); seenIO.unobserve(en.target); } });
     }, { rootMargin: '0px 0px -7% 0px', threshold: .08 });
-    [].forEach.call(document.querySelectorAll('.hero__stage, .chapter, .split > *, .steps > li, .faq__item, .join > *, .footer__row, .footer__word'), function (el) {
+    [].forEach.call(document.querySelectorAll('.chapter, .split > *, .steps > li, .faq__item, .join > *, .footer__row, .footer__word'), function (el) {
       var i = [].indexOf.call(el.parentNode.children, el);
       el.style.setProperty('--d', el.matches('.steps > li, .split > *, .join > *') ? Math.min(i, 3) : 0);
       el.classList.add('rv'); seenIO.observe(el);
