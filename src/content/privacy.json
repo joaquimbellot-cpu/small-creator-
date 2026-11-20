@@ -37,7 +37,8 @@
     {
       "heading": "Cookies",
       "paragraphs": [
-        "This site sets no advertising cookies and no analytics cookies."
+        "This site sets no advertising cookies and no analytics cookies.",
+        "The opening animation on the home page plays once per visit. To do that, the site keeps one small note in your browser’s session storage, which holds no personal details and is removed when you close the browser tab."
       ]
     },
     {

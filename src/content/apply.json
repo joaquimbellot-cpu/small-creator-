@@ -32,7 +32,8 @@
       "subscribers": {
         "label": "Subscriber count",
         "hint": "We work with channels of 1,000 to 50,000 subscribers.",
-        "error": "Enter your subscriber count in digits, such as 12000."
+        "error": "Enter your subscriber count in digits, such as 12000.",
+        "errorRange": "We work with channels of 1,000 to 50,000 subscribers."
       }
     },
     "submit": "Send application",

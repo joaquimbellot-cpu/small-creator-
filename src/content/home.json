@@ -57,6 +57,11 @@
     "label": "Matches",
     "title": "What a match can look like",
     "note": "These are invented examples to show how a match works, and none of them is a real deal.",
+    "labels": {
+      "channel": "Channel",
+      "sponsor": "Sponsor",
+      "video": "The video"
+    },
     "items": [
       {
         "channel": "A home baking channel",
