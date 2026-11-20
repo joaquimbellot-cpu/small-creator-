@@ -2,72 +2,161 @@
  * footer.css
  * Owner: Header and Footer agent. (Responsive may add layout fixes.)
  *
- * Belongs here: the ink footer with the short line about Smallfold, the contact
- * email, the three link groups, the very large wordmark in --ink-soft and the
- * copyright line (docs/design-brief.md, section 8).
- *
- * Below is only the minimum that makes the Foundation's simple footer usable.
- * Replace it freely.
+ * The ink footer (src/partials/footer.html), in this order: the short line about
+ * Smallfold, the contact details, the three groups of links, the wordmark set
+ * very large and barely visible, and the copyright line
+ * (docs/design-brief.md, section 8). Every value comes from tokens.css.
  */
 
+/* ---------- The footer ---------- */
+
+/* A section's worth of air above; the bottom clears a phone's home bar. */
 .site-footer {
-  padding-block: var(--s-8) var(--s-6);
+  padding-top: var(--section);
+  padding-bottom: max(var(--s-6), env(safe-area-inset-bottom));
 }
 
+/* Left: the line and the contact details. Right: the groups of links. */
 .site-footer__top {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-  gap: var(--s-7);
-  padding-bottom: var(--s-8);
+  gap: var(--s-8) var(--s-7);
 }
 
-.site-footer__about {
+/* ---------- The line and the contact details ---------- */
+
+/* The line about Smallfold, in the light serif. */
+.site-footer__line {
+  max-width: 15em;
+  font-size: var(--t-statement);
+  font-weight: var(--w-heading);
+  line-height: var(--lh-statement);
+  letter-spacing: var(--track-heading);
+  text-wrap: balance;
+}
+
+/* Email, and the phone number once there is one: a small label above each. */
+.site-footer__contact {
   display: grid;
   gap: var(--s-4);
-  align-content: start;
-  justify-items: start;
+  margin-top: var(--s-7);
 }
 
-.site-footer__logo {
+/* The address itself is the link, so it can be selected and copied. 44px tall
+   for a finger, a hair below its label so the focus ring does not touch it;
+   a long address may break rather than run off a small screen. */
+.site-footer__contact-link {
   display: inline-flex;
   align-items: center;
-  min-height: 44px;
-  text-decoration: none;
+  min-height: var(--tap);
+  margin-top: var(--s-1);
+  font-size: var(--t-lead);
+  line-height: var(--lh-lead);
+  overflow-wrap: anywhere;
 }
+
+/* ---------- The groups of links ---------- */
 
 .site-footer__groups {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: var(--s-6);
-}
-
-.site-footer__group {
-  display: grid;
-  gap: var(--s-2);
+  gap: var(--s-7) var(--s-5);
   align-content: start;
 }
 
+/* The title of a group: a small muted heading, on the line of the first link's row. */
+.site-footer__title {
+  display: flex;
+  align-items: center;
+  min-height: var(--tap);
+}
+
+/* Links in the label style, each 44px tall. The hairline under a link is there
+   all along, without colour, so nothing moves when it shows. */
 .site-footer__link {
   display: inline-flex;
   align-items: center;
-  min-height: 44px;
-  text-decoration: none;
+  min-height: var(--tap);
+  text-decoration: underline;
+  text-decoration-color: transparent;
+  text-underline-offset: .6em;
+  -webkit-tap-highlight-color: transparent;
+  transition:
+    color var(--dur-hover) var(--ease),
+    text-decoration-color var(--dur-hover) var(--ease);
 }
 
+/* Hover: the hairline shows. */
 @media (hover: hover) {
   .site-footer__link:hover {
-    text-decoration: underline;
+    text-decoration-color: currentColor;
   }
 }
 
+/* Pressed. */
+.site-footer__link:active {
+  color: var(--fg-muted);
+}
+
+/* ---------- The wordmark, very large and barely visible ---------- */
+
+/* Decoration only: dark on dark, not read aloud, not selectable. The frame
+   measures its own width and cuts off anything wider, so the word can never
+   make the page scroll sideways. */
+.site-footer__wordmark {
+  container-type: inline-size;
+  margin-top: var(--section);
+  overflow: hidden;
+  color: var(--ink-soft);
+  pointer-events: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+/* The word fills the width of the frame: its nine letters are 4.16 times the
+   type size wide, so the type size is a little under a quarter of the width.
+   The first size, in vw, is for browsers that do not know cqw. */
+.site-footer__wordmark span {
+  display: block;
+  padding-top: .08em;
+  font-size: min(21vw, calc(var(--wrap) * .24));
+  font-size: 23.9cqw;
+  line-height: .78;
+  letter-spacing: var(--track-heading);
+  white-space: nowrap;
+}
+
+/* ---------- The copyright line ---------- */
+
+.site-footer__copyright {
+  margin-top: var(--s-6);
+  padding-top: var(--s-5);
+  border-top: var(--hairline) solid var(--rule);
+}
+
+/* ---------- Smaller screens ---------- */
+
+/* 860px and below: the line and contact details above, the groups below. */
 @media (max-width: 860px) {
   .site-footer__top {
     grid-template-columns: minmax(0, 1fr);
+    gap: var(--s-7);
   }
 }
 
+/* Phones: two columns. The first group stands beside the other two. */
 @media (max-width: 520px) {
   .site-footer__groups {
-    grid-template-columns: minmax(0, 1fr);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--s-5);
+  }
+
+  .site-footer__group:first-child {
+    grid-row: span 2;
+  }
+
+  .site-footer__contact-link {
+    font-size: var(--t-body);
+    line-height: var(--lh-body);
   }
 }

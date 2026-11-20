@@ -1,19 +1,23 @@
-<!-- Terms (stub). Owner: Content Sections agent.
-     Words: src/content/terms.json. -->
-<section class="section">
+<section class="section legal">
   <div class="wrap wrap--narrow">
-    <p><span class="chip">{{site.labels.draft}}</span></p>
-    <h1 class="h1">{{terms.title}}</h1>
-    <p class="lead">{{terms.lead}}</p>
-    <p class="notice notice--draft">{{terms.draftNotice}}</p>
-    <p class="small muted">{{terms.updated}}</p>
+    <div class="notice notice--draft legal__notice" data-reveal>
+      <p><span class="chip">{{site.labels.draft}}</span></p>
+      <p>{{terms.draftNotice}}</p>
+    </div>
+    <div class="legal__head">
+      <h1 class="h1" data-reveal="lines">{{terms.title}}</h1>
+      <p class="lead" data-reveal data-reveal-delay="1">{{terms.lead}}</p>
+      <p class="small muted" data-reveal data-reveal-delay="2">{{terms.updated}}</p>
+    </div>
+    <div class="legal__body">
+      {{#each terms.sections}}
+      <section class="legal__section">
+        <h2 class="h3">{{heading}}</h2>
+        {{#each paragraphs}}
+        <p class="body">{{this}}</p>
+        {{/each}}
+      </section>
+      {{/each}}
+    </div>
   </div>
 </section>
-
-<!--
-  Planned sections, in order (docs/design-brief.md, section 9):
-  1. Draft notice (terms.draftNotice, site.labels.draft)
-  2. Sections of text (terms.sections)
-
-  Note: the brief says every page ends with the closing section, but its table lists none for this page. Ask the team leader before adding it.
--->

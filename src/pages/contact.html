@@ -1,18 +1,49 @@
-<!-- Contact (stub). Owner: Content Sections agent.
-     Words: src/content/contact.json and site.contact. -->
-<section class="section">
+<section class="section page-head">
   <div class="wrap">
-    <p class="label label--muted">{{contact.head.label}}</p>
-    <h1 class="h1">{{contact.head.title}}</h1>
-    <p class="lead">{{contact.head.lead}}</p>
+    <div class="page-head__inner">
+      <p class="label label--muted" data-reveal>{{contact.head.label}}</p>
+      <h1 class="h1" data-reveal="lines">{{contact.head.title}}</h1>
+      <p class="lead" data-reveal data-reveal-delay="1">{{contact.head.lead}}</p>
+    </div>
   </div>
 </section>
 
-<!--
-  Planned sections, in order (docs/design-brief.md, section 9):
-  1. Page head (contact.head)
-  2. Email, and phone when site.contact.phone is filled in (contact.email, contact.phone, site.contact)
-  3. Two paths: creators to Apply, brands to the enquiry form (contact.paths)
+<section class="section contact-ways">
+  <div class="wrap">
+    <div class="contact-ways__grid">
+      <div class="contact-ways__item" data-reveal>
+        <h2 class="label label--muted">{{contact.email.title}}</h2>
+        <p class="contact-ways__value"><a class="text-link" href="mailto:{{site.contact.email}}">{{site.contact.email}}</a></p>
+        <p class="muted">{{contact.email.text}}</p>
+      </div>
+      {{#if site.contact.phone}}
+      <div class="contact-ways__item" data-reveal data-reveal-delay="1">
+        <h2 class="label label--muted">{{contact.phone.title}}</h2>
+        <p class="contact-ways__value"><a class="text-link" href="tel:{{site.contact.phone}}">{{site.contact.phone}}</a></p>
+        <p class="muted">{{contact.phone.text}}</p>
+      </div>
+      {{/if}}
+    </div>
+  </div>
+</section>
 
-  Note: the brief says every page ends with the closing section, but its table lists none for this page. Ask the team leader before adding it.
--->
+<section class="section contact-paths">
+  <div class="wrap">
+    <div class="contact-paths__grid">
+      {{#each contact.paths}}
+      <a class="tile contact-paths__tile" href="{{link.href}}" data-reveal data-reveal-delay="{{@number}}">
+        <div class="media media--3x2">
+          {{#if @first}}
+          <img src="{{images.about.src}}" srcset="{{images.about.srcSmall}} {{images.about.widthSmall}}w, {{images.about.src}} {{images.about.width}}w" sizes="(min-width: 861px) 46vw, 100vw" width="{{images.about.width}}" height="{{images.about.height}}" alt="" loading="lazy">
+          {{else}}
+          <img src="{{images.brands.src}}" srcset="{{images.brands.srcSmall}} {{images.brands.widthSmall}}w, {{images.brands.src}} {{images.brands.width}}w" sizes="(min-width: 861px) 46vw, 100vw" width="{{images.brands.width}}" height="{{images.brands.height}}" alt="" loading="lazy">
+          {{/if}}
+        </div>
+        <h2 class="h3">{{title}}</h2>
+        <p class="muted">{{text}}</p>
+        <span class="link">{{link.label}} {{> icons/arrow-right}}</span>
+      </a>
+      {{/each}}
+    </div>
+  </div>
+</section>

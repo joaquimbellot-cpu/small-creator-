@@ -1,18 +1,149 @@
-<!-- Home (stub). Owner: Content Sections agent. The hero partial belongs to the Hero agent.
-     Words: src/content/home.json and site.json. Images: src/content/images.json. -->
 {{> hero}}
 
-<!--
-  Planned sections, in order (docs/design-brief.md, section 9):
-  1. Hero: photo, tagline, one sentence, Apply, range note (the "hero" partial, above)
-  2. Statement paragraph with the word reveal (home.statement)
-  3. Three differences, text beside a 4:5 photo (home.differences, images.difference1 to 3)
-  4. "How a match is made": inset ink panel with the threads drawing and the four steps (home.process, images.threads)
-  5. Example matches: three tiles, each tagged "Example", no amounts (home.examples, site.labels.example)
-  6. Commission as hairline rows (home.commission, site.commission)
-  7. Photo band with one line (home.band, images.band)
-  8. Three questions with a link to all (home.questions)
-  9. Closing section (the "closing" partial, below)
--->
+<section class="section home-statement">
+  <div class="wrap">
+    <p class="statement home-statement__text" data-reveal="words">{{home.statement.text}}</p>
+  </div>
+</section>
+
+<section class="section differences">
+  <div class="wrap">
+    <div class="section-head section-head--center">
+      <p class="label label--muted" data-reveal>{{home.differences.label}}</p>
+      <h2 class="h2" data-reveal="lines">{{home.differences.title}}</h2>
+    </div>
+    <ul class="differences__list">
+      {{#each home.differences.items}}
+      <li class="differences__item">
+        <figure class="media media--4x5 differences__media" data-reveal>
+          {{#if @first}}
+          <img src="{{images.difference1.src}}" srcset="{{images.difference1.srcSmall}} {{images.difference1.widthSmall}}w, {{images.difference1.src}} {{images.difference1.width}}w" sizes="(min-width: 861px) 40vw, (min-width: 561px) 45vw, 100vw" width="{{images.difference1.width}}" height="{{images.difference1.height}}" alt="{{images.difference1.alt}}" loading="lazy">
+          {{else}}
+          {{#if @last}}
+          <img src="{{images.difference3.src}}" srcset="{{images.difference3.srcSmall}} {{images.difference3.widthSmall}}w, {{images.difference3.src}} {{images.difference3.width}}w" sizes="(min-width: 861px) 40vw, (min-width: 561px) 45vw, 100vw" width="{{images.difference3.width}}" height="{{images.difference3.height}}" alt="{{images.difference3.alt}}" loading="lazy">
+          {{else}}
+          <img src="{{images.difference2.src}}" srcset="{{images.difference2.srcSmall}} {{images.difference2.widthSmall}}w, {{images.difference2.src}} {{images.difference2.width}}w" sizes="(min-width: 861px) 40vw, (min-width: 561px) 45vw, 100vw" width="{{images.difference2.width}}" height="{{images.difference2.height}}" alt="{{images.difference2.alt}}" loading="lazy">
+          {{/if}}
+          {{/if}}
+        </figure>
+        <div class="differences__text" data-reveal data-reveal-delay="1">
+          <h3 class="h2">{{title}}</h3>
+          <p class="lead muted">{{text}}</p>
+        </div>
+      </li>
+      {{/each}}
+    </ul>
+  </div>
+</section>
+
+<section class="section process">
+  <div class="panel">
+    <div class="wrap">
+      <div class="process__top">
+        <div class="process__head">
+          <p class="label label--muted" data-reveal>{{home.process.label}}</p>
+          <h2 class="h2" data-reveal="lines">{{home.process.title}}</h2>
+          <p class="lead muted" data-reveal data-reveal-delay="1">{{home.process.lead}}</p>
+        </div>
+        <div class="threads process__threads" data-threads>
+          <img src="{{images.threads.src}}" alt="{{images.threads.alt}}" width="{{images.threads.width}}" height="{{images.threads.height}}" loading="lazy">
+        </div>
+      </div>
+      <ol class="steps process__steps">
+        {{#each home.process.steps}}
+        <li class="step" data-reveal data-reveal-delay="{{@number}}">
+          <h3 class="h3">{{title}}</h3>
+          <p class="muted">{{text}}</p>
+        </li>
+        {{/each}}
+      </ol>
+      <p class="process__more"><a class="link" href="{{home.process.link.href}}">{{home.process.link.label}} {{> icons/arrow-right}}</a></p>
+    </div>
+  </div>
+</section>
+
+<section class="section examples">
+  <div class="wrap">
+    <div class="section-head">
+      <p class="label label--muted" data-reveal>{{home.examples.label}}</p>
+      <h2 class="h2" data-reveal="lines">{{home.examples.title}}</h2>
+    </div>
+    <ul class="examples__grid">
+      {{#each home.examples.items}}
+      <li class="tile examples__tile" data-reveal data-reveal-delay="{{@number}}">
+        <span class="chip">{{site.labels.example}}</span>
+        <dl class="examples__lines">
+          <div class="examples__line">
+            <dt class="label label--muted">{{home.examples.labels.channel}}</dt>
+            <dd class="h3">{{channel}}</dd>
+          </div>
+          <div class="examples__line">
+            <dt class="label label--muted">{{home.examples.labels.sponsor}}</dt>
+            <dd class="h3">{{sponsor}}</dd>
+          </div>
+          <div class="examples__line">
+            <dt class="label label--muted">{{home.examples.labels.video}}</dt>
+            <dd class="muted">{{video}}</dd>
+          </div>
+        </dl>
+      </li>
+      {{/each}}
+    </ul>
+    <p class="small muted examples__note" data-reveal>{{home.examples.note}}</p>
+  </div>
+</section>
+
+<section class="section commission">
+  <div class="wrap split">
+    <div class="split__head">
+      <p class="label label--muted" data-reveal>{{home.commission.label}}</p>
+      <h2 class="h2" data-reveal="lines">{{home.commission.title}}</h2>
+      <p class="lead" data-reveal data-reveal-delay="1">{{home.commission.lead}}</p>
+    </div>
+    <div class="split__body">
+      <dl class="rows rows--split" data-reveal>
+        <div class="row row--head">
+          <dt class="label label--muted">{{site.commission.sizeHead}}</dt>
+          <dd class="label label--muted">{{site.commission.rateHead}}</dd>
+        </div>
+        {{#each site.commission.tiers}}
+        <div class="row">
+          <dt class="h3">{{size}}</dt>
+          <dd class="h3">{{rate}}</dd>
+        </div>
+        {{/each}}
+      </dl>
+      <ul class="commission__notes" data-reveal data-reveal-delay="1">
+        {{#each site.commission.notes}}
+        <li class="commission__note small muted">{{> icons/check}}<span>{{this}}</span></li>
+        {{/each}}
+      </ul>
+      <p class="commission__more" data-reveal data-reveal-delay="2"><a class="link" href="{{home.commission.link.href}}">{{home.commission.link.label}} {{> icons/arrow-right}}</a></p>
+    </div>
+  </div>
+</section>
+
+<section class="band home-band">
+  <img src="{{images.band.src}}" srcset="{{images.band.srcSmall}} {{images.band.widthSmall}}w, {{images.band.src}} {{images.band.width}}w" sizes="100vw" width="{{images.band.width}}" height="{{images.band.height}}" alt="{{images.band.alt}}" loading="lazy" data-parallax>
+  <p class="h2" data-reveal="lines">{{home.band.text}}</p>
+</section>
+
+<section class="section home-questions">
+  <div class="wrap">
+    <div class="section-head">
+      <p class="label label--muted" data-reveal>{{home.questions.label}}</p>
+      <h2 class="h2" data-reveal="lines">{{home.questions.title}}</h2>
+    </div>
+    <ul class="rows">
+      {{#each home.questions.items}}
+      <li class="row" data-reveal data-reveal-delay="{{@number}}">
+        <h3 class="h3">{{q}}</h3>
+        <p class="muted home-questions__answer">{{a}}</p>
+      </li>
+      {{/each}}
+    </ul>
+    <p class="home-questions__more" data-reveal><a class="link" href="{{home.questions.link.href}}">{{home.questions.link.label}} {{> icons/arrow-right}}</a></p>
+  </div>
+</section>
 
 {{> closing}}

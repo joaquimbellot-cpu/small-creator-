@@ -1,18 +1,55 @@
-<!-- About (stub). Owner: Content Sections agent.
-     Words: src/content/about.json. Images: images.about. -->
-<section class="section">
+<section class="section page-head">
   <div class="wrap">
-    <p class="label label--muted">{{about.head.label}}</p>
-    <h1 class="h1">{{about.head.title}}</h1>
-    <p class="lead">{{about.head.lead}}</p>
+    <div class="page-head__inner">
+      <p class="label label--muted" data-reveal>{{about.head.label}}</p>
+      <h1 class="h1" data-reveal="lines">{{about.head.title}}</h1>
+      <p class="lead" data-reveal data-reveal-delay="1">{{about.head.lead}}</p>
+    </div>
   </div>
 </section>
 
-<!--
-  Planned sections, in order (docs/design-brief.md, section 9):
-  1. Page head (about.head)
-  2. The story (about.story)
-  3. The three differences as beliefs (about.beliefs)
-  4. YouTube now, other platforms later (about.platforms)
-  5. Closing section (the "closing" partial)
--->
+<section class="section about-story">
+  <div class="wrap about-story__grid">
+    <figure class="media media--3x2 about-story__media" data-reveal>
+      <img src="{{images.about.src}}" srcset="{{images.about.srcSmall}} {{images.about.widthSmall}}w, {{images.about.src}} {{images.about.width}}w" sizes="(min-width: 861px) 55vw, 100vw" width="{{images.about.width}}" height="{{images.about.height}}" alt="{{images.about.alt}}">
+    </figure>
+    <div class="about-story__text">
+      <p class="label label--muted" data-reveal>{{about.story.label}}</p>
+      <h2 class="h2" data-reveal="lines">{{about.story.title}}</h2>
+      {{#each about.story.paragraphs}}
+      <p class="{{#if @first}}lead{{else}}body muted{{/if}}" data-reveal data-reveal-delay="{{@number}}">{{this}}</p>
+      {{/each}}
+    </div>
+  </div>
+</section>
+
+<section class="section about-beliefs">
+  <div class="wrap">
+    <div class="section-head">
+      <p class="label label--muted" data-reveal>{{about.beliefs.label}}</p>
+      <h2 class="h2" data-reveal="lines">{{about.beliefs.title}}</h2>
+    </div>
+    <ul class="steps">
+      {{#each about.beliefs.items}}
+      <li class="step" data-reveal data-reveal-delay="{{@number}}">
+        <h3 class="h3">{{title}}</h3>
+        <p class="muted">{{text}}</p>
+      </li>
+      {{/each}}
+    </ul>
+  </div>
+</section>
+
+<section class="section about-platforms">
+  <div class="wrap split about-platforms__grid">
+    <div class="split__head">
+      <p class="label label--muted" data-reveal>{{about.platforms.label}}</p>
+      <h2 class="h2" data-reveal="lines">{{about.platforms.title}}</h2>
+    </div>
+    <div class="split__body about-platforms__text">
+      <p class="lead" data-reveal data-reveal-delay="1">{{about.platforms.text}}</p>
+    </div>
+  </div>
+</section>
+
+{{> closing}}

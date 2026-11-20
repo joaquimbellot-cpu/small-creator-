@@ -1,16 +1,30 @@
-<!-- Questions (stub). Owner: Content Sections agent.
-     Words: src/content/questions.json. -->
-<section class="section">
+<section class="section page-head">
   <div class="wrap">
-    <p class="label label--muted">{{questions.head.label}}</p>
-    <h1 class="h1">{{questions.head.title}}</h1>
-    <p class="lead">{{questions.head.lead}}</p>
+    <div class="page-head__inner">
+      <p class="label label--muted" data-reveal>{{questions.head.label}}</p>
+      <h1 class="h1" data-reveal="lines">{{questions.head.title}}</h1>
+      <p class="lead" data-reveal data-reveal-delay="1">{{questions.head.lead}}</p>
+      <p class="page-head__contact" data-reveal data-reveal-delay="2"><a class="text-link" href="mailto:{{site.contact.email}}">{{site.contact.email}}</a></p>
+    </div>
   </div>
 </section>
 
-<!--
-  Planned sections, in order (docs/design-brief.md, section 9):
-  1. Page head (questions.head)
-  2. Questions in groups, as an accordion (questions.groups)
-  3. Closing section (the "closing" partial)
--->
+<section class="section faq">
+  <div class="wrap faq__groups">
+    {{#each questions.groups}}
+    <div class="faq__group">
+      <h2 class="h2 faq__title" data-reveal="lines">{{title}}</h2>
+      <div class="accordion faq__list" data-reveal>
+        {{#each items}}
+        <details class="accordion__item">
+          <summary>{{q}} {{> icons/plus}}{{> icons/minus}}</summary>
+          <p>{{a}}</p>
+        </details>
+        {{/each}}
+      </div>
+    </div>
+    {{/each}}
+  </div>
+</section>
+
+{{> closing}}

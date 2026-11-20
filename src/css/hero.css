@@ -1,12 +1,338 @@
 /*
  * hero.css
- * Owner: Hero agent. (Responsive may add layout fixes.)
+ * Owner: Hero agent. (Responsive may add layout fixes; the Animation agent may tune the timings.)
  *
- * Belongs here: the home hero (src/partials/hero.html): the full-bleed photo,
- * the dark veil, the centred tagline, sentence, Apply button and range note,
- * and the structure of the [data-intro] opening, where the photo grows from a
- * framed card to full-bleed and the text rises line by line
- * (docs/design-brief.md, sections 7 and 9).
+ * The first screen of the home page (src/partials/hero.html): one full-bleed
+ * picture under a dark veil and, centred on it, the headline, one sentence, one
+ * button and one small note. The headline is the only focal point: everything
+ * else stays small and quiet, and nothing else belongs on this screen.
  *
- * Empty for now: the hero stub borrows the .band component from components.css.
+ * Also here: the opening on the hook [data-intro] (docs/design-brief.md, section 7).
+ * hero.js only chooses which opening plays and says so with data-hero on <html>;
+ * every movement is a CSS animation in part 5, so it ends by itself.
+ *
+ *   1. Settings
+ *   2. Layout
+ *   3. Picture and veil
+ *   4. Text
+ *   5. Opening
  */
+
+/* ---------- 1. Settings ---------- */
+
+.hero {
+  --hero-max: var(--wrap);              /* the tallest the first screen gets, on a very tall monitor */
+  --hero-pad: var(--s-6);               /* air between the header and the text, and the same below */
+  --hero-title: 7.6em;                  /* widest line of the headline: sets it in two even lines */
+  --hero-lead: 23em;                    /* widest line of the sentence */
+  --hero-wash: .4;                      /* share of the veil that lies over the whole picture */
+
+  /* The opening. The framed card the picture grows from: its distance from
+     the top and from the sides, and the size of the picture inside it. */
+  --hero-card: 25% 28%;
+  --hero-card-zoom: .74;
+
+  --hero-wait: calc(var(--dur-hover-slow) * 5);               /* 2.5s: after this, CSS shows everything by itself */
+  --hero-mark: calc(var(--dur-hover) * 1.5);                  /* the symbol comes, and later goes */
+  --hero-grow: calc(var(--dur-enter-long) - var(--dur-hover) * .75); /* the card grows to the full screen */
+  --hero-grow-at: calc(var(--dur-hover) * .5);                /* ...a moment after it has appeared */
+  --hero-rise: var(--dur-enter);                              /* one line of the headline rises */
+  --hero-rise-at: calc(var(--dur-hover) * 1.25);              /* ...starting while the card is still growing */
+  --hero-step: calc(var(--dur-hover) * .5);                   /* pause between lines, and between the parts after them */
+  --hero-soft: var(--dur-hover-slow);                         /* the sentence, the button and the note come in */
+}
+
+/* Upright screens show the tall picture, so the card is upright too. */
+@media (orientation: portrait) {
+  .hero {
+    --hero-wash: .2;
+    --hero-card: 27% 16%;
+    --hero-card-zoom: .84;
+  }
+}
+
+/* Low screens (a phone held sideways, a small laptop window): less air. */
+@media (max-height: 620px) {
+  .hero {
+    --hero-pad: var(--s-4);
+  }
+}
+
+/* ---------- 2. Layout ---------- */
+
+/* About one screen tall. The fixed header lies on top, so the text keeps clear
+   of it, by the same distance above and below: the text stays in the middle. */
+.hero {
+  position: relative;
+  isolation: isolate;
+  display: grid;
+  place-items: center;
+  min-height: min(100vh, var(--hero-max));
+  min-height: min(100svh, var(--hero-max));
+  padding: calc(var(--header-h, 64px) + var(--hero-pad)) var(--gutter);
+  overflow: hidden;
+  text-align: center;
+}
+
+/* ---------- 3. Picture and veil ---------- */
+
+/* The picture fills the whole section, behind the text. */
+.hero__stage {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+}
+
+.hero__stage picture,
+.hero__photo {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.hero__photo {
+  object-fit: cover;
+}
+
+/* Both layers of the veil lie on top of the picture. */
+.hero__stage::before,
+.hero__stage::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
+
+/* A wash of the veil over the whole picture, so that nothing in it is brighter than the headline. */
+.hero__stage::before {
+  background-color: var(--veil);
+  opacity: var(--hero-wash);
+}
+
+/* The full veil where words are: under the header and behind the text. It thins
+   out toward the sides and the bottom, where the paper and the window light show. */
+.hero__stage::after {
+  background-image:
+    linear-gradient(to bottom, var(--veil) var(--header-h, 64px), transparent 45%),
+    radial-gradient(ellipse 62% 66% at 50% 50%, var(--veil) 58%, transparent 100%);
+}
+
+/* On an upright screen the text is as wide as the screen, so the veil is too. */
+@media (orientation: portrait) {
+  .hero__stage::after {
+    background-image:
+      linear-gradient(to bottom, var(--veil) var(--header-h, 64px), transparent 45%),
+      radial-gradient(ellipse 140% 52% at 50% 50%, var(--veil) 62%, transparent 100%);
+  }
+}
+
+/* ---------- 4. Text ---------- */
+
+/* One calm column in the middle. */
+.hero__text {
+  display: grid;
+  justify-items: center;
+  width: 100%;
+  max-width: var(--w-band-text);
+}
+
+.hero__title {
+  max-width: var(--hero-title);
+}
+
+.hero__lead {
+  max-width: var(--hero-lead);
+  margin-top: var(--s-6);
+  text-wrap: balance;
+}
+
+.hero__cta {
+  margin-top: var(--s-7);
+}
+
+.hero__note {
+  margin-top: var(--s-5);
+}
+
+@media (max-width: 860px) {
+  .hero__lead {
+    margin-top: var(--s-5);
+  }
+
+  .hero__cta {
+    margin-top: var(--s-6);
+  }
+}
+
+/* The symbol belongs to the opening only. */
+.hero__mark {
+  display: none;
+}
+
+/* ---------- 5. Opening ---------- */
+
+/*
+ * States, set by hero.js as data-hero on <html>:
+ *   (none)    the script has not chosen yet: ink only
+ *   "intro"   first home view of a session: the symbol alone on ink
+ *   "open"    the picture grows from a framed card, the headline rises line by line
+ *   "return"  later views in the session: a short rise of the text
+ *   "done"    settled: no rule below applies any more
+ *
+ * Nothing is hidden by a plain declaration. Every hidden start is the first
+ * frame of an animation, so each state ends in the finished hero by itself,
+ * even if the script stops. All of it needs html.js and no reduced motion.
+ * Only opacity, transform and clip-path move.
+ */
+
+/* The same fade under two names: a state that swaps one for the other starts a
+   new animation, instead of carrying on with the old one's clock. */
+@keyframes hero-wait {
+  from { opacity: 0; }
+}
+
+@keyframes hero-show {
+  from { opacity: 0; }
+}
+
+@keyframes hero-mark-in {
+  from { opacity: 0; transform: scale(.9); }
+}
+
+@keyframes hero-mark-out {
+  to { opacity: 0; transform: scale(1.1); }
+}
+
+@keyframes hero-card {
+  from { clip-path: inset(var(--hero-card) round var(--r-lg)); }
+  to { clip-path: inset(0 round 0); }
+}
+
+@keyframes hero-photo {
+  from { transform: scale(var(--hero-card-zoom)); }
+}
+
+@keyframes hero-rise {
+  from { transform: translateY(140%); }
+}
+
+@keyframes hero-soft {
+  from { opacity: 0; transform: translateY(var(--s-4)); }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  /* Waiting (no state yet, or the symbol is showing): the picture and the text
+     are held back. This is the failsafe: if no state follows, they fade in by
+     themselves after --hero-wait. */
+  html.js:not([data-hero]) .hero[data-intro] .hero__stage,
+  html.js:not([data-hero]) .hero[data-intro] .hero__text > *,
+  html.js[data-hero="intro"] .hero__stage,
+  html.js[data-hero="intro"] .hero__text > * {
+    animation: hero-wait var(--dur-hover-slow) linear var(--hero-wait) both;
+  }
+
+  /* The header waits too, so that the symbol stands alone, and comes back with
+     the text. (.site-header belongs to header.css; only its opacity is animated
+     here, and only while the opening plays. It lives outside .hero, so its
+     three rules repeat the times instead of reading the settings above.) */
+  html.js:not([data-hero]) body[data-page="home"] .site-header,
+  html.js[data-hero="intro"] .site-header {
+    animation: hero-wait var(--dur-hover-slow) linear calc(var(--dur-hover-slow) * 5) both;
+  }
+
+  /* "intro": the symbol, alone in the middle of the ink. */
+  html.js[data-hero="intro"] .hero__mark,
+  html.js[data-hero="open"] .hero__mark {
+    position: absolute;
+    inset: 0;
+    display: block;
+    width: var(--s-7);
+    height: var(--s-7);
+    margin: auto;
+  }
+
+  html.js[data-hero="intro"] .hero__mark {
+    animation: hero-mark-in var(--hero-mark) var(--ease) both;
+  }
+
+  /* "open": the symbol dissolves into the card, which stands for a moment and then grows. */
+  html.js[data-hero="open"] .hero__mark {
+    animation: hero-mark-out var(--hero-mark) var(--ease) both;
+  }
+
+  html.js[data-hero="open"] .hero__stage {
+    animation:
+      hero-show var(--hero-mark) linear both,
+      hero-card var(--hero-grow) var(--ease) var(--hero-grow-at) both;
+  }
+
+  html.js[data-hero="open"] .hero__photo {
+    animation: hero-photo var(--hero-grow) var(--ease) var(--hero-grow-at) both;
+  }
+
+  /* The card starts as a clear photograph; the full veil arrives with the words. */
+  html.js[data-hero="open"] .hero__stage::after {
+    animation: hero-show var(--hero-grow) var(--ease) var(--hero-grow-at) both;
+  }
+
+  /* The headline: hero.js wraps each word in a mask (.hero__w) and numbers its
+     line (--hero-line). The words of a line rise together from behind the mask. */
+  .hero__w {
+    display: inline-block;
+    clip-path: inset(-.3em -.4em -.24em);
+  }
+
+  .hero__w > span {
+    display: inline-block;
+  }
+
+  html.js[data-hero="open"] .hero__w > span {
+    animation: hero-rise var(--hero-rise) var(--ease) calc(var(--hero-rise-at) + var(--hero-line, 0) * var(--hero-step)) both;
+  }
+
+  /* Then, softly, the sentence, the button and the note. */
+  html.js[data-hero="open"] .hero__lead,
+  html.js[data-hero="open"] .hero__cta,
+  html.js[data-hero="open"] .hero__note {
+    animation: hero-soft var(--hero-soft) var(--ease) both;
+  }
+
+  html.js[data-hero="open"] .hero__lead {
+    animation-delay: calc(var(--hero-rise-at) + var(--hero-step) * 3);
+  }
+
+  html.js[data-hero="open"] .hero__cta {
+    animation-delay: calc(var(--hero-rise-at) + var(--hero-step) * 4);
+  }
+
+  html.js[data-hero="open"] .hero__note {
+    animation-delay: calc(var(--hero-rise-at) + var(--hero-step) * 5);
+  }
+
+  html.js[data-hero="open"] .site-header {
+    animation: hero-show var(--dur-hover-slow) linear calc(var(--dur-hover) * 2.5) both;
+  }
+
+  /* "return": no intro. The picture is there at once and the text rises a little. */
+  html.js[data-hero="return"] .hero__stage,
+  html.js[data-hero="return"] .site-header {
+    animation: hero-show var(--dur-hover) linear both;
+  }
+
+  html.js[data-hero="return"] .hero__text > * {
+    animation: hero-soft var(--hero-soft) var(--ease) both;
+  }
+
+  html.js[data-hero="return"] .hero__lead {
+    animation-delay: var(--hero-step);
+  }
+
+  html.js[data-hero="return"] .hero__cta {
+    animation-delay: calc(var(--hero-step) * 2);
+  }
+
+  html.js[data-hero="return"] .hero__note {
+    animation-delay: calc(var(--hero-step) * 3);
+  }
+}

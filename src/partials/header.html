@@ -1,4 +1,4 @@
-<header class="site-header on-cream">
+<header class="site-header" data-header>
   <div class="wrap site-header__inner">
     <a class="site-header__logo" href="index.html" aria-label="{{site.labels.home}}">{{> logo}}</a>
     <nav class="site-nav" aria-label="{{site.labels.menu}}">
@@ -8,6 +8,37 @@
         {{/each}}
       </ul>
     </nav>
-    <a class="btn btn--small" href="{{site.cta.href}}"{{#if page.is.apply}} aria-current="page"{{/if}}>{{site.cta.label}}</a>
+    <a class="btn btn--small site-header__cta" href="{{site.cta.href}}"{{#if page.is.apply}} aria-current="page"{{/if}}>{{site.cta.label}}</a>
+    <button class="btn btn--ghost btn--small btn--icon site-header__toggle" type="button" aria-haspopup="dialog" aria-expanded="false" aria-controls="site-menu" data-menu-open>{{> icons/menu-dots}}<span class="sr-only">{{site.labels.menu}}</span></button>
   </div>
+  <dialog class="site-menu on-ink" id="site-menu" aria-label="{{site.labels.menu}}" data-menu>
+    <div class="wrap site-menu__inner">
+      <div class="site-menu__top">
+        <a class="site-header__logo" href="index.html" aria-label="{{site.labels.home}}">{{> logo}}</a>
+        <button class="btn btn--ghost btn--small btn--icon" type="button" data-menu-close>{{> icons/close}}<span class="sr-only">{{site.labels.close}}</span></button>
+      </div>
+      <nav class="site-menu__nav" aria-label="{{site.labels.menu}}">
+        <ul class="site-menu__list">
+          {{#each site.nav}}
+          <li><a class="site-menu__link" href="{{href}}"{{#if current}} aria-current="page"{{/if}}>{{label}}</a></li>
+          {{/each}}
+        </ul>
+      </nav>
+      <div class="site-menu__foot">
+        <a class="btn site-menu__cta" href="{{site.cta.href}}"{{#if page.is.apply}} aria-current="page"{{/if}}>{{site.cta.label}}</a>
+        <dl class="site-menu__contact">
+          <div>
+            <dt class="label label--muted">{{site.contact.emailLabel}}</dt>
+            <dd><a class="site-menu__contact-link text-link" href="mailto:{{site.contact.email}}">{{site.contact.email}}</a></dd>
+          </div>
+          {{#if site.contact.phone}}
+          <div>
+            <dt class="label label--muted">{{site.contact.phoneLabel}}</dt>
+            <dd><a class="site-menu__contact-link text-link" href="tel:{{site.contact.phone}}">{{site.contact.phone}}</a></dd>
+          </div>
+          {{/if}}
+        </dl>
+      </div>
+    </div>
+  </dialog>
 </header>

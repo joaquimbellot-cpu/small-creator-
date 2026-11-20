@@ -1,33 +1,35 @@
 <footer class="site-footer on-ink">
   <div class="wrap">
     <div class="site-footer__top">
-      <div class="site-footer__about">
-        <a class="site-footer__logo" href="index.html" aria-label="{{site.labels.home}}">{{> logo}}</a>
-        <p class="lead">{{site.footer.line}}</p>
-        <p>
-          <span class="label label--muted">{{site.contact.emailLabel}}</span><br>
-          <a class="text-link" href="mailto:{{site.contact.email}}">{{site.contact.email}}</a>
-        </p>
-        {{#if site.contact.phone}}
-        <p>
-          <span class="label label--muted">{{site.contact.phoneLabel}}</span><br>
-          <a class="text-link" href="tel:{{site.contact.phone}}">{{site.contact.phone}}</a>
-        </p>
-        {{/if}}
+      <div class="site-footer__intro">
+        <p class="site-footer__line">{{site.footer.line}}</p>
+        <dl class="site-footer__contact">
+          <div>
+            <dt class="label label--muted">{{site.contact.emailLabel}}</dt>
+            <dd><a class="site-footer__contact-link text-link" href="mailto:{{site.contact.email}}">{{site.contact.email}}</a></dd>
+          </div>
+          {{#if site.contact.phone}}
+          <div>
+            <dt class="label label--muted">{{site.contact.phoneLabel}}</dt>
+            <dd><a class="site-footer__contact-link text-link" href="tel:{{site.contact.phone}}">{{site.contact.phone}}</a></dd>
+          </div>
+          {{/if}}
+        </dl>
       </div>
       <div class="site-footer__groups">
         {{#each site.footer.groups}}
-        <div class="site-footer__group">
-          <h2 class="label label--muted">{{title}}</h2>
+        <nav class="site-footer__group" aria-labelledby="site-footer-nav-{{@number}}">
+          <h2 class="site-footer__title label label--muted" id="site-footer-nav-{{@number}}">{{title}}</h2>
           <ul class="site-footer__links">
             {{#each links}}
-            <li><a class="site-footer__link" href="{{href}}">{{label}}</a></li>
+            <li><a class="site-footer__link label" href="{{href}}">{{label}}</a></li>
             {{/each}}
           </ul>
-        </div>
+        </nav>
         {{/each}}
       </div>
     </div>
-    <p class="small muted">{{site.footer.copyright}}</p>
+    <p class="site-footer__wordmark" aria-hidden="true"><span>{{site.brand.name}}</span></p>
+    <p class="site-footer__copyright small muted">{{site.footer.copyright}}</p>
   </div>
 </footer>

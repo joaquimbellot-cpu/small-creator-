@@ -2,14 +2,589 @@
  * sections.css
  * Owner: Content Sections agent. (Responsive may add layout fixes.)
  *
- * Belongs here: the layout of the page sections built in src/pages/*.html and
- * src/partials/closing.html: page heads, the statement, the three differences
- * beside a 4:5 photo, the "how a match is made" panel, example tiles, commission
- * rows, the photo band, question lists, form layouts, legal pages and the
- * closing section (docs/design-brief.md, section 9).
+ * The layout of the page sections built in src/pages/*.html and
+ * src/partials/closing.html (docs/design-brief.md, section 9).
  *
- * Use the component classes from components.css and add only layout here;
- * do not restyle the components.
+ * Arrangement only: grids, columns, gaps and widths. The look of every part
+ * comes from the component classes of components.css and is not changed here.
+ * Every distance comes from tokens.css. Phones first: one column by default,
+ * a first step at 561px and the wide layout from 861px.
  *
- * Empty for now.
+ * Contents: shared patterns (section head, page head, split, commission notes,
+ * closing), home, how it works, for brands, about, questions, contact, apply,
+ * forms, privacy and terms.
  */
+
+/* ---------- Shared patterns ---------- */
+
+/* A link to a section of a page stops with a little air above the section.
+   (header.css already keeps the jump clear of the fixed header.) */
+main section[id] {
+  scroll-margin-top: var(--s-5);
+}
+
+/* Section head: the label, title and lead above the content of a section. */
+.section-head {
+  margin-bottom: var(--s-7);
+}
+
+/* A section head set in the middle of the page. */
+.section-head--center {
+  text-align: center;
+}
+
+/* Its lead is centred as a block too. */
+.section-head--center .lead {
+  margin-inline: auto;
+}
+
+/* Page head: the label, title and lead at the top of every page except home,
+   in a centred column a little wider than the narrow one. */
+.page-head__inner {
+  max-width: calc(var(--narrow) + 2 * var(--s-9));
+  margin-inline: auto;
+  text-align: center;
+}
+
+/* The lead of a page head is centred as a block too. */
+.page-head__inner .lead {
+  margin-inline: auto;
+}
+
+/* The email address under the lead of the questions page. */
+.page-head__contact {
+  margin-top: var(--s-4);
+}
+
+/* Page head with a picture: the text first, the picture under it on a phone. */
+.page-head__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--s-7);
+}
+
+/* The button of a page head, under the lead. */
+.page-head__action {
+  margin-top: var(--s-6);
+}
+
+/* Split: the head of a section and its content, one under the other on a phone. */
+.split {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--s-7);
+}
+
+/* Commission: the three notes under the rows. */
+.commission__notes {
+  display: grid;
+  gap: var(--s-3);
+  margin-top: var(--s-6);
+}
+
+/* One note: a tick, then the sentence. */
+.commission__note {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--s-3);
+}
+
+/* The link under the notes. */
+.commission__more {
+  margin-top: var(--s-5);
+}
+
+/* Closing section: one centred column under a hairline. */
+.closing__inner {
+  display: grid;
+  justify-items: center;
+  gap: var(--s-5);
+  padding-top: var(--section);
+  border-top: var(--hairline) solid var(--rule);
+  text-align: center;
+}
+
+/* The gap does the spacing between the parts of the closing section. */
+.closing__inner > * {
+  margin: 0;
+}
+
+/* A little more air above the button. */
+.closing__action {
+  padding-top: var(--s-3);
+}
+
+/* Wide screens. */
+@media (min-width: 861px) {
+  /* More room between a section head and its content. */
+  .section-head {
+    margin-bottom: var(--s-8);
+  }
+
+  /* The picture of a page head sits beside the text. */
+  .page-head__grid {
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+    gap: var(--s-8);
+    align-items: center;
+  }
+
+  /* Split: the head on the left, the content on the right. */
+  .split {
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+    gap: var(--s-8);
+    align-items: start;
+  }
+}
+
+/* ---------- Home ---------- */
+
+/* Statement: one paragraph alone on the screen, with more air than a usual section. */
+.home-statement {
+  padding-block: var(--s-9);
+}
+
+/* Its column is a little wider than the narrow one. */
+.home-statement__text {
+  max-width: calc(var(--narrow) + 2 * var(--s-9));
+  margin-inline: auto;
+}
+
+/* Three differences: one under the other, with generous space between them. */
+.differences__list {
+  display: grid;
+  gap: var(--s-8);
+}
+
+/* One difference: the picture above the text on a phone. */
+.differences__item {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--s-5);
+}
+
+/* The text of a difference never runs wider than a line of running text. */
+.differences__text {
+  max-width: var(--measure);
+}
+
+/* How a match is made: the head above the drawing on a phone. */
+.process__top {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--s-6);
+}
+
+/* The drawing fills its column and keeps its own shape. */
+.process__threads > img,
+.process__threads > canvas {
+  width: 100%;
+  height: auto;
+}
+
+/* The four steps, under the head and the drawing. */
+.process__steps {
+  margin-top: var(--s-7);
+}
+
+/* The link under the steps. */
+.process__more {
+  margin-top: var(--s-6);
+}
+
+/* Example matches: one tile under the other on a phone. */
+.examples__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--s-4);
+}
+
+/* The three labelled lines of a tile, as wide as the tile. */
+.examples__lines {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--s-5);
+  align-self: stretch;
+  padding-top: var(--s-3);
+}
+
+/* One line: its label, then its words. */
+.examples__line {
+  display: grid;
+  gap: var(--s-2);
+  align-content: start;
+}
+
+/* The gap does the spacing between a label and its words. */
+.examples__line > * {
+  margin: 0;
+}
+
+/* The note under the tiles. */
+.examples__note {
+  margin-top: var(--s-5);
+}
+
+/* Questions: an answer never runs wider than a line of running text. */
+.home-questions__answer {
+  max-width: var(--measure);
+}
+
+/* The link under the questions. */
+.home-questions__more {
+  margin-top: var(--s-5);
+}
+
+/* Small tablets and up. */
+@media (min-width: 561px) {
+  /* A difference: the picture beside the text. */
+  .differences__item {
+    grid-template-columns: minmax(0, 5fr) minmax(0, 6fr);
+    gap: var(--s-6);
+    align-items: center;
+  }
+
+  /* Every second difference has its picture on the right. */
+  .differences__item:nth-child(even) {
+    grid-template-columns: minmax(0, 6fr) minmax(0, 5fr);
+  }
+
+  /* Its picture takes the second column... */
+  .differences__item:nth-child(even) .differences__media {
+    grid-column: 2;
+  }
+
+  /* ...and its text the first one, on the same line. */
+  .differences__item:nth-child(even) .differences__text {
+    grid-column: 1;
+    grid-row: 1;
+  }
+}
+
+/* Small tablets only. */
+@media (min-width: 561px) and (max-width: 860px) {
+  /* The four steps of the panel sit two by two. */
+  .process__steps {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--s-6);
+  }
+
+  /* The three lines of an example tile run across the tile. */
+  .examples__lines {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+/* Wide screens. */
+@media (min-width: 861px) {
+  /* The statement gets the most air of all. */
+  .home-statement {
+    padding-block: var(--s-10);
+  }
+
+  /* About one difference per screen. */
+  .differences__list {
+    gap: var(--s-9);
+  }
+
+  /* The differences are set on twelve columns. */
+  .differences__item,
+  .differences__item:nth-child(even) {
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    column-gap: var(--s-6);
+  }
+
+  /* A picture of five columns, one column in from the side. */
+  .differences__media {
+    grid-column: 2 / span 5;
+  }
+
+  /* A text of four columns, with a column of air between it and the picture. */
+  .differences__text {
+    grid-column: 8 / span 4;
+  }
+
+  /* Every second difference is the mirror image: the picture on the right... */
+  .differences__item:nth-child(even) .differences__media {
+    grid-column: 7 / span 5;
+  }
+
+  /* ...and the text on the left. */
+  .differences__item:nth-child(even) .differences__text {
+    grid-column: 2 / span 4;
+  }
+
+  /* The head of the panel beside the drawing. */
+  .process__top {
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+    gap: var(--s-8);
+    align-items: center;
+  }
+
+  /* More room above the steps. */
+  .process__steps {
+    margin-top: var(--s-8);
+  }
+
+  /* Three example tiles in a row. */
+  .examples__grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--s-5);
+  }
+}
+
+/* ---------- How it works ---------- */
+
+/* The four steps in detail: more air in each row than the list gives by itself. */
+.how-steps__list > .step {
+  padding-block: var(--s-6);
+}
+
+/* Wide screens. */
+@media (min-width: 861px) {
+  /* Still more air, and a third, empty row that takes up the room a title of
+     two lines needs, so that the two texts beside it stay together. */
+  .how-steps__list > .step {
+    grid-template-rows: auto auto 1fr;
+    padding-block: var(--s-7);
+  }
+
+  /* The title stands beside both texts. */
+  .how-steps__list > .step > :first-child {
+    grid-row: 1 / span 3;
+  }
+}
+
+/* ---------- For brands ---------- */
+
+/* The three points: a text never runs wider than a line of running text. */
+.brands-points__text {
+  max-width: var(--measure);
+}
+
+/* The price statement: one centred column between two hairlines. */
+.brands-price__inner {
+  max-width: calc(var(--narrow) + 2 * var(--s-9));
+  margin-inline: auto;
+  padding-block: var(--section-tight);
+  border-block: var(--hairline) solid var(--rule);
+  text-align: center;
+}
+
+/* Its sentence is centred as a block too. */
+.brands-price__inner .lead {
+  margin-inline: auto;
+}
+
+/* ---------- About ---------- */
+
+/* The story: the picture above the text on a phone. */
+.about-story__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--s-7);
+}
+
+/* Platforms: the text follows the title closely on a phone. */
+.about-platforms__grid {
+  gap: var(--s-5);
+}
+
+/* Wide screens. */
+@media (min-width: 861px) {
+  /* The story: the picture on the left, the text beside it. */
+  .about-story__grid {
+    grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+    gap: var(--s-8);
+    align-items: center;
+  }
+
+  /* Platforms: the usual gap between the two columns of a split. */
+  .about-platforms__grid {
+    gap: var(--s-8);
+  }
+
+  /* The text ends on the last line of the title. */
+  .about-platforms__text {
+    align-self: end;
+  }
+}
+
+/* ---------- Questions ---------- */
+
+/* The groups of questions, one under the other. */
+.faq__groups {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--s-8);
+}
+
+/* One group: its title above its questions on a phone. */
+.faq__group {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--s-5);
+}
+
+/* Wide screens. */
+@media (min-width: 861px) {
+  /* More room between the groups. */
+  .faq__groups {
+    gap: var(--s-9);
+  }
+
+  /* The title of a group on the left, its questions on the right. */
+  .faq__group {
+    grid-template-columns: minmax(0, 4fr) minmax(0, 8fr);
+    gap: var(--s-8);
+    align-items: start;
+  }
+}
+
+/* ---------- Contact ---------- */
+
+/* The ways to reach us, between two hairlines: one block for the email, and
+   a second one for the phone once there is a number. */
+.contact-ways__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--s-7);
+  padding-block: var(--section-tight);
+  border-block: var(--hairline) solid var(--rule);
+  text-align: center;
+}
+
+/* One block: its name, the address or number, then a sentence. */
+.contact-ways__item {
+  display: grid;
+  justify-items: center;
+  gap: var(--s-3);
+}
+
+/* The gap does the spacing between the parts of a block. */
+.contact-ways__item > * {
+  margin: 0;
+}
+
+/* The address itself. On a phone it is set small enough to stay on one line. */
+.contact-ways__value {
+  font-size: var(--t-body);
+  line-height: var(--lh-h3);
+}
+
+/* The two paths, as tiles: one under the other on a phone. */
+.contact-paths__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--s-4);
+}
+
+/* Small tablets and up. */
+@media (min-width: 561px) {
+  /* The address is set larger. */
+  .contact-ways__value {
+    font-size: var(--t-h3);
+  }
+}
+
+/* Wide screens. */
+@media (min-width: 861px) {
+  /* The blocks sit side by side, however many there are. */
+  .contact-ways__grid {
+    grid-auto-flow: column;
+    grid-auto-columns: minmax(0, 1fr);
+    grid-template-columns: none;
+  }
+
+  /* The two tiles sit side by side. */
+  .contact-paths__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--s-5);
+  }
+}
+
+/* ---------- Apply ---------- */
+
+/* The form first, "what happens next" under it on a phone. */
+.apply__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--s-8);
+}
+
+/* The three steps, under the title of "what happens next". */
+.apply__steps {
+  margin-top: var(--s-6);
+}
+
+/* Wide screens. */
+@media (min-width: 861px) {
+  /* "What happens next" beside the form. */
+  .apply__grid {
+    grid-template-columns: minmax(0, 7fr) minmax(0, 4fr);
+    gap: var(--s-9);
+    align-items: start;
+  }
+
+  /* It stays in view, below the fixed header, while the form scrolls. */
+  .apply__next {
+    position: sticky;
+    top: calc(var(--header-h, var(--s-8)) + var(--s-6));
+  }
+}
+
+/* ---------- Forms (apply.html and brands.html) ---------- */
+
+/* The parts of a form, one under the other. */
+.form > * + * {
+  margin-top: var(--s-5);
+}
+
+/* The places where the script puts its messages take no room while they are empty. */
+.form > .form__summary:empty,
+.form > .form__status:empty,
+.form > .form__summary:empty + * {
+  margin-top: 0;
+}
+
+/* A little more air above the line about the use of the details. */
+.form > .form__privacy {
+  margin-top: var(--s-6);
+}
+
+/* When the script moves to a field that needs fixing, the page stops with the
+   label of the field and the summary of errors in view above it. */
+.form .input,
+.form .select,
+.form .textarea {
+  scroll-margin-top: var(--s-10);
+  scroll-margin-bottom: var(--s-8);
+}
+
+/* Phones: the send button is as wide as the form. */
+@media (max-width: 560px) {
+  .form__submit {
+    display: flex;
+    width: 100%;
+  }
+}
+
+/* ---------- Privacy and Terms ---------- */
+
+/* The title, lead and date, under the draft notice. */
+.legal__head {
+  margin-top: var(--s-7);
+}
+
+/* The sections of text, under a hairline. */
+.legal__body {
+  display: grid;
+  gap: var(--s-7);
+  margin-top: var(--s-8);
+  padding-top: var(--s-8);
+  border-top: var(--hairline) solid var(--rule);
+}
+
+/* The heading and the paragraphs of one section. */
+.legal__section > * + * {
+  margin-top: var(--s-4);
+}

@@ -2,70 +2,372 @@
  * header.css
  * Owner: Header and Footer agent. (Responsive may add layout fixes.)
  *
- * Belongs here: the fixed site header, its transparent state over the home hero,
- * the solid cream bar after scrolling, hide on scroll down and return on scroll up,
- * and the full-screen ink menu for 860px and below (docs/design-brief.md, section 8).
+ * The fixed site header (src/partials/header.html): the bar with the logo, the
+ * tiny uppercase links and the Apply button; its clear state over the home hero
+ * and its solid cream state everywhere else; the slide out of view on the way
+ * down the page; and the full-screen ink menu for 860px and below
+ * (docs/design-brief.md, section 8). Every value comes from tokens.css.
  *
- * Below is only the minimum that makes the Foundation's simple header usable.
- * Replace it freely.
+ * For the other stylesheets:
+ *   --header-h                 the room the bar takes at the top of the page
+ *                              (64px; 56px at 860px and below; 0 without JavaScript)
+ *
+ * Hooks set by src/js/nav.js:
+ *   .site-header.is-solid      home only: the page has left the top, the bar is solid cream
+ *   .site-header.is-hidden     the bar has slid out of view
+ *   html.menu-open             the phone menu is open and the page behind does not scroll
  */
 
+/* ---------- The height of the bar, defined once ---------- */
+
+/* The small button with 12px of air above and below it: 64px. */
+:root {
+  --header-h: calc(var(--h-btn-small) + var(--s-5));
+}
+
+/* Phones and small tablets: 8px of air, 56px. */
+@media (max-width: 860px) {
+  :root {
+    --header-h: calc(var(--h-btn-small) + var(--s-4));
+  }
+}
+
+/* Without JavaScript the bar stands in the flow of the page, so no room is kept for it. */
+:root:not(.js) {
+  --header-h: 0px;
+}
+
+/* Every page except home starts below the fixed bar. On home the hero runs under it. */
+body:not([data-page="home"]) main {
+  padding-top: var(--header-h);
+}
+
+/* A jump to a part of a page stops below the bar, not under it. */
+html {
+  scroll-padding-top: var(--header-h);
+}
+
+/* ---------- The bar ---------- */
+
+/* The solid cream bar with a hairline: the six ground variables, as .on-cream sets them.
+   This plain version is also what a visitor without JavaScript gets: it sticks to
+   the top of the window and never hides. */
 .site-header {
+  --bg: var(--cream);
+  --fg: var(--ink);
+  --fg-muted: var(--muted);
+  --rule: var(--line);
+  --surface: var(--paper);
+  --accent-fg: var(--accent);
   position: sticky;
   top: 0;
   z-index: 100;
-  border-bottom: 1px solid var(--rule);
+  border-bottom: var(--hairline) solid var(--rule);
+  background-color: var(--bg);
+  color: var(--fg);
+  transition:
+    transform var(--dur-hover-slow) var(--ease),
+    background-color var(--dur-hover) var(--ease),
+    border-color var(--dur-hover) var(--ease),
+    color var(--dur-hover) var(--ease);
 }
 
+/* With JavaScript the bar is fixed, exactly --header-h tall. */
+html.js .site-header {
+  position: fixed;
+  right: 0;
+  left: 0;
+  height: var(--header-h);
+}
+
+/* Home, at the top of the page: a clear bar with cream text over the hero photo.
+   The six ground variables, as .on-photo sets them. */
+html.js [data-page="home"] .site-header:not(.is-solid) {
+  --bg: var(--ink);
+  --fg: var(--cream);
+  --fg-muted: var(--cream);
+  --rule: var(--line-on-ink);
+  --surface: var(--ink-soft);
+  --accent-fg: var(--accent-on-ink);
+  border-bottom-color: transparent;
+  background-color: transparent;
+}
+
+/* Over the photo the gap inside the focus ring is filled with ink, as on .on-photo. */
+html.js [data-page="home"] .site-header:not(.is-solid) .site-header__inner :focus-visible {
+  box-shadow: 0 0 0 var(--focus-offset) var(--bg);
+}
+
+/* Scrolling down: the bar slides up and out of view. */
+.site-header.is-hidden {
+  transform: translateY(-100%);
+}
+
+/* Logo left, everything else right. Without JavaScript the row may wrap. */
 .site-header__inner {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 0 var(--s-5);
-  min-height: 64px;
+  gap: 0 var(--s-6);
   padding-block: var(--s-2);
 }
 
+html.js .site-header__inner {
+  flex-wrap: nowrap;
+  height: 100%;
+  padding-block: 0;
+}
+
+/* The logo as a link to the home page, 44px tall for a finger. */
 .site-header__logo {
   display: inline-flex;
   align-items: center;
-  min-height: 44px;
+  min-height: var(--tap);
   margin-right: auto;
   text-decoration: none;
+  -webkit-tap-highlight-color: transparent;
 }
+
+/* The fold of the symbol changes colour with the ground, at the pace of the bar. */
+.site-header__logo .logo__symbol path {
+  transition: fill var(--dur-hover) var(--ease);
+}
+
+/* ---------- The links of the bar (desktop) ---------- */
 
 .site-nav__list {
   display: flex;
   flex-wrap: wrap;
-  gap: 0 var(--s-5);
+  align-items: center;
+  gap: 0 var(--s-6);
 }
 
+/* Tiny uppercase links, muted until pointed at. The hairline under a link is
+   there all along, without colour, so nothing moves when it shows. */
 .site-nav__link {
   display: inline-flex;
   align-items: center;
-  min-height: 44px;
+  min-height: var(--tap);
   color: var(--fg-muted);
-  text-decoration: none;
+  white-space: nowrap;
+  text-decoration: underline;
+  text-decoration-color: transparent;
+  text-underline-offset: .6em;
+  -webkit-tap-highlight-color: transparent;
+  transition:
+    color var(--dur-hover) var(--ease),
+    text-decoration-color var(--dur-hover) var(--ease);
 }
 
+/* The page the visitor is on: full colour and the hairline. */
 .site-nav__link[aria-current="page"] {
   color: var(--fg);
+  text-decoration-color: currentColor;
 }
 
+/* Hover: from muted to full. */
 @media (hover: hover) {
   .site-nav__link:hover {
     color: var(--fg);
+    text-decoration-color: currentColor;
   }
 }
 
-/* Phones: the links move to a second row and the bar scrolls away, until the real menu exists. */
+/* Pressed. */
+.site-nav__link:active {
+  color: var(--fg-muted);
+}
+
+/* A little less air between the links on small laptops and tablets held sideways. */
+@media (max-width: 1100px) {
+  .site-header__inner,
+  .site-nav__list {
+    column-gap: var(--s-5);
+  }
+}
+
+/* ---------- 860px and below: one Menu button ---------- */
+
+/* The square button with four dots. It is of use only with JavaScript. */
+.site-header__toggle {
+  display: none;
+}
+
 @media (max-width: 860px) {
-  .site-header {
+  /* With JavaScript the links and Apply move into the menu. */
+  html.js .site-nav,
+  html.js .site-header__cta {
+    display: none;
+  }
+
+  html.js .site-header__toggle {
+    display: inline-flex;
+  }
+
+  /* Without JavaScript the links stay: on a second row under the logo and
+     Apply, and the bar scrolls away with the page instead of sticking. */
+  html:not(.js) .site-header {
     position: static;
   }
 
-  .site-nav {
+  html:not(.js) .site-nav {
     order: 3;
     width: 100%;
   }
+}
+
+/* ---------- The menu: a full-screen ink panel ---------- */
+
+/* A <dialog> opened as a modal by nav.js: the page behind cannot be reached
+   until it is closed. These rules undo the browser's small centred box. */
+.site-menu {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  max-width: none;
+  height: 100%;
+  max-height: none;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+/* The panel covers the whole window, so the layer behind it stays clear. */
+.site-menu::backdrop {
+  background-color: transparent;
+}
+
+/* While the menu is open the page behind does not scroll. */
+html.menu-open {
+  overflow: hidden;
+}
+
+/* Top row, links, then Apply and the email at the foot of the screen. */
+.site-menu__inner {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+  padding-bottom: max(var(--s-6), env(safe-area-inset-bottom));
+}
+
+/* The same height and hairline as the bar, so the logo and the button do not
+   move when the menu opens: the four dots become a cross in place. */
+.site-menu__top {
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: space-between;
+  height: var(--header-h);
+  border-bottom: var(--hairline) solid transparent;
+}
+
+.site-menu__nav {
+  flex: 1 0 auto;
+  padding-block: var(--s-7);
+}
+
+/* The links in large serif type, one to a line. */
+.site-menu__link {
+  display: block;
+  padding-block: var(--s-2);
+  font-size: var(--t-h1);
+  font-weight: var(--w-heading);
+  line-height: var(--lh-h1);
+  letter-spacing: var(--track-heading);
+  text-decoration: underline;
+  text-decoration-color: transparent;
+  text-decoration-thickness: var(--hairline);
+  text-underline-offset: .18em;
+  -webkit-tap-highlight-color: transparent;
+  transition:
+    color var(--dur-hover) var(--ease),
+    text-decoration-color var(--dur-hover) var(--ease);
+}
+
+/* The page the visitor is on is set in the light italic. */
+.site-menu__link[aria-current="page"] {
+  font-style: italic;
+}
+
+@media (hover: hover) {
+  .site-menu__link:hover {
+    text-decoration-color: currentColor;
+  }
+}
+
+.site-menu__link:active {
+  color: var(--fg-muted);
+}
+
+/* Apply, then the contact details under a hairline. */
+.site-menu__foot {
+  display: grid;
+  flex: none;
+  gap: var(--s-6);
+  justify-items: start;
+}
+
+.site-menu__contact {
+  display: grid;
+  gap: var(--s-4);
+  width: 100%;
+  padding-top: var(--s-5);
+  border-top: var(--hairline) solid var(--rule);
+}
+
+/* The address itself is the link; 44px tall for a finger, and a hair below
+   its label so the focus ring does not touch it. */
+.site-menu__contact-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--tap);
+  margin-top: var(--s-1);
+  overflow-wrap: anywhere;
+}
+
+/* On a phone the Apply button is as wide as the screen allows. */
+@media (max-width: 520px) {
+  .site-menu__cta {
+    width: 100%;
+  }
+}
+
+/* Opening: the panel fades in and its contents rise a little. Closing: a quick
+   fade. Only where motion is welcome; without support the menu simply appears. */
+@media (prefers-reduced-motion: no-preference) {
+  .site-menu {
+    opacity: 0;
+    transition-property: opacity, display, overlay;
+    transition-duration: var(--dur-hover);
+    transition-timing-function: var(--ease);
+    transition-behavior: allow-discrete;
+  }
+
+  .site-menu[open] {
+    opacity: 1;
+    transition-duration: var(--dur-hover-slow);
+  }
+
+  .site-menu__nav,
+  .site-menu__foot {
+    transition: transform var(--dur-hover-slow) var(--ease);
+  }
+
+  @starting-style {
+    .site-menu[open] {
+      opacity: 0;
+    }
+
+    .site-menu[open] .site-menu__nav,
+    .site-menu[open] .site-menu__foot {
+      transform: translateY(var(--s-5));
+    }
+  }
+}
+
+/* A menu that is fading out no longer takes taps. */
+.site-menu:not([open]) {
+  pointer-events: none;
 }

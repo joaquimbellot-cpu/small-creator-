@@ -1,9 +1,10 @@
-<!-- Closing section, the same on every page that ends with it. Owner: Content Sections agent. -->
 <section class="section closing">
   <div class="wrap">
-    <h2 class="h2">{{site.closing.title}}</h2>
-    <p class="lead">{{site.closing.lead}}</p>
-    <p><a class="btn" href="{{site.cta.href}}">{{site.closing.button}}</a></p>
-    <p class="small muted">{{site.closing.note}}</p>
+    <div class="closing__inner">
+      <h2 class="h2" data-reveal="lines">{{site.closing.title}}</h2>
+      <p class="lead" data-reveal data-reveal-delay="1">{{site.closing.lead}}</p>
+      <p class="closing__action" data-reveal data-reveal-delay="2"><a class="btn" href="{{site.cta.href}}">{{site.closing.button}} {{> icons/arrow-right}}</a></p>
+      <p class="small muted" data-reveal data-reveal-delay="3">{{site.closing.note}}</p>
+    </div>
   </div>
 </section>
