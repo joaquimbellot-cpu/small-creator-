@@ -3,6 +3,10 @@
 Every picture on the Smallfold site, where it came from, and the terms it is used under.
 The same facts are in `src/content/images.json` (`credit`, `creditUrl`, `licence`).
 
+> **Update:** the owner did not like the drawn pictures described below. They have been replaced
+> on the site by soft blurred stand-ins (plus three new slots, `example1` to `example3`) until the
+> owner's own pictures arrive. The prompts for those are in `docs/image-prompts.md`.
+
 ## The pictures in the photo slots
 
 **These eight pictures are not photographs.** They were drawn by script for Smallfold as one series:

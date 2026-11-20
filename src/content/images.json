@@ -5,10 +5,11 @@
     "height": 1350,
     "srcSmall": "assets/img/hero-small.jpg",
     "widthSmall": 1200,
-    "alt": "Sheets of cream paper on a dark desk in low window light; one small square sheet has its corner folded over in blue.",
+    "alt": "",
     "credit": "",
     "creditUrl": "",
-    "licence": "Drawn for Smallfold"
+    "licence": "",
+    "placeholder": true
   },
   "heroTall": {
     "src": "assets/img/hero-tall.jpg",
@@ -16,10 +17,11 @@
     "height": 1500,
     "srcSmall": "assets/img/hero-tall-small.jpg",
     "widthSmall": 600,
-    "alt": "Sheets of cream paper on a dark desk in low window light; one small square sheet has its corner folded over in blue.",
+    "alt": "",
     "credit": "",
     "creditUrl": "",
-    "licence": "Drawn for Smallfold"
+    "licence": "",
+    "placeholder": true
   },
   "band": {
     "src": "assets/img/band.jpg",
@@ -27,10 +29,11 @@
     "height": 1200,
     "srcSmall": "assets/img/band-small.jpg",
     "widthSmall": 1200,
-    "alt": "Close view of a fanned stack of paper sheets on a desk, their edges catching window light.",
+    "alt": "",
     "credit": "",
     "creditUrl": "",
-    "licence": "Drawn for Smallfold"
+    "licence": "",
+    "placeholder": true
   },
   "difference1": {
     "src": "assets/img/difference-1.jpg",
@@ -38,10 +41,11 @@
     "height": 1500,
     "srcSmall": "assets/img/difference-1-small.jpg",
     "widthSmall": 600,
-    "alt": "Small paper cards laid out in rows on a desk; one is lifted out of line, its corner folded over in blue.",
+    "alt": "",
     "credit": "",
     "creditUrl": "",
-    "licence": "Drawn for Smallfold"
+    "licence": "",
+    "placeholder": true
   },
   "difference2": {
     "src": "assets/img/difference-2.jpg",
@@ -49,10 +53,11 @@
     "height": 1500,
     "srcSmall": "assets/img/difference-2-small.jpg",
     "widthSmall": 600,
-    "alt": "One small square of paper in a pool of window light on a wide, dim desk, beside the edge of a much larger sheet.",
+    "alt": "",
     "credit": "",
     "creditUrl": "",
-    "licence": "Drawn for Smallfold"
+    "licence": "",
+    "placeholder": true
   },
   "difference3": {
     "src": "assets/img/difference-3.jpg",
@@ -60,10 +65,11 @@
     "height": 1500,
     "srcSmall": "assets/img/difference-3-small.jpg",
     "widthSmall": 600,
-    "alt": "A sheet of paper with a blue folded corner in window light, a second sheet set aside behind it, and a pen below.",
+    "alt": "",
     "credit": "",
     "creditUrl": "",
-    "licence": "Drawn for Smallfold"
+    "licence": "",
+    "placeholder": true
   },
   "brands": {
     "src": "assets/img/brands.jpg",
@@ -71,10 +77,11 @@
     "height": 1200,
     "srcSmall": "assets/img/brands-small.jpg",
     "widthSmall": 1200,
-    "alt": "A sheet of paper, a plain box and two round tins set out on a table in window light, seen from above.",
+    "alt": "",
     "credit": "",
     "creditUrl": "",
-    "licence": "Drawn for Smallfold"
+    "licence": "",
+    "placeholder": true
   },
   "about": {
     "src": "assets/img/about.jpg",
@@ -82,10 +89,11 @@
     "height": 1200,
     "srcSmall": "assets/img/about-small.jpg",
     "widthSmall": 1200,
-    "alt": "A notebook with one corner folded over, a round lens and a pen on a desk by a window, seen from above.",
+    "alt": "",
     "credit": "",
     "creditUrl": "",
-    "licence": "Drawn for Smallfold"
+    "licence": "",
+    "placeholder": true
   },
   "threads": {
     "src": "assets/illustrations/threads.svg",
@@ -113,5 +121,41 @@
     "credit": "",
     "creditUrl": "",
     "licence": "Drawn for Smallfold"
+  },
+  "example1": {
+    "src": "assets/img/example-1.jpg",
+    "width": 960,
+    "height": 1200,
+    "alt": "",
+    "credit": "",
+    "creditUrl": "",
+    "licence": "",
+    "srcSmall": "assets/img/example-1-small.jpg",
+    "widthSmall": 480,
+    "placeholder": true
+  },
+  "example2": {
+    "src": "assets/img/example-2.jpg",
+    "width": 960,
+    "height": 1200,
+    "alt": "",
+    "credit": "",
+    "creditUrl": "",
+    "licence": "",
+    "srcSmall": "assets/img/example-2-small.jpg",
+    "widthSmall": 480,
+    "placeholder": true
+  },
+  "example3": {
+    "src": "assets/img/example-3.jpg",
+    "width": 960,
+    "height": 1200,
+    "alt": "",
+    "credit": "",
+    "creditUrl": "",
+    "licence": "",
+    "srcSmall": "assets/img/example-3-small.jpg",
+    "widthSmall": 480,
+    "placeholder": true
   }
 }
