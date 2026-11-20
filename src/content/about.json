@@ -1,38 +1,38 @@
 {
   "head": {
-    "label": "[label: small label above the page title, 1 to 3 words]",
-    "title": "[title: page title for About, max 9 words]",
-    "lead": "[lead: what Smallfold is, one sentence, max 24 words]"
+    "label": "About",
+    "title": "We look at the small ones",
+    "lead": "Smallfold finds sponsors for small YouTube channels, with a person choosing each one by hand."
   },
   "story": {
-    "label": "[label: small label above the story, 1 to 3 words]",
-    "title": "[title: title of the story, max 8 words]",
+    "label": "Our story",
+    "title": "It began with a small channel",
     "paragraphs": [
-      "[paragraph 1: the story exactly as given in brand-info.md, section 1, with no added detail, max 40 words]",
-      "[paragraph 2: what Smallfold does about it today, 1 to 3 sentences, max 50 words]"
+      "Smallfold was started by a YouTube creator with a small channel who found that sponsors only looked at big ones.",
+      "That finding is why Smallfold exists. Today we find sponsors for small YouTube channels, and that is all we do."
     ]
   },
   "beliefs": {
-    "label": "[label: small label above the section, 1 to 3 words]",
-    "title": "[title: section title for the three beliefs, max 8 words]",
+    "label": "What we believe",
+    "title": "Three beliefs behind every match",
     "items": [
       {
-        "title": "[title: belief 1, matched by hand, max 6 words]",
-        "text": "[text: belief 1, 1 or 2 sentences, max 35 words]"
+        "title": "A person should choose",
+        "text": "A sponsor should be chosen by someone who has looked at the channel. So a person does it, with no automatic list and no algorithm."
       },
       {
-        "title": "[title: belief 2, only small channels, max 6 words]",
-        "text": "[text: belief 2, 1 or 2 sentences, max 35 words]"
+        "title": "Small channels deserve attention",
+        "text": "We work only with channels of 1,000 to 50,000 subscribers. Here a small channel is never behind a big one."
       },
       {
-        "title": "[title: belief 3, the creator has the final say, max 6 words]",
-        "text": "[text: belief 3, 1 or 2 sentences, max 35 words]"
+        "title": "The decision belongs to you",
+        "text": "It is your channel. You can turn down any sponsor we suggest, and nothing goes ahead without your yes."
       }
     ]
   },
   "platforms": {
-    "label": "[label: small label above the section, 1 to 3 words]",
-    "title": "[title: YouTube now, other platforms later, max 8 words]",
-    "text": "[text: one or two sentences, no platform names and no dates, max 30 words]"
+    "label": "Platforms",
+    "title": "YouTube now, other platforms later",
+    "text": "Today we work with YouTube channels only. Other platforms will come later."
   }
 }

@@ -1,58 +1,74 @@
 {
   "head": {
-    "label": "[label: small label above the page title, 1 to 3 words]",
-    "title": "[title: page title for Questions, max 6 words]",
-    "lead": "[lead: one sentence, and where to ask anything that is not answered here, max 24 words]"
+    "label": "Questions",
+    "title": "Questions and answers",
+    "lead": "If your question is not answered here, write to us by email."
   },
   "groups": [
     {
-      "title": "[title: group 1, for example joining, max 4 words]",
+      "title": "Joining",
       "items": [
         {
-          "q": "[q: question, max 12 words]",
-          "a": "[a: answer, 1 to 3 sentences, max 50 words]"
+          "q": "Who can join Smallfold?",
+          "a": "Creators with a YouTube channel of 1,000 to 50,000 subscribers. A channel with fewer than 1,000 subscribers cannot join yet."
         },
         {
-          "q": "[q: question, max 12 words]",
-          "a": "[a: answer, 1 to 3 sentences, max 50 words]"
+          "q": "How do I apply?",
+          "a": "Fill out the application form. We ask for your name, your email, a link to your channel, what it is about and your subscriber count. A phone number is optional."
         },
         {
-          "q": "[q: question, max 12 words]",
-          "a": "[a: answer, 1 to 3 sentences, max 50 words]"
+          "q": "What happens after I apply?",
+          "a": "We reply within 2 working days. A person looks at your channel and chooses a sponsor that suits it, and we suggest that sponsor to you."
+        },
+        {
+          "q": "Which platforms do you work with?",
+          "a": "YouTube, for now. Other platforms will come later."
+        },
+        {
+          "q": "How do I contact you?",
+          "a": "Write to us by email. The address is on the contact page and at the bottom of every page."
         }
       ]
     },
     {
-      "title": "[title: group 2, for example sponsors and deals, max 4 words]",
+      "title": "Sponsors and matches",
       "items": [
         {
-          "q": "[q: question, max 12 words]",
-          "a": "[a: answer, 1 to 3 sentences, max 50 words]"
+          "q": "Do I have to look for sponsors myself?",
+          "a": "No. Finding the sponsor is our work. Your part is to apply, and to say yes or no to what we suggest."
         },
         {
-          "q": "[q: question, max 12 words]",
-          "a": "[a: answer, 1 to 3 sentences, max 50 words]"
+          "q": "How do you choose a sponsor for my channel?",
+          "a": "By hand. A person looks at your channel and picks a sponsor that suits it. There is no automatic list and no algorithm."
         },
         {
-          "q": "[q: question, max 12 words]",
-          "a": "[a: answer, 1 to 3 sentences, max 50 words]"
+          "q": "Can I say no to a sponsor?",
+          "a": "Yes. You can turn down any sponsor we suggest. The final say is yours."
+        },
+        {
+          "q": "Does the sponsor have a say?",
+          "a": "Yes. A sponsor approves each channel we suggest to it. A deal goes ahead only when you and the sponsor both say yes."
+        },
+        {
+          "q": "I represent a brand. How do I start?",
+          "a": "Send a short inquiry from the For brands page. Tell us what you want to promote and your budget range."
         }
       ]
     },
     {
-      "title": "[title: group 3, for example money, max 4 words]",
+      "title": "Commission",
       "items": [
         {
-          "q": "[q: question, max 12 words]",
-          "a": "[a: answer, 1 to 3 sentences, max 50 words]"
+          "q": "What does Smallfold cost?",
+          "a": "Joining is free. We take a commission from your fee once a deal is done. It is 10% on a sponsorship under $500, 8% from $500 to $1,999, and 5% at $2,000 or more."
         },
         {
-          "q": "[q: question, max 12 words]",
-          "a": "[a: answer, 1 to 3 sentences, max 50 words]"
+          "q": "When is the commission charged?",
+          "a": "Only once a deal is done. If there is no deal, there is no commission."
         },
         {
-          "q": "[q: question, max 12 words]",
-          "a": "[a: answer, 1 to 3 sentences, max 50 words]"
+          "q": "Do sponsors pay extra because of the commission?",
+          "a": "No. The sponsor pays exactly the agreed fee and nothing extra. The commission comes out of your fee."
         }
       ]
     }

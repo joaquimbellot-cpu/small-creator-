@@ -4,6 +4,7 @@
  *
  * Reset, page defaults, the type classes, the layout helpers (.wrap, .section)
  * and the accessibility helpers. Components live in components.css.
+ * Every value comes from tokens.css.
  */
 
 /* ---------- Reset ---------- */
@@ -33,6 +34,8 @@ body {
   font-weight: var(--w-text);
   line-height: var(--lh-body);
   font-optical-sizing: auto;
+  /* Only the weights and italics that are really loaded are used; the browser never fakes one. */
+  font-synthesis: none;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   overflow-wrap: break-word;
@@ -80,16 +83,28 @@ h6 {
   text-wrap: balance;
 }
 
+/* Paragraphs avoid a single word alone on the last line, where the browser can. */
+p {
+  text-wrap: pretty;
+}
+
 a {
   color: inherit;
-  text-decoration-thickness: 1px;
+  text-decoration-thickness: var(--hairline);
   text-underline-offset: .18em;
 }
 
+/* Emphasis is the light italic. */
 em,
 i {
   font-style: italic;
   font-weight: var(--w-heading);
+}
+
+/* Newsreader is loaded in weights 300 and 400 only, so there is no bold. */
+b,
+strong {
+  font-weight: var(--w-text);
 }
 
 /* A list with a class is a layout list: no bullets. Plain lists in text keep theirs. */
@@ -99,9 +114,37 @@ ol[class] {
   padding: 0;
 }
 
+ul:not([class]),
+ol:not([class]) {
+  padding-left: 1.25em;
+}
+
+hr {
+  height: 0;
+  border: 0;
+  border-top: var(--hairline) solid var(--rule);
+}
+
 table {
   border-collapse: collapse;
   font-variant-numeric: tabular-nums;
+}
+
+/* A fieldset is used to group radio tiles; it has no frame of its own. */
+fieldset {
+  min-width: 0;
+  padding: 0;
+  border: 0;
+}
+
+legend {
+  padding: 0;
+}
+
+/* Selected text takes the colours of a button. */
+::selection {
+  background-color: var(--fg);
+  color: var(--bg);
 }
 
 [hidden] {
@@ -117,6 +160,19 @@ table {
   color: var(--fg);
 }
 
+/* Tells the browser which ground it is on, so its own parts (the list of a
+   select, autofill, scrollbars) come out light or dark to match. */
+.on-cream {
+  color-scheme: light;
+}
+
+.on-ink,
+.on-photo,
+.panel,
+.band {
+  color-scheme: dark;
+}
+
 /* ---------- Type classes (usable on any element) ---------- */
 
 .h-hero,
@@ -129,27 +185,32 @@ table {
   text-wrap: balance;
 }
 
+/* The hero line: the light italic. */
 .h-hero {
   font-size: var(--t-hero);
   line-height: var(--lh-hero);
   font-style: italic;
 }
 
+/* Page title. */
 .h1 {
   font-size: var(--t-h1);
   line-height: var(--lh-h1);
 }
 
+/* Section title. */
 .h2 {
   font-size: var(--t-h2);
   line-height: var(--lh-h2);
 }
 
+/* Item title. */
 .h3 {
   font-size: var(--t-h3);
   line-height: var(--lh-h3);
 }
 
+/* The centred statement paragraph. */
 .statement {
   font-size: var(--t-statement);
   line-height: var(--lh-statement);
@@ -159,27 +220,32 @@ table {
   text-wrap: balance;
 }
 
+/* Lead paragraph under a title. */
 .lead {
   max-width: var(--measure);
   font-size: var(--t-lead);
   line-height: var(--lh-lead);
 }
 
+/* Running text. */
 .body {
   max-width: var(--measure);
   font-size: var(--t-body);
   line-height: var(--lh-body);
 }
 
+/* Notes and hints. */
 .small {
   font-size: var(--t-small);
   line-height: var(--lh-small);
 }
 
+/* Secondary text. Add it to any of the classes above. */
 .muted {
   color: var(--fg-muted);
 }
 
+/* Uppercase sans label. Never smaller than 12px. */
 .label {
   font-family: var(--font-sans);
   font-size: var(--t-label);
@@ -219,6 +285,7 @@ table {
   padding-inline: var(--gutter);
 }
 
+/* The narrow text column. */
 .wrap--narrow {
   max-width: calc(var(--narrow) + 2 * var(--gutter));
 }
@@ -239,6 +306,7 @@ table {
 
 /* ---------- Accessibility helpers ---------- */
 
+/* For screen readers only: in the page, but not shown. */
 .sr-only {
   position: absolute;
   width: 1px;
@@ -252,7 +320,7 @@ table {
   border: 0;
 }
 
-/* Hidden until it receives keyboard focus. */
+/* The first link of every page. Hidden until it receives keyboard focus. */
 .skip-link {
   position: fixed;
   top: var(--s-2);
@@ -260,8 +328,8 @@ table {
   z-index: 1000;
   display: inline-flex;
   align-items: center;
-  min-height: 44px;
-  padding: 0 var(--s-4);
+  min-height: var(--tap);
+  padding: 0 var(--s-5);
   border-radius: var(--r);
   background-color: var(--ink);
   color: var(--cream);
@@ -272,6 +340,7 @@ table {
   text-transform: uppercase;
   text-decoration: none;
   transform: translateY(-200%);
+  transition: transform var(--dur-hover) var(--ease);
 }
 
 .skip-link:focus {
@@ -279,10 +348,17 @@ table {
   outline-color: var(--accent-on-ink);
 }
 
-/* Focus is always visible. */
+/* Focus is always visible: a ring in the pen blue around whatever has the keyboard. */
 :focus-visible {
-  outline: 2px solid var(--accent-fg);
-  outline-offset: 3px;
+  outline: var(--stroke) solid var(--accent-fg);
+  outline-offset: var(--focus-offset);
+}
+
+/* On a photograph the gap inside the ring is filled with ink, so the ring
+   stands out on any picture. (A solid band, not a shadow: it has no blur.) */
+.on-photo :focus-visible,
+.band :focus-visible {
+  box-shadow: 0 0 0 var(--focus-offset) var(--bg);
 }
 
 /* The skip link moves focus to <main>; no ring is needed around the whole page. */

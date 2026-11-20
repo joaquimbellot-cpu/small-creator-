@@ -1,111 +1,111 @@
 {
   "hero": {
     "title": "A sponsor chosen for your channel",
-    "lead": "[lead: what Smallfold does for a small channel, one sentence, max 22 words]",
+    "lead": "We find sponsors for small YouTube channels, and a person makes every match.",
     "cta": "Apply",
-    "note": "[note: the channel size range, one line, max 10 words]"
+    "note": "For channels with 1,000 to 50,000 subscribers."
   },
   "statement": {
-    "text": "[text: the statement paragraph, why Smallfold exists and how it works, one paragraph of 30 to 45 words]"
+    "text": "Smallfold was started by a YouTube creator with a small channel who found that sponsors only looked at big ones. So we look at the small ones. A person looks at each channel and chooses a sponsor that suits it."
   },
   "differences": {
-    "label": "[label: small label above the section, 1 to 3 words]",
-    "title": "[title: section title for the three differences, max 8 words]",
+    "label": "Why Smallfold",
+    "title": "Three things we hold to",
     "items": [
       {
         "title": "Matched by hand",
-        "text": "[text: a person looks at each channel and picks the sponsor, 1 or 2 sentences, max 35 words]"
+        "text": "No automatic list, no algorithm. Every sponsor we suggest is picked by a person."
       },
       {
         "title": "Only small channels",
-        "text": "[text: only channels in our subscriber range, 1 or 2 sentences, max 35 words]"
+        "text": "We work only with channels that have 1,000 to 50,000 subscribers."
       },
       {
         "title": "You have the final say",
-        "text": "[text: a creator can turn down any suggested sponsor, 1 or 2 sentences, max 35 words]"
+        "text": "You can turn down any sponsor we suggest. Nothing goes ahead without your yes."
       }
     ]
   },
   "process": {
-    "label": "[label: small label above the section, 1 to 3 words]",
-    "title": "[title: section title, how a match is made, max 7 words]",
-    "lead": "[lead: one sentence introducing the four steps, max 22 words]",
+    "label": "The process",
+    "title": "How a match is made",
+    "lead": "From your application to a deal, in four steps.",
     "steps": [
       {
-        "title": "[title: step 1, max 5 words]",
-        "text": "[text: step 1 in one sentence, max 22 words]"
+        "title": "You apply",
+        "text": "Send us a link to your channel, what it is about and your subscriber count."
       },
       {
-        "title": "[title: step 2, max 5 words]",
-        "text": "[text: step 2 in one sentence, max 22 words]"
+        "title": "We choose a sponsor",
+        "text": "We look at your channel and choose a sponsor to suggest."
       },
       {
-        "title": "[title: step 3, max 5 words]",
-        "text": "[text: step 3 in one sentence, max 22 words]"
+        "title": "You decide",
+        "text": "You say yes or no to the sponsor, and the sponsor says yes or no to your channel."
       },
       {
-        "title": "[title: step 4, max 5 words]",
-        "text": "[text: step 4 in one sentence, max 22 words]"
+        "title": "The deal is done",
+        "text": "With a yes on both sides, the deal goes ahead."
       }
     ],
     "link": {
-      "label": "[label: link to the How it works page, max 5 words]",
+      "label": "See each step in detail",
       "href": "how-it-works.html"
     }
   },
   "examples": {
-    "label": "[label: small label above the section, 1 to 3 words]",
-    "title": "[title: section title for the example matches, max 8 words]",
-    "note": "[note: says plainly that these are examples and not real deals, one sentence, max 20 words]",
+    "label": "Matches",
+    "title": "What a match can look like",
+    "note": "These are invented examples to show how a match works, and none of them is a real deal.",
     "items": [
       {
-        "channel": "[channel: example 1, the kind of channel, no real names, max 8 words]",
-        "sponsor": "[sponsor: example 1, the kind of sponsor, no real brand names, max 8 words]",
-        "video": "[video: example 1, the kind of sponsored video, no dollar amounts, max 14 words]"
+        "channel": "A home baking channel",
+        "sponsor": "A small flour mill",
+        "video": "A sourdough video with a short section on the mill’s flour."
       },
       {
-        "channel": "[channel: example 2, the kind of channel, no real names, max 8 words]",
-        "sponsor": "[sponsor: example 2, the kind of sponsor, no real brand names, max 8 words]",
-        "video": "[video: example 2, the kind of sponsored video, no dollar amounts, max 14 words]"
+        "channel": "A channel about restoring old bicycles",
+        "sponsor": "A maker of bicycle tools",
+        "video": "A full restoration, with the sponsor’s tools named as they are used."
       },
       {
-        "channel": "[channel: example 3, the kind of channel, no real names, max 8 words]",
-        "sponsor": "[sponsor: example 3, the kind of sponsor, no real brand names, max 8 words]",
-        "video": "[video: example 3, the kind of sponsored video, no dollar amounts, max 14 words]"
+        "channel": "A houseplant care channel",
+        "sponsor": "An online shop for pots and planters",
+        "video": "A repotting guide that shows the sponsor’s pots in use."
       }
     ]
   },
   "commission": {
-    "label": "[label: small label above the section, 1 to 3 words]",
-    "title": "[title: section title for the commission, max 8 words]",
-    "lead": "[lead: when and how the commission applies, one sentence, max 24 words]",
+    "label": "Commission",
+    "title": "No deal, no commission",
+    "lead": "Our commission comes out of your fee, and only once a deal is done.",
     "link": {
-      "label": "[label: link to the How it works page, max 5 words]",
+      "label": "More about commission",
       "href": "how-it-works.html"
     }
   },
   "band": {
-    "text": "[text: the single line set on the photo band, max 10 words]"
+    "text": "Chosen by hand, one channel at a time"
   },
   "questions": {
-    "label": "[label: small label above the section, 1 to 3 words]",
-    "title": "[title: section title for the three questions, max 6 words]",
+    "label": "Questions",
+    "title": "Before you apply",
     "items": [
       {
-        "q": "[q: question 1, max 12 words]",
-        "a": "[a: answer 1, 1 to 3 sentences, max 45 words]"
+        "q": "Do I have to look for sponsors myself?",
+        "a": "No. Finding the sponsor is our work. Your part is to apply, and to say yes or no to what we suggest."
       },
       {
-        "q": "[q: question 2, max 12 words]",
-        "a": "[a: answer 2, 1 to 3 sentences, max 45 words]"
+        "q": "What if my channel has fewer than 1,000 subscribers?",
+        "a": "It cannot join yet. We work with channels of 1,000 to 50,000 subscribers, so apply once yours reaches 1,000."
       },
       {
-        "q": "[q: question 3, max 12 words]",
-        "a": "[a: answer 3, 1 to 3 sentences, max 45 words]"
+        "q": "Is Smallfold only for YouTube?",
+        "a": "For now, yes. Other platforms will come later."
       }
     ],
     "link": {
-      "label": "[label: link to the Questions page, max 4 words]",
+      "label": "All questions",
       "href": "questions.html"
     }
   }

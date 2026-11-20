@@ -1,52 +1,52 @@
 {
   "head": {
-    "label": "[label: small label above the page title, 1 to 3 words]",
-    "title": "[title: page title for How it works, max 8 words]",
-    "lead": "[lead: the whole process in one sentence, max 24 words]"
+    "label": "How it works",
+    "title": "How a channel meets its sponsor",
+    "lead": "You apply, we choose a sponsor for your channel, and you decide whether to accept."
   },
   "steps": [
     {
-      "title": "[title: step 1, max 5 words]",
-      "text": "[text: step 1, what happens, 1 or 2 sentences, max 35 words]",
-      "detail": "[detail: step 1, one extra practical fact, one sentence, max 20 words]"
+      "title": "You apply",
+      "text": "Fill out the application with a link to your channel, what it is about and your subscriber count.",
+      "detail": "We work with channels of 1,000 to 50,000 subscribers, and a channel under 1,000 cannot join yet."
     },
     {
-      "title": "[title: step 2, max 5 words]",
-      "text": "[text: step 2, what happens, 1 or 2 sentences, max 35 words]",
-      "detail": "[detail: step 2, one extra practical fact, one sentence, max 20 words]"
+      "title": "We choose a sponsor",
+      "text": "A person looks at your channel and chooses a sponsor that suits it.",
+      "detail": "No automatic list, no algorithm."
     },
     {
-      "title": "[title: step 3, max 5 words]",
-      "text": "[text: step 3, what happens, 1 or 2 sentences, max 35 words]",
-      "detail": "[detail: step 3, one extra practical fact, one sentence, max 20 words]"
+      "title": "You decide",
+      "text": "We tell you which sponsor we have chosen, and you say yes or no. You can turn down any sponsor we suggest.",
+      "detail": "The sponsor approves each channel we suggest to it."
     },
     {
-      "title": "[title: step 4, max 5 words]",
-      "text": "[text: step 4, what happens, 1 or 2 sentences, max 35 words]",
-      "detail": "[detail: step 4, one extra practical fact, one sentence, max 20 words]"
+      "title": "The deal is done",
+      "text": "When you and the sponsor both say yes, the deal goes ahead.",
+      "detail": "This is the point at which our commission applies."
     }
   ],
   "after": {
-    "label": "[label: small label above the section, 1 to 3 words]",
-    "title": "[title: section title, what happens after you apply, max 8 words]",
+    "label": "After you apply",
+    "title": "What to expect from us",
     "items": [
       {
-        "title": "[title: point 1, max 6 words]",
-        "text": "[text: point 1, 1 or 2 sentences, max 30 words]"
+        "title": "A reply from us",
+        "text": "We reply within 2 working days of your application."
       },
       {
-        "title": "[title: point 2, max 6 words]",
-        "text": "[text: point 2, 1 or 2 sentences, max 30 words]"
+        "title": "No searching on your side",
+        "text": "You do not look for sponsors yourself. Finding one that suits your channel is our work."
       },
       {
-        "title": "[title: point 3, max 6 words]",
-        "text": "[text: point 3, 1 or 2 sentences, max 30 words]"
+        "title": "A way to ask questions",
+        "text": "Write to us by email at any point. The address is on the contact page."
       }
     ]
   },
   "commission": {
-    "label": "[label: small label above the section, 1 to 3 words]",
-    "title": "[title: section title for the commission, max 8 words]",
-    "lead": "[lead: who pays the commission and when, 1 or 2 sentences, max 30 words]"
+    "label": "Commission",
+    "title": "What we charge, and when",
+    "lead": "The commission is taken from your fee, and only once a deal is done. With no deal, there is no commission."
   }
 }

@@ -5,30 +5,39 @@
  * Every design value of the site, defined once. Source: docs/design-brief.md,
  * sections 3 (colour), 4 (type), 5 (space, shape, grid) and 7 (easing).
  * All other stylesheets use these variables and never hard-code a value.
+ *
+ * To change a colour, a size or a distance for the whole site, change it here.
  */
 
 :root {
   /* Colour (brief, section 3) */
   --cream: #F1EFEB;                       /* brand colour, the page ground */
   --ink: #0E0E0E;                         /* brand colour, text on cream, dark grounds */
-  --paper: #FAF8F4;                       /* raised surfaces on cream */
-  --cream-deep: #E5E1D8;                  /* tiles, chips, image placeholders */
+  --paper: #FAF8F4;                       /* raised surfaces on cream: tiles, form fields */
+  --cream-deep: #E5E1D8;                  /* a deeper cream, for a builder's own blocks */
   --ink-soft: #1A1A19;                    /* raised surfaces on ink */
-  --muted: #5C5A55;                       /* secondary text on cream */
-  --muted-on-ink: #A9A59C;                /* secondary text on ink */
-  --faint: #B9B5AC;                       /* unrevealed words and decorative marks only */
+  --muted: #5C5A55;                       /* secondary text on cream (contrast 6.0) */
+  --muted-on-ink: #A9A59C;                /* secondary text on ink (contrast 7.9) */
+  --faint: #B9B5AC;                       /* unrevealed words and decorative marks only, never text to read */
   --line: rgba(14, 14, 14, .14);          /* hairlines on cream */
   --line-on-ink: rgba(241, 239, 235, .18); /* hairlines on ink */
-  --accent: #2B44D6;                      /* pen blue on cream or paper */
-  --accent-on-ink: #A8B4FF;               /* the same accent on ink */
+  --accent: #2B44D6;                      /* pen blue on cream or paper (contrast 6.3) */
+  --accent-on-ink: #A8B4FF;               /* the same accent on ink (contrast 9.8) */
+
+  /* The dark veil laid over a photo that carries text. At this strength cream
+     text keeps a contrast of 4.5 on any photo, even a white one. It is the only
+     place where the site darkens a picture. */
+  --veil: rgba(14, 14, 14, .64);
 
   /* Type (brief, section 4) */
   --font-serif: "Newsreader", Georgia, "Times New Roman", serif;
   --font-sans: "Instrument Sans", "Helvetica Neue", Arial, sans-serif;
+  --font-mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace; /* code samples in the style guide only */
 
   --w-heading: 300;
   --w-text: 400;
   --w-label: 500;
+  --w-label-strong: 600;                  /* the label of a form field that has an error */
 
   --t-hero: clamp(2.75rem, 6.2vw, 5.5rem);
   --t-h1: clamp(2.4rem, 4.6vw, 4rem);
@@ -39,6 +48,7 @@
   --t-body: 1.125rem;
   --t-small: 1rem;
   --t-label: .75rem;
+  --t-logo: 1.375rem;                     /* the wordmark in the header */
 
   --lh-hero: 1.02;
   --lh-h1: 1.06;
@@ -79,9 +89,24 @@
   --r: 8px;                               /* buttons, fields, tiles */
   --r-lg: 14px;                           /* inset panels, photos that are not full-bleed */
 
+  /* Lines */
+  --hairline: 1px;                        /* rules and borders */
+  --stroke: 2px;                          /* the focus ring, the border of a field with an error */
+  --focus-offset: 3px;                    /* gap between a control and its focus ring */
+
+  /* Sizes of controls (brief, section 6) */
+  --tap: 44px;                            /* smallest area a finger can tap */
+  --h-btn: 48px;                          /* button */
+  --h-btn-small: 40px;                    /* small button */
+  --h-field: 52px;                        /* form field, choice tile */
+  --icon: 24px;                           /* an icon on its own */
+  --icon-small: 16px;                     /* an icon inside a button or a link */
+  --mark: 20px;                           /* the radio and checkbox mark, the error mark */
+
   /* Motion (brief, section 7) */
   --ease: cubic-bezier(.22, 1, .36, 1);
   --dur-hover: 200ms;
+  --dur-hover-slow: 500ms;                /* longer hover moves: the sliding underline, the photo in a tile */
   --dur-enter: 900ms;
   --dur-enter-long: 1300ms;
 }
@@ -98,6 +123,13 @@
  * Grounds. A section sits on cream, on ink or on a photograph. Each ground
  * sets the same six variables; components read only these six, so every
  * component works on every ground.
+ *
+ *   --bg         the ground itself
+ *   --fg         text, and the fill of a button
+ *   --fg-muted   secondary text, and the border of a form field
+ *   --rule       hairlines
+ *   --surface    raised blocks: tiles, fields, chips, notices
+ *   --accent-fg  the pen blue: focus ring, the chosen option, the current step
  */
 :root,
 .on-cream {
@@ -120,11 +152,13 @@
   --accent-fg: var(--accent-on-ink);
 }
 
-/* Text on a photograph: cream text over a dark veil (the veil is drawn by .band and the hero). */
-.on-photo {
+/* Text on a photograph: cream text over the dark veil. .band is always on a photo.
+   Secondary text stays close to full cream here, so it is readable on any picture. */
+.on-photo,
+.band {
   --bg: var(--ink);
   --fg: var(--cream);
-  --fg-muted: rgba(241, 239, 235, .82);
+  --fg-muted: rgba(241, 239, 235, .92);
   --rule: rgba(241, 239, 235, .32);
   --surface: rgba(14, 14, 14, .4);
   --accent-fg: var(--accent-on-ink);

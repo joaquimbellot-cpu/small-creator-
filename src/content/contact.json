@@ -1,31 +1,31 @@
 {
   "head": {
-    "label": "[label: small label above the page title, 1 to 3 words]",
-    "title": "[title: page title for Contact, max 6 words]",
-    "lead": "[lead: one sentence on how to reach Smallfold, max 20 words]"
+    "label": "Contact",
+    "title": "Get in touch",
+    "lead": "Smallfold is online only, and these are the ways to reach us."
   },
   "email": {
-    "title": "[title: heading above the email address, 1 to 3 words]",
-    "text": "[text: one sentence about writing to us, max 18 words]"
+    "title": "Email",
+    "text": "Write to us with any question about Smallfold."
   },
   "phone": {
-    "title": "[title: heading above the phone number, 1 to 3 words]",
-    "text": "[text: one sentence about calling us, shown only once a number exists, max 18 words]"
+    "title": "Phone",
+    "text": "You can also call us on this number."
   },
   "paths": [
     {
-      "title": "[title: path for creators, max 5 words]",
-      "text": "[text: creators apply with the form, one sentence, max 22 words]",
+      "title": "You have a small channel",
+      "text": "Apply with the form, and we reply within 2 working days.",
       "link": {
-        "label": "[label: link to the application form, max 4 words]",
+        "label": "Apply to join",
         "href": "apply.html"
       }
     },
     {
-      "title": "[title: path for brands, max 5 words]",
-      "text": "[text: brands send a short enquiry, one sentence, max 22 words]",
+      "title": "You represent a brand",
+      "text": "Send a short inquiry and tell us what you want to promote.",
       "link": {
-        "label": "[label: link to the brand enquiry form, max 4 words]",
+        "label": "Send an inquiry",
         "href": "brands.html#enquiry"
       }
     }

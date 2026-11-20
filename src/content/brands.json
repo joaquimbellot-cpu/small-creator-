@@ -1,94 +1,94 @@
 {
   "head": {
-    "label": "[label: small label above the page title, 1 to 3 words]",
-    "title": "[title: page title for brands, max 9 words]",
-    "lead": "[lead: what Smallfold offers a brand, one sentence, max 24 words]",
+    "label": "For brands",
+    "title": "Small channels, chosen for your brand",
+    "lead": "Tell us what you want to promote, and a person chooses small YouTube channels that suit it.",
     "cta": {
-      "label": "[label: button that jumps to the enquiry form, max 3 words]",
+      "label": "Send an inquiry",
       "href": "#enquiry"
     }
   },
   "points": {
-    "label": "[label: small label above the section, 1 to 3 words]",
-    "title": "[title: section title for the three points for brands, max 8 words]",
+    "label": "What we offer",
+    "title": "Chosen by a person, approved by you",
     "items": [
       {
-        "title": "[title: point 1, max 6 words]",
-        "text": "[text: point 1, 1 or 2 sentences, max 30 words]"
+        "title": "Channels chosen by hand",
+        "text": "A person looks at each channel before we suggest it. No automatic list, no algorithm."
       },
       {
-        "title": "[title: point 2, max 6 words]",
-        "text": "[text: point 2, 1 or 2 sentences, max 30 words]"
+        "title": "Only small channels",
+        "text": "Every channel we work with is on YouTube and has 1,000 to 50,000 subscribers."
       },
       {
-        "title": "[title: point 3, max 6 words]",
-        "text": "[text: point 3, 1 or 2 sentences, max 30 words]"
+        "title": "You approve each channel",
+        "text": "You see every channel we suggest, and none goes ahead without your approval."
       }
     ]
   },
   "steps": {
-    "label": "[label: small label above the section, 1 to 3 words]",
-    "title": "[title: section title, how it works for a brand, max 8 words]",
+    "label": "Three steps",
+    "title": "How it works for a brand",
     "items": [
       {
-        "title": "[title: step 1, max 5 words]",
-        "text": "[text: step 1 in one sentence, max 24 words]"
+        "title": "You send an inquiry",
+        "text": "Tell us your company, what you want to promote and your budget range."
       },
       {
-        "title": "[title: step 2, max 5 words]",
-        "text": "[text: step 2 in one sentence, max 24 words]"
+        "title": "We suggest channels",
+        "text": "We come back with small YouTube channels that suit what you want to promote."
       },
       {
-        "title": "[title: step 3, max 5 words]",
-        "text": "[text: step 3 in one sentence, max 24 words]"
+        "title": "You approve",
+        "text": "You approve the channels you want, and a deal goes ahead once the creator says yes too."
       }
     ]
   },
   "price": {
-    "label": "[label: small label above the section, 1 to 3 words]",
-    "title": "[title: the brand pays the agreed fee and nothing more, max 10 words]",
-    "text": "[text: explains that the commission comes out of the creator's fee, 1 or 2 sentences, max 35 words]"
+    "label": "Cost",
+    "title": "You pay the agreed fee and nothing more",
+    "text": "Our commission is taken from the creator’s fee, and only once a deal is done."
   },
   "form": {
-    "label": "[label: small label above the form, 1 to 3 words]",
-    "title": "[title: title of the enquiry form, max 6 words]",
-    "lead": "[lead: what to send and what happens next, one sentence, max 24 words]",
+    "label": "Inquiry",
+    "title": "Start with a short inquiry",
+    "lead": "A few details are enough, and we will write back to the email address you give.",
     "fields": {
       "company": {
-        "label": "[label: company field, 1 to 3 words]",
-        "error": "[error: company is empty, max 8 words]"
+        "label": "Company",
+        "error": "Enter your company name."
       },
       "promote": {
-        "label": "[label: what you want to promote, max 6 words]",
-        "hint": "[hint: what to write here, max 12 words]",
-        "error": "[error: this field is empty, max 10 words]"
+        "label": "What you want to promote",
+        "hint": "The product or service, in a sentence or two.",
+        "error": "Tell us what you want to promote."
       },
       "budget": {
-        "label": "[label: budget range field, 1 to 3 words]",
-        "placeholder": "[placeholder: first empty choice of the list, max 4 words]",
+        "label": "Budget range",
+        "placeholder": "Choose a range",
         "options": [
-          "[option 1: lowest budget range]",
-          "[option 2: middle budget range]",
-          "[option 3: highest budget range]",
-          "[option 4: not sure yet]"
+          "Under $500",
+          "$500 to $1,999",
+          "$2,000 or more",
+          "Not sure yet"
         ],
-        "error": "[error: no budget range chosen, max 8 words]"
+        "error": "Choose a budget range."
       },
       "name": {
-        "label": "[label: name of the contact person, 1 to 3 words]",
-        "error": "[error: name is empty, max 8 words]"
+        "label": "Your name",
+        "error": "Enter your name."
       },
       "email": {
-        "label": "[label: email field, 1 or 2 words]",
-        "error": "[error: email is empty or not valid, max 10 words]"
+        "label": "Email",
+        "error": "Enter an email address, like name@example.com."
       },
       "phone": {
-        "label": "[label: phone field, 1 or 2 words]",
-        "hint": "[hint: why a phone number can help, max 10 words]",
-        "error": "[error: phone number is not valid, max 10 words]"
+        "label": "Phone",
+        "hint": "Include the country code, such as +1.",
+        "error": "Check the number, or leave this field empty."
       }
     },
-    "submit": "[submit: button that sends the enquiry, max 3 words]",
-    "privacy": "[privacy: one sentence on how the details are used, max 22 words]"
+    "submit": "Send inquiry",
+    "privacy": "We use these details to reply to your inquiry and to suggest channels."
   }
 }

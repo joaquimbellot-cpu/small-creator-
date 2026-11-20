@@ -1,58 +1,58 @@
 {
   "head": {
-    "label": "[label: small label above the page title, 1 to 3 words]",
-    "title": "[title: page title for Apply, max 8 words]",
-    "lead": "[lead: who can apply and that joining is free, one sentence, max 24 words]"
+    "label": "Apply",
+    "title": "Apply to join Smallfold",
+    "lead": "Smallfold is open to YouTube channels with 1,000 to 50,000 subscribers, and joining is free."
   },
   "form": {
     "fields": {
       "name": {
-        "label": "[label: name field, 1 or 2 words]",
-        "error": "[error: name is empty, max 8 words]"
+        "label": "Your name",
+        "error": "Enter your name."
       },
       "email": {
-        "label": "[label: email field, 1 or 2 words]",
-        "error": "[error: email is empty or not valid, max 10 words]"
+        "label": "Email",
+        "error": "Enter an email address, like name@example.com."
       },
       "phone": {
-        "label": "[label: phone field, 1 or 2 words]",
-        "hint": "[hint: why a phone number can help, max 10 words]",
-        "error": "[error: phone number is not valid, max 10 words]"
+        "label": "Phone",
+        "hint": "Include the country code, such as +1.",
+        "error": "Check the number, or leave this field empty."
       },
       "channel": {
-        "label": "[label: link to the YouTube channel, max 5 words]",
-        "hint": "[hint: what the link should look like, max 10 words]",
-        "error": "[error: channel link is empty or not a link, max 10 words]"
+        "label": "Link to your YouTube channel",
+        "hint": "For example, https://www.youtube.com/@yourchannel",
+        "error": "Enter the full link, with https:// at the start."
       },
       "topic": {
-        "label": "[label: what the channel is about, max 6 words]",
-        "hint": "[hint: what to write here, max 12 words]",
-        "error": "[error: this field is empty, max 10 words]"
+        "label": "What your channel is about",
+        "hint": "A sentence or two on the subjects you cover.",
+        "error": "Tell us briefly what your channel is about."
       },
       "subscribers": {
-        "label": "[label: subscriber count field, 1 to 3 words]",
-        "hint": "[hint: the subscriber range Smallfold works with, max 12 words]",
-        "error": "[error: subscriber count is empty or not a number, max 10 words]"
+        "label": "Subscriber count",
+        "hint": "We work with channels of 1,000 to 50,000 subscribers.",
+        "error": "Enter your subscriber count in digits, such as 12000."
       }
     },
-    "submit": "[submit: button that sends the application, max 3 words]",
-    "privacy": "[privacy: one sentence on how the details are used, max 22 words]"
+    "submit": "Send application",
+    "privacy": "We use these details to consider your application and to reply to you."
   },
   "next": {
-    "label": "[label: small label above the list, 1 to 3 words]",
-    "title": "[title: what happens next, max 5 words]",
+    "label": "The process",
+    "title": "What happens next",
     "items": [
       {
-        "title": "[title: step 1 after applying, max 6 words]",
-        "text": "[text: step 1, one sentence, max 22 words]"
+        "title": "We reply",
+        "text": "You hear from us within 2 working days."
       },
       {
-        "title": "[title: step 2 after applying, max 6 words]",
-        "text": "[text: step 2, one sentence, max 22 words]"
+        "title": "We choose a sponsor",
+        "text": "A person looks at your channel and chooses a sponsor that suits it."
       },
       {
-        "title": "[title: step 3 after applying, max 6 words]",
-        "text": "[text: step 3, one sentence, max 22 words]"
+        "title": "You decide",
+        "text": "You can turn down any sponsor we suggest, and commission applies only once a deal is done."
       }
     ]
   }

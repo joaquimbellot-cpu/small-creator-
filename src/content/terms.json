@@ -1,28 +1,69 @@
 {
-  "title": "[title: page title for Terms, max 4 words]",
-  "lead": "[lead: what this page covers, one sentence, max 22 words]",
-  "draftNotice": "[draftNotice: says this page is a draft and must be checked before the site goes public, max 30 words]",
-  "updated": "[updated: the date of this draft, one short line]",
+  "title": "Terms of service",
+  "lead": "These terms describe what Smallfold does, who can apply, what it costs and what each side decides.",
+  "draftNotice": "These terms are a draft. Smallfold is not a registered business yet, and the owner or a lawyer must check this page before the site goes public.",
+  "updated": "Updated 20 November 2026",
   "sections": [
     {
-      "heading": "[heading: section 1, max 6 words]",
+      "heading": "Who we are",
       "paragraphs": [
-        "[paragraph: section 1, first paragraph, with a marked blank for the legal name and country, max 60 words]",
-        "[paragraph: section 1, second paragraph, max 60 words]"
+        "Smallfold finds sponsors for small YouTube channels. Smallfold is not a registered business yet. Its legal name is (legal name to be added) and it is based in (country to be added).",
+        "In these terms, “we” means Smallfold. A “creator” is a person who applies with a YouTube channel. A “sponsor” is a brand that wants to sponsor a channel."
       ]
     },
     {
-      "heading": "[heading: section 2, max 6 words]",
+      "heading": "What we do",
       "paragraphs": [
-        "[paragraph: section 2, first paragraph, max 60 words]",
-        "[paragraph: section 2, second paragraph, max 60 words]"
+        "A person looks at each channel and chooses a sponsor that suits it. We suggest the sponsor to the creator and the channel to the sponsor. For now we work with YouTube channels only.",
+        "We do not promise to find a sponsor for every channel, or a channel for every sponsor."
       ]
     },
     {
-      "heading": "[heading: section 3, max 6 words]",
+      "heading": "Who can apply",
       "paragraphs": [
-        "[paragraph: section 3, first paragraph, max 60 words]",
-        "[paragraph: section 3, second paragraph, max 60 words]"
+        "A creator can apply with a YouTube channel that has 1,000 to 50,000 subscribers. A channel with fewer than 1,000 subscribers cannot join yet.",
+        "Applying is free, and joining is free. We reply to an application within 2 working days.",
+        "The details in an application or a brand inquiry must be true, including the subscriber count."
+      ]
+    },
+    {
+      "heading": "Who decides",
+      "paragraphs": [
+        "A creator can turn down any sponsor we suggest. A sponsor approves each channel we suggest to it. A deal goes ahead only when the creator and the sponsor both agree.",
+        "How each deal is agreed and put in writing is (deal agreement to be added)."
+      ]
+    },
+    {
+      "heading": "Commission",
+      "paragraphs": [
+        "We charge a commission only once a deal is done. The commission is taken from the creator’s fee. If there is no deal, there is no commission.",
+        "The rate depends on the size of the sponsorship. It is 10% under $500, 8% from $500 to $1,999, and 5% at $2,000 or more.",
+        "The sponsor pays exactly the agreed fee and nothing extra.",
+        "How and when payments are made is (payment terms to be added)."
+      ]
+    },
+    {
+      "heading": "Our responsibility",
+      "paragraphs": [
+        "What we are responsible for, and the limits of that responsibility, are (limits of liability to be added)."
+      ]
+    },
+    {
+      "heading": "Changes to these terms",
+      "paragraphs": [
+        "We may change these terms. The date at the top of this page shows when they were last changed."
+      ]
+    },
+    {
+      "heading": "Governing law",
+      "paragraphs": [
+        "These terms are governed by the law of (country to be added)."
+      ]
+    },
+    {
+      "heading": "Contact",
+      "paragraphs": [
+        "For any question about these terms, write to us at small.fold.sponsorship@gmail.com."
       ]
     }
   ]

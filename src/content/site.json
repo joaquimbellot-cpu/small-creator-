@@ -2,7 +2,7 @@
   "brand": {
     "name": "Smallfold",
     "tagline": "A sponsor chosen for your channel",
-    "descriptor": "[descriptor: what Smallfold does, one sentence, max 16 words]"
+    "descriptor": "Smallfold finds sponsors for small YouTube channels, each chosen by a person."
   },
   "nav": [
     { "label": "How it works", "href": "how-it-works.html", "id": "how" },
@@ -17,36 +17,36 @@
   "contact": {
     "email": "small.fold.sponsorship@gmail.com",
     "phone": "",
-    "emailLabel": "[emailLabel: label shown before the email address, 1 or 2 words]",
-    "phoneLabel": "[phoneLabel: label shown before the phone number, 1 or 2 words]"
+    "emailLabel": "Email",
+    "phoneLabel": "Phone"
   },
   "range": {
     "min": "1,000",
     "max": "50,000",
-    "note": "[note: the channel size Smallfold works with, one line, max 10 words]"
+    "note": "We work with channels of 1,000 to 50,000 subscribers."
   },
   "commission": {
-    "sizeHead": "[sizeHead: column heading for the size of the sponsorship, max 5 words]",
-    "rateHead": "[rateHead: column heading for the commission, max 3 words]",
+    "sizeHead": "Size of the sponsorship",
+    "rateHead": "Our commission",
     "tiers": [
       { "size": "Under $500", "rate": "10%" },
       { "size": "$500 to $1,999", "rate": "8%" },
       { "size": "$2,000 or more", "rate": "5%" }
     ],
     "notes": [
-      "[note 1: one fact about the commission, one sentence, max 18 words]",
-      "[note 2: one fact about the commission, one sentence, max 18 words]",
-      "[note 3: one fact about the commission, one sentence, max 18 words]"
+      "Joining is free.",
+      "The larger the sponsorship, the lower our rate.",
+      "The sponsor pays the agreed fee and nothing extra."
     ]
   },
   "closing": {
-    "title": "[title: the closing line shown at the end of every page, max 9 words]",
-    "lead": "[lead: one sentence inviting creators to apply, max 20 words]",
+    "title": "Tell us about your channel",
+    "lead": "It starts with a short application, and joining is free.",
     "button": "Apply",
-    "note": "[note: how soon we reply to an application, one sentence, max 8 words]"
+    "note": "We reply within 2 working days."
   },
   "footer": {
-    "line": "[line: one short sentence about Smallfold for the footer, max 18 words]",
+    "line": "Sponsors for small YouTube channels, matched by hand.",
     "groups": [
       {
         "title": "Smallfold",
@@ -85,11 +85,11 @@
   },
   "forms": {
     "endpoint": "",
-    "notConnected": "[notConnected: plain message that this form is not connected yet, and to email us instead, max 25 words]",
-    "sending": "[sending: shown on the button while a form is being sent, 1 or 2 words]",
-    "success": "[success: message shown after a form was sent, max 20 words]",
-    "error": "[error: message shown when sending failed, pointing to the email address, max 25 words]",
-    "errorsOne": "[errorsOne: summary when one field needs fixing, max 10 words]",
-    "errorsMany": "[errorsMany: summary when several fields need fixing, max 10 words]"
+    "notConnected": "This form is not connected yet. For now, please write to us by email.",
+    "sending": "Sending",
+    "success": "Your application is with us. We reply within 2 working days.",
+    "error": "The form did not send. Try again, or write to us by email.",
+    "errorsOne": "One field needs fixing.",
+    "errorsMany": "fields need fixing."
   }
 }

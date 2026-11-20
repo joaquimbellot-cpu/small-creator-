@@ -1,28 +1,62 @@
 {
-  "title": "[title: page title for Privacy, max 4 words]",
-  "lead": "[lead: what this page covers, one sentence, max 22 words]",
-  "draftNotice": "[draftNotice: says this page is a draft and must be checked before the site goes public, max 30 words]",
-  "updated": "[updated: the date of this draft, one short line]",
+  "title": "Privacy policy",
+  "lead": "This page explains which details we collect through this website, what we use them for and what you can ask of us.",
+  "draftNotice": "This page is a draft. Smallfold is not a registered business yet, and the owner or a lawyer must check this page before the site goes public.",
+  "updated": "Updated 20 November 2026",
   "sections": [
     {
-      "heading": "[heading: section 1, max 6 words]",
+      "heading": "Who we are",
       "paragraphs": [
-        "[paragraph: section 1, first paragraph, with a marked blank for the legal name and country, max 60 words]",
-        "[paragraph: section 1, second paragraph, max 60 words]"
+        "This website is run by Smallfold, which finds sponsors for small YouTube channels. Smallfold is not a registered business yet. Its legal name is (legal name to be added) and it is based in (country to be added). In this policy, “we” means Smallfold."
       ]
     },
     {
-      "heading": "[heading: section 2, max 6 words]",
+      "heading": "What we collect",
       "paragraphs": [
-        "[paragraph: section 2, first paragraph, max 60 words]",
-        "[paragraph: section 2, second paragraph, max 60 words]"
+        "If you apply as a creator, the application form asks for your name, your email address, a link to your YouTube channel, what the channel is about and its subscriber count. A phone number is optional.",
+        "If you send a brand inquiry, the form asks for your company, what you want to promote, a budget range, your name and your email address. A phone number is optional.",
+        "If you write to us by email, we receive your email address and whatever you choose to tell us."
       ]
     },
     {
-      "heading": "[heading: section 3, max 6 words]",
+      "heading": "How we use your details",
       "paragraphs": [
-        "[paragraph: section 3, first paragraph, max 60 words]",
-        "[paragraph: section 3, second paragraph, max 60 words]"
+        "We use the details in an application to look at your channel, to reply to you and to find a sponsor that suits your channel.",
+        "We use the details in a brand inquiry to reply to you and to suggest channels that suit what you want to promote.",
+        "The legal basis for using your details is (legal basis to be added)."
+      ]
+    },
+    {
+      "heading": "Services that handle your details",
+      "paragraphs": [
+        "Each form is delivered to our email inbox through a form-handling service, Formspree. Your details pass through Formspree on the way to us. Our inbox is a Gmail account, provided by Google.",
+        "This site loads its fonts from Google Fonts. To fetch them, your browser contacts Google’s servers, and Google receives your IP address as part of that request.",
+        "What we pass on to a sponsor about a creator, and to a creator about a sponsor, is (details shared in a match to be added)."
+      ]
+    },
+    {
+      "heading": "Cookies",
+      "paragraphs": [
+        "This site sets no advertising cookies and no analytics cookies."
+      ]
+    },
+    {
+      "heading": "How long we keep details",
+      "paragraphs": [
+        "We keep the details you send us for (retention period to be added)."
+      ]
+    },
+    {
+      "heading": "What you can ask of us",
+      "paragraphs": [
+        "You can ask us to show you the details we hold about you, to correct them or to delete them. Write to us at small.fold.sponsorship@gmail.com.",
+        "Our contact for data protection is (data protection contact to be added)."
+      ]
+    },
+    {
+      "heading": "Changes to this page",
+      "paragraphs": [
+        "We may change this page. The date at the top shows when it was last changed."
       ]
     }
   ]
