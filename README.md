@@ -217,3 +217,10 @@ Good to know:
 
 See `docs/design-brief.md`, section 12. Each stylesheet and script starts with a
 comment that names its owner and what belongs in it.
+
+## The back office
+
+The back office is a private app for the owner and staff. It runs the company side of
+Smallfold: finding creators, sending emails, and tracking deals. It lives in the `admin/`
+folder and is not part of the public website. Its own guide, with a test run on your
+computer and the steps to put it online, is in `admin/README.md`.
