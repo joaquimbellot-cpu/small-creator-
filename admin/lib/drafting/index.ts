@@ -40,7 +40,9 @@ export async function draftEmail(creator: CreatorFacts, instruction: Instruction
     console.error('drafting failed', e instanceof Error ? e.name : 'error');
     return { ok: false, error: 'The drafting service failed. Try again.' };
   }
-  const problem = draftProblem(raw);
+  // Clean first (a subject from Claude may wrap onto two lines), then check.
+  const draft = cleanDraft(raw);
+  const problem = draftProblem(draft);
   if (problem) return { ok: false, error: problem };
-  return { ok: true, draft: cleanDraft(raw) };
+  return { ok: true, draft };
 }

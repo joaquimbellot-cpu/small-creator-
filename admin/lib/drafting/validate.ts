@@ -12,6 +12,8 @@ export function draftProblem(d: { subject?: unknown; body?: unknown }): string |
   const body = d.body.trim();
   if (!subject) return 'The subject is empty.';
   if (!body) return 'The body is empty.';
+  // A line break in a subject could be read as an extra email header.
+  if (/[\r\n]/.test(subject)) return 'The subject must be on one line.';
   if (subject.length > MAX_SUBJECT) return `The subject is longer than ${MAX_SUBJECT} characters.`;
   if (body.length > MAX_BODY) return `The body is longer than ${MAX_BODY} characters.`;
   if (subject.includes('{{') || body.includes('{{')) return 'The draft still contains a {{placeholder}}.';
@@ -19,5 +21,5 @@ export function draftProblem(d: { subject?: unknown; body?: unknown }): string |
 }
 
 export function cleanDraft(d: Draft): Draft {
-  return { subject: d.subject.trim(), body: d.body.trim() };
+  return { subject: d.subject.replace(/\s+/g, ' ').trim(), body: d.body.trim() };
 }

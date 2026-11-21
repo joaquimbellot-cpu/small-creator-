@@ -44,7 +44,7 @@ export async function saveTemplateAction(_prev: TemplateState, form: FormData): 
 
 export async function deleteTemplateAction(form: FormData) {
   await requireOwner(); // only the owner deletes (the database checks this too)
-  const id = z.uuid().safeParse(form.get('id'));
+  const id = z.guid().safeParse(form.get('id'));
   if (!id.success) return;
   const supabase = await createClient();
   await supabase.from('email_templates').delete().eq('id', id.data);

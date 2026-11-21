@@ -1,6 +1,7 @@
 'use client';
 // One draft or approved email: edit, approve, back to draft, discard. Never sends.
 import { useActionState } from 'react';
+import { submitKeepingValues } from '@/lib/email/submit';
 import { Badge, Button, ConfirmButton, Input, Notice, Textarea } from '@/components/ui';
 import { backToDraftAction, discardAction, editAction, type EditState } from './actions';
 
@@ -18,7 +19,7 @@ export function ReviewCard({ email, footer }: { email: ReviewEmail; footer: stri
         <Badge tone={approved ? 'good' : 'warn'}>{approved ? 'Approved' : 'Draft'}</Badge>
       </div>
 
-      <form action={action}>
+      <form onSubmit={submitKeepingValues(action)}>
         <input type="hidden" name="id" value={email.id} />
         <Input label="Subject" name="subject" defaultValue={email.subject} maxLength={120} required />
         <Textarea label="Body" name="body" defaultValue={email.body} rows={10} maxLength={4000} required />

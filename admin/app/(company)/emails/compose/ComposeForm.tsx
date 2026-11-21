@@ -1,6 +1,7 @@
 'use client';
 // Compose form: search and select creators, then a template or a goal. Submitting only drafts.
 import { useActionState, useEffect, useState } from 'react';
+import { submitKeepingValues } from '@/lib/email/submit';
 import { Badge, Button, Input, Notice, Select, Textarea } from '@/components/ui';
 import type { ComposeCreator } from '@/lib/email/creators';
 import { draftAction, type ComposeState } from './actions';
@@ -39,7 +40,7 @@ export function ComposeForm({ initial, templates, mock }: { initial: ComposeCrea
   const usable = selected.filter((c) => !c.blocked);
 
   return (
-    <form action={action} className="split">
+    <form onSubmit={submitKeepingValues(action)} className="split">
       <div>
         <Input label="Find creators" type="search" value={q} onChange={(e) => setQ(e.target.value)} placeholder="Name, email or channel" />
         <ul style={{ listStyle: 'none', padding: 0, margin: 0 }} aria-label="Search results">

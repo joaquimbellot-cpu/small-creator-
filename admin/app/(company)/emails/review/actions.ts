@@ -8,7 +8,7 @@ import { draftProblem } from '@/lib/drafting/validate';
 
 export type EditState = { error?: string; message?: string };
 
-const Id = z.uuid();
+const Id = z.guid();
 
 /** Save the text, or save and approve (the clicked button sends intent=save or intent=approve). */
 export async function editAction(_prev: EditState, form: FormData): Promise<EditState> {

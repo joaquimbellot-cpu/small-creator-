@@ -7,7 +7,7 @@ import { createClient } from '@/lib/supabase/server';
 
 export async function markRepliedAction(form: FormData) {
   await requireStaff();
-  const id = z.uuid().safeParse(form.get('id'));
+  const id = z.guid().safeParse(form.get('id'));
   if (!id.success) return;
   const supabase = await createClient();
   await supabase.rpc('mark_replied', { email_id: id.data });
@@ -17,7 +17,7 @@ export async function markRepliedAction(form: FormData) {
 /** A failed email goes back to draft so it can be fixed, approved and sent again. */
 export async function retryAction(form: FormData) {
   await requireStaff();
-  const id = z.uuid().safeParse(form.get('id'));
+  const id = z.guid().safeParse(form.get('id'));
   if (!id.success) return;
   const supabase = await createClient();
   await supabase.from('emails').update({ status: 'draft' }).eq('id', id.data).eq('status', 'failed');

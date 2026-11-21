@@ -17,7 +17,7 @@ const MESSAGES: Record<string, string> = {
 };
 
 export const POST = apiHandler({ role: 'staff' }, async ({ supabase, params }) => {
-  const id = z.uuid().safeParse(params.id);
+  const id = z.guid().safeParse(params.id);
   if (!id.success) throw new ApiError(400, 'Invalid input.');
 
   const r = await sendEmail(supabase, id.data);

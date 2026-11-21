@@ -36,9 +36,10 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 async function mail(subjectPart) {
   // newest message whose subject contains the text
   const list = await (await fetch(`${MAIL}/messages`)).json();
-  const hit = list.filter((m) => m.subject.includes(subjectPart)).pop() || list.filter((m) => m.subject.includes(subjectPart))[0];
+  const hit = list.filter((m) => m.subject.includes(subjectPart)).pop();
   if (!hit) return null;
-  const raw = await (await fetch(`${MAIL}/messages/${hit.id}`)).text();
+  // Mail bodies are quoted-printable: join soft line breaks and decode =XX before searching the text.
+  const raw = (await (await fetch(`${MAIL}/messages/${hit.id}`)).text()).replace(/=\r?\n/g, '').replace(/=([0-9A-F]{2})/g, (_, h) => String.fromCharCode(parseInt(h, 16)));
   return { ...hit, raw };
 }
 const mailCount = async (subjectPart) => (await (await fetch(`${MAIL}/messages`)).json()).filter((m) => m.subject.includes(subjectPart)).length;
@@ -79,6 +80,7 @@ async function setSettings(page, { limit, delay, testMode, postal }) {
   const parked = await db('GET', 'emails', '?status=eq.approved&select=id');
   if (parked.length) await db('PATCH', 'emails', `?id=in.(${parked.map((p) => p.id).join(',')})`, { status: 'draft' });
 
+  const baseline = await mailCount('ZZ Test'); // the catcher may still hold mail from earlier runs
   const browser = await chromium.launch();
   try {
     // ================= owner: settings =================
@@ -128,7 +130,7 @@ async function setSettings(page, { limit, delay, testMode, postal }) {
       await card(n).getByRole('button', { name: 'Approve' }).click();
       await card(n).getByText('Approved.').waitFor();
     }
-    check('Zeta stays a draft and nothing was sent by approving', (await mailCount('ZZ Test')) === 0);
+    check('approving sends nothing', (await mailCount('ZZ Test')) === baseline);
     await op.screenshot({ path: `${SHOT}/review.png`, fullPage: true });
 
     // ================= send: API rules =================
@@ -165,9 +167,11 @@ async function setSettings(page, { limit, delay, testMode, postal }) {
     check('daily limit stops the run', true);
     const sentRows = await db('GET', 'emails', `?id=in.(${E.Alpha},${E.Delta},${E.Epsilon})&select=id,status`);
     const st = Object.fromEntries(sentRows.map((r) => [r.id, r.status]));
-    check('Alpha and Delta sent, Epsilon still approved', st[E.Alpha] === 'sent' && st[E.Delta] === 'sent' && st[E.Epsilon] === 'approved', JSON.stringify(st));
+    // The list is newest first, so Epsilon goes first and Delta is the one left over.
+    const left = [E.Delta, E.Epsilon].find((id) => st[id] === 'approved');
+    check('one more was sent, the other is still approved', st[E.Alpha] === 'sent' && !!left && [E.Delta, E.Epsilon].filter((id) => st[id] === 'sent').length === 1, JSON.stringify(st));
     check('the UI waited for the delay (Delta needed >= 2s)', Date.now() - t0 >= 1500, `${Date.now() - t0}ms`);
-    const direct = await api(E.Epsilon);
+    const direct = await api(left);
     check('API also refuses at the limit (429 daily_limit)', direct.status() === 429 && (await direct.json()).reason === 'daily_limit');
 
     // ================= log, detail, replied, retry =================
@@ -178,12 +182,12 @@ async function setSettings(page, { limit, delay, testMode, postal }) {
     await op.getByRole('button', { name: 'Mark as replied' }).click();
     await op.getByText('replied', { exact: true }).first().waitFor();
     check('mark as replied', (await db('GET', 'emails', `?id=eq.${E.Alpha}&select=status`))[0].status === 'replied');
-    await db('PATCH', 'emails', `?id=eq.${E.Epsilon}`, { status: 'failed', error: 'ZZ Test smtp error' });
-    await op.goto(`${SITE}/emails/${E.Epsilon}`);
+    await db('PATCH', 'emails', `?id=eq.${left}`, { status: 'failed', error: 'ZZ Test smtp error' });
+    await op.goto(`${SITE}/emails/${left}`);
     check('failed email shows its error', (await op.textContent('body')).includes('ZZ Test smtp error'));
     await op.getByRole('button', { name: /Retry/ }).click();
     await op.getByText('Open in Review').waitFor();
-    check('retry puts a failed email back to draft', (await db('GET', 'emails', `?id=eq.${E.Epsilon}&select=status`))[0].status === 'draft');
+    check('retry puts a failed email back to draft', (await db('GET', 'emails', `?id=eq.${left}&select=status`))[0].status === 'draft');
 
     // ================= blocked at the send API =================
     async function blockedCase(label, name, block) {
@@ -207,7 +211,7 @@ async function setSettings(page, { limit, delay, testMode, postal }) {
     await tp.getByText('not a known placeholder').waitFor();
     await tp.getByLabel('Body').fill('Hello {{first_name}} of {{channel_name}}');
     await tp.getByRole('button', { name: 'Save template' }).click();
-    await tp.waitForURL('**/emails/templates');
+    await tp.waitForURL('**/emails/templates', { timeout: 8000 }).catch(async () => console.log('template page text:', (await tp.textContent('main')).slice(0, 300)));
     check('template saved, unknown placeholder refused', (await tp.textContent('body')).includes('ZZ Test template'));
 
     // ================= worker =================

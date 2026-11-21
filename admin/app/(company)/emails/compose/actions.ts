@@ -13,7 +13,7 @@ export type ComposeState = { error?: string };
 
 const MAX_CREATORS = 25;
 const Input = z.object({
-  creators: z.array(z.uuid()).min(1, 'Pick at least one creator.').max(MAX_CREATORS, `Pick at most ${MAX_CREATORS} creators per run.`),
+  creators: z.array(z.guid()).min(1, 'Pick at least one creator.').max(MAX_CREATORS, `Pick at most ${MAX_CREATORS} creators per run.`),
   mode: z.enum(['template', 'goal']),
   templateId: z.string().optional(),
   goal: z.string().trim().max(500).optional(),
