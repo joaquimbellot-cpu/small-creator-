@@ -35,7 +35,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<SP>
   };
   const sorts = { name: sortCol('name'), subscribers: sortCol('subscribers'), last_contacted: sortCol('last_contacted'), added: sortCol('added') };
 
-  const creatorParam = z.string().uuid().safeParse(first(sp.creator));
+  const creatorParam = z.guid().safeParse(first(sp.creator));
   const isNew = first(sp.new) === '1';
   const wantsEdit = first(sp.edit) === '1';
   let dialog: React.ReactNode = null;

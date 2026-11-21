@@ -7,7 +7,7 @@ import { logAudit } from '@/lib/audit';
 import { MAX_REFRESH_IDS } from '@/lib/creators/constants';
 import { MISSING_KEY_MESSAGE, refreshSubscribers, youtubeConfigFromEnv } from '@/lib/youtube';
 
-const body = z.object({ ids: z.array(z.string().uuid()).min(1).max(MAX_REFRESH_IDS) });
+const body = z.object({ ids: z.array(z.guid()).min(1).max(MAX_REFRESH_IDS) });
 
 export const POST = apiHandler({ body }, async ({ supabase, body }) => {
   const cfg = youtubeConfigFromEnv();

@@ -17,7 +17,7 @@ export async function saveCreator(_prev: SaveState, formData: FormData): Promise
   for (const f of FIELDS) values[f] = str(formData.get(f));
 
   const id = str(formData.get('id'));
-  if (id && !z.string().uuid().safeParse(id).success) return { error: 'Creator not found.', values };
+  if (id && !z.guid().safeParse(id).success) return { error: 'Creator not found.', values };
   const back = str(formData.get('back'));
   const backQuery = /^\?[\w=&%.+\-]*$/.test(back) ? back : '';
 

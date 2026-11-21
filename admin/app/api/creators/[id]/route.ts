@@ -4,7 +4,7 @@ import { z } from 'zod';
 import { apiHandler, ApiError } from '@/lib/api/handler';
 import { logAudit } from '@/lib/audit';
 
-const uuid = z.string().uuid();
+const uuid = z.guid();
 
 export const GET = apiHandler({}, async ({ supabase, params }) => {
   const id = uuid.safeParse(params.id);
