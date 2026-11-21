@@ -158,8 +158,10 @@ main section[id] {
 
 /* Its column is a little wider than the narrow one. */
 .home-statement__text {
-  max-width: calc(var(--narrow) + 2 * var(--s-9));
+  max-width: 21em; /* about 45 characters a line, so the eye finds the next line easily */
   margin-inline: auto;
+  font-weight: var(--w-text); /* the regular weight reads more easily than the light one at this length */
+  line-height: 1.3;
 }
 
 /* Three differences: one under the other, with generous space between them. */
@@ -408,10 +410,6 @@ main section[id] {
     padding-block: var(--s-10);
   }
 
-  .home-statement__text {
-    max-width: calc(var(--narrow) + 2 * var(--s-10));
-    font-size: var(--t-h2);
-  }
 
   /* About one difference per screen. */
   .differences__list {

@@ -108,7 +108,7 @@ html.js [data-threads] > canvas {
   /* The statement: words not yet reached by the scroll are faint, and darken
      softly as they are reached (and lighten again when scrolling back). */
   html.mo-on .is-scrub .mo-word {
-    color: var(--faint);
+    color: var(--fg-muted);
     transition: color var(--dur-hover-slow) var(--ease);
   }
 
