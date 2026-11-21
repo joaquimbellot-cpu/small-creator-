@@ -7,7 +7,10 @@ T="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 export PGOPTIONS='-c client_min_messages=notice'
 echo "== SQL tests =="
 out=$(psql -q -o /dev/null -v ON_ERROR_STOP=1 -f "$T/rls.sql" 2>&1) && rc=0 || rc=$?
-echo "$out" | sed -n 's/^.*NOTICE:  //p'
+out2=$(psql -q -o /dev/null -v ON_ERROR_STOP=1 -f "$T/activity.sql" 2>&1) && rc2=0 || rc2=$?
+out="$out
+$out2"; [ "$rc2" = 0 ] || rc=$rc2
+echo -e "$out" | sed -n 's/^.*NOTICE:  //p'
 [ "$rc" = 0 ] || { echo "$out" | grep -E 'ERROR|DETAIL' ; echo "SQL tests FAILED"; exit 1; }
 echo "== HTTP tests (gateway :54321) =="
 node "$T/gateway.test.mjs"
