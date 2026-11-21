@@ -38,7 +38,7 @@ or because a second option suited the page better. The prompts are in `docs/imag
 
 ## Everything else
 
-The logo (symbol and wordmark), the threads drawing, the icons and the share image `og.jpg`
+The logo (an italic S in a ring with one blue dot, beside the wordmark), the threads drawing, the icons and the share image `og.jpg`
 were drawn for Smallfold. Nobody else holds rights in them.
 
 ## Earlier pictures

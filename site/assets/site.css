@@ -420,10 +420,10 @@ main:focus {
 }
 .logo__symbol {
   position: relative;
-  top: -.05em;
+  top: -.02em;
   flex: none;
-  width: 1.05em;
-  height: 1.05em;
+  width: 1.3em;
+  height: 1.3em;
 }
 .logo__word {
   font-family: var(--font-serif);

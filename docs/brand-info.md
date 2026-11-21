@@ -22,6 +22,8 @@ Status: **confirmed by the owner on 20 November 2026**, including the three carr
 
 Do not add a name, a channel, a date, a place or any other detail to this story.
 
+The owner's preferred short form, used on the home page (21 November 2026): "Smallfold was created by a small channel, for small channels, to help them find sponsors."
+
 ## 2. Audience
 
 - **First:** creators with a small YouTube channel. The home page speaks to them.
