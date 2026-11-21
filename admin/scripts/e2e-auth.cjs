@@ -163,7 +163,7 @@ async function login(page, [email, pw]) {
     await p.waitForSelector('text=Turn off');
     check('2FA enrolled', true);
     await p.click('header >> text=Log out'); await p.waitForURL('**/login');
-    await login(p, OWNER); await p.waitForTimeout(2500); console.log('AFTER', p.url(), await p.textContent('body'));  await p.waitForURL(/login\/2fa/);
+    await login(p, OWNER); await p.waitForTimeout(2500); await p.waitForURL(/login\/2fa/);
     await p.fill('input[name=code]', '000000'); await p.click('button[type=submit]');
     await p.waitForSelector('form [role=alert]'); check('wrong 2FA code refused', p.url().includes('/login/2fa'));
     await p.fill('input[name=code]', totp(secret, 1)); await p.click('button[type=submit]');
@@ -173,7 +173,7 @@ async function login(page, [email, pw]) {
     // a half-logged-in session (password only) cannot reach pages
     const c = await ctx('10.0.0.9'); const q = await c.newPage();
     await login(q, OWNER); await q.waitForURL(/login\/2fa/); await q.goto(BASE + '/overview');
-    console.log('URL', q.url()); check('password-only session is sent to the 2FA step', q.url().includes('/login/2fa')); await c.close();
+    check('password-only session is sent to the 2FA step', q.url().includes('/login/2fa')); await c.close();
     await p.goto(BASE + '/settings/security'); await p.getByRole('button', { name: 'Turn off' }).click();
     await p.getByRole('dialog').getByRole('button', { name: 'Turn off' }).click();
     await p.waitForSelector('text=Set up two-step login');

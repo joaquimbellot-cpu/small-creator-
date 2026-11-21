@@ -44,7 +44,7 @@ export function apiHandler<B = undefined, Q = undefined>(
   return async (req: NextRequest, routeCtx?: { params?: Promise<Record<string, string | string[]>> }) => {
     try {
       const staff = await getCurrentStaff();
-      if (!staff || staff.mfaRequired) return fail(401, 'Not logged in.');
+      if (!staff) return fail(401, 'Not logged in.');
       if ((opts.role ?? 'staff') === 'owner' && staff.role !== 'owner') return fail(403, 'Not allowed.');
 
       let body = undefined as B;

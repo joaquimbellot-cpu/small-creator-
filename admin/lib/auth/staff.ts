@@ -12,12 +12,16 @@ import { createClient } from '@/lib/supabase/server';
 export type Role = 'owner' | 'worker';
 export type Staff = { id: string; email: string; fullName: string; role: Role; mfaRequired: boolean };
 
-type Result = { staff: Staff | null; reason: 'anonymous' | 'no_access' | 'ok' };
+type Result = { staff: Staff | null; reason: 'anonymous' | 'no_access' | 'mfa' | 'ok' };
 
 const load = cache(async (): Promise<Result> => {
   const supabase = await createClient();
   const { data, error } = await supabase.auth.getUser();
   if (error || !data.user) return { staff: null, reason: 'anonymous' };
+  // With a verified 2FA factor, the database treats an aal1 session as "not staff" (RLS), so the
+  // profile cannot even be read yet. Check the assurance level first and send the user to the 2FA step.
+  const { data: aal } = await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
+  if (aal && aal.currentLevel === 'aal1' && aal.nextLevel === 'aal2') return { staff: null, reason: 'mfa' };
   const { data: profile } = await supabase
     .from('profiles')
     .select('id, full_name, email, role, is_active')
@@ -26,8 +30,6 @@ const load = cache(async (): Promise<Result> => {
   if (!profile || !profile.is_active || (profile.role !== 'owner' && profile.role !== 'worker')) {
     return { staff: null, reason: 'no_access' };
   }
-  const { data: aal } = await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
-  const mfaRequired = !!aal && aal.currentLevel === 'aal1' && aal.nextLevel === 'aal2';
   return {
     reason: 'ok',
     staff: {
@@ -35,7 +37,7 @@ const load = cache(async (): Promise<Result> => {
       email: String(profile.email || data.user.email || ''),
       fullName: profile.full_name || String(profile.email).split('@')[0],
       role: profile.role,
-      mfaRequired,
+      mfaRequired: false,
     },
   };
 });
@@ -48,7 +50,7 @@ export async function requireStaff(): Promise<Staff> {
   const { staff, reason } = await load();
   if (!staff) {
     // A signed-in user without access is signed out by the route handler (cookies cannot be changed while rendering).
-    redirect(reason === 'no_access' ? '/auth/signout?reason=no_access' : '/login');
+    redirect(reason === 'no_access' ? '/auth/signout?reason=no_access' : reason === 'mfa' ? '/login/2fa' : '/login');
   }
   if (staff.mfaRequired) redirect('/login/2fa');
   return staff;

@@ -16,8 +16,7 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
   const sp = await searchParams;
   const staff = await getCurrentStaff();
   const next = typeof sp.next === 'string' ? sp.next : undefined;
-  if (staff && !staff.mfaRequired) redirect(safeNext(next));
-  if (staff && staff.mfaRequired) redirect('/login/2fa');
+  if (staff) redirect(safeNext(next));
   const error = typeof sp.error === 'string' ? MESSAGES[sp.error] : undefined;
   const notice = sp.notice === 'password_updated' ? 'Your password is updated. Log in with the new one.' : sp.notice === 'signed_out' ? 'You are logged out.' : undefined;
   return (

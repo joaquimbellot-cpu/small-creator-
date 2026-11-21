@@ -42,18 +42,19 @@ export async function loginAction(_prev: FormState, formData: FormData): Promise
     return { error: GENERIC };
   }
 
+  const { data: aal } = await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
+  if (aal && aal.currentLevel === 'aal1' && aal.nextLevel === 'aal2') {
+    // The profile cannot be read before the code is entered (RLS), so access is checked after the 2FA step
+    // (requireStaff). The attempt is recorded as a success only after the code is verified (verifyCodeAction).
+    redirect(`/login/2fa?next=${encodeURIComponent(next)}`);
+  }
+
   // Must be an active staff member with a role; otherwise treated exactly like a wrong password.
   const { data: profile } = await supabase.from('profiles').select('role, is_active').eq('id', data.user.id).maybeSingle();
   if (!profile || !profile.is_active || (profile.role !== 'owner' && profile.role !== 'worker')) {
     await supabase.auth.signOut();
     await admin.rpc('record_login_attempt', { email, ip, success: false });
     return { error: GENERIC };
-  }
-
-  const { data: aal } = await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
-  if (aal && aal.currentLevel === 'aal1' && aal.nextLevel === 'aal2') {
-    // The attempt is recorded as a success only after the code is verified (see verifyCodeAction).
-    redirect(`/login/2fa?next=${encodeURIComponent(next)}`);
   }
 
   await admin.rpc('record_login_attempt', { email, ip, success: true });
