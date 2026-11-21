@@ -546,9 +546,9 @@ main section[id] {
  * the layouts above apply unchanged. The media query here is the one in motion.js. */
 
 @media screen and (min-width: 861px) and (min-height: 600px) and (prefers-reduced-motion: no-preference) {
-  /* Three differences: the track is one screen plus most of a screen per difference. */
+  /* Three differences: the track is one screen plus nearly a screen per difference. */
   html.mo-on .differences.is-pinned {
-    height: calc(100vh + 3 * 70vh);
+    height: calc(100vh + 3 * 90vh); /* nearly a full screen of scrolling for each of the three; raise or lower the 90vh to change the pace */
     padding-block: 0;
   }
 
