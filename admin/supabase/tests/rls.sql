@@ -57,6 +57,7 @@ select (select id from public.profiles where email = 'owner@example.test')  as o
        (select id from public.profiles where email = 'worker@example.test') as worker_id,
        gen_random_uuid() as norole_id;
 grant select on ids to public;
+delete from auth.mfa_factors;   -- live data may hold real enrolments; start clean (rolled back)
 insert into auth.users (id, instance_id, aud, role, email, raw_app_meta_data, raw_user_meta_data, created_at, updated_at)
 select norole_id, '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated', 'norole@example.test', '{}', '{}', now(), now() from ids;
 
@@ -99,7 +100,7 @@ select tests.check('anon: cannot execute any public function; PUBLIC has no exec
                 and a.grantee in (0, (select oid from pg_roles where rolname = 'anon'))));
 
 select tests.check('anon: stats_overview denied', not (tests.run_as('anon', null, 'select public.stats_overview()')).ok);
-select tests.check('anon: reserve_send denied', not (tests.run_as('anon', null, 'select public.reserve_send(gen_random_uuid())')).ok);
+select tests.check('anon: reserve_send denied', not (tests.run_as('anon', null, 'select public.reserve_send(gen_random_uuid(), gen_random_uuid())')).ok);
 select tests.check('anon: insert into creators denied', not (tests.run_as('anon', null, $q$insert into public.creators (full_name, email) values ('x','x@example.test')$q$)).ok);
 select tests.check('anon: opt_out / login_allowed / bootstrap_owner denied',
   not (tests.run_as('anon', null, $q$select public.opt_out('a@example.test')$q$)).ok
@@ -116,8 +117,8 @@ select tests.check('no-role user: cannot insert a creator',
 select tests.check('no-role user: stats_overview, log_audit denied',
   not (tests.run_as('authenticated', (select norole_id from ids), 'select public.stats_overview()')).ok
   and not (tests.run_as('authenticated', (select norole_id from ids), $q$select public.log_audit('x')$q$)).ok);
-select tests.check('no-role user: reserve_send says forbidden',
-  tests.json_as('authenticated', (select norole_id from ids), 'select public.reserve_send(gen_random_uuid())') ->> 'reason' = 'forbidden');
+select tests.check('no-role user: cannot call reserve_send at all',
+  not (tests.run_as('authenticated', (select norole_id from ids), 'select public.reserve_send(gen_random_uuid(), gen_random_uuid())')).ok);
 select tests.check('no-role user: is_staff() false',
   tests.json_as('authenticated', (select norole_id from ids), 'select to_jsonb(public.is_staff())') = 'false');
 select tests.check('authenticated cannot call service-only functions',
@@ -265,9 +266,11 @@ update public.settings set daily_send_limit = 100, min_seconds_between_sends = 0
 -- a stale snapshot, so every mutation below is its own statement, captured with \gset.)
 create function tests.w(p_sql text) returns jsonb language sql as
 $$ select tests.json_as('authenticated', (select worker_id from ids), p_sql) $$;
-create function tests.rs(p_id uuid) returns jsonb language sql as $$ select tests.w(format('select public.reserve_send(%L)', p_id)) $$;
-create function tests.ms(p_id uuid, p_mid text) returns jsonb language sql as $$ select tests.w(format('select public.mark_sent(%L, %L)', p_id, p_mid)) $$;
-create function tests.mf(p_id uuid, p_err text) returns jsonb language sql as $$ select tests.w(format('select public.mark_failed(%L, %L)', p_id, p_err)) $$;
+-- reserve_send / mark_sent / mark_failed are service-role only; the worker is passed as p_actor.
+create function tests.svc(p_sql text) returns jsonb language sql as $$ select tests.json_as('service_role', null, p_sql) $$;
+create function tests.rs(p_id uuid) returns jsonb language sql as $$ select tests.svc(format('select public.reserve_send(%L, %L)', p_id, (select worker_id from ids))) $$;
+create function tests.ms(p_id uuid, p_mid text) returns jsonb language sql as $$ select tests.svc(format('select public.mark_sent(%L, %L, %L)', p_id, p_mid, (select worker_id from ids))) $$;
+create function tests.mf(p_id uuid, p_err text) returns jsonb language sql as $$ select tests.svc(format('select public.mark_failed(%L, %L, %L)', p_id, p_err, (select worker_id from ids))) $$;
 create function tests.mr(p_id uuid) returns jsonb language sql as $$ select tests.w(format('select public.mark_replied(%L)', p_id)) $$;
 
 -- 1. test mode redirect
@@ -366,7 +369,7 @@ create temp table e7 as select tests.mk_email(7) as id;
 select tests.rs((select id from e7)) as r \gset
 select tests.check('test send is refused when test_email is empty', :'r'::jsonb ->> 'reason' = 'test_email_missing');
 update public.settings set test_email = 'owner@example.test';
-select tests.w('select public.reserve_send(gen_random_uuid())') as r \gset
+select tests.rs(gen_random_uuid()) as r \gset
 select tests.check('reserve_send for a missing email -> not_found', :'r'::jsonb ->> 'reason' = 'not_found');
 select tests.rs((select id from e1)) as r \gset
 select tests.check('reserve_send for an already sent email -> not_approved', :'r'::jsonb ->> 'reason' = 'not_approved');

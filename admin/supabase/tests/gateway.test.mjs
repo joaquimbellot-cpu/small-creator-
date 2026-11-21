@@ -2,7 +2,7 @@
 // Needs the stack from admin/dev/start.sh (seeded). Dependency-free: Node 18+ fetch.
 import fs from 'node:fs';
 import { loadSecrets } from '../../dev/keys.mjs';
-import { SEED_USERS } from '../seed/users.mjs';
+
 
 const expected = JSON.parse(fs.readFileSync(new URL('../seed/expected.json', import.meta.url)));
 const { anon_key, service_key } = loadSecrets();
@@ -43,8 +43,19 @@ check('CORS preflight allows http://localhost:3000', pre.status === 204 && pre.h
 const evil = await fetch(`${API}/rest/v1/creators`, { method: 'OPTIONS', headers: { origin: 'http://evil.example.test', 'access-control-request-method': 'GET' } });
 check('CORS preflight does not allow another origin', !evil.headers.get('access-control-allow-origin'));
 
-const owner = await login(SEED_USERS[0].email, SEED_USERS[0].password);
-const worker = await login(SEED_USERS[1].email, SEED_USERS[1].password);
+// Temporary owner and worker, so the test does not depend on the seed owner's 2FA state (a verified
+// factor makes a password-only session useless, which is exactly what the database now enforces).
+const admin = (path, init = {}) => fetch(`http://127.0.0.1:9999${path}`, { ...init, headers: { authorization: `Bearer ${service_key}`, 'content-type': 'application/json' } });
+const tmp = [];
+async function tempUser(role) {
+  const email = `http-${role}-${Date.now()}@example.test`, password = 'Http-Test-Pass-12345!';
+  const u = await (await admin('/admin/users', { method: 'POST', body: JSON.stringify({ email, password, email_confirm: true, app_metadata: role ? { role } : {} }) })).json();
+  tmp.push(u.id);
+  return { email, password };
+}
+const tOwner = await tempUser('owner'), tWorker = await tempUser('worker');
+const owner = await login(tOwner.email, tOwner.password);
+const worker = await login(tWorker.email, tWorker.password);
 check('owner and worker can log in', !!owner.body?.access_token && !!worker.body?.access_token);
 const ot = owner.body.access_token, wt = worker.body.access_token;
 
@@ -60,7 +71,7 @@ await rest(`creators?id=eq.${first}`, { token: wt, method: 'DELETE' });
 check('worker DELETE removes nothing', (await count('creators', ot)) === 60);
 const patchS = await rest('settings?id=eq.1', { token: wt, method: 'PATCH', body: { daily_send_limit: 999 }, headers: { prefer: 'return=representation' } });
 check('worker cannot change settings', ((await json(patchS)) || []).length === 0 && (await json(await rest('settings', { token: ot })))[0].daily_send_limit === 30);
-const patchP = await rest(`profiles?email=eq.worker@example.test`, { token: wt, method: 'PATCH', body: { role: 'owner' }, headers: { prefer: 'return=representation' } });
+const patchP = await rest(`profiles?email=eq.${tWorker.email}`, { token: wt, method: 'PATCH', body: { role: 'owner' }, headers: { prefer: 'return=representation' } });
 check('worker cannot promote themselves', ((await json(patchP)) || []).length === 0);
 const upd = await rest(`creators?id=eq.${first}`, { token: wt, method: 'PATCH', body: { notes: 'edited through the API' }, headers: { prefer: 'return=representation' } });
 check('worker can edit a creator', (await json(upd)).length === 1);
@@ -86,7 +97,6 @@ check('service key: login_allowed -> true', (await rpc(service_key, 'login_allow
 check('service key can read login_attempts, anon cannot', (await rest('login_attempts', { key: service_key })).status === 200);
 
 // ---- a user with no role sees nothing
-const admin = (path, init = {}) => fetch(`http://127.0.0.1:9999${path}`, { ...init, headers: { authorization: `Bearer ${service_key}`, 'content-type': 'application/json' } });
 const nr = await (await admin('/admin/users', { method: 'POST', body: JSON.stringify({ email: 'norole-http@example.test', password: 'NoRole-Pass-12345!', email_confirm: true }) })).json();
 const nrTok = (await login('norole-http@example.test', 'NoRole-Pass-12345!')).body?.access_token;
 check('role-less user reads no creators', !!nrTok && ((await json(await rest('creators', { token: nrTok }))) || []).length === 0);
@@ -94,6 +104,7 @@ check('role-less user cannot read stats or profiles',
   (await rest('rpc/stats_overview', { token: nrTok, method: 'POST', body: {} })).status >= 400
   && ((await json(await rest('profiles', { token: nrTok }))) || []).length === 0);
 await admin(`/admin/users/${nr.id}`, { method: 'DELETE' });
+for (const id of tmp.reverse()) await admin(`/admin/users/${id}`, { method: 'DELETE' });
 
 console.log(failed ? `\n${failed} HTTP check(s) FAILED` : '\nall HTTP checks passed');
 process.exit(failed ? 1 : 0);

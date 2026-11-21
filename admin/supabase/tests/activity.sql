@@ -15,6 +15,7 @@ begin
 end $$;
 create temp table ids as select (select id from public.profiles where email='worker@example.test') as worker_id, gen_random_uuid() as norole_id;
 grant select on ids to public;
+delete from auth.mfa_factors;
 insert into auth.users (id, instance_id, aud, role, email, raw_app_meta_data, created_at, updated_at)
 select norole_id, '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated', 'norole2@example.test', '{}', now(), now() from ids;
 
