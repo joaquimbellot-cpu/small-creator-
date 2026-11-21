@@ -8,3 +8,7 @@ node_modules/
 .env
 .env.*
 !.env.example
+
+# Screenshots written by the back office browser tests
+admin/lib/**/*.png
+admin/tests/**/*.png
