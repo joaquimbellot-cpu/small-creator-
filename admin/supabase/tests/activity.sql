@@ -21,7 +21,7 @@ select norole_id, '00000000-0000-0000-0000-000000000000', 'authenticated', 'auth
 -- excluded actions (newest rows, so a leak would show first) + one visible control row
 insert into public.audit_log (action, entity_type, entity_id, details)
 select a, 'x', 'EXCL-' || a, '{"label":"Secret"}' from unnest(array['creator.viewed','creators.exported','auth.login','auth.logout',
-  'auth.password_changed','user.invited','user.removed','settings.updated','smallfold.reserve_send']) a;
+  'auth.password_changed','auth.2fa_enabled','auth.2fa_removed','profile.created','profile.deleted','profile.role_changed','future.unknown_action','brand.created','email.deleted','user.invited','user.removed','settings.updated','smallfold.reserve_send']) a;
 insert into public.audit_log (action, entity_type, entity_id, details)
 values ('email.status_changed','email','EXCL-test-email','{"label":"Hidden Tester","is_test":true,"status":"sent","changes":{"status":{"from":"sending","to":"sent"}}}'),
        ('email.status_changed','email','EXCL-sending','{"label":"Hidden","is_test":false,"changes":{"status":{"from":"approved","to":"sending"}}}'),
@@ -31,7 +31,7 @@ select tests.check('worker gets rows', tests.rows_as('authenticated',(select wor
 select tests.check('limit is capped at 50', tests.rows_as('authenticated',(select worker_id from ids),'select * from public.recent_activity(500)') = 50);
 select tests.check('limit 3 returns 3', tests.rows_as('authenticated',(select worker_id from ids),'select * from public.recent_activity(3)') = 3);
 select tests.check('excluded actions and test emails never appear',
-  tests.rows_as('authenticated',(select worker_id from ids),$q$select * from public.recent_activity(50) where entity_id like 'EXCL-%' or action in ('creator.viewed','creators.exported','auth.login','auth.logout','auth.password_changed','smallfold.reserve_send') or action like 'user.%' or action like 'settings.%'$q$) = 0);
+  tests.rows_as('authenticated',(select worker_id from ids),$q$select * from public.recent_activity(50) where entity_id like 'EXCL-%' or action in ('creator.viewed','creators.exported','auth.login','auth.logout','auth.password_changed','smallfold.reserve_send') or action like 'user.%' or action like 'settings.%' or action like 'profile.%' or action like 'auth.%' or action like 'future.%'$q$) = 0);
 select tests.check('newest first and the import line reads well',
   tests.rows_as('authenticated',(select worker_id from ids),$q$select * from public.recent_activity(1) where summary = 'imported 12 creators'$q$) = 1);
 select tests.check('summaries are filled and plain',
