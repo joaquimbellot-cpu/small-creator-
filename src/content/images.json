@@ -5,11 +5,10 @@
     "height": 1350,
     "srcSmall": "assets/img/hero-small.jpg",
     "widthSmall": 1200,
-    "alt": "",
-    "credit": "",
+    "alt": "A video creator seen from behind at a wooden desk in a dim room, adjusting a camera on a small tripod beside a warm desk lamp and a blue notebook.",
+    "credit": "Generated for Smallfold with Higgsfield",
     "creditUrl": "",
-    "licence": "",
-    "placeholder": true
+    "licence": ""
   },
   "heroTall": {
     "src": "assets/img/hero-tall.jpg",
@@ -17,11 +16,10 @@
     "height": 1500,
     "srcSmall": "assets/img/hero-tall-small.jpg",
     "widthSmall": 600,
-    "alt": "",
-    "credit": "",
+    "alt": "A video creator seen from behind at a wooden desk in a dim room, adjusting a camera beside a blue notebook.",
+    "credit": "Generated for Smallfold with Higgsfield",
     "creditUrl": "",
-    "licence": "",
-    "placeholder": true
+    "licence": ""
   },
   "band": {
     "src": "assets/img/band.jpg",
@@ -29,11 +27,10 @@
     "height": 1200,
     "srcSmall": "assets/img/band-small.jpg",
     "widthSmall": 1200,
-    "alt": "",
-    "credit": "",
+    "alt": "A hand lifting one blank card away from a row of cards on a dark wooden table.",
+    "credit": "Generated for Smallfold with Higgsfield",
     "creditUrl": "",
-    "licence": "",
-    "placeholder": true
+    "licence": ""
   },
   "difference1": {
     "src": "assets/img/difference-1.jpg",
@@ -41,11 +38,10 @@
     "height": 1500,
     "srcSmall": "assets/img/difference-1-small.jpg",
     "widthSmall": 600,
-    "alt": "",
-    "credit": "",
+    "alt": "A hand with a blue pen marking one blank card among several laid out on a desk.",
+    "credit": "Generated for Smallfold with Higgsfield",
     "creditUrl": "",
-    "licence": "",
-    "placeholder": true
+    "licence": ""
   },
   "difference2": {
     "src": "assets/img/difference-2.jpg",
@@ -53,11 +49,10 @@
     "height": 1500,
     "srcSmall": "assets/img/difference-2-small.jpg",
     "widthSmall": 600,
-    "alt": "",
-    "credit": "",
+    "alt": "A camera on a tripod facing an empty wooden chair in the corner of a small room, beside a lamp and a window.",
+    "credit": "Generated for Smallfold with Higgsfield",
     "creditUrl": "",
-    "licence": "",
-    "placeholder": true
+    "licence": ""
   },
   "difference3": {
     "src": "assets/img/difference-3.jpg",
@@ -65,11 +60,10 @@
     "height": 1500,
     "srcSmall": "assets/img/difference-3-small.jpg",
     "widthSmall": 600,
-    "alt": "",
-    "credit": "",
+    "alt": "A person seen from behind, sitting with a closed laptop on their knees and looking toward a window.",
+    "credit": "Generated for Smallfold with Higgsfield",
     "creditUrl": "",
-    "licence": "",
-    "placeholder": true
+    "licence": ""
   },
   "brands": {
     "src": "assets/img/brands.jpg",
@@ -77,11 +71,10 @@
     "height": 1200,
     "srcSmall": "assets/img/brands-small.jpg",
     "widthSmall": 1200,
-    "alt": "",
-    "credit": "",
+    "alt": "A hand setting a small plain wooden box beside a clay cup on a linen-covered table, with a camera out of focus behind.",
+    "credit": "Generated for Smallfold with Higgsfield",
     "creditUrl": "",
-    "licence": "",
-    "placeholder": true
+    "licence": ""
   },
   "about": {
     "src": "assets/img/about.jpg",
@@ -89,11 +82,10 @@
     "height": 1200,
     "srcSmall": "assets/img/about-small.jpg",
     "widthSmall": 1200,
-    "alt": "",
-    "credit": "",
+    "alt": "A camera, an open blank notebook with a pen and a cup of coffee on a wooden desk by a window.",
+    "credit": "Generated for Smallfold with Higgsfield",
     "creditUrl": "",
-    "licence": "",
-    "placeholder": true
+    "licence": ""
   },
   "threads": {
     "src": "assets/illustrations/threads.svg",
@@ -126,36 +118,33 @@
     "src": "assets/img/example-1.jpg",
     "width": 960,
     "height": 1200,
-    "alt": "",
-    "credit": "",
+    "alt": "Hands dusting flour over a round loaf on a wooden board.",
+    "credit": "Generated for Smallfold with Higgsfield",
     "creditUrl": "",
     "licence": "",
     "srcSmall": "assets/img/example-1-small.jpg",
-    "widthSmall": 480,
-    "placeholder": true
+    "widthSmall": 480
   },
   "example2": {
     "src": "assets/img/example-2.jpg",
     "width": 960,
     "height": 1200,
-    "alt": "",
-    "credit": "",
+    "alt": "Hands working on an old bicycle turned upside down on a workbench.",
+    "credit": "Generated for Smallfold with Higgsfield",
     "creditUrl": "",
     "licence": "",
     "srcSmall": "assets/img/example-2-small.jpg",
-    "widthSmall": 480,
-    "placeholder": true
+    "widthSmall": 480
   },
   "example3": {
     "src": "assets/img/example-3.jpg",
     "width": 960,
     "height": 1200,
-    "alt": "",
-    "credit": "",
+    "alt": "Hands repotting a leafy houseplant into a terracotta pot.",
+    "credit": "Generated for Smallfold with Higgsfield",
     "creditUrl": "",
     "licence": "",
     "srcSmall": "assets/img/example-3-small.jpg",
-    "widthSmall": 480,
-    "placeholder": true
+    "widthSmall": 480
   }
 }
