@@ -163,7 +163,7 @@ async function login(page, [email, pw]) {
     await p.waitForSelector('text=Turn off');
     check('2FA enrolled', true);
     await p.click('header >> text=Log out'); await p.waitForURL('**/login');
-    await login(p, OWNER); await p.waitForURL(/login\/2fa/);
+    await login(p, OWNER); await p.waitForTimeout(2500); console.log('AFTER', p.url(), await p.textContent('body'));  await p.waitForURL(/login\/2fa/);
     await p.fill('input[name=code]', '000000'); await p.click('button[type=submit]');
     await p.waitForSelector('form [role=alert]'); check('wrong 2FA code refused', p.url().includes('/login/2fa'));
     await p.fill('input[name=code]', totp(secret, 1)); await p.click('button[type=submit]');
