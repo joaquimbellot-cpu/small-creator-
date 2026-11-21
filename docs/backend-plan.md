@@ -1,6 +1,6 @@
 # Smallfold back office: plan for Section 1 (Company)
 
-Status: **draft, waiting for the owner's "yes"**. Written 21 November 2026 by the team leader.
+Status: **built** (approved by the owner and built on 21 November 2026). How to run and set it up: `admin/README.md`.
 Brand facts still come from `docs/brand-info.md`. Nothing in the public site (`src/`, `site/`, `build.js`) changes.
 
 ## 1. Decisions
@@ -68,7 +68,7 @@ All numbers come from one database function, so the page and the tests read the 
 
 ### E. Email outreach with Claude
 1. **Compose**: pick one or many creators (from the creators page or inside compose), then either choose a saved template or write the goal in one sentence.
-2. **Draft**: the server sends Claude only that creator's own fields (name, channel name and link, niche, subscriber count, notes the owner marked as usable) and the template or goal. The instructions say: use only these facts, never invent anything about the creator or Smallfold, leave out any fact that is missing, and stay within the brand facts. Claude returns a subject and body for each creator. Each becomes an email with status **draft**.
+2. **Draft**: the server sends Claude only that creator's own fields (name, channel name and link, niche, subscriber count) and the template or goal. Notes, email and phone are never sent to Claude. The instructions say: use only these facts, never invent anything about the creator or Smallfold, leave out any fact that is missing, and stay within the brand facts. Claude returns a subject and body for each creator. Each becomes an email with status **draft**.
 3. **Review**: one card per draft. Everything can be edited. Each draft can be approved or thrown away. Approving does not send.
 4. **Send**: only a click on **Send** sends, and it sends only the approved drafts on screen, one after another. There is no automatic or scheduled sending anywhere in the code.
 
@@ -94,7 +94,8 @@ Templates: name, goal, subject and body with placeholders (`{{first_name}}`, `{{
 
 - **The public website never talks to Supabase.** On top of that, the `anon` role has no rights on any table, and every table has RLS switched on with "deny by default". Only logged-in staff (owner, worker) can read company data, through policies that check their role.
 - Secret keys (Supabase service key, Gmail app password, Anthropic key, YouTube key, unsubscribe secret) live only in environment variables on the server. None is ever sent to the browser or written in the code. Only the Supabase URL and the public "anon" key go to the browser, and they can read nothing on their own.
-- The service key is used in exactly three places: inviting and removing users, the unsubscribe page, and writing to the login-attempts table. Everything else runs as the logged-in user, so RLS always applies.
+- The service key is used in exactly four places: inviting and removing users, the unsubscribe page, the login-attempts functions, and the send functions (called by the send route after its own session and role check). Everything else runs as the logged-in user, so RLS always applies.
+- 2FA, once turned on, is enforced inside the database too: a password-only session reads nothing.
 - Every input is checked on the server with a schema (Zod): types, lengths, email and URL formats, allowed statuses.
 - **Audit log**, written by the database and never editable or deletable, not even by the owner: logins, creator viewed, created, edited, deleted, imported, exported, email drafted, approved, sent, failed, opt-out, deal changes, settings changes, invites and removals.
 - `.env.example` lists every variable, with no values. `.env*` files are in `.gitignore`.
