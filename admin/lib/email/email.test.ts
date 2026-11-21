@@ -54,3 +54,14 @@ describe('footer', () => {
     expect(footer).toContain('https://x.test/u');
   });
 });
+
+describe('creator search filter', () => {
+  it('keeps quotes, commas and brackets inside one quoted value', async () => {
+    const { searchFilter } = await import('@/lib/creators/filters');
+    const f = searchFilter('a",email.eq.x)')!;
+    // every column gets exactly one quoted value, and the inner quote is escaped
+    expect(f.split(',email.ilike.')).toHaveLength(2);
+    expect(f).toContain('\\"');
+    expect(f.startsWith('full_name.ilike."%')).toBe(true);
+  });
+});

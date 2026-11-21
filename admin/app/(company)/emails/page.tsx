@@ -73,7 +73,7 @@ export default async function EmailLogPage({ searchParams }: { searchParams: Pro
                 <td>{r.subject || <span className="muted">(no subject)</span>}</td>
                 <td>
                   <Badge tone={STATUS_TONE[r.status] ?? 'neutral'}>{r.status}</Badge>{' '}
-                  {r.is_test ? <Badge>test</Badge> : null}
+                  {r.is_test ? <Badge>test: sent to the test address</Badge> : null}
                 </td>
                 <td>{new Date(r.sent_at ?? r.created_at).toISOString().slice(0, 16).replace('T', ' ')}</td>
               </tr>

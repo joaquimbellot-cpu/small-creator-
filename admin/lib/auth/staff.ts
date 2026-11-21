@@ -60,8 +60,4 @@ export async function requireOwner(): Promise<Staff> {
   return staff;
 }
 
-/** Only allows same-site relative paths, for ?next= redirects. */
-export function safeNext(next: unknown, fallback = '/overview'): string {
-  if (typeof next === 'string' && next.startsWith('/') && !next.startsWith('//') && !next.startsWith('/\\')) return next;
-  return fallback;
-}
+export { safeNext } from './safe-next';

@@ -1,13 +1,22 @@
-// Ends the session and goes to the login page. Used when a signed-in user turns out to have no access
-// (cookies cannot be changed while a page renders), and by "use a different account" on the 2FA step.
+// Ends the session (POST only, so another site cannot log anyone out by linking here).
+// GET just shows the login page. The shell's "Log out" is a server action; this POST route serves
+// the "use a different account" button on the 2FA step.
 import { NextResponse, type NextRequest } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 
-export async function GET(request: NextRequest) {
-  const supabase = await createClient();
-  await supabase.auth.signOut();
+function toLogin(request: NextRequest, search = '') {
   const url = request.nextUrl.clone();
   url.pathname = '/login';
-  url.search = request.nextUrl.searchParams.get('reason') === 'no_access' ? '?error=no_access' : '';
-  return NextResponse.redirect(url);
+  url.search = search;
+  return NextResponse.redirect(url, 303);
+}
+
+export async function POST(request: NextRequest) {
+  const supabase = await createClient();
+  await supabase.auth.signOut();
+  return toLogin(request);
+}
+
+export async function GET(request: NextRequest) {
+  return toLogin(request, request.nextUrl.searchParams.get('reason') === 'no_access' ? '?error=no_access' : '');
 }

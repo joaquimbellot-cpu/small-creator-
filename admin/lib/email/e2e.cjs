@@ -68,6 +68,8 @@ async function setSettings(page, { limit, delay, testMode, postal }) {
 }
 
 (async () => {
+  // A password-only owner session reads nothing once the owner has a verified 2FA factor: remove any (local stack only).
+  require('child_process').execSync(`PGPASSWORD=postgres psql -h localhost -p 54322 -U postgres -d postgres -c "delete from auth.mfa_factors where user_id = (select id from auth.users where email='owner@example.test')"`, { stdio: 'ignore' });
   const original = (await db('GET', 'settings', '?id=eq.1'))[0];
   const mk = (n, extra = {}) => ({ full_name: `ZZ Test ${n}`, email: `zz.${n.toLowerCase()}@example.test`, channel_name: `ZZ Test Channel ${n}`, niche: 'testing', subscribers: 2500, status: 'new', ...extra });
   const created = await db('POST', 'creators', '', [

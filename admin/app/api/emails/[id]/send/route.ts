@@ -16,11 +16,11 @@ const MESSAGES: Record<string, string> = {
   send_failed: 'The email could not be sent. See the email log.',
 };
 
-export const POST = apiHandler({ role: 'staff' }, async ({ supabase, params }) => {
+export const POST = apiHandler({ role: 'staff' }, async ({ staff, supabase, params }) => {
   const id = z.guid().safeParse(params.id);
   if (!id.success) throw new ApiError(400, 'Invalid input.');
 
-  const r = await sendEmail(supabase, id.data);
+  const r = await sendEmail(supabase, staff, id.data);
   if (r.ok) return { ok: true, to: r.to, is_test: r.isTest, delay_seconds: r.delaySeconds };
 
   if (r.reason === 'too_soon' || r.reason === 'daily_limit') {

@@ -1,6 +1,7 @@
 // Service-role client. SERVER ONLY, bypasses row level security.
-// Allowed uses: inviting and removing users, login rate-limit functions, and things the
-// leader explicitly allows (the public unsubscribe page). Everything else uses ./server.
+// Allowed uses: inviting and removing users, the login rate-limit functions, the public unsubscribe
+// page, and the send guard functions (reserve_send / mark_sent / mark_failed), which the email send
+// route calls only after its own session + role check. Everything else uses ./server.
 import 'server-only';
 import { createClient } from '@supabase/supabase-js';
 import { supabaseUrl } from './env';

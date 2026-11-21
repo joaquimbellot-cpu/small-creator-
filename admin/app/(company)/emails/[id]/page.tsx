@@ -35,8 +35,9 @@ export default async function EmailDetail({ params }: { params: Promise<{ id: st
       <h2>{e.subject || '(no subject)'}</h2>
       <p>
         <Badge tone={STATUS_TONE[e.status] ?? 'neutral'}>{e.status}</Badge> {e.is_test ? <Badge>test</Badge> : null}{' '}
-        <span className="muted">To {e.creators?.full_name} ({e.to_email})</span>
+        <span className="muted">{e.is_test ? 'Would go to' : 'To'} {e.creators?.full_name} ({e.to_email})</span>
       </p>
+      {e.is_test ? <Notice tone="info" title="Test">Delivered to the test address, not to the creator. The address above is only where a real send would go.</Notice> : null}
       {e.error ? <Notice tone="error" title="Error">{e.error}</Notice> : null}
 
       <div className="split">

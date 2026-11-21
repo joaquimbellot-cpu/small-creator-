@@ -12,6 +12,7 @@ export default async function ResetPage() {
   return (
     <>
       <h1 className="auth__title">Set a new password</h1>
+      <p className="auth__sub" style={{ marginTop: -16 }}>Passwords need at least 12 characters.</p>
       <ResetForm />
     </>
   );

@@ -48,7 +48,7 @@ async function login(page, [email, pw]) {
   psql("delete from login_attempts"); psql("delete from auth.mfa_factors");
   psql(`delete from auth.users where email = '${NEWBIE}'`);
   const browser = await chromium.launch();
-  const ctx = async (ip) => browser.newContext({ extraHTTPHeaders: { 'x-forwarded-for': ip } });
+  const ctx = async (ip) => browser.newContext({ extraHTTPHeaders: { 'x-real-ip': ip } });
 
   // logged out -> login
   { const c = await ctx('10.0.0.1'); const p = await c.newPage();
@@ -173,12 +173,16 @@ async function login(page, [email, pw]) {
     // a half-logged-in session (password only) cannot reach pages
     const c = await ctx('10.0.0.9'); const q = await c.newPage();
     await login(q, OWNER); await q.waitForURL(/login\/2fa/); await q.goto(BASE + '/overview');
-    check('password-only session is sent to the 2FA step', q.url().includes('/login/2fa')); await c.close();
+    console.log('URL', q.url()); check('password-only session is sent to the 2FA step', q.url().includes('/login/2fa')); await c.close();
     await p.goto(BASE + '/settings/security'); await p.getByRole('button', { name: 'Turn off' }).click();
     await p.getByRole('dialog').getByRole('button', { name: 'Turn off' }).click();
     await p.waitForSelector('text=Set up two-step login');
     check('2FA removed', true);
     await p.close(); }
+
+  // sign-out route: GET must not sign out
+  { const p = await ownerCtx.newPage(); await p.goto(BASE + '/auth/signout'); await p.goto(BASE + '/overview');
+    check('GET /auth/signout does not sign out', p.url().includes('/overview')); await p.close(); }
 
   // logout clears the session
   { const p = await ownerCtx.newPage(); await p.goto(BASE + '/overview');

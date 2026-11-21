@@ -29,6 +29,7 @@ function applyHeaders(res: NextResponse, policy: string) {
   res.headers.set('X-Content-Type-Options', 'nosniff');
   res.headers.set('X-Robots-Tag', 'noindex, nofollow, noarchive');
   res.headers.set('Permissions-Policy', 'camera=(), microphone=(), geolocation=()');
+  if (process.env.NODE_ENV === 'production') res.headers.set('Strict-Transport-Security', 'max-age=63072000; includeSubDomains');
   res.headers.set('Cache-Control', 'private, no-store');
   return res;
 }

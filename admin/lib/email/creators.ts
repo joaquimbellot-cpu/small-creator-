@@ -2,6 +2,7 @@
 // A blocked creator can be shown but never selected or drafted. The database enforces it too.
 import 'server-only';
 import type { SupabaseClient } from '@supabase/supabase-js';
+import { searchFilter } from '@/lib/creators/filters';
 
 export type Blocked = 'do_not_contact' | 'suppressed' | null;
 export type ComposeCreator = {
@@ -37,10 +38,10 @@ export async function creatorsByIds(supabase: SupabaseClient, ids: string[]): Pr
 }
 
 export async function searchCreators(supabase: SupabaseClient, q: string): Promise<ComposeCreator[]> {
-  // Remove characters that have a meaning in PostgREST filters.
-  const term = q.replace(/[%,()*\\]/g, ' ').trim();
+  // searchFilter quotes and escapes the text, so quotes, commas and brackets cannot break the filter.
+  const filter = searchFilter(q);
   let query = supabase.from('creators').select(COLUMNS).order('full_name').limit(20);
-  if (term) query = query.or(`full_name.ilike.%${term}%,email.ilike.%${term}%,channel_name.ilike.%${term}%`);
+  if (filter) query = query.or(filter);
   const { data } = await query;
   return withBlocked(supabase, (data ?? []) as Row[]);
 }

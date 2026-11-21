@@ -52,3 +52,4 @@ button, input, select, textarea { font: inherit; }
 @media (min-width: 900px) { .split { grid-template-columns: minmax(0, 2fr) minmax(0, 1fr); } }
 .qr { width: 200px; height: 200px; background: #fff; padding: var(--s-2); border-radius: var(--r); border: var(--hairline) solid var(--rule); }
 .mono { font-family: var(--font-mono); font-size: .875rem; word-break: break-all; }
+.auth__linkbtn { background: none; border: 0; padding: 0; min-height: var(--tap); color: var(--accent-fg); text-decoration: underline; cursor: pointer; font: inherit; }
