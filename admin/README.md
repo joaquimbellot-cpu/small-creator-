@@ -102,8 +102,10 @@ Supabase is a service that hosts the database and handles logins and invitations
    5. `20261121000500_rls_and_grants.sql`
    6. `20261121000600_recent_activity.sql`
    7. `20261121000700_recent_activity_exclusions.sql`
+   8. `20261121000800_security_hardening.sql`
 
-   All seven files are in `admin/supabase/migrations/`. Never run the seed files
+   All eight files are in `admin/supabase/migrations/`. Do not skip the last one: it holds the
+   security fixes, including two-step login checked by the database. Never run the seed files
    (`admin/supabase/seed/`) on the online project. They create test logins with known passwords.
 3. **Switch off public sign-up.** In the **Authentication** settings, turn **off**
    "Allow new users to sign up". Only the owner can invite people.
