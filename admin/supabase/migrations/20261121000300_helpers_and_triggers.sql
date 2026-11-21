@@ -223,7 +223,7 @@ create trigger trg_guard before update on public.settings
 create or replace function public.suppression_before() returns trigger
 language plpgsql set search_path = public, extensions, pg_temp as $$
 begin
-  new.email := btrim(new.email);
+  new.email := lower(btrim(new.email));
   return new;
 end $$;
 

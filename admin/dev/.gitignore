@@ -1,0 +1,5 @@
+# Local test stack runtime files
+.data/
+.logs/
+.mail/
+.pids/
