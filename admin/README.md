@@ -33,7 +33,7 @@ The rules are checked by the app and again by the database, so a worker cannot g
 
 ## Run it on your computer (test data only)
 
-Use this part to try the app. Everything is fake. No real email can be sent from your
+Use this part to try the app. Everything is fake. The local test stack runs on Linux only. No real email can be sent from your
 computer, because the local mail server only catches messages and shows them to you.
 
 **You need these first:**
@@ -42,7 +42,7 @@ computer, because the local mail server only catches messages and shows them to 
 2. **Docker.** A program that runs the test database and login services in containers.
    Install it and make sure it is running.
 3. **PostgreSQL, version 16.** The test database. The start script looks for it at
-   `/usr/lib/postgresql/16` on Linux. TODO: confirm the path or steps for macOS and Windows.
+   `/usr/lib/postgresql/16`.
 
 **Then do this:**
 
@@ -76,6 +76,9 @@ computer, because the local mail server only catches messages and shows them to 
    ```
    bash admin/dev/reset.sh
    ```
+   A reset also makes new local test keys. Stop the app and start it again afterwards
+   (`npm run dev`). If you test the built app with `npm run start`, run `npm run build` again first,
+   because the build keeps the old public key.
 
 Log files are in `admin/dev/.logs/`. The file `admin/.env.local` holds test secrets. Git
 ignores it, so it is never uploaded.
@@ -100,11 +103,8 @@ Supabase is a service that hosts the database and handles logins and invitations
    6. `20261121000600_recent_activity.sql`
    7. `20261121000700_recent_activity_exclusions.sql`
 
-   All seven files are in `admin/supabase/migrations/`. Do not run the seed files
-   (`admin/supabase/seed/`) on the online project. They hold fake test data.
-   TODO: the Supabase command-line tool (`supabase db push`) can run the same files, but it
-   looks for them in a `supabase/` folder at the top of the project, and ours is in
-   `admin/supabase/`. Confirm the command before using it.
+   All seven files are in `admin/supabase/migrations/`. Never run the seed files
+   (`admin/supabase/seed/`) on the online project. They create test logins with known passwords.
 3. **Switch off public sign-up.** In the **Authentication** settings, turn **off**
    "Allow new users to sign up". Only the owner can invite people.
 4. **Set the email links.** In **Authentication**, open the **Invite user** email template
@@ -120,6 +120,11 @@ Supabase is a service that hosts the database and handles logins and invitations
 7. **Site URL and Redirect URLs.** Do this part again after Step 5, when you know the
    Vercel address. Set the **Site URL** to that address. Add it to the **Redirect URLs** list
    as `https://your-app.example.com/**`, using your own address.
+8. **Security settings.** In **Authentication**, set the minimum password length to 12. Turn on
+   **Secure password change**. Keep the built-in sign-in rate limits, and lower them if Supabase
+   offers that. Keep sign-ups OFF (part 3).
+9. **Keep the secret key secret.** The `service_role` key stays only in Vercel's server settings
+   (Step 5). Never put it in a file, in the browser, or in a chat.
 
 ### Step 2: Gmail (sends the emails)
 
@@ -172,7 +177,7 @@ Vercel is a hosting service. It runs the app for you.
 
 1. In Supabase, open **Authentication**, then **Users**, then **Invite user**. Type your own
    email address and send the invite.
-2. Open the invite email and follow the link. Choose a password when the app asks.
+2. Open the invite email and follow the link. It opens a page where you choose a password of at least 12 characters.
 3. In Supabase, open the **SQL Editor**. Paste the line below. Replace the placeholder with
    the same email address you invited, then click **Run**:
    ```sql
@@ -180,8 +185,6 @@ Vercel is a hosting service. It runs the app for you.
    ```
    It shows `true` when it works. It works only while there is no owner yet, so run it once.
    If it shows `false`, check the spelling of the email address.
-   TODO: not yet tested on a real Supabase project. If the editor says "permission denied",
-   tell the developer.
 4. Log in at your Vercel address. You are now the owner.
 
 Do this before you invite anyone else.
@@ -193,14 +196,14 @@ Do this before you invite anyone else.
 3. **Sender postal address:** type the full postal address that appears at the bottom of
    every email. US law asks for a valid postal address on commercial email. A PO box is accepted.
 4. Keep **Test mode** ticked, then save.
-5. Send one test email. Open **Emails**, then **Compose**. Pick one creator, write the goal
-   in a sentence, and let Claude draft it. Approve the draft, then click **Send**. With test
+5. Send one test email. Open **Emails**, then **Compose**. Pick one or more creators. Choose a
+   saved template, or type your goal in one sentence. Click **Draft emails**. Under **Review**, edit
+   a draft if you want, then click **Approve**. Click **Send**, and confirm in the dialog. With test
    mode on, the email goes to your test address with `[TEST]` in the subject. No creator gets it.
 6. When you are happy with the test, untick **Test mode** and save. Until a postal address is
    set, the app refuses to send to real creators.
 
 Keep test mode on until the test email looks right.
-TODO: the Compose steps are from the project plan. Check them against the app once the Emails pages are final.
 
 ### Step 8: Optional, two-step login for the owner
 
@@ -220,23 +223,32 @@ TODO: the Compose steps are from the project plan. Check them against the app on
 - **Do not contact.** A creator marked "do not contact" cannot be emailed.
 - **Audit log.** A record of who did what and when. Nobody can edit or delete it, not even the owner.
 - **Row-level security.** The database itself checks each person's role on every read and write.
+- **Two-step login in the database.** Once turned on, the database itself requires the code for the owner.
+- **Only the server sends.** Only the server can call the functions that send email.
 - **Login limit.** After 5 failed logins in 15 minutes, the app waits 15 minutes before it tries again.
 
 ## Tests
 
-- `admin/tests/run-all.sh` runs the full set of checks. TODO: this file is being written now
-  and is not in the repository yet. Once it exists, run it with the test stack running.
-  From the plan, it checks:
-  - failed logins and the login limit;
-  - a worker blocked from owner-only actions, on the page, in the API, and in the database;
-  - search and the creator pop-up;
-  - the Overview numbers match the fake data;
-  - test mode sends only to the test address;
-  - opted-out and "do not contact" creators are blocked;
-  - the daily limit and the delay are enforced.
-- `admin/supabase/tests/run.sh` checks the database rules and the Overview numbers. It needs the
-  test stack running (`bash admin/dev/start.sh`).
-- `npm test`, run inside `admin/`, runs the unit tests.
+Run every check with one command. Before you start, the test stack (`bash admin/dev/start.sh`)
+must be running, and the app must be running too. Start the app with `npm run dev`, or with
+`npm run build` and then `npm run start`. Then, from inside `admin/`, run:
+
+```
+bash tests/run-all.sh
+```
+
+The script runs these suites in order. It prints one summary line for each, and it reports
+an error if any suite fails:
+
+1. **Database tests:** the row-level security rules, the guard functions, and two-step login enforcement.
+2. **Unit tests** (vitest).
+3. **QA browser checks:** failed login; a worker blocked from owner actions; search and the
+   creator pop-up; Overview numbers equal to the fake data; test-mode sending; opted-out and
+   "do not contact" creators blocked; the public key reads nothing.
+4. **Browser tests** for creators, deals and emails.
+5. **Browser test for login.** It runs last, because it trips the login limit.
+
+The script starts and resets nothing. If the test data looks wrong, run `bash admin/dev/reset.sh` first.
 
 ## Not built yet
 

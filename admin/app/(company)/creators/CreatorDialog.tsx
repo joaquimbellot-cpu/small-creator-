@@ -111,7 +111,9 @@ function View({ creatorId, editHref, isOwner, youtubeEnabled, onDeleted }: Props
       {deleteError ? <div className={s.stack}><Notice tone="error">{deleteError}</Notice></div> : null}
       <div className={s.actions}>
         <LinkButton href={editHref}>Edit</LinkButton>
-        <LinkButton variant="ghost" href={`/emails/compose?creators=${c.id}`}>Email this creator</LinkButton>
+        {c.status !== 'do_not_contact' ? (
+          <LinkButton variant="ghost" href={`/emails/compose?creators=${c.id}`}>Email this creator</LinkButton>
+        ) : null}
         <Button variant="ghost" loading={busy} onClick={refresh}>Refresh subscribers</Button>
         {isOwner ? (
           <ConfirmButton size="md" title={`Delete ${c.full_name}?`} message="This removes the creator and their emails for good. It cannot be undone." confirmLabel="Delete creator" onConfirm={remove}>Delete</ConfirmButton>
