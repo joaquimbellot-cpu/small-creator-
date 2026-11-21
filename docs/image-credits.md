@@ -1,60 +1,48 @@
 # Image credits
 
 Every picture on the Smallfold site, where it came from, and the terms it is used under.
-The same facts are in `src/content/images.json` (`credit`, `creditUrl`, `licence`).
+The same facts are in `src/content/images.json`.
 
-> **Update:** the owner did not like the drawn pictures described below. They have been replaced
-> on the site by soft blurred stand-ins (plus three new slots, `example1` to `example3`) until the
-> owner's own pictures arrive. The prompts for those are in `docs/image-prompts.md`.
+## The pictures
 
-## The pictures in the photo slots
+**These eleven pictures are generated, not photographed.** They were made for Smallfold on
+21 November 2026 with Higgsfield (the Soul 2.0 model), on the owner's own Higgsfield account.
+No photographer, no model and no real place is shown. Check Higgsfield's terms for the plan
+the account is on before using the pictures outside this website.
 
-**These eight pictures are not photographs.** They were drawn by script for Smallfold as one series:
-cream paper on a dim desk in window light, with one corner folded over in pen blue.
-Nobody else holds rights in them, so there is no photographer to credit, no source page and no licence to follow.
+| id | File | What it shows |
+|---|---|---|
+| hero | `src/assets/img/hero.jpg` | A video creator seen from behind at a desk in a dim room, adjusting a camera beside a lamp and a blue notebook |
+| heroTall | `src/assets/img/hero-tall.jpg` | The same scene composed upright, for phones |
+| band | `src/assets/img/band.jpg` | A hand lifting one blank card away from a row of cards on a dark table |
+| difference1 | `src/assets/img/difference-1.jpg` | A hand with a blue pen marking one blank card among several ("Matched by hand") |
+| difference2 | `src/assets/img/difference-2.jpg` | A camera on a tripod facing an empty chair in the corner of a small room ("Only small channels") |
+| difference3 | `src/assets/img/difference-3.jpg` | A person seen from behind with a closed laptop, looking toward a window ("You have the final say") |
+| brands | `src/assets/img/brands.jpg` | A hand setting a plain wooden box beside a clay cup on a linen-covered table |
+| about | `src/assets/img/about.jpg` | A camera, an open blank notebook and a cup of coffee on a desk by a window |
+| example1 | `src/assets/img/example-1.jpg` | Hands dusting flour over a loaf (the baking example) |
+| example2 | `src/assets/img/example-2.jpg` | Hands working on an old bicycle (the bicycle example) |
+| example3 | `src/assets/img/example-3.jpg` | Hands repotting a houseplant (the houseplant example) |
 
-| id | File | What it shows | Photographer | Source page | Licence |
-|---|---|---|---|---|---|
-| hero | `src/assets/img/hero.jpg` | Paper sheets on a desk in window light; a small folded sheet at the upper left, a pen at the lower right; the middle is left empty for the headline | None (drawn for Smallfold) | None | None needed |
-| heroTall | `src/assets/img/hero-tall.jpg` | The same desk as the hero, composed upright for phones | None (drawn for Smallfold) | None | None needed |
-| band | `src/assets/img/band.jpg` | Two fanned stacks of paper at the edges, window light across the desk between them | None (drawn for Smallfold) | None | None needed |
-| difference1 | `src/assets/img/difference-1.jpg` | A grid of small cards with one picked out ("Matched by hand") | None (drawn for Smallfold) | None | None needed |
-| difference2 | `src/assets/img/difference-2.jpg` | One small sheet in the light, a large one leaving the frame ("Only small channels") | None (drawn for Smallfold) | None | None needed |
-| difference3 | `src/assets/img/difference-3.jpg` | A kept sheet, a sheet set aside and a pen ("You have the final say") | None (drawn for Smallfold) | None | None needed |
-| brands | `src/assets/img/brands.jpg` | Plain objects set out on a table, seen from above | None (drawn for Smallfold) | None | None needed |
-| about | `src/assets/img/about.jpg` | A notebook, a lens and a pen on a desk in window light | None (drawn for Smallfold) | None | None needed |
+Each picture has a smaller copy beside it with `-small` in the name, for phones.
 
-Each picture has a smaller copy beside it with `-small` in the name (1200px wide for hero, band, brands and about; 600px wide for hero-tall and the three difference pictures).
+Twenty pictures were generated and eleven kept. The others were set aside because an object
+in them carried lettering (a label on a bottle, a mark on a softbox, letters on a bicycle frame)
+or because a second option suited the page better. The prompts are in `docs/image-prompts.md`.
 
-### Why there are no photographs
+## How they were chosen
 
-Royalty-free photographs were looked for first, on 20 November 2026.
+- Nobody's face is shown: people are seen from behind or as hands, so no picture reads as a real client.
+- No readable text, logo or brand name appears in any picture.
+- The two home-page pictures with a headline on them (`hero`, `band`) have a calm, dark middle.
 
-- Unsplash refuses automated visitors, so nothing was taken from it.
-- Openverse (a search of openly licensed pictures) was then searched for works marked CC0 or Public Domain Mark that could be downloaded from Wikimedia Commons. About 350 previews were looked at.
-- No photograph was found that could carry the home page: a small creator's desk in warm low light, with no face, no brand name and a calm middle for the headline. Mixing a few photographs with drawn pictures looked worse than either alone, so the whole set is drawn in one style.
+## Everything else
 
-### Photographs that were good enough to keep in mind
+The logo (symbol and wordmark), the threads drawing, the icons and the share image `og.jpg`
+were drawn for Smallfold. Nobody else holds rights in them.
 
-All four are marked CC0 1.0 on Wikimedia Commons, which asks for no credit. None is used on the site. The first three were checked at full size; the fourth was seen only as a small preview.
+## Earlier pictures
 
-| What it shows | Photographer | Source page | Would suit |
-|---|---|---|---|
-| Two hands on a laptop keyboard and trackpad, seen from above on a walnut table | Fabian Irsara | https://commons.wikimedia.org/w/index.php?curid=61684280 | difference3 |
-| The corner of a linen-bound book on a weathered wooden table | Beatriz Pérez Moya | https://commons.wikimedia.org/w/index.php?curid=62122143 | band |
-| A parcel wrapped in star-printed brown paper with a blank tag, on dark wood | Annie Spratt | https://commons.wikimedia.org/w/index.php?curid=62122924 | brands |
-| Hands writing in a journal on a wooden desk, with coffee | Cathryn Lavery | https://commons.wikimedia.org/w/index.php?curid=61717182 | difference1 |
-
-## Drawn for Smallfold
-
-The logo (`src/assets/logo/`, `src/partials/logo.html`), the two threads illustrations (`src/assets/illustrations/`), the social sharing image (`src/assets/img/og.jpg`) and the icons (`src/partials/icons/`) were drawn for Smallfold. Nothing in them is taken from another source.
-
-The wordmark is set in Newsreader, a typeface published under the SIL Open Font Licence, and converted to outlines, so the logo files need no font.
-
-## Replacing a picture
-
-1. Keep the file name and the pixel size listed in `src/content/images.json`.
-2. Save a `-small` copy beside it, in the width given above.
-3. Update the entry in `src/content/images.json` (`alt`, `credit`, `creditUrl`, `licence`) and the table in this file.
-
-Use only pictures whose licence allows it. No recognisable faces, no visible brand names.
+The first version of the site used a drawn series of paper sheets, which the owner did not like.
+Those files are in the git history. A search for free photographs on 20 November 2026 found none
+good enough for the home page; four that were shortlisted are listed in the history of this file.

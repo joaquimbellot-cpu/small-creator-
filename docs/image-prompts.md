@@ -3,7 +3,9 @@
 Paste each prompt into an image generator. Every prompt is complete by itself.
 Generate each picture in the shape given, at the largest size the tool offers.
 
-The pictures now on the site are soft blurred stand-ins. They are replaced when yours arrive.
+These prompts were used on 21 November 2026 to generate the pictures now on the site, with the
+Soul 2.0 model in Higgsfield. Use them again to make replacements in the same style. That model
+offers 3:4 instead of 4:5 and 16:9 instead of 2:1; the pictures are cropped when they are placed.
 
 ## How to send the finished pictures
 
