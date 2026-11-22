@@ -66,23 +66,13 @@ The number then appears in the menu, the footer and on the Contact page.
 
 ### The forms (applications and brand inquiries)
 
-The two forms do not send anything yet, and each one shows a notice saying so. To make
-them deliver to your email inbox:
+The two forms (the application on Apply and the brand inquiry on For brands) are handled by
+the back office, which lives in `admin/`. They need no outside form service. An application
+creates a new creator in the back office with status New. A brand inquiry appears on the
+back office's Inbox page.
 
-1. Sign up for a form service that gives you a web address to post forms to. The forms
-   were built and tested for the way [Formspree](https://formspree.io) works, but have
-   not been tried against the live service.
-2. Create one form there for the address you want the messages sent to, and copy the
-   form's address. It looks like `https://formspree.io/f/abcdwxyz`.
-3. In `src/content/site.json`, under `"forms"`, paste it between the quotation marks of
-   `"applyEndpoint"` (application form) and `"contactEndpoint"` (brand inquiry form). An
-   empty value makes that form say it is not connected yet.
-4. Run `node build.js`, put the site online, and send yourself one test application and
-   one test inquiry. Each arrives with its own subject line ("New creator application",
-   "New brand inquiry").
-
-Once the address is filled in, the "not connected" notices disappear by themselves.
-The Privacy page has a blank for the name of the service: fill that in too.
+Nothing needs filling in here. The Privacy page may still have a blank for the name of the
+service that handles the forms. Check that page's wording, and have the owner or a lawyer approve it.
 
 ### The site's address
 
@@ -221,7 +211,9 @@ comment that names its owner and what belongs in it.
 
 ## The back office
 
-The back office is a private app for the owner and staff. It runs the company side of
-Smallfold: finding creators, sending emails, and tracking deals. It lives in the `admin/`
-folder and is not part of the public website. Its own guide, with a test run on your
+The website and the back office launch together. They are one app in the `admin/` folder,
+and Vercel deploys that folder. When the app is built, it also builds this website into
+`admin/public/`, so the website is at the main address and the back office is at `/login` and
+the pages after it. The back office runs the company side of Smallfold: finding creators,
+sending emails, and tracking deals. It is private. Its own guide, with a test run on your
 computer and the steps to put it online, is in `admin/README.md`.

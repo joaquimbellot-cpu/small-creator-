@@ -1,6 +1,6 @@
 # Launch plan: one website, a private login, and Claude in the back office
 
-Status: approved by the owner on 22 November 2026 through their answers to four questions. Building.
+Status: built on 22 November 2026, approved by the owner through their answers to four questions. The owner's setup guide is `admin/README.md`.
 
 ## What the owner asked for
 
