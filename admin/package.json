@@ -4,11 +4,12 @@
   "private": true,
   "scripts": {
     "tokens": "node scripts/copy-tokens.mjs",
-    "dev": "npm run tokens && next dev -p 3000",
-    "build": "npm run tokens && next build",
+    "dev": "npm run tokens && npm run site && next dev -p 3000",
+    "build": "npm run tokens && npm run site && next build",
     "start": "next start -p 3000",
     "typecheck": "npm run tokens && tsc --noEmit",
-    "test": "vitest run"
+    "test": "vitest run",
+    "site": "node ../build.js --out public"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^1.12.0",

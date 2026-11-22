@@ -6,6 +6,10 @@ const config: NextConfig = {
   poweredByHeader: false,
   reactStrictMode: true,
   agentRules: false,
+  // The public website is built into public/ (see "site" in package.json); its home page is public/index.html.
+  async rewrites() {
+    return { beforeFiles: [{ source: '/', destination: '/index.html' }], afterFiles: [], fallback: [] };
+  },
 };
 
 export default config;

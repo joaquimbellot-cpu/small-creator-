@@ -75,7 +75,8 @@ them deliver to your email inbox:
 2. Create one form there for the address you want the messages sent to, and copy the
    form's address. It looks like `https://formspree.io/f/abcdwxyz`.
 3. In `src/content/site.json`, under `"forms"`, paste it between the quotation marks of
-   `"endpoint": ""`.
+   `"applyEndpoint"` (application form) and `"contactEndpoint"` (brand inquiry form). An
+   empty value makes that form say it is not connected yet.
 4. Run `node build.js`, put the site online, and send yourself one test application and
    one test inquiry. Each arrives with its own subject line ("New creator application",
    "New brand inquiry").

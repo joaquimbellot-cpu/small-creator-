@@ -7,3 +7,6 @@ next-env.d.ts
 app/tokens.css
 .env*
 !.env.example
+
+# generated website (node ../build.js --out public)
+/public/

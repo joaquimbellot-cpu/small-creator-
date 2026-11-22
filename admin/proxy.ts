@@ -5,6 +5,41 @@ import { refreshSession } from '@/lib/supabase/proxy';
 
 const PUBLIC = [/^\/login(\/|$)/, /^\/forgot-password$/, /^\/reset-password$/, /^\/auth(\/|$)/, /^\/unsubscribe(\/|$)/, /^\/api\/unsubscribe(\/|$)/, /^\/api\/public\//];
 
+// The public website (built from ../src into public/): the home page, its .html pages, /assets and robots.txt.
+// None of the back-office routes ends in .html or starts with /assets.
+const WEBSITE = [/^\/$/, /^\/[a-z0-9-]+\.html$/, /^\/assets\//, /^\/robots\.txt$/];
+
+// sha256 of the one inline script every website page has (src/partials/head.html):
+//   document.documentElement.classList.add('js');
+// If that script changes, update this hash (the browser console shows the right one).
+const SITE_INLINE_SCRIPT_HASH = 'sha256-/x7W7R75k8Roq0WaVRQX9blP4OufE5xbAdzklGxsgpw=';
+
+function websiteCsp(): string {
+  return [
+    `default-src 'self'`,
+    `script-src 'self' '${SITE_INLINE_SCRIPT_HASH}'`,
+    `style-src 'self' 'unsafe-inline' https://fonts.googleapis.com`,
+    `font-src 'self' https://fonts.gstatic.com`,
+    `img-src 'self' data:`,
+    `connect-src 'self'`,
+    `frame-ancestors 'none'`,
+    `base-uri 'self'`,
+    `form-action 'self'`,
+    `object-src 'none'`,
+  ].join('; ');
+}
+
+// Website responses: public, indexable, cacheable. Only the safety headers.
+function websiteResponse() {
+  const res = NextResponse.next();
+  res.headers.set('Content-Security-Policy', websiteCsp());
+  res.headers.set('X-Frame-Options', 'DENY');
+  res.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin');
+  res.headers.set('X-Content-Type-Options', 'nosniff');
+  if (process.env.NODE_ENV === 'production') res.headers.set('Strict-Transport-Security', 'max-age=63072000; includeSubDomains');
+  return res;
+}
+
 function csp(nonce: string): string {
   const supabase = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
   const dev = process.env.NODE_ENV !== 'production';
@@ -35,6 +70,8 @@ function applyHeaders(res: NextResponse, policy: string) {
 }
 
 export async function proxy(request: NextRequest) {
+  if (WEBSITE.some((re) => re.test(request.nextUrl.pathname))) return websiteResponse();
+
   const nonce = btoa(crypto.randomUUID());
   const policy = csp(nonce);
   const requestHeaders = new Headers(request.headers);
