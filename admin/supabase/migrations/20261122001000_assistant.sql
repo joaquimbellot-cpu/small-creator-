@@ -69,6 +69,10 @@ end $$;
 create trigger assistant_proposals_guard before update on public.assistant_proposals
   for each row execute function public.assistant_proposals_guard();
 
+-- Trigger functions need no EXECUTE privilege for anyone (triggers run them regardless).
+revoke all on function public.assistant_messages_append_only(), public.assistant_proposals_guard()
+  from public, anon, authenticated, service_role;
+
 -- ---------------------------------------------------------------- 2. row level security and grants
 alter table public.assistant_threads   enable row level security;
 alter table public.assistant_messages  enable row level security;
