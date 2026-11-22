@@ -13,11 +13,11 @@ export const POST = (req: NextRequest) =>
       p_ip_hash: hash,
       p_name: d.name,
       p_email: d.email,
-      p_phone: d.phone ?? null,
+      p_phone: d.phone,
       p_channel_url: d.channel,
       p_subscribers: d.subscribers,
-      p_niche: d.topic, // the column holds 200 characters; a longer text also goes whole into the notes
-      p_notes: d.topic.length > 200 ? d.topic : null,
+      p_niche: d.niche,
+      p_notes: d.notes,
     }),
   });
 
