@@ -13,7 +13,9 @@ Read this first in a new chat. It replaces the history of the previous one.
 
 - **Website and back office:** https://smallfold.netlify.app
   - Netlify project `smallfold`, site id `13382a5d-efd4-4324-9a26-37187b574c55`.
-- **Visitor access:** Netlify team login is still required, so the site is **not public yet**. Turn it off only when the owner asks, with the Netlify MCP `update-visitor-access-controls`.
+- **Visitor access:** the Netlify team login was turned off on 22 November at the owner's request (`update-visitor-access-controls`, `requireSSOTeamLogin: false`, checked afterwards with `get-project`). The site is **public**. To lock it again, call the same operation with `requireSSOTeamLogin: true`.
+- **Search engines:** every website page has `<meta name="robots" content="noindex">` (`src/partials/head.html`), so the site is open to anyone with the link but search engines are asked to skip it. Remove that line, and fill in `siteUrl` in `src/content/seo.json`, when the owner wants the site found in search.
+- **Still drafts, now visible to the public:** the Privacy and Terms pages have 13 blanks and a "draft" notice. The phone number in `src/content/site.json` is empty.
 - **Log in:** at `/login`. The link is at the bottom of the drop-down menu on phones, and on the right of the footer's copyright line on every page.
 - Website pages answer with or without `.html`, because Netlify drops it. See `admin/lib/site-pages.ts`.
 - **Deploys are manual uploads.** GitHub is not connected to Netlify. To deploy:
@@ -67,7 +69,7 @@ Read this first in a new chat. It replaces the history of the previous one.
    - It is billed per use, separately from a Claude.ai plan.
    - Daily cap: `ASSISTANT_DAILY_LIMIT`, default 100.
    - A cheaper model can be chosen with `ANTHROPIC_ASSISTANT_MODEL`.
-5. **Make the site public** (Netlify visitor access), when the owner says so.
+5. **Site is public (done 22 November).** Left to do before telling people about it: the legal pages (blanks and draft notice), the phone number or removing its line, and `noindex` (see above).
 6. **Optional:**
    - connect the GitHub repository in Netlify, for automatic deploys;
    - a custom domain. If added, update `NEXT_PUBLIC_SITE_URL` and Supabase's site URL and redirect list.
