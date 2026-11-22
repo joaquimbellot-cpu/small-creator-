@@ -48,16 +48,16 @@ export const POST = apiHandler(
           if (!open) return; // the browser went away; keep working so the stored conversation stays complete
           try { controller.enqueue(encoder.encode(JSON.stringify(e) + '\n')); } catch { open = false; }
         };
-        let tools: string[] = [];
+        const result: { tools: string[]; creators: string[]; inbox: string[] } = { tools: [], creators: [], inbox: [] };
         try {
           emit({ type: 'thread', id: tid });
-          tools = (await runTurn({ supabase, staff, threadId: tid, text: body.message, emit })).tools;
+          await runTurn({ supabase, staff, threadId: tid, text: body.message, emit, out: result });
         } catch (e) {
           console.error('assistant turn failed', e instanceof Error ? e.message : e);
           emit({ type: 'error', message: 'Something went wrong. Try again.' });
         } finally {
           await supabase.from('assistant_threads').update({ locked_at: null, updated_at: new Date().toISOString() }).eq('id', tid);
-          await logAudit('assistant.message', 'assistant_thread', tid, { thread: tid, tools });
+          await logAudit('assistant.message', 'assistant_thread', tid, { thread: tid, tools: result.tools, creator_ids: result.creators, inbox_ids: result.inbox });
           emit({ type: 'done' });
           try { controller.close(); } catch { /* already closed */ }
         }

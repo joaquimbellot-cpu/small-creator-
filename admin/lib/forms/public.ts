@@ -5,14 +5,14 @@ import 'server-only';
 import { createHmac } from 'node:crypto';
 import { NextResponse, type NextRequest } from 'next/server';
 import type { ZodType } from 'zod';
-import { clientIp } from '@/lib/auth/ip';
+import { onVercel, trustedIp } from '@/lib/auth/ip';
 import { createAdminClient } from '@/lib/supabase/admin';
 
 const NO_STORE = { 'Cache-Control': 'no-store' };
 
 // The shape the website's forms.js reads: any 2xx is "sent"; anything else shows its error box.
 export const sent = () => NextResponse.json({ ok: true }, { headers: NO_STORE });
-export const refuse = (status: 400 | 403 | 405 | 429 | 500, error: string) =>
+export const refuse = (status: 400 | 403 | 405 | 429 | 500 | 503, error: string) =>
   NextResponse.json({ ok: false, error }, { status, headers: NO_STORE });
 
 /** HMAC-SHA256 of the visitor's IP with a "form-rate:" prefix. Raw IPs are never stored. */
@@ -52,7 +52,13 @@ export async function handleForm<T>(
     const parsed = opts.schema.safeParse(raw);
     if (!parsed.success) return refuse(400, 'Please check the form and try again.');
 
-    const hash = ipHash(await clientIp());
+    const ip = await trustedIp();
+    if (ip === null) {
+      // On Vercel without the platform header we cannot tell visitors apart; do not guess.
+      if (onVercel()) console.error('form route: no trusted client IP on Vercel');
+      return refuse(503, 'The form is not available right now. Please write to us by email.');
+    }
+    const hash = ipHash(ip);
     if (!hash) {
       console.error('form route: UNSUBSCRIBE_SECRET is not set');
       return refuse(500, 'Something went wrong. Please try again later.');

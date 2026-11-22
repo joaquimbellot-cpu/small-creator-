@@ -4,6 +4,7 @@ import { Badge, Button, EmptyState, Pagination, Select, Table, tableCell } from 
 import { requireStaff } from '@/lib/auth/staff';
 import { createClient } from '@/lib/supabase/server';
 import { formatWhen } from '@/lib/deals/format';
+import { logAudit } from '@/lib/audit';
 import { filterSchema } from '@/lib/forms/schemas';
 
 export const metadata: Metadata = { title: 'Inbox' };
@@ -32,6 +33,8 @@ export default async function InboxPage({ searchParams }: { searchParams: Promis
     .order('id')
     .range((page - 1) * PAGE_SIZE, page * PAGE_SIZE - 1);
   const rows = (data ?? []) as Row[];
+  // The list shows sender emails: one audit line per page view.
+  if (!error) await logAudit('contact.viewed', 'contact_message', null, { list: true, count: rows.length });
 
   const hrefFor = (p: number) => {
     const u = new URLSearchParams();

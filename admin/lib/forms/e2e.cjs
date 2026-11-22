@@ -62,7 +62,7 @@ async function main() {
   const headers = (ip, origin = BASE) => ({ Origin: origin, 'x-real-ip': ip, Accept: 'application/json' });
   const apply = (ip, fields, origin) => api.post(`${BASE}/api/public/apply`, { headers: headers(ip, origin), multipart: fields });
   const person = (n, extra = {}) => ({
-    name: `Forms Test ${n}`, email: `forms-e2e-${n}@example.test`, phone: '+1 555 0100', channel: '@formstest',
+    name: `Forms Test ${n}`, email: `forms-e2e-${n}@example.test`, phone: '+1 555 0100', channel: 'https://www.youtube.com/@formstest',
     topic: 'Fake videos about fake things.', subscribers: '12,500', _subject: 'New creator application', _gotcha: '', ...extra,
   });
 
@@ -90,6 +90,23 @@ async function main() {
 
   r = await apply(IPS[0], person('bad', { email: 'not-an-email' }));
   check(r.status() === 400 && (await r.json()).ok === false, 'apply: invalid email gets 400');
+  // same limits as the staff form: whatever is saved here can be edited later
+  for (const [what, extra] of [
+    ['a channel link that is not YouTube', { channel: 'https://example.test/@formstest' }],
+    ['a channel word instead of a link', { channel: '@formstest' }],
+    ['a javascript: channel link', { channel: 'javascript:alert(1)' }],
+    ['a phone with letters', { phone: 'call me maybe' }],
+    ['a phone over 30 characters', { phone: '+1 555 0100 0100 0100 0100 0100 0100' }],
+    ['a niche over 120 characters', { topic: 'x'.repeat(121) }],
+    ['a name over 120 characters', { name: 'n'.repeat(121) }],
+    ['subscribers over 100 million', { subscribers: '100000001' }],
+  ]) {
+    r = await apply(IPS[1], person('limits', extra));
+    check(r.status() === 400, `apply: ${what} gets 400 (got ${r.status()})`);
+  }
+  check(psql(`select count(*) from creators where email = 'forms-e2e-limits@example.test'`) === '0', 'apply: refused limits cases saved nothing');
+  r = await apply(IPS[1], person('norm', { channel: 'youtube.com/@formsnorm', subscribers: '12.500', phone: '' }));
+  check(r.status() === 200 && psql(`select channel_url || '|' || subscribers || '|' || coalesce(phone,'none') from creators where email = 'forms-e2e-norm@example.test'`) === 'https://youtube.com/@formsnorm|12500|none', 'apply: channel link is stored normalized (https://), 12.500 reads as 12500');
   r = await api.post(`${BASE}/api/public/apply`, { headers: headers(IPS[0]), data: { name: 'x' } });
   check(r.status() === 400, 'apply: JSON body is refused with 400');
   r = await api.get(`${BASE}/api/public/apply`);

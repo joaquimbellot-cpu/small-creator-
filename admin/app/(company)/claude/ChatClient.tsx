@@ -87,7 +87,7 @@ export function ChatClient({ threadId, connected, initialItems, initialProposals
       <div className={s.log} aria-live="polite">
         {items.length === 0 ? <p className="muted">Try: &ldquo;How is the business doing?&rdquo;, &ldquo;Find creators in cooking&rdquo; or &ldquo;Draft an intro email to &hellip;&rdquo;.</p> : null}
         {items.map((it, i) => <Row key={i} item={it} proposals={proposals} decide={decide} />)}
-        {busy ? <div className={s.step} role="status">Working&hellip;</div> : null}
+        {busy ? <div className={s.step} role="status" data-from="working">Working&hellip;</div> : null}
       </div>
       {error ? <Notice tone="error">{error}</Notice> : null}
       <form onSubmit={send} className={s.form}>
@@ -102,12 +102,12 @@ export function ChatClient({ threadId, connected, initialItems, initialProposals
 
 function Row({ item, proposals, decide }: { item: Item; proposals: Record<string, ProposalView>; decide: (id: string, a: 'approve' | 'reject') => Promise<void> }) {
   switch (item.kind) {
-    case 'user': return <div className={s.you}>{item.text}</div>;
-    case 'assistant': return <div className={s.claude}>{item.text}</div>;
-    case 'step': return <div className={`${s.step} ${item.ok ? '' : s.stepBad}`}>{item.label}{item.ok ? '' : ' (did not work)'}</div>;
-    case 'notice': return <Notice tone="warn">{item.text}</Notice>;
+    case 'user': return <div className={s.you} data-from="you">{item.text}</div>;
+    case 'assistant': return <div className={s.claude} data-from="claude">{item.text}</div>;
+    case 'step': return <div className={`${s.step} ${item.ok ? '' : s.stepBad}`} data-from="step">{item.label}{item.ok ? '' : ' (did not work)'}</div>;
+    case 'notice': return <div data-from="notice"><Notice tone="warn">{item.text}</Notice></div>;
     case 'draft': return (
-      <div className={s.card}>
+      <div className={s.card} data-from="draft">
         <div><strong>Draft saved{item.creator ? ` for ${item.creator}` : ''}.</strong> <span className="muted">Nothing has been sent.</span></div>
         <div className={s.actions}><Link href="/emails/review" className="auth__linkbtn">Open Review to read, approve and send it</Link></div>
       </div>
@@ -121,13 +121,25 @@ function ProposalCard({ p, decide }: { p?: ProposalView; decide: (id: string, a:
   if (!p) return null;
   const run = async (a: 'approve' | 'reject') => { setWorking(true); try { await decide(p.id, a); } finally { setWorking(false); } };
   return (
-    <div className={s.card} role="group" aria-label="Proposed change">
+    <div className={s.card} role="group" aria-label="Proposed change" data-from="proposal" data-status={p.status}>
       <div className={s.actions}>
         <Badge tone={p.status === 'approved' ? 'good' : p.status === 'pending' ? 'warn' : p.status === 'failed' ? 'bad' : 'neutral'}>
           {p.status === 'pending' ? 'Waiting for you' : p.status === 'approved' ? 'Approved' : p.status === 'rejected' ? 'Rejected' : 'Failed'}
         </Badge>
       </div>
-      <div>{p.summary}</div>
+      {p.detail ? (
+        <div data-part="detail">
+          <strong>{p.detail.title}</strong>{p.detail.subject ? <> <span className="muted">&middot;</span> {p.detail.subject}</> : null}
+          <ul className={s.changes}>
+            {p.detail.changes.map((c) => (
+              <li key={c.label}>
+                <span className="muted">{c.label}: </span>
+                {c.from === null ? <span data-part="to">{c.to}</span> : <><span data-part="from">{c.from}</span> <span aria-label="changes to">&rarr;</span> <span data-part="to">{c.to}</span></>}
+              </li>
+            ))}
+          </ul>
+        </div>
+      ) : <div>This proposal cannot be shown. Reject it and ask Claude again.</div>}
       {p.error ? <Notice tone="error">{p.error}</Notice> : null}
       {p.status === 'pending' ? (
         <div className={s.actions}>

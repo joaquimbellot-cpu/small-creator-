@@ -3,11 +3,16 @@ export const PROPOSAL_KINDS = ['creator.create', 'creator.update', 'deal.stage']
 export type ProposalKind = (typeof PROPOSAL_KINDS)[number];
 export type ProposalStatus = 'pending' | 'approved' | 'rejected' | 'failed';
 
-/** What the owner sees on a proposal card. The payload itself never leaves the server. */
+/** One line of a proposal: the old and the new value. from is null for a new creator. */
+export type ProposalChange = { label: string; from: string | null; to: string };
+/** What a proposal does, built on the server from its stored payload (never from Claude's free text). */
+export type ProposalDetail = { title: string; subject: string | null; changes: ProposalChange[] };
+
+/** What the owner sees on a proposal card. The raw payload and Claude's free-text summary never leave the server. */
 export type ProposalView = {
   id: string;
   kind: ProposalKind;
-  summary: string;
+  detail: ProposalDetail | null;
   status: ProposalStatus;
   error: string | null;
 };

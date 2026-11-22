@@ -94,6 +94,20 @@ select tests.check('limit is per visitor', tests.json_as('service_role', $q$sele
 update public.form_rate_limits set created_at = now() - interval '2 hours' where ip_hash = 'testhash2';
 select tests.check('old rate rows stop counting', tests.json_as('service_role', $q$select public.submit_application('testhash2','F','f6@example.test',null,null,null,null)$q$) = '{"ok": true}');
 
+-- global cap: 60 sends per hour per form across all visitors
+delete from public.form_rate_limits;
+insert into public.form_rate_limits (form, ip_hash) select 'apply', 'bulk' || (i % 20) from generate_series(1, 59) i;
+select tests.check('59 sends in the hour: a new visitor still passes', tests.json_as('service_role', $q$select public.submit_application('capfresh1','F','cap1@example.test',null,null,null,null)$q$) = '{"ok": true}');
+select tests.check('60 sends in the hour: any new visitor is limited',
+  tests.json_as('service_role', $q$select public.submit_application('capfresh2','F','cap2@example.test',null,null,null,null)$q$) = '{"ok": false, "reason": "rate_limited"}');
+select tests.check('globally limited send creates nothing', (select count(*) from public.creators where email = 'cap2@example.test') = 0);
+select tests.check('the cap is per form', tests.json_as('service_role', $q$select public.submit_contact('capfresh2','F','cap2@example.test',null,'m')$q$) = '{"ok": true}');
+update public.form_rate_limits set created_at = now() - interval '2 hours' where form = 'apply';
+select tests.check('after the hour the cap frees up', tests.json_as('service_role', $q$select public.submit_application('capfresh2','F','cap3@example.test',null,null,null,null)$q$) = '{"ok": true}');
+update public.form_rate_limits set created_at = now() - interval '3 days' where form = 'apply' and ip_hash like 'bulk%';
+select tests.json_as('service_role', $q$select public.submit_contact('cleanup1','F','cap4@example.test',null,'m')$q$);
+select tests.check('rows older than a day are removed', (select count(*) from public.form_rate_limits where ip_hash like 'bulk%') = 0);
+
 do $$ declare f int; begin select count(*) filter (where not ok) into f from tests.results;
   if f > 0 then raise exception 'forms tests failed: %', (select string_agg(name,'; ') from tests.results where not ok); end if; end $$;
 rollback;

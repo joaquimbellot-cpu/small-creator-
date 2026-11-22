@@ -42,13 +42,13 @@ async function login(browser, who) {
 
 // Sends one message and waits until Claude has finished (the Send button is back and "Working…" is gone).
 async function ask(page, text) {
-  const before = await page.locator('main [class$="__you"]').count();
+  const before = await page.locator('main [data-from="you"]').count();
   await page.locator('#claude-message').fill(text);
   await page.getByRole('button', { name: 'Send' }).click();
-  await page.locator('main [class$="__you"]').nth(before).waitFor({ timeout: 15000 });
+  await page.locator('main [data-from="you"]').nth(before).waitFor({ timeout: 15000 });
   await page.getByRole('button', { name: 'Send' }).waitFor({ timeout: 120000 });
 }
-const lastReply = (page) => page.locator('main [class$="__claude"]').last().innerText();
+const lastReply = (page) => page.locator('main [data-from="claude"]').last().innerText();
 
 async function main() {
   const startedAt = new Date(Date.now() - 2000).toISOString();
@@ -92,6 +92,13 @@ async function main() {
     await page.locator('#claude-message').waitFor({ timeout: 90000 });
     check(await page.locator('#claude-message').isEnabled(), 'owner: Claude page loads and the chat box is enabled (Claude is connected)');
 
+    // other sites cannot write as the logged-in owner
+    const evil = await o.ctx.request.post(`${BASE}/api/assistant/proposals/${fakeId}/reject`, { headers: { Origin: 'https://evil.example.test' } });
+    const cross = await o.ctx.request.post(`${BASE}/api/assistant/proposals/${fakeId}/reject`, { headers: { 'Sec-Fetch-Site': 'cross-site' } });
+    const sameSite = await o.ctx.request.post(`${BASE}/api/assistant/proposals/${fakeId}/reject`, { headers: { Origin: BASE, 'Sec-Fetch-Site': 'same-origin' } });
+    check(evil.status() === 403 && cross.status() === 403, `same-origin: a foreign Origin and a cross-site request are refused (${evil.status()}, ${cross.status()})`);
+    check(sameSite.status() !== 403, `same-origin: the same origin is let through (${sameSite.status()})`);
+
     // 1. stats question: tool_use then an answer built from the tool result
     await ask(page, 'How are the stats looking?');
     const reply1 = await lastReply(page);
@@ -130,8 +137,12 @@ async function main() {
     const target = wren[1] === 'active' ? 'inactive' : 'active';
     created.touchedCreators.push({ id: wren[0], status: wren[1] });
     await ask(page, `Propose changing the status of the creator named Wren to ${target}`);
-    const card1 = page.getByRole('group', { name: 'Proposed change' }).last();
+    const card1 = page.locator('main [data-from="proposal"]').last();
     await card1.getByText('Waiting for you').waitFor({ timeout: 30000 });
+    const cardText = await card1.innerText();
+    const label = (x) => ({ active: 'Active', inactive: 'Inactive' }[x] || x);
+    check(/Change a creator/.test(cardText) && /Status/.test(cardText) && cardText.includes(label(wren[1])) && cardText.includes(label(target)), `status proposal: the card shows the kind and the old and new value ("${cardText.replace(/\s+/g, ' ').slice(0, 120)}")`);
+    check(await card1.locator('[data-part="from"]').innerText() === label(wren[1]) && await card1.locator('[data-part="to"]').innerText() === label(target), 'status proposal: old and new values are in their own places');
     check(psql(`select status from creators where id = ${q(wren[0])}`) === wren[1], 'status proposal: nothing changed before approval');
     check(psql(`select count(*) from assistant_proposals where status = 'pending' and kind = 'creator.update' and thread_id = ${q(threadId)}`) === '1', 'status proposal: stored as pending');
     await card1.getByRole('button', { name: 'Approve' }).click();
@@ -142,8 +153,10 @@ async function main() {
 
     // 5. propose a deal stage, reject it
     await ask(page, 'Propose moving a deal to signed');
-    const card2 = page.getByRole('group', { name: 'Proposed change' }).last();
+    const card2 = page.locator('main [data-from="proposal"]').last();
     await card2.getByText('Waiting for you').waitFor({ timeout: 30000 });
+    const card2Text = await card2.innerText();
+    check(/Move a deal/.test(card2Text) && /Stage/.test(card2Text) && /Signed/.test(card2Text), `deal proposal: the card shows from stage and to stage ("${card2Text.replace(/\s+/g, ' ').slice(0, 120)}")`);
     await card2.getByRole('button', { name: 'Reject' }).click();
     await card2.getByText('Rejected').waitFor({ timeout: 30000 });
     check(psql("select string_agg(id || ':' || stage, ',' order by id) from deals") === base.stages, 'deal proposal: rejecting changed no deal');
@@ -156,7 +169,7 @@ async function main() {
 
     // 6. propose a deal stage, approve it (state is re-checked), then restore by hand at the end
     await ask(page, 'Propose moving a deal to paid');
-    const card3 = page.getByRole('group', { name: 'Proposed change' }).last();
+    const card3 = page.locator('main [data-from="proposal"]').last();
     await card3.getByText('Waiting for you').waitFor({ timeout: 30000 });
     // The deal changes behind Claude's back: approval must notice and refuse.
     const dealId = psql(`select payload->>'deal_id' from assistant_proposals where status = 'pending' and thread_id = ${q(threadId)}`);
@@ -169,7 +182,7 @@ async function main() {
 
     // 7. add a creator, approve
     await ask(page, `Add creator Zed Testperson ${NEW_EMAIL}`);
-    const card4 = page.getByRole('group', { name: 'Proposed change' }).last();
+    const card4 = page.locator('main [data-from="proposal"]').last();
     await card4.getByText('Waiting for you').waitFor({ timeout: 30000 });
     check(psql(`select count(*) from creators where email = ${q(NEW_EMAIL)}`) === '0', 'add creator: nothing added before approval');
     await card4.getByRole('button', { name: 'Approve' }).click();
@@ -196,6 +209,8 @@ async function main() {
     // ------------------------------------------------------------ database facts
     const tools = psql(`select string_agg(details->>'thread' || ' ' || (details->'tools')::text, ';') from audit_log where id > ${auditStart} and action = 'assistant.message'`);
     check(psql(`select count(*) from audit_log where id > ${auditStart} and action = 'assistant.message'`) === '9', "audit: one 'assistant.message' per owner message (9)");
+    const seenAudit = psql(`select count(*) from audit_log where id > ${auditStart} and action = 'assistant.message' and jsonb_array_length(details->'creator_ids') >= 3`);
+    check(Number(seenAudit) >= 1, "audit: assistant.message lists the creator ids the tools returned");
     check(tools.includes('get_overview_stats') && tools.includes('create_email_draft') && tools.includes('propose_deal_stage'), 'audit: assistant.message lists the tool names used');
     const stored = psql(`select count(*) from assistant_messages where thread_id = ${q(threadId)} and role = 'assistant' and content->0->>'type' = 'thinking'`);
     check(Number(stored) >= 10, `messages: assistant content is stored with its thinking block (${stored} turns)`);

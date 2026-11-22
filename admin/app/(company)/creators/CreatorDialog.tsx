@@ -91,7 +91,11 @@ function View({ creatorId, editHref, isOwner, youtubeEnabled, onDeleted }: Props
       <dl className={s.dl}>
         <dt>Name</dt><dd><strong>{c.full_name}</strong></dd>
         <dt>YouTube</dt>
-        <dd>{c.channel_url ? <a href={c.channel_url} target="_blank" rel="noopener noreferrer">{c.channel_name || c.channel_url}</a> : '—'}</dd>
+        <dd>{c.channel_url
+          ? c.channel_url.startsWith('https://')
+            ? <a href={c.channel_url} target="_blank" rel="noopener noreferrer">{c.channel_name || c.channel_url}</a>
+            : (c.channel_name || c.channel_url)
+          : '—'}</dd>
         <dt>Email</dt><dd>{c.email}</dd>
         <dt>Phone</dt><dd>{c.phone || '—'}</dd>
         <dt>Subscribers</dt>

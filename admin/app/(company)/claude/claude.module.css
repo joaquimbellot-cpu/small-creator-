@@ -18,3 +18,4 @@
 .actions { display: flex; gap: var(--s-2); flex-wrap: wrap; align-items: center; }
 .form { display: flex; flex-direction: column; gap: var(--s-2); }
 .form textarea { width: 100%; min-height: 84px; padding: var(--s-3); border: var(--hairline) solid var(--rule); border-radius: var(--r); background: var(--bg); color: var(--fg); resize: vertical; }
+.changes { margin: var(--s-2) 0 0; padding-left: var(--s-5); display: flex; flex-direction: column; gap: var(--s-1); overflow-wrap: anywhere; }

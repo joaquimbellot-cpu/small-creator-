@@ -26,10 +26,19 @@ export type ToolContext = {
   threadId: string;
   emit: (e: AssistantEvent) => void;
   draftsMade: number;
+  /** Ids of creators and Inbox messages the tools returned during this owner message (for the audit log). */
+  seen: { creators: Set<string>; inbox: Set<string> };
 };
 export type ToolResult = { text: string; isError?: boolean };
 
 export const MAX_DRAFTS_PER_MESSAGE = 10;
+export const MAX_SEEN_IDS = 50;
+
+/** The ids to put in the audit line, capped. */
+export const seenIds = (ctx: ToolContext) => ({
+  creators: [...ctx.seen.creators].slice(0, MAX_SEEN_IDS),
+  inbox: [...ctx.seen.inbox].slice(0, MAX_SEEN_IDS),
+});
 const MAX_RESULT_CHARS = 30_000;
 
 const CREATOR_COLUMNS = 'id, full_name, channel_name, channel_url, niche, subscribers, subscribers_hidden, status, deal_count, total_earned_cents, last_contacted_at';
@@ -132,7 +141,7 @@ const stats: Handler = async (_i, { supabase }) => {
   return error || !data ? fail('The Overview numbers could not be loaded.') : ok(data);
 };
 
-const searchCreators: Handler = async (input, { supabase }) => {
+const searchCreators: Handler = async (input, { supabase, seen }) => {
   const p = z.object({ query: z.string().optional(), status: z.enum(STATUSES).optional(), limit: z.number().optional() }).safeParse(input);
   if (!p.success) return fail('Invalid input.');
   let q = supabase.from('creator_summaries').select(CREATOR_COLUMNS).order('created_at', { ascending: false }).limit(limitOf(p.data.limit, 10, 25));
@@ -141,18 +150,20 @@ const searchCreators: Handler = async (input, { supabase }) => {
   if (p.data.status) q = q.eq('status', p.data.status);
   const { data, error } = await q;
   if (error) return fail('The search failed.');
+  for (const c of data as CreatorRow[]) seen.creators.add(c.id);
   return ok({ count: data.length, creators: (data as CreatorRow[]).map(creatorForClaude) });
 };
 
-const getCreator: Handler = async (input, { supabase }) => {
+const getCreator: Handler = async (input, { supabase, seen }) => {
   const p = z.object({ creator_id: id }).safeParse(input);
   if (!p.success) return fail('creator_id must be a creator id from search_creators.');
   const { data } = await supabase.from('creator_summaries').select(CREATOR_COLUMNS).eq('id', p.data.creator_id).maybeSingle();
+  if (data) seen.creators.add((data as CreatorRow).id);
   return data ? ok(creatorForClaude(data as CreatorRow)) : fail('No creator with that id.');
 };
 
 type DealRow = { id: string; stage: string; amount_cents: number; created_at: string; stage_changed_at: string; creators: { id: string; full_name: string } | null; brands: { name: string } | null };
-const listDeals: Handler = async (input, { supabase }) => {
+const listDeals: Handler = async (input, { supabase, seen }) => {
   const p = z.object({ creator_id: id.optional(), stage: z.enum(STAGES).optional(), limit: z.number().optional() }).safeParse(input);
   if (!p.success) return fail('Invalid input.');
   let q = supabase.from('deals').select('id, stage, amount_cents, created_at, stage_changed_at, creators(id, full_name), brands(name)')
@@ -161,6 +172,7 @@ const listDeals: Handler = async (input, { supabase }) => {
   if (p.data.stage) q = q.eq('stage', p.data.stage);
   const { data, error } = await q;
   if (error) return fail('Could not load deals.');
+  for (const d of data as unknown as DealRow[]) if (d.creators?.id) seen.creators.add(d.creators.id);
   return ok({
     count: data.length,
     deals: (data as unknown as DealRow[]).map((d) => ({
@@ -195,7 +207,7 @@ const listTemplates: Handler = async (_i, { supabase }) => {
   return ok({ templates: data.map((t) => ({ id: t.id, name: untrusted(t.name, 200), goal: untrusted(t.goal, 500), subject: untrusted(t.subject, 200), body: untrusted(t.body, 1500) })) });
 };
 
-const listInbox: Handler = async (input, { supabase }) => {
+const listInbox: Handler = async (input, { supabase, seen }) => {
   const p = z.object({ unhandled_only: z.boolean().optional(), limit: z.number().optional() }).safeParse(input);
   if (!p.success) return fail('Invalid input.');
   // The columns are named: the sender's email and phone are never selected (the message is a summary of company, product and budget).
@@ -206,6 +218,7 @@ const listInbox: Handler = async (input, { supabase }) => {
     const missing = error.code === 'PGRST205' || error.code === '42P01';
     return missing ? ok({ available: false, note: 'The Inbox is not available.' }) : fail('Could not load the Inbox.');
   }
+  for (const m of data) seen.inbox.add(m.id);
   return ok({
     count: data.length,
     messages: data.map((m) => ({ id: m.id, name: untrusted(m.name, 200), topic: untrusted(m.topic, 200), message: untrusted(m.message, 1000), created_at: m.created_at, handled_at: m.handled_at })),

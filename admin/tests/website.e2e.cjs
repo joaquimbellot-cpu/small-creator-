@@ -92,7 +92,7 @@ async function main() {
       await page.goto(`${BASE}/apply.html`);
       await page.fill('#apply-name', 'QA Website Test');
       await page.fill('#apply-email', APPLY_EMAIL);
-      await page.fill('#apply-channel', '@qawebsitetest');
+      await page.fill('#apply-channel', 'https://www.youtube.com/@qawebsitetest');
       await page.fill('#apply-topic', 'Fake videos for a QA check.');
       await page.fill('#apply-subscribers', '12,500');
       await page.click('form[data-form] button[type=submit]');

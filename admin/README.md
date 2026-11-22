@@ -323,12 +323,13 @@ an error if any suite fails:
    creator pop-up; Overview numbers equal to the fake data; test-mode sending; opted-out and
    "do not contact" creators blocked; the public key reads nothing.
 4. **Browser tests** for creators, deals and emails.
-5. **Browser test for login.** It runs last, because it trips the login limit.
+5. **Browser tests** for the website, the website forms and the Claude page. The Claude test adds one
+   test creator and one draft, and removes them again.
+6. **Browser test for login.** It runs last, because it trips the login limit.
 
-The Claude page has its own browser check, `admin/lib/assistant/e2e.cjs`. `run-all.sh` does not
-run it yet. To run it, keep the app running and start it from inside `admin/` with `node lib/assistant/e2e.cjs`,
-with `BASE_URL` set to your app's address (for example `http://localhost:3000`). It adds one test creator.
-Run `bash admin/dev/reset.sh` afterwards to remove the test data.
+Each browser test can also be run alone from inside `admin/`, for example `node lib/assistant/e2e.cjs`,
+with `BASE_URL` set to your app's address. The Claude test needs the fake Claude from `dev/start.sh`.
+Run `bash admin/dev/reset.sh` afterwards to remove any leftover test data.
 
 The script starts and resets nothing. If the test data looks wrong, run `bash admin/dev/reset.sh` first.
 

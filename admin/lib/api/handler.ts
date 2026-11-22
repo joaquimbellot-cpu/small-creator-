@@ -8,7 +8,7 @@
 //          query: zod schema for the search params (values are strings).
 // Context: { req, staff, supabase (as the user, RLS applies), body, query, params }
 // Errors, always JSON { error: string }: 401 not logged in, 403 wrong role, 400 invalid input,
-// 429 too many requests, 500 anything else (details only go to the server log).
+// 403 also for a write from another site (Origin / Sec-Fetch-Site check), 429 too many requests, 500 anything else (details only go to the server log).
 // Throw `new ApiError(status, 'message')` for your own controlled errors.
 import 'server-only';
 import { NextResponse, type NextRequest } from 'next/server';
@@ -37,12 +37,24 @@ function fail(status: number, message: string) {
   return NextResponse.json({ error: message }, { status, headers: { 'Cache-Control': 'no-store' } });
 }
 
+// Logged-in writes must come from our own pages. Browsers always send Origin and/or Sec-Fetch-Site on cross-site
+// requests; scripts and tests that send neither stay allowed.
+function sameOrigin(req: NextRequest): boolean {
+  if (req.method === 'GET' || req.method === 'HEAD') return true;
+  const origin = req.headers.get('origin');
+  if (origin !== null && origin !== req.nextUrl.origin) return false;
+  const site = req.headers.get('sec-fetch-site');
+  if (site !== null && site !== 'same-origin' && site !== 'none') return false;
+  return true;
+}
+
 export function apiHandler<B = undefined, Q = undefined>(
   opts: Opts<B, Q>,
   fn: (ctx: Ctx<B, Q>) => Promise<unknown> | unknown,
 ) {
   return async (req: NextRequest, routeCtx?: { params?: Promise<Record<string, string | string[]>> }) => {
     try {
+      if (!sameOrigin(req)) return fail(403, 'Not allowed.');
       const staff = await getCurrentStaff();
       if (!staff) return fail(401, 'Not logged in.');
       if ((opts.role ?? 'staff') === 'owner' && staff.role !== 'owner') return fail(403, 'Not allowed.');
