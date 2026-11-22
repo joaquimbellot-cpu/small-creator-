@@ -40,8 +40,9 @@ export const applicationSchema = applicationRaw.transform((v, ctx) => {
   const niche = shortNiche(v.topic);
   const base = { name: v.name.slice(0, 120), email: v.email, niche, subscribers };
 
+  // Short notes first, the long answer last, so the 2000-character cap can only shorten the answer.
   const notes: string[] = [];
-  if (niche !== v.topic.replace(/\s+/g, ' ')) notes.push(`About the channel (from the website): ${v.topic}`);
+  if (v.name.length > 120) notes.push(`Full name given on the website: ${v.name}`);
 
   // Each optional part is kept only if it passes on its own; otherwise it goes into the notes.
   const fits = (extra: Record<string, string>) => validateCreator({ ...base, ...extra }).ok;
@@ -49,6 +50,8 @@ export const applicationSchema = applicationRaw.transform((v, ctx) => {
   if (!channelOk) notes.push(`Channel link given on the website (not a channel link): ${v.channel}`);
   const phoneOk = phone !== '' && fits({ phone });
   if (phone !== '' && !phoneOk) notes.push(`Phone given on the website: ${v.phone}`);
+
+  if (niche !== v.topic.replace(/\s+/g, ' ')) notes.push(`About the channel (from the website): ${v.topic}`);
 
   const r = validateCreator({ ...base, channel_url: channelOk ? channel : '', phone: phoneOk ? phone : '' });
   if (!r.ok || r.data.subscribers === null) {

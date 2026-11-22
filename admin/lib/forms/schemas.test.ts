@@ -43,3 +43,22 @@ describe('applicationSchema', () => {
     expect(applicationSchema.safeParse({ ...base, email: 'nope' }).success).toBe(false);
   });
 });
+
+describe('applicationSchema notes', () => {
+  it('keeps the channel and phone notes even when the answer is very long', () => {
+    const topic = 'word '.repeat(398).trim(); // about 1990 characters
+    const r = applicationSchema.safeParse({ ...base, topic, channel: 'my channel', phone: 'call me maybe' });
+    expect(r.success).toBe(true);
+    if (r.success) {
+      expect(r.data.notes!.length).toBeLessThanOrEqual(2000);
+      expect(r.data.notes).toContain('my channel');
+      expect(r.data.notes).toContain('call me maybe');
+    }
+  });
+  it('keeps a long name in the notes', () => {
+    const name = 'N'.repeat(150);
+    const r = applicationSchema.safeParse({ ...base, name });
+    expect(r.success && r.data.name.length).toBe(120);
+    expect(r.success && r.data.notes).toContain(name);
+  });
+});
