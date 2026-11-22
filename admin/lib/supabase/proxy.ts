@@ -15,6 +15,9 @@ export async function refreshSession(request: NextRequest, requestHeaders: Heade
       },
     },
   });
-  const { data } = await supabase.auth.getUser();
-  return { user: data.user, getResponse: () => response };
+  // getClaims() checks the login token's signature on this server (no trip to the database in Tokyo) and
+  // refreshes an expired one. If the project signs with a shared secret, it falls back to asking Supabase.
+  const { data } = await supabase.auth.getClaims();
+  const user = data?.claims?.sub ? { id: data.claims.sub } : null;
+  return { user, getResponse: () => response };
 }

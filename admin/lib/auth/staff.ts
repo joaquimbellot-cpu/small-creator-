@@ -16,25 +16,34 @@ type Result = { staff: Staff | null; reason: 'anonymous' | 'no_access' | 'mfa' |
 
 const load = cache(async (): Promise<Result> => {
   const supabase = await createClient();
-  const { data, error } = await supabase.auth.getUser();
-  if (error || !data.user) return { staff: null, reason: 'anonymous' };
-  // With a verified 2FA factor, the database treats an aal1 session as "not staff" (RLS), so the
-  // profile cannot even be read yet. Check the assurance level first and send the user to the 2FA step.
-  const { data: aal } = await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
-  if (aal && aal.currentLevel === 'aal1' && aal.nextLevel === 'aal2') return { staff: null, reason: 'mfa' };
+  // getClaims() verifies the token's signature on this server, so it costs no trip to the database. The profile
+  // lookup below still asks the database on every request: a removed or deactivated person has no access at once.
+  const { data: claimsData, error } = await supabase.auth.getClaims();
+  const claims = claimsData?.claims;
+  if (error || !claims?.sub) return { staff: null, reason: 'anonymous' };
+  const user = { id: claims.sub, email: typeof claims.email === 'string' ? claims.email : '' };
   const { data: profile } = await supabase
     .from('profiles')
     .select('id, full_name, email, role, is_active')
-    .eq('id', data.user.id)
+    .eq('id', user.id)
     .maybeSingle();
-  if (!profile || !profile.is_active || (profile.role !== 'owner' && profile.role !== 'worker')) {
+  if (!profile) {
+    // With a verified 2FA factor, the database treats an aal1 session as "not staff" (RLS), so the profile cannot
+    // even be read yet. Only then is it worth asking whether the person still has to do the 2FA step.
+    if (claims.aal === 'aal1') {
+      const { data: aal } = await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
+      if (aal && aal.currentLevel === 'aal1' && aal.nextLevel === 'aal2') return { staff: null, reason: 'mfa' };
+    }
+    return { staff: null, reason: 'no_access' };
+  }
+  if (!profile.is_active || (profile.role !== 'owner' && profile.role !== 'worker')) {
     return { staff: null, reason: 'no_access' };
   }
   return {
     reason: 'ok',
     staff: {
       id: profile.id,
-      email: String(profile.email || data.user.email || ''),
+      email: String(profile.email || user.email || ''),
       fullName: profile.full_name || String(profile.email).split('@')[0],
       role: profile.role,
       mfaRequired: false,

@@ -12,3 +12,13 @@
 # Named here because a project created through the API may not add it on its own. No version pin.
 [[plugins]]
   package = "@netlify/plugin-nextjs"
+
+# The website's images, stylesheet and script (admin/public/assets). They skip the app's proxy (see admin/proxy.ts),
+# so their headers are set here. A browser keeps them for an hour and may show an older copy for a day while it
+# fetches the new one, so a repeat visit does not wait for the server.
+[[headers]]
+  for = "/assets/*"
+  [headers.values]
+    Cache-Control = "public, max-age=3600, stale-while-revalidate=86400"
+    X-Content-Type-Options = "nosniff"
+    Strict-Transport-Security = "max-age=63072000; includeSubDomains"

@@ -72,6 +72,15 @@ Read this first in a new chat. It replaces the history of the previous one.
    - connect the GitHub repository in Netlify, for automatic deploys;
    - a custom domain. If added, update `NEXT_PUBLIC_SITE_URL` and Supabase's site URL and redirect list.
 
+## Speed (22 November)
+
+- **Why it was slow:** Supabase is in Tokyo, and Netlify's free plan runs the app's server steps in the US. Each trip between them costs a fraction of a second, and a back-office page made about four of them one after another.
+- **Done:** the login check (`getClaims()` in `admin/proxy.ts` path and `admin/lib/auth/staff.ts`) now verifies the token on the server instead of asking Supabase. The 2FA level is checked only when the profile is hidden. A page now needs one or two database trips. The profile is still read from the database on every request, so a deactivated person is blocked at once. If the project ever signs with a shared secret, `getClaims()` falls back to the old slower check by itself.
+- **Done:** `/assets/*` and `robots.txt` skip the app's proxy (matcher in `admin/proxy.ts`). Their headers and a one-hour browser cache are in `netlify.toml`.
+- **Not possible on the free plan:** moving the server steps to Tokyo. Netlify's function region is a Pro-plan setting. With Pro, set it to the region nearest Tokyo and redeploy.
+- **Not done:** the fonts still load from Google Fonts. Self-hosting them would save two connections on every first visit.
+- Can't measure the live site from the sandbox, so the owner has to say whether it feels faster.
+
 ## The owner's standing rules
 
 - Do what the owner asks unless told otherwise. All sub-agents run on Opus (model `opus`).
@@ -93,6 +102,7 @@ Read this first in a new chat. It replaces the history of the previous one.
 
 - Local test stack: `admin/dev/start.sh` starts Docker (Postgres on :54322, gateway on :54321, mail catcher on :8025, fake Claude on :4010). If the Docker daemon is down, start `dockerd` first.
 - Run the app with `env -u ANTHROPIC_BASE_URL npm run build` / `npm run start` in `admin/`, because the shell exports an `ANTHROPIC_BASE_URL`.
+- To run the email suite, start the app with `EMAIL_FROM=smallfold-test@example.test` in its environment (`dev/start.sh` does not set it). Without it, every send fails with "EMAIL_FROM is not set". After `dev/reset.sh` the keys change, so run `npm run build` again before testing.
 - Tests:
   - all suites: `admin/tests/run-all.sh` (run `reset.sh` before a full run);
   - one website check: `BASE_URL=http://localhost:3000 NODE_PATH=/opt/node-tools/node_modules node tests/website.e2e.cjs`.

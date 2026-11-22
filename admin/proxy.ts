@@ -116,5 +116,7 @@ export async function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/((?!_next/static|_next/image|favicon.ico).*)'],
+  // /assets and robots.txt are plain files: they skip this proxy, so Netlify does not run a server step for every
+  // image and stylesheet. Their safety and cache headers are set in ../netlify.toml.
+  matcher: ['/((?!_next/static|_next/image|favicon.ico|assets/|robots.txt).*)'],
 };
