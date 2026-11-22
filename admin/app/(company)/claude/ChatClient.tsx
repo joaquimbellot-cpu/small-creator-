@@ -1,7 +1,8 @@
 'use client';
 // The chat. Sends the message, reads the streamed events and shows live step lines, drafts and proposal cards.
 import Link from 'next/link';
-import { useRef, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { useEffect, useRef, useState } from 'react';
 import { Badge, Button, Notice } from '@/components/ui';
 import type { ChatItem } from '@/lib/assistant/display';
 import type { AssistantEvent, ProposalView } from '@/lib/assistant/types';
@@ -12,12 +13,23 @@ type Item = ChatItem | { kind: 'notice'; text: string };
 export function ChatClient({ threadId, connected, initialItems, initialProposals }: {
   threadId: string | null; connected: boolean; initialItems: ChatItem[]; initialProposals: ProposalView[];
 }) {
+  const router = useRouter();
   const [items, setItems] = useState<Item[]>(initialItems);
   const [proposals, setProposals] = useState<Record<string, ProposalView>>(() => Object.fromEntries(initialProposals.map((p) => [p.id, p])));
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
   const thread = useRef<string | null>(threadId);
   const box = useRef<HTMLTextAreaElement>(null);
+
+  // Another conversation was opened (or "New conversation"): show what the server sent for it.
+  // The refresh after a new conversation starts gives the same id as thread.current, so nothing on screen is lost.
+  useEffect(() => {
+    if (threadId === thread.current) return;
+    thread.current = threadId;
+    setItems(initialItems);
+    setProposals(Object.fromEntries(initialProposals.map((p) => [p.id, p])));
+    setError('');
+  }, [threadId, initialItems, initialProposals]);
 
   const add = (i: Item) => setItems((x) => [...x, i]);
 
@@ -57,6 +69,8 @@ export function ChatClient({ threadId, connected, initialItems, initialProposals
       setError('The connection was lost. Reload the page to see what happened.');
     } finally {
       setBusy(false);
+      // A new conversation: refresh the list on the left so it shows up there.
+      if (!threadId && thread.current) router.refresh();
     }
   }
 

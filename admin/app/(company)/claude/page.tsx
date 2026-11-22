@@ -50,7 +50,7 @@ export default async function ClaudePage({ searchParams }: { searchParams: Promi
         </nav>
         <section className={s.chat} aria-label="Chat">
           {wanted.success && !current ? <EmptyState title="Conversation not found">Pick one from the list or start a new one.</EmptyState> : (
-            <ChatClient key={current?.id ?? 'new'} threadId={current?.id ?? null} connected={isConnected()} initialItems={buildItems(messages)} initialProposals={proposals} />
+            <ChatClient threadId={current?.id ?? null} connected={isConnected()} initialItems={buildItems(messages)} initialProposals={proposals} />
           )}
         </section>
       </div>
