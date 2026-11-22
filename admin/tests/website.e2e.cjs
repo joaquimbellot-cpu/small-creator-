@@ -41,6 +41,14 @@ async function main() {
       check(!home.headers()['x-robots-tag'], 'GET / has no X-Robots-Tag header', home.headers()['x-robots-tag'] || '');
       const how = await api.get('/how-it-works.html');
       check(how.status() === 200, `GET /how-it-works.html returns 200 (got ${how.status()})`);
+      // Netlify drops ".html" from addresses, so every page must also work without it, as a website page.
+      for (const p of ['how-it-works', 'brands', 'about', 'questions', 'contact', 'apply', 'privacy', 'terms']) {
+        const r = await api.get(`/${p}`);
+        const body = await r.text();
+        const csp = r.headers()['content-security-policy'] || '';
+        check(r.status() === 200 && body.includes('site-menu') && !r.headers()['x-robots-tag'] && csp.includes('sha256-'),
+          `GET /${p} (no .html) shows the website page (got ${r.status()}, ${r.headers()['location'] || 'no redirect'})`);
+      }
       const css = await api.get('/assets/site.css');
       check(css.status() === 200, `GET /assets/site.css returns 200 (got ${css.status()})`);
     });

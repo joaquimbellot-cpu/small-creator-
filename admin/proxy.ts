@@ -2,12 +2,15 @@
 // every route except the public ones, and sets security headers (CSP with a per-request nonce).
 import { NextResponse, type NextRequest } from 'next/server';
 import { refreshSession } from '@/lib/supabase/proxy';
+import { SITE_PAGES } from '@/lib/site-pages';
 
 const PUBLIC = [/^\/login(\/|$)/, /^\/forgot-password$/, /^\/reset-password$/, /^\/auth(\/|$)/, /^\/unsubscribe(\/|$)/, /^\/api\/unsubscribe(\/|$)/, /^\/api\/public\//];
 
-// The public website (built from ../src into public/): the home page, its .html pages, /assets and robots.txt.
-// None of the back-office routes ends in .html or starts with /assets.
-const WEBSITE = [/^\/$/, /^\/[a-z0-9-]+\.html$/, /^\/assets\//, /^\/robots\.txt$/];
+// The public website (built from ../src into public/): the home page, its .html pages, the same pages without
+// ".html" (Netlify drops it from addresses), /assets and robots.txt.
+// None of the back-office routes ends in .html or starts with /assets, and lib/site-pages.test.ts checks that no
+// back-office route has a website page's name.
+const WEBSITE = [/^\/$/, /^\/[a-z0-9-]+\.html$/, new RegExp(`^/(${SITE_PAGES.join('|')})$`), /^\/assets\//, /^\/robots\.txt$/];
 
 // sha256 of the one inline script every website page has (src/partials/head.html):
 //   document.documentElement.classList.add('js');
