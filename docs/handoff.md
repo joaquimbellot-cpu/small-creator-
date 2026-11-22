@@ -1,0 +1,103 @@
+# Handoff: where Smallfold stands (22 November 2026)
+
+Read this first in a new chat. It replaces the history of the previous one.
+
+## What this is
+
+- **Smallfold**: a public website plus a private back office for the owner. Both are one Next.js 16 app in `admin/`.
+- The website pages are built from `src/` by `build.js` into `admin/public/`. A copy is also built into `site/`.
+- Working branch: `claude/wonderful-meitner-sjwb8y`. Commit and push all work there.
+- Setup guide: `admin/README.md`. Design decisions: `docs/launch-plan.md`.
+
+## Live now
+
+- **Website and back office:** https://smallfold.netlify.app
+  - Netlify project `smallfold`, site id `13382a5d-efd4-4324-9a26-37187b574c55`.
+- **Visitor access:** Netlify team login is still required, so the site is **not public yet**. Turn it off only when the owner asks, with the Netlify MCP `update-visitor-access-controls`.
+- **Log in:** at `/login`. The link is at the bottom of the drop-down menu on phones, and on the right of the footer's copyright line on every page.
+- Website pages answer with or without `.html`, because Netlify drops it. See `admin/lib/site-pages.ts`.
+- **Deploys are manual uploads.** GitHub is not connected to Netlify. To deploy:
+  1. Export the latest commit to a clean folder: `git archive HEAD | tar -x -C <empty scratch dir>`.
+  2. Call the Netlify MCP `deploy-site`.
+  3. In that folder, run `NODE_USE_ENV_PROXY=1 npx -y @netlify/mcp@latest --site-id <id> --proxy-path "<path it returns>"`. Without `NODE_USE_ENV_PROXY=1`, fetch fails in the sandbox.
+- **Can't test live from the sandbox:** it can't reach `*.netlify.app`, so the owner has to check the live site.
+
+## Supabase (database and login)
+
+- Project ref: `lmmuymyghsohxrxdhucv`. Region Tokyo, free plan.
+- **Database:**
+  - All 11 migrations in `admin/supabase/migrations/` were applied.
+  - Checked: all 15 public tables have RLS on, and the `anon` role can't select any table or execute any function.
+- **Auth settings:**
+  - sign-up off;
+  - minimum password length 12;
+  - secure password change on;
+  - `site_url` = https://smallfold.netlify.app;
+  - redirect list = `https://smallfold.netlify.app/**`.
+- **Free plan email limits:** email templates can't be edited, so the default templates are used. That works: the app passes `redirectTo: <site>/auth/confirm`, and `/auth/hash` reads the tokens. The default sender only reaches the Supabase account's own team addresses, at most 2 per hour. Custom SMTP (Gmail) lifts both limits.
+- **Owner:** the owner created their own login in the Supabase dashboard, and `bootstrap_owner` made it the owner. It's the only account. Never put the owner's email in a request or a file.
+- **Management API access:** possible through a personal access token saved as a network secret for `api.supabase.com`. The owner was told to delete it after the first successful login, so it may be gone.
+
+## Netlify environment variables (set)
+
+| Name | Notes |
+|---|---|
+| `NEXT_PUBLIC_SUPABASE_URL` | |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | |
+| `NEXT_PUBLIC_SITE_URL` | |
+| `ASSISTANT_DEADLINE_MS` | `50000`, because Netlify functions stop at 60 s |
+| `SUPABASE_SERVICE_ROLE_KEY` | secret, Production only |
+| `UNSUBSCRIBE_SECRET` | secret, Production only |
+
+- `NEXT_PUBLIC_*` values are built in, so changing one needs a redeploy.
+- **Not set yet:**
+  - `SMTP_HOST`, `SMTP_PORT`, `SMTP_SECURE`, `SMTP_USER`, `SMTP_PASS`, `EMAIL_FROM` (Gmail, guide Step 2);
+  - `ANTHROPIC_API_KEY` (Claude page and email drafts);
+  - `YOUTUBE_API_KEY` (optional).
+- **Secret keys:** the sandbox's safety rules stop Claude from reading secret keys. The owner copies them in, by hand or with Claude in Chrome. Never ask for keys in the chat.
+
+## Still to do, in order
+
+1. **First live login.** The owner should confirm that login on smallfold.netlify.app works. It has not been seen working yet.
+2. **Owner's security steps:**
+   - turn on two-step login (Settings, then Security);
+   - delete the Supabase token named `smallfold`.
+3. **Rewrite `admin/README.md` for Netlify.** It still describes Vercel in Step 5.
+   - Its migration list shows 10 files; there are 11, and the last one is `20261122001100_forms_hardening.sql`.
+   - Add the free-plan email limit and how the owner was created.
+4. **Gmail.** Set the SMTP variables in Netlify, then turn on Supabase custom SMTP with the same details.
+5. **Anthropic API key for the Claude page.**
+   - It is billed per use, separately from a Claude.ai plan.
+   - Daily cap: `ASSISTANT_DAILY_LIMIT`, default 100.
+   - A cheaper model can be chosen with `ANTHROPIC_ASSISTANT_MODEL`.
+6. **Make the site public** (Netlify visitor access), when the owner says so.
+7. **Optional:**
+   - connect the GitHub repository in Netlify, for automatic deploys;
+   - a custom domain. If added, update `NEXT_PUBLIC_SITE_URL` and Supabase's site URL and redirect list.
+
+## The owner's standing rules
+
+- Do what the owner asks unless told otherwise. All sub-agents run on Opus (model `opus`).
+- Personal data (emails, phone numbers) must never be readable from the public website. Use row-level security.
+- Every API route checks the session and the role and validates its input. Login attempts are rate-limited.
+- The audit log records who viewed, edited, exported or sent what, and when.
+- Secrets:
+  - none in code or git;
+  - `.env.example` lists every variable;
+  - keys never go into the chat;
+  - the owner's email is private.
+- No home-made password system. Supabase Auth handles login.
+- Claude never invents facts about a creator, and never receives a creator's email, phone or notes.
+- Nothing is sent without the owner's click on "Send". Sending happens on the server only.
+- Every email carries the sender's identity and an opt-out line. Opt-outs and "do not contact" block all sends.
+- Only fake data during development. Never send a real email while building.
+
+## Working in the sandbox
+
+- Local test stack: `admin/dev/start.sh` starts Docker (Postgres on :54322, gateway on :54321, mail catcher on :8025, fake Claude on :4010). If the Docker daemon is down, start `dockerd` first.
+- Run the app with `env -u ANTHROPIC_BASE_URL npm run build` / `npm run start` in `admin/`, because the shell exports an `ANTHROPIC_BASE_URL`.
+- Tests:
+  - all suites: `admin/tests/run-all.sh` (run `reset.sh` before a full run);
+  - one website check: `BASE_URL=http://localhost:3000 NODE_PATH=/opt/node-tools/node_modules node tests/website.e2e.cjs`.
+- A dev server with `NEXT_DIST_DIR` rewrites `admin/tsconfig.json`. Restore it with `git checkout -- admin/tsconfig.json`.
+- After any change to `src/`, rebuild both copies: `node build.js` (into `site/`) and `npm run build` in `admin/`.
