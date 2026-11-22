@@ -6,13 +6,12 @@ import Anthropic from '@anthropic-ai/sdk';
 import type { BetaMessage, BetaMessageParam } from '@anthropic-ai/sdk/resources/beta/messages/messages';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Staff } from '@/lib/auth/staff';
-import { assistantModel, createAnthropic, MAX_STEPS, MAX_TOKENS } from './client';
+import { assistantModel, createAnthropic, deadlineMs, MAX_STEPS, MAX_TOKENS } from './client';
 import { appendMessage, loadMessages, MAX_STORED_MESSAGES, repairDanglingToolUse, type Block } from './history';
 import { SYSTEM_PROMPT } from './prompt';
 import { runTool, seenIds, TOOLS, type ToolContext } from './tools';
 import { toolLabel, type AssistantEvent } from './types';
 
-const DEADLINE_MS = 270_000;
 
 export type TurnResult = { tools: string[]; creators: string[]; inbox: string[] };
 
@@ -24,6 +23,7 @@ export async function runTurn(opts: {
   const { supabase, threadId, emit } = opts;
   const used: string[] = [];
   const started = Date.now();
+  const deadline = deadlineMs();
 
   const stored = await loadMessages(supabase, threadId);
   if (stored.length > MAX_STORED_MESSAGES) {
@@ -40,7 +40,9 @@ export async function runTurn(opts: {
 
   try {
     for (let step = 1; step <= MAX_STEPS; step++) {
-      if (Date.now() - started > DEADLINE_MS) {
+      // Stop before the host stops the request: each call gets only the time that is left.
+      const left = deadline - (Date.now() - started);
+      if (left < 8_000) {
         emit({ type: 'notice', text: 'That is taking too long, so I stopped. Send another message to continue.' });
         break;
       }
@@ -56,10 +58,14 @@ export async function runTurn(opts: {
           output_config: { effort: 'medium' },
           fallbacks: 'default',
           cache_control: { type: 'ephemeral' },
-        });
+        }, { timeout: Math.min(120_000, left - 3_000) });
       } catch (e) {
         // Log the type and status only; the message could contain request details.
         console.error('assistant call failed', e instanceof Error ? e.name : 'error', e instanceof Anthropic.APIError ? e.status : '');
+        if (e instanceof Anthropic.APIConnectionTimeoutError) {
+          emit({ type: 'notice', text: 'That is taking too long, so I stopped. Send another message to continue.' });
+          break;
+        }
         emit({ type: 'error', message: e instanceof Anthropic.RateLimitError ? 'Claude is busy right now. Try again in a minute.' : 'Claude could not be reached. Try again.' });
         break;
       }

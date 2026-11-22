@@ -12,3 +12,6 @@ node_modules/
 # Screenshots written by the back office browser tests
 admin/lib/**/*.png
 admin/tests/**/*.png
+
+# Netlify CLI link state
+.netlify

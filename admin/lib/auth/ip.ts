@@ -1,5 +1,6 @@
 // Client IP for rate limiting. Only headers set by the hosting platform are trusted.
 //  * On Vercel (process.env.VERCEL is set): only x-vercel-forwarded-for. No other header is read.
+//  * On Netlify: x-nf-client-connection-ip, which Netlify's edge sets from the connection itself.
 //  * Elsewhere (local, tests): x-real-ip if present, else the fixed bucket 'local'.
 // The client-supplied x-forwarded-for chain is never used, because anyone could put a fresh value there
 // on every try and dodge the per-IP limit.
@@ -15,6 +16,8 @@ export async function trustedIp(): Promise<string | null> {
     const ip = h.get('x-vercel-forwarded-for')?.split(',')[0]?.trim();
     return ip ? ip.slice(0, 100) : null;
   }
+  const netlify = h.get('x-nf-client-connection-ip')?.trim();
+  if (netlify) return netlify.slice(0, 100);
   const ip = h.get('x-real-ip')?.split(',')[0]?.trim();
   return ip ? ip.slice(0, 100) : 'local';
 }

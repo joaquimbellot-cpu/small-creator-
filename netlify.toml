@@ -1,0 +1,9 @@
+# Netlify: the website and the back office are one Next.js app in admin/ (see admin/README.md).
+# Netlify's Next.js runtime is added automatically. Settings and keys go in the Netlify UI, never here.
+[build]
+  base = "admin"
+  command = "npm run build"
+  publish = ".next"
+
+[build.environment]
+  NODE_VERSION = "22"

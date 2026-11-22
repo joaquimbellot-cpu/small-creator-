@@ -21,7 +21,16 @@ export function dailyLimit(): number {
   return Number.isFinite(n) && n > 0 ? n : 100;
 }
 
+/**
+ * How long one owner message may take, in ms. Default 270 s (Vercel allows 300).
+ * Set ASSISTANT_DEADLINE_MS=50000 on Netlify, which stops a request after 60 s.
+ */
+export function deadlineMs(): number {
+  const n = Math.floor(Number(process.env.ASSISTANT_DEADLINE_MS));
+  return Number.isFinite(n) && n >= 15_000 ? Math.min(n, 270_000) : 270_000;
+}
+
 export function createAnthropic(): Anthropic {
-  // One call may take a while at medium effort; the route as a whole stops at 270 s (maxDuration is 300).
+  // Each call also gets its own timeout: the time left before the deadline (see loop.ts).
   return new Anthropic({ timeout: 120_000, maxRetries: 1 });
 }

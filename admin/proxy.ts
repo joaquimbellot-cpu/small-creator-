@@ -69,11 +69,29 @@ function applyHeaders(res: NextResponse, policy: string) {
   return res;
 }
 
+// Shown for every back-office address while NEXT_PUBLIC_SUPABASE_URL / _ANON_KEY are missing (they are set
+// when the site is built, so adding them needs a new deploy). See admin/README.md, "Put it online".
+function notConnected(pathname: string) {
+  if (pathname.startsWith('/api/')) {
+    return NextResponse.json({ ok: false, error: 'The back office is not connected yet.' }, { status: 503 });
+  }
+  const html = `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Back office not connected yet</title>
+<style>body{margin:0;min-height:100vh;display:grid;place-items:center;background:#f1efea;color:#141414;font:17px/1.5 system-ui,sans-serif}main{max-width:32rem;padding:24px}h1{font-weight:500;font-size:1.6rem;margin:0 0 .5rem}a{color:inherit}</style></head>
+<body><main><h1>The back office is not connected yet</h1><p>The website is live, but the database and login are not set up on this host yet. Once they are, this address shows the login page.</p><p><a href="/">Back to the website</a></p></main></body></html>`;
+  return new NextResponse(html, { status: 503, headers: { 'Content-Type': 'text/html; charset=utf-8' } });
+}
+
 export async function proxy(request: NextRequest) {
   if (WEBSITE.some((re) => re.test(request.nextUrl.pathname))) return websiteResponse();
 
   const nonce = btoa(crypto.randomUUID());
   const policy = csp(nonce);
+
+  // The database and login (Supabase) are not connected yet: say so instead of failing.
+  if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
+    return applyHeaders(notConnected(request.nextUrl.pathname), policy);
+  }
+
   const requestHeaders = new Headers(request.headers);
   requestHeaders.set('x-nonce', nonce);
   requestHeaders.set('Content-Security-Policy', policy);
