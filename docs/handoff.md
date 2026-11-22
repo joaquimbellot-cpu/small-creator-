@@ -58,9 +58,9 @@ Read this first in a new chat. It replaces the history of the previous one.
 
 ## Still to do, in order
 
-1. **First live login.** The owner should confirm that login on smallfold.netlify.app works. It has not been seen working yet.
+1. **First live login: done.** On 22 November the database shows the owner's sign-in and an `auth.login` audit line from the live app (21:08 UTC), then one `assistant.message` line at 21:10. Checked from counts and dates only.
 2. **Owner's security steps:**
-   - turn on two-step login (Settings, then Security);
+   - turn on two-step login (Settings, then Security). Not done yet: the database has no two-step factor;
    - delete the Supabase token named `smallfold`.
 3. **Gmail.** Set the SMTP variables in Netlify, then turn on Supabase custom SMTP with the same details.
 4. **Anthropic API key for the Claude page.**
