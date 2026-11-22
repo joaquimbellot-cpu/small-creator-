@@ -10,6 +10,8 @@ export function AppShell({ staff, children }: { staff: Staff; children: React.Re
     { href: '/creators', label: 'Creators' },
     { href: '/deals', label: 'Deals' },
     { href: '/emails', label: 'Emails' },
+    { href: '/inbox', label: 'Inbox' },
+    ...(staff.role === 'owner' ? [{ href: '/claude', label: 'Claude' }] : []),
     ...(staff.role === 'owner' ? [{ href: '/settings', label: 'Settings' }] : []),
   ];
   return (
