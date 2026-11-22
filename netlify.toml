@@ -7,3 +7,8 @@
 
 [build.environment]
   NODE_VERSION = "22"
+
+# Netlify's Next.js runtime (turns the app's pages, API routes and proxy into functions).
+# Named here because a project created through the API may not add it on its own. No version pin.
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
