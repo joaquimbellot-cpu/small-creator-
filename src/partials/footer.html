@@ -30,6 +30,11 @@
       </div>
     </div>
     <p class="site-footer__wordmark" aria-hidden="true"><span>{{site.brand.name}}</span></p>
-    <p class="site-footer__copyright small muted">{{site.footer.copyright}}</p>
+    <div class="site-footer__bottom">
+      <p class="site-footer__copyright small muted">{{site.footer.copyright}}</p>
+      {{#if site.login.href}}
+      <a class="site-footer__login small muted" href="{{site.login.href}}">{{site.login.label}}</a>
+      {{/if}}
+    </div>
   </div>
 </footer>

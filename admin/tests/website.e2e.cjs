@@ -79,6 +79,20 @@ async function main() {
       await page.close();
     });
 
+    // ---------- wide screens: no menu button, so the footer carries the Log in link
+    await step('desktop footer login', async () => {
+      const page = await ctx.newPage();
+      await page.goto(`${BASE}/how-it-works`);
+      check(!(await page.locator('button[aria-controls="site-menu"]').isVisible()), 'wide screen: the menu button is hidden (links sit in the top bar)');
+      const link = page.locator('footer').getByRole('link', { name: 'Log in' });
+      await link.scrollIntoViewIfNeeded();
+      check(await link.isVisible(), 'wide screen: the footer shows a visible "Log in" link');
+      await link.click();
+      await page.waitForURL(/\/login(\?|$)/, { timeout: 15000 });
+      check(new URL(page.url()).pathname === '/login', `footer "Log in" reaches /login (at ${new URL(page.url()).pathname})`);
+      await page.close();
+    });
+
     // ---------- console CSP errors on the public pages
     for (const p of ['/', '/apply.html', '/brands.html']) {
       await step(`csp ${p}`, async () => {

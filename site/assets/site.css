@@ -1823,10 +1823,36 @@ html.menu-open {
   letter-spacing: var(--track-heading);
   white-space: nowrap;
 }
-.site-footer__copyright {
+.site-footer__bottom {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  column-gap: var(--s-5);
   margin-top: var(--s-6);
-  padding-top: var(--s-5);
+  padding-top: var(--s-4);
   border-top: var(--hairline) solid var(--rule);
+}
+.site-footer__copyright {
+  margin: 0;
+}
+.site-footer__login {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--tap);
+  text-decoration: underline;
+  text-decoration-color: transparent;
+  text-underline-offset: .4em;
+  -webkit-tap-highlight-color: transparent;
+  transition:
+    color var(--dur-hover) var(--ease),
+    text-decoration-color var(--dur-hover) var(--ease);
+}
+@media (hover: hover) {
+  .site-footer__login:hover {
+    color: inherit;
+    text-decoration-color: currentColor;
+  }
 }
 @media (max-width: 1023px) {
   .site-footer__top {
