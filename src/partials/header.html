@@ -38,6 +38,9 @@
           </div>
           {{/if}}
         </dl>
+        {{#if site.login.href}}
+        <a class="site-menu__login label" href="{{site.login.href}}">{{site.login.label}}</a>
+        {{/if}}
       </div>
     </div>
   </dialog>

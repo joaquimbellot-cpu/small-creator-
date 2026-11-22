@@ -3,7 +3,7 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import { refreshSession } from '@/lib/supabase/proxy';
 
-const PUBLIC = [/^\/login(\/|$)/, /^\/forgot-password$/, /^\/reset-password$/, /^\/auth(\/|$)/, /^\/unsubscribe(\/|$)/, /^\/api\/unsubscribe(\/|$)/];
+const PUBLIC = [/^\/login(\/|$)/, /^\/forgot-password$/, /^\/reset-password$/, /^\/auth(\/|$)/, /^\/unsubscribe(\/|$)/, /^\/api\/unsubscribe(\/|$)/, /^\/api\/public\//];
 
 function csp(nonce: string): string {
   const supabase = process.env.NEXT_PUBLIC_SUPABASE_URL || '';

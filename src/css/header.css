@@ -364,6 +364,28 @@ html.menu-open {
   overflow-wrap: anywhere;
 }
 
+/* Log in for the owner: a small quiet link at the very end of the menu. 44px tall for a finger. */
+.site-menu__login {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--tap);
+  color: var(--fg-muted);
+  text-decoration: underline;
+  text-decoration-color: transparent;
+  text-decoration-thickness: var(--hairline);
+  text-underline-offset: .25em;
+  transition:
+    color var(--dur-hover) var(--ease),
+    text-decoration-color var(--dur-hover) var(--ease);
+}
+
+@media (hover: hover) {
+  .site-menu__login:hover {
+    color: inherit;
+    text-decoration-color: currentColor;
+  }
+}
+
 /* Responsive: on a phone held sideways the menu ran a screen and a half; less air, smaller links. */
 @media (max-height: 500px) {
   .site-menu__nav {

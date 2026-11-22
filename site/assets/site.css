@@ -1678,6 +1678,25 @@ html.menu-open {
   margin-top: var(--s-1);
   overflow-wrap: anywhere;
 }
+.site-menu__login {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--tap);
+  color: var(--fg-muted);
+  text-decoration: underline;
+  text-decoration-color: transparent;
+  text-decoration-thickness: var(--hairline);
+  text-underline-offset: .25em;
+  transition:
+    color var(--dur-hover) var(--ease),
+    text-decoration-color var(--dur-hover) var(--ease);
+}
+@media (hover: hover) {
+  .site-menu__login:hover {
+    color: inherit;
+    text-decoration-color: currentColor;
+  }
+}
 @media (max-height: 500px) {
   .site-menu__nav {
     padding-block: var(--s-5);

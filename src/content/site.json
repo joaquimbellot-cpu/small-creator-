@@ -84,8 +84,10 @@
     "draft": "Draft",
     "optional": "optional"
   },
+  "login": { "label": "Log in", "href": "/login" },
   "forms": {
-    "endpoint": "",
+    "applyEndpoint": "/api/public/apply",
+    "contactEndpoint": "/api/public/contact",
     "notConnected": "This form is not connected yet. For now, please write to us by email.",
     "sending": "Sending",
     "success": "Your application is with us. We reply within 2 working days.",
