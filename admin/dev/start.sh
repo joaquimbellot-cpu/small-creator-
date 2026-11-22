@@ -32,6 +32,10 @@ psql -q -v ON_ERROR_STOP=1 -f "$DEV_DIR/bootstrap-roles.sql"
 # 2. mail catcher first (GoTrue and the app send to it)
 start_node mailcatcher "$DEV_DIR/mailcatcher.mjs"
 
+# 2b. fake Anthropic API (the Claude page and its tests use it; port 4010)
+start_node fake-anthropic "$DEV_DIR/fake-anthropic.mjs"
+wait_http http://127.0.0.1:4010/health "fake Anthropic"
+
 # 3. GoTrue (runs its own auth migrations on boot)
 docker rm -f smallfold-gotrue >/dev/null 2>&1 || true
 docker run -d --name smallfold-gotrue --network host \
@@ -86,6 +90,7 @@ cat <<MSG
 Local stack is up.
   API gateway   http://localhost:54321   (/auth/v1, /rest/v1)
   Mail catcher  http://localhost:8025    (SMTP 1025, files in admin/dev/.mail)
+  Fake Claude   http://localhost:4010    (log: admin/dev/.logs/fake-anthropic-requests.log)
   Postgres      postgres://postgres@127.0.0.1:$PG_PORT/postgres   (psql -h 127.0.0.1 -p $PG_PORT -U postgres)
   Env file      admin/.env.local
   Logins        see admin/supabase/seed/EXPECTED.md

@@ -9,6 +9,7 @@ MAIL_DIR="$DEV_DIR/.mail"
 PID_DIR="$DEV_DIR/.pids"
 PG_BIN=/usr/lib/postgresql/16/bin
 PG_PORT=54322
+export FAKE_ANTHROPIC_PORT=4010   # dev/fake-anthropic.mjs
 export PGOPTIONS='-c client_min_messages=warning'
 export PGHOST=127.0.0.1 PGPORT=$PG_PORT PGUSER=postgres PGDATABASE=postgres
 

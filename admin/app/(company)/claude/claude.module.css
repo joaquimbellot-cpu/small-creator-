@@ -1,0 +1,20 @@
+.layout { display: grid; gap: var(--s-5); grid-template-columns: minmax(0, 1fr); }
+@media (min-width: 900px) { .layout { grid-template-columns: 240px minmax(0, 1fr); } }
+.threads { display: flex; flex-direction: column; gap: var(--s-1); align-self: start; }
+.newChat, .thread { display: block; padding: var(--s-2) var(--s-3); border-radius: var(--r); text-decoration: none; border: var(--hairline) solid var(--rule); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-height: var(--tap); line-height: var(--tap); padding-block: 0; }
+.newChat { font-weight: var(--w-label); }
+.thread { color: var(--fg-muted); border-color: transparent; }
+.thread:hover { color: var(--fg); }
+.threads a[aria-current='page'] { color: var(--fg); background: var(--surface); border-color: var(--rule); }
+.chat { min-width: 0; }
+.log { display: flex; flex-direction: column; gap: var(--s-3); margin-bottom: var(--s-4); }
+.you, .claude { padding: var(--s-3) var(--s-4); border-radius: var(--r); white-space: pre-wrap; overflow-wrap: anywhere; max-width: 100%; }
+.you { background: var(--surface); border: var(--hairline) solid var(--rule); align-self: flex-end; max-width: 85%; }
+.claude { border: var(--hairline) solid var(--rule); }
+.step { color: var(--fg-muted); font-size: var(--t-label); display: flex; gap: var(--s-2); align-items: center; }
+.step::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: currentColor; flex: none; }
+.stepBad::before { background: var(--accent-fg); }
+.card { background: var(--surface); border: var(--hairline) solid var(--rule); border-radius: var(--r); padding: var(--s-4); display: flex; flex-direction: column; gap: var(--s-3); }
+.actions { display: flex; gap: var(--s-2); flex-wrap: wrap; align-items: center; }
+.form { display: flex; flex-direction: column; gap: var(--s-2); }
+.form textarea { width: 100%; min-height: 84px; padding: var(--s-3); border: var(--hairline) solid var(--rule); border-radius: var(--r); background: var(--bg); color: var(--fg); resize: vertical; }

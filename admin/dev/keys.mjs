@@ -52,7 +52,12 @@ function writeEnv(s) {
     ANTHROPIC_MODEL: 'claude-sonnet-5-5',
     YOUTUBE_API_KEY: '',
     UNSUBSCRIBE_SECRET: s.unsubscribe_secret,
+    // Local fake of the Anthropic API (dev/fake-anthropic.mjs). DRAFT_MODE=mock keeps email drafting offline.
+    ANTHROPIC_BASE_URL: 'http://localhost:4010',
+    DRAFT_MODE: 'mock',
   };
+  // An empty placeholder counts as missing for these: filled with the local fake key, a real key is never touched.
+  const fillIfEmpty = { ANTHROPIC_API_KEY: 'local-fake-key' };
   const lines = fs.existsSync(envFile) ? fs.readFileSync(envFile, 'utf8').split('\n') : ['# Local dev only. Written by admin/dev/start.sh. Never commit.'];
   if (lines.at(-1) === '') lines.pop();
   const seen = new Set();
@@ -60,9 +65,10 @@ function writeEnv(s) {
     const m = l.match(/^([A-Z0-9_]+)=/);
     if (!m) return l;
     seen.add(m[1]);
+    if (m[1] in fillIfEmpty && l === `${m[1]}=`) return `${m[1]}=${fillIfEmpty[m[1]]}`;
     return m[1] in managed ? `${m[1]}=${managed[m[1]]}` : l;
   });
-  for (const [k, v] of Object.entries({ ...defaults, ...managed })) if (!seen.has(k)) out.push(`${k}=${v}`);
+  for (const [k, v] of Object.entries({ ...defaults, ...managed, ...fillIfEmpty })) if (!seen.has(k)) out.push(`${k}=${v}`);
   fs.writeFileSync(envFile, out.join('\n') + '\n', { mode: 0o600 });
 }
 
