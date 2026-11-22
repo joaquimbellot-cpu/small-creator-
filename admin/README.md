@@ -46,9 +46,11 @@ You never edit that folder by hand.
 - **Apply** creates a new creator with status New and source "website". If the email address
   is already on file, nothing new is created. The visitor sees the same thank-you message either way.
 - **Brand inquiries** (the form on the For brands page) go to the **Inbox** page.
-- **Log in.** The website's menu has a "Log in" link that goes to `/login`. The menu is the
-  drop-down button shown on narrow screens (860 pixels wide and less). On a wide screen, type
-  your address and add `/login` at the end, for example `https://your-app.example.com/login`.
+- **Log in.** Every page has a "Log in" link that goes to `/login`. On a phone, it is at the
+  bottom of the drop-down menu. On every screen, it is also on the right of the copyright line
+  at the foot of the page.
+- **Page addresses.** Each page answers with or without `.html` at the end, for example
+  `/apply` and `/apply.html`. Netlify drops the `.html`, so the app accepts both.
 - **Protection on the forms.** A form is sent only from the website itself. A hidden field
   catches robots. Each visitor may send at most 5 forms per hour. The app stores only a keyed
   hash of the visitor's IP address, never the address itself.
@@ -116,6 +118,10 @@ ignores it, so it is never uploaded.
 You will make accounts with four services and one hosting company. Do the steps in order.
 Keep every key you copy in a password manager. Never paste a key into a chat or an email.
 
+**Smallfold is already online** at https://smallfold.netlify.app. Steps 1, 5 and 6 are done.
+The steps below say how each part is set up, so you can check it or do it again. The note
+`docs/handoff.md` lists what is done and what is left.
+
 ### Step 1: Supabase (the database and the login)
 
 Supabase is a service that hosts the database and handles logins and invitations.
@@ -133,32 +139,41 @@ Supabase is a service that hosts the database and handles logins and invitations
    8. `20261121000800_security_hardening.sql`
    9. `20261122000900_website_forms.sql`
    10. `20261122001000_assistant.sql`
+   11. `20261122001100_forms_hardening.sql`
 
-   All ten files are in `admin/supabase/migrations/`. Do not skip the last two: they hold the
-   website forms (the tables and the form rules) and the Claude page's tables. Do not skip
-   `20261121000800_security_hardening.sql` either: it holds the
+   All eleven files are in `admin/supabase/migrations/`. Do not skip the last three: they hold
+   the website forms (the tables and the form rules), the Claude page's tables, and the stricter
+   rules for the forms. Do not skip `20261121000800_security_hardening.sql` either: it holds the
    security fixes, including two-step login checked by the database. Never run the seed files
    (`admin/supabase/seed/`) on the online project. They create test logins with known passwords.
 3. **Switch off public sign-up.** In the **Authentication** settings, turn **off**
    "Allow new users to sign up". Only the owner can invite people.
-4. **Set the email links.** In **Authentication**, open the **Invite user** email template
-   and the **Reset password** email template. In each, change the link to these:
+4. **Leave the email templates as they are.** Supabase's free plan does not let you edit the
+   **Invite user** and **Reset password** email templates. The default templates work. The app
+   tells Supabase to send each link to `/auth/confirm` on your site, and the app reads the link
+   there. If you move to a paid plan, you may set these links instead, but you do not have to:
    - Invite: `{{ .SiteURL }}/auth/confirm?token_hash={{ .TokenHash }}&type=invite`
    - Reset password: `{{ .SiteURL }}/auth/confirm?token_hash={{ .TokenHash }}&type=recovery`
-5. **Connect Supabase's own email.** In the Authentication settings, find **SMTP** (custom
-   SMTP). Enter the same Gmail details from Step 2. Then invites and password-reset emails
-   are sent from your Gmail account.
+5. **Connect Supabase's own email.** Until you do this, Supabase sends invites and
+   password-reset emails itself, with two limits on the free plan:
+   - they only reach the email addresses of your own Supabase team, and
+   - at most 2 emails are sent per hour.
+
+   So a staff invite does not arrive until this part is done. In the Authentication settings,
+   find **SMTP** (custom SMTP). Enter the same Gmail details from Step 2. Then invites and
+   password-reset emails are sent from your Gmail account, to any address.
 6. **Copy three values** from **Project Settings, then API**: the Project URL, the `anon`
    key, and the `service_role` key. You will need them in Step 5. The `service_role` key is
    secret.
 7. **Site URL and Redirect URLs.** Do this part again after Step 5, when you know the
-   Vercel address. Set the **Site URL** to that address. Add it to the **Redirect URLs** list
-   as `https://your-app.example.com/**`, using your own address.
+   Netlify address. Set the **Site URL** to that address. Add it to the **Redirect URLs** list
+   as `https://your-app.example.com/**`, using your own address. Today both use
+   `https://smallfold.netlify.app`. If you add your own domain later, change both.
 8. **Security settings.** In **Authentication**, set the minimum password length to 12. Turn on
    **Secure password change**. Keep the built-in sign-in rate limits, and lower them if Supabase
    offers that. Keep sign-ups OFF (part 3).
-9. **Keep the secret key secret.** The `service_role` key stays only in Vercel's server settings
-   (Step 5). The server uses it to save website forms, to send email, and to manage staff. Never
+9. **Keep the secret key secret.** The `service_role` key stays only in Netlify's environment
+   variables (Step 5). The server uses it to save website forms, to send email, and to manage staff. Never
    put it in a file, in the browser, or in a chat.
 
 ### Step 2: Gmail (sends the emails)
@@ -196,41 +211,60 @@ The same key powers the Claude page. Without it, the Claude page says that Claud
    **API key**. Copy the key.
 4. Open the key's settings and **restrict** it to **YouTube Data API v3** only. Save.
 
-### Step 5: Vercel (puts the website and the app online)
+### Step 5: Netlify (puts the website and the app online)
 
-Vercel is a hosting service. It runs the app for you, and the app serves the website too.
+Netlify is a hosting service. It runs the app for you, and the app serves the website too.
+Smallfold is the Netlify project `smallfold`, at https://smallfold.netlify.app.
 
-1. Go to vercel.com and sign in with your GitHub account.
-2. **Choose the right plan.** Vercel's free **Hobby** plan is for personal, non-commercial use only.
-   Smallfold is a business, so use the **Pro** plan.
-3. Click **Add New, then Project**, and import this GitHub repository.
-4. Set **Root Directory** to `admin`. This tells Vercel that the app is in that folder.
-   Leave the other build settings as Vercel shows them. Vercel runs the app's build, which
-   also builds the website.
-5. Open **Environment Variables**. Add every name listed in `admin/.env.example`, with its
-   value from the steps above. Leave out the lines under "Testing on your computer only."
-   The two Claude settings, `ANTHROPIC_ASSISTANT_MODEL` and `ASSISTANT_DAILY_LIMIT`, are optional.
-6. Click **Deploy**. When it finishes, copy the address Vercel gives you. It ends in
-   `.vercel.app`, unless you add your own domain.
-7. Set `NEXT_PUBLIC_SITE_URL` to that address, then **redeploy**. The `NEXT_PUBLIC_` settings
-   are built into the app, so a change needs a new deploy to take effect.
-8. Go back to Supabase, Step 1, part 7, and set the Site URL and Redirect URLs.
+1. Go to netlify.com and sign in. Create a project, or open the project `smallfold`.
+2. **Build settings.** You do not type these into Netlify. The file `netlify.toml`, in the main
+   project folder, holds them: the app is in the `admin` folder, the build command is
+   `npm run build`, the Node.js version is 22, and Netlify's Next.js runtime is switched on.
+   The build also builds the website.
+3. **Environment variables.** In the project, open **Project configuration**, then
+   **Environment variables**. Add every name listed in `admin/.env.example`, with its value
+   from the steps above. Leave out the lines under "Testing on your computer only."
+   - Tick **Contains secret values** for each line marked SECRET in that file.
+   - Set `ASSISTANT_DEADLINE_MS` to `50000`. Netlify stops a request after 60 seconds, so the
+     Claude page must finish its answer before that.
+   - `ANTHROPIC_MODEL`, `ANTHROPIC_ASSISTANT_MODEL` and `ASSISTANT_DAILY_LIMIT` are optional.
+   - Type each key into Netlify yourself. Never paste a key into a chat.
+4. **Deploy.** There are two ways.
+   - **By upload (how it is done today).** The GitHub repository is not connected to Netlify.
+     A new version goes online only when someone uploads it. The exact commands are in
+     `docs/handoff.md`.
+   - **From GitHub (optional).** In **Project configuration**, then **Build & deploy**, link
+     this GitHub repository and choose the branch. Then every push to that branch goes online
+     on its own.
+5. Set `NEXT_PUBLIC_SITE_URL` to the address Netlify gives you, with no slash at the end.
+   It ends in `.netlify.app`, unless you add your own domain. The `NEXT_PUBLIC_` settings are
+   built into the app, so a change needs a new deploy to take effect.
+6. Go back to Supabase, Step 1, part 7, and set the Site URL and Redirect URLs.
+7. **Who can see the site.** Netlify can keep the whole site behind a login while you set it
+   up. Today this is on: only people in your Netlify team can open the site, and visitors
+   cannot. When you are ready to go public, open **Project configuration**, then
+   **Access & security**, then **Visitor access**, and turn the login off. Do Step 7 first.
 
 ### Step 6: First login (make yourself the owner)
 
-1. In Supabase, open **Authentication**, then **Users**, then **Invite user**. Type your own
-   email address and send the invite.
-2. Open the invite email and follow the link. It opens a page where you choose a password of at least 12 characters.
-3. In Supabase, open the **SQL Editor**. Paste the line below. Replace the placeholder with
-   the same email address you invited, then click **Run**:
+This is how the owner's account was made. Do it again only if you start a new Supabase project.
+
+1. In Supabase, open **Authentication**, then **Users**. Click **Add user**, then
+   **Create new user**. Type your own email address and a password of at least 12 characters.
+   Keep **Auto Confirm User** ticked. This way needs no email, so the free plan's email limits
+   (Step 1, part 5) do not get in the way.
+2. In Supabase, open the **SQL Editor**. Paste the line below. Replace the placeholder with
+   the same email address, then click **Run**:
    ```sql
    select public.bootstrap_owner('you@example.com');
    ```
    It shows `true` when it works. It works only while there is no owner yet, so run it once.
    If it shows `false`, check the spelling of the email address.
-4. Log in at your Vercel address. You are now the owner.
+3. Log in at your Netlify address, at `/login`. You are now the owner.
+4. Turn on two-step login straight away (Step 8).
 
-Do this before you invite anyone else.
+Do this before you invite anyone else. Invite staff from **Settings** in the back office, after
+Supabase's own email is connected (Step 1, part 5).
 
 ### Step 7: Settings, Sending (test first)
 
@@ -243,7 +277,7 @@ Do this before you invite anyone else.
    saved template, or type your goal in one sentence. Click **Draft emails**. Under **Review**, edit
    a draft if you want, then click **Approve**. Click **Send**, and confirm in the dialog. With test
    mode on, the email goes to your test address with `[TEST]` in the subject. No creator gets it.
-6. Test the website forms. Open your Vercel address, go to **Apply**, and send one application
+6. Test the website forms. Open your Netlify address, go to **Apply**, and send one application
    with a test name and email. It should appear on **Creators** with status New. Then send one
    message from **For brands**. It should appear on **Inbox**. Delete the test records afterwards
    (as the owner).

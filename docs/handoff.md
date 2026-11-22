@@ -7,7 +7,7 @@ Read this first in a new chat. It replaces the history of the previous one.
 - **Smallfold**: a public website plus a private back office for the owner. Both are one Next.js 16 app in `admin/`.
 - The website pages are built from `src/` by `build.js` into `admin/public/`. A copy is also built into `site/`.
 - Working branch: `claude/wonderful-meitner-sjwb8y`. Commit and push all work there.
-- Setup guide: `admin/README.md`. Design decisions: `docs/launch-plan.md`.
+- Setup guide: `admin/README.md` (rewritten for Netlify on 22 November). Design decisions: `docs/launch-plan.md`.
 
 ## Live now
 
@@ -36,7 +36,7 @@ Read this first in a new chat. It replaces the history of the previous one.
   - redirect list = `https://smallfold.netlify.app/**`.
 - **Free plan email limits:** email templates can't be edited, so the default templates are used. That works: the app passes `redirectTo: <site>/auth/confirm`, and `/auth/hash` reads the tokens. The default sender only reaches the Supabase account's own team addresses, at most 2 per hour. Custom SMTP (Gmail) lifts both limits.
 - **Owner:** the owner created their own login in the Supabase dashboard, and `bootstrap_owner` made it the owner. It's the only account. Never put the owner's email in a request or a file.
-- **Management API access:** possible through a personal access token saved as a network secret for `api.supabase.com`. The owner was told to delete it after the first successful login, so it may be gone.
+- **Management API access:** possible through a personal access token saved as a network secret for `api.supabase.com`. The owner was told to delete it after the first successful login. On 22 November (second chat) it still worked.
 
 ## Netlify environment variables (set)
 
@@ -62,16 +62,13 @@ Read this first in a new chat. It replaces the history of the previous one.
 2. **Owner's security steps:**
    - turn on two-step login (Settings, then Security);
    - delete the Supabase token named `smallfold`.
-3. **Rewrite `admin/README.md` for Netlify.** It still describes Vercel in Step 5.
-   - Its migration list shows 10 files; there are 11, and the last one is `20261122001100_forms_hardening.sql`.
-   - Add the free-plan email limit and how the owner was created.
-4. **Gmail.** Set the SMTP variables in Netlify, then turn on Supabase custom SMTP with the same details.
-5. **Anthropic API key for the Claude page.**
+3. **Gmail.** Set the SMTP variables in Netlify, then turn on Supabase custom SMTP with the same details.
+4. **Anthropic API key for the Claude page.**
    - It is billed per use, separately from a Claude.ai plan.
    - Daily cap: `ASSISTANT_DAILY_LIMIT`, default 100.
    - A cheaper model can be chosen with `ANTHROPIC_ASSISTANT_MODEL`.
-6. **Make the site public** (Netlify visitor access), when the owner says so.
-7. **Optional:**
+5. **Make the site public** (Netlify visitor access), when the owner says so.
+6. **Optional:**
    - connect the GitHub repository in Netlify, for automatic deploys;
    - a custom domain. If added, update `NEXT_PUBLIC_SITE_URL` and Supabase's site URL and redirect list.
 

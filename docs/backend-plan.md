@@ -10,7 +10,7 @@ Brand facts still come from `docs/brand-info.md`. Nothing in the public site (`s
 | App | **Next.js 16 (App Router, TypeScript)** in a new folder `admin/`, with its own `package.json` | The public site has no server. Sending email and keeping keys secret need one. A separate folder means the public site cannot break. |
 | Look | Plain CSS (CSS Modules) using the site's own tokens: cream `#F1EFEB`, ink `#0E0E0E`, pen blue `#2B44D6`, Newsreader + Instrument Sans, 8px corners, no shadows | Matches the site. `src/css/tokens.css` stays the single source; a small script copies it into `admin/` before each run. |
 | Database, login | **Supabase**: Postgres, Supabase Auth, row-level security (RLS) | Proven login (no home-made passwords), invites, password reset, TOTP 2FA, RLS. |
-| Hosting | **Vercel**, project root `admin/`, on a `*.vercel.app` address until there is a domain | Free, built for Next.js. |
+| Hosting | **Netlify**, app folder `admin/` (set in `netlify.toml`), on a `*.netlify.app` address until there is a domain | Runs Next.js. Vercel was the first plan; the app went online on Netlify instead. |
 | Sending email | **Gmail SMTP** (Nodemailer) from `small.fold.sponsorship@gmail.com` with a Google **app password** | Owner's choice. Works without a domain; replies land in the same Gmail inbox. |
 | Drafting | **Anthropic API**, model `claude-sonnet-5-5` by default (set by env var `ANTHROPIC_MODEL`) | Good writing quality for a sensible price. Called from the server only. |
 | Subscribers | **YouTube Data API v3**, `channels.list` (1 quota unit per call, 10,000 free per day) | The owner has no key yet; setup steps go in the README. Until the key is set, the button explains why it is off. |
@@ -155,7 +155,7 @@ At most 3 agents at once. Each reports back in 10 lines or fewer.
 1. A free Supabase project: run the migrations, switch off sign-up, set the site address, and connect Supabase's own emails (invites, password reset) to the same Gmail account.
 2. Gmail: switch on 2-step verification and create an app password.
 3. An Anthropic API key, and a YouTube Data API key from Google Cloud.
-4. A Vercel project pointing at `admin/`, with the environment variables from `.env.example`.
+4. A Netlify project that builds `admin/`, with the environment variables from `.env.example`.
 5. In Settings: the test address, the sender postal address, then a test send, then test mode off.
 
 ## 9. Open questions (the plan works without answers; these are the defaults)

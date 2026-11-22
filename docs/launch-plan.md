@@ -14,7 +14,7 @@ Status: built on 22 November 2026, approved by the owner through their answers t
 |---|---|
 | How Claude connects | A chat page inside the back office (not a connector for the Claude app) |
 | What Claude may do | Claude may freely read and write email drafts. Every other change is a proposal that the owner approves with a click. |
-| How it goes online | One Vercel project serves both the website and the back office. "Log in" goes to `/login`. |
+| How it goes online | One Netlify project serves both the website and the back office. "Log in" goes to `/login`. |
 | Website forms | Apply creates a new creator with status New. Contact goes to an Inbox page. |
 
 ## How it fits together

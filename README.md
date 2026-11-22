@@ -212,7 +212,7 @@ comment that names its owner and what belongs in it.
 ## The back office
 
 The website and the back office launch together. They are one app in the `admin/` folder,
-and Vercel deploys that folder. When the app is built, it also builds this website into
+and Netlify deploys that folder. When the app is built, it also builds this website into
 `admin/public/`, so the website is at the main address and the back office is at `/login` and
 the pages after it. The back office runs the company side of Smallfold: finding creators,
 sending emails, and tracking deals. It is private. Its own guide, with a test run on your
