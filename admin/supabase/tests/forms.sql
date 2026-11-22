@@ -67,7 +67,7 @@ select tests.check('owner deletes a message', tests.n_as('authenticated', (selec
 select tests.check('service role contact ok', tests.json_as('service_role', $q$select public.submit_contact('testhash','Fake','fake@example.test','Topic','Hi')$q$) = '{"ok": true}');
 select tests.check('contact row stored', (select count(*) from public.contact_messages where email = 'fake@example.test') = 1);
 select tests.check('contact.received audit row has no actor',
-  (select count(*) from public.audit_log where action = 'contact.received' and actor_id is null) = 1);
+  (select count(*) from public.audit_log where action = 'contact.received' and actor_id is null and created_at = now()) = 1);
 create temp table r1 as select tests.json_as('service_role', $q$select public.submit_application('testhash2','Fake Creator','fake.creator@example.test','+1 555 0100','@fakechannel',2500,'We make fake videos')$q$) as j;
 select tests.check('application creates a website creator',
   (select j from r1) = '{"ok": true}'
@@ -81,7 +81,7 @@ select tests.check('duplicate email (other case) creates nothing',
   (select j from r3) = '{"ok": true}'
   and (select count(*) from public.creators where email = 'fake.creator@example.test') = 1);
 select tests.check('application.received audit rows written, no actor',
-  (select count(*) from public.audit_log where action = 'application.received' and actor_id is null) = 3);
+  (select count(*) from public.audit_log where action = 'application.received' and actor_id is null and created_at = now()) = 3);
 select tests.check('three sends so far are counted', (select count(*) from public.form_rate_limits where ip_hash = 'testhash2' and form = 'apply') = 3);
 select tests.check('the 4th and 5th send of the hour pass',
   tests.json_as('service_role', $q$select public.submit_application('testhash2','F','f2@example.test',null,null,null,null)$q$) = '{"ok": true}'

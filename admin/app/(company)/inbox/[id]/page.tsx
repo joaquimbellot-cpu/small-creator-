@@ -19,7 +19,7 @@ export default async function MessagePage({ params }: { params: Promise<{ id: st
   const supabase = await createClient();
   const { data: m } = await supabase
     .from('contact_messages')
-    .select('id, name, email, topic, message, created_at, handled_at, handled_by')
+    .select('id, name, email, topic, message, created_at, handled_at, handled_by, company, budget, phone')
     .eq('id', id.data)
     .maybeSingle();
   if (!m) notFound();
@@ -44,6 +44,9 @@ export default async function MessagePage({ params }: { params: Promise<{ id: st
           <dd>{m.name}</dd>
           <dt className="label">Email</dt>
           <dd>{m.email}</dd>
+          {m.company ? <><dt className="label">Company</dt><dd>{m.company}</dd></> : null}
+          {m.budget ? <><dt className="label">Budget</dt><dd>{m.budget}</dd></> : null}
+          {m.phone ? <><dt className="label">Phone</dt><dd>{m.phone}</dd></> : null}
           <dt className="label">Received</dt>
           <dd>{formatWhen(m.created_at)}</dd>
           <dt className="label">Status</dt>

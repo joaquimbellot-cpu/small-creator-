@@ -69,8 +69,8 @@ async function main() {
   // ---------- apply
   let r = await apply(IPS[0], person('one'));
   check(r.status() === 200 && (await r.json()).ok === true, 'apply: 200 with {ok:true}');
-  const row = psql(`select status || '|' || source || '|' || subscribers || '|' || coalesce(notes,'') from creators where email = 'forms-e2e-one@example.test'`);
-  check(row === 'new|website|12500|Fake videos about fake things.', `apply: creator saved as new, website, 12500, notes (got ${row})`);
+  const row = psql(`select status || '|' || source || '|' || subscribers || '|' || coalesce(niche,'') from creators where email = 'forms-e2e-one@example.test'`);
+  check(row === 'new|website|12500|Fake videos about fake things.', `apply: creator saved as new, website, 12500, niche (got ${row})`);
   check(psql(`select count(*) from audit_log where action = 'application.received' and entity_id = (select id::text from creators where email = 'forms-e2e-one@example.test')`) === '1', 'apply: audit row written');
 
   r = await apply(IPS[0], person('one', { name: 'Someone Else' }));
@@ -111,12 +111,15 @@ async function main() {
   check(psql(`select count(*) from form_rate_limits where ip_hash like '%10.99.%'`) === '0', 'apply: no raw IP stored');
 
   // ---------- contact
-  r = await api.post(`${BASE}/api/public/contact`, { headers: headers(IPS[3]), form: { name: 'Forms Contact', email: 'forms-e2e-contact@example.test', topic: 'A fake question', message: 'Hello, this is a fake message.\nSecond line.', _gotcha: '' } });
+  r = await api.post(`${BASE}/api/public/contact`, { headers: headers(IPS[3]), form: { company: 'Fake Brand Co', promote: 'A fake product for fake people.', budget: '$500 to $1,999', name: 'Forms Contact', email: 'forms-e2e-contact@example.test', phone: '+1 555 0101', _subject: 'New brand inquiry', _gotcha: '' } });
   check(r.status() === 200 && (await r.json()).ok === true, 'contact: 200 with {ok:true}');
   check(psql(`select count(*) from contact_messages where email = 'forms-e2e-contact@example.test'`) === '1', 'contact: message saved');
-  r = await api.post(`${BASE}/api/public/contact`, { headers: headers(IPS[3], 'https://evil.example.test'), form: { name: 'X', email: 'forms-e2e-x@example.test', message: 'x' } });
+  const saved = psql(`select topic || '|' || message || '|' || company || '|' || budget || '|' || phone from contact_messages where email = 'forms-e2e-contact@example.test'`);
+  check(saved === 'Brand inquiry|Fake Brand Co wants to promote: A fake product for fake people.\nBudget: $500 to $1,999|Fake Brand Co|$500 to $1,999|+1 555 0101', `contact: topic, summary, company, budget, phone stored (got ${saved})`);
+  check(!psql(`select message from contact_messages where email = 'forms-e2e-contact@example.test'`).includes('555'), 'contact: phone is not in the message text');
+  r = await api.post(`${BASE}/api/public/contact`, { headers: headers(IPS[3], 'https://evil.example.test'), form: { company: 'X', promote: 'x', budget: 'x', name: 'X', email: 'forms-e2e-x@example.test' } });
   check(r.status() === 403, 'contact: wrong Origin gets 403');
-  r = await api.post(`${BASE}/api/public/contact`, { headers: headers(IPS[3]), form: { name: 'Bot', email: 'forms-e2e-bot@example.test', message: 'x', _gotcha: 'x' } });
+  r = await api.post(`${BASE}/api/public/contact`, { headers: headers(IPS[3]), form: { company: 'X', promote: 'x', budget: 'x', name: 'Bot', email: 'forms-e2e-bot@example.test', _gotcha: 'x' } });
   check(r.status() === 200 && psql(`select count(*) from contact_messages where email = 'forms-e2e-bot@example.test'`) === '0', 'contact: _gotcha saves nothing');
   const id = psql(`select id from contact_messages where email = 'forms-e2e-contact@example.test'`);
 
@@ -133,13 +136,14 @@ async function main() {
   // ---------- worker
   const worker = await login(browser, WORKER);
   await worker.page.goto(`${BASE}/inbox`);
-  const nav = await worker.page.locator('nav[aria-label="Main"]').innerText();
+  const nav = await worker.page.locator('nav[aria-label="Main"]').textContent();
   check(/Inbox/.test(nav) && !/Claude/.test(nav), 'worker: nav has Inbox and no Claude');
   const wrow = worker.page.locator('table[aria-label="Messages"] tbody tr', { hasText: 'Forms Contact' });
   check((await wrow.count()) === 1, 'worker: the contact message shows in the Inbox');
   await wrow.getByRole('link', { name: 'Forms Contact' }).click();
   await worker.page.waitForURL(new RegExp(`/inbox/${id}`));
-  await worker.page.getByText('Second line.').waitFor();
+  await worker.page.getByText('Budget: $500 to $1,999').waitFor();
+  check((await worker.page.getByText('Fake Brand Co', { exact: true }).count()) === 1 && (await worker.page.getByText('+1 555 0101').count()) === 1, 'worker: detail shows company and phone');
   check((await worker.page.getByRole('button', { name: 'Delete' }).count()) === 0, 'worker: no Delete button');
   await worker.page.getByRole('button', { name: 'Mark as handled' }).click();
   await worker.page.getByRole('button', { name: 'Mark as not handled' }).waitFor({ timeout: 30000 });
@@ -156,7 +160,7 @@ async function main() {
   const owner = await login(browser, OWNER);
   const op = owner.page;
   await op.goto(`${BASE}/inbox`);
-  const onav = await op.locator('nav[aria-label="Main"]').innerText();
+  const onav = await op.locator('nav[aria-label="Main"]').textContent();
   check(/Inbox/.test(onav) && /Claude/.test(onav), 'owner: nav has Inbox and Claude');
   check((await op.locator('table[aria-label="Messages"] tbody tr', { hasText: 'Forms Contact' }).count()) === 0, 'owner: a handled message is hidden from the default "Not handled" view');
   await op.getByLabel('Show', { exact: true }).selectOption('all');

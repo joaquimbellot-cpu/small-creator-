@@ -13,6 +13,12 @@ const VERBS: Record<string, string> = {
   'creator.viewed': 'Viewed a creator',
   'creators.exported': 'Exported creators',
   'creators.imported': 'Imported creators',
+  'contact.viewed': 'Viewed an Inbox message',
+  'contact.received': 'Inbox message from the website',
+  'application.received': 'Application from the website',
+  'assistant.message': 'Asked Claude',
+  'assistant.proposal_approved': "Approved Claude's change",
+  'assistant.proposal_rejected': "Rejected Claude's change",
 };
 
 export function describeAction(action: string): string {

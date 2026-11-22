@@ -20,11 +20,14 @@ export const applicationSchema = z.object({
     .transform((s) => Number(s.replace(/\D/g, ''))),
 });
 
+// The website's brand inquiry form: company, promote, budget, name, email, phone (optional).
 export const contactSchema = z.object({
+  company: z.string().trim().min(1).max(200),
+  promote: z.string().trim().min(1).max(2000),
+  budget: z.string().trim().min(1).max(100),
   name,
   email,
-  topic: optional(200),
-  message: z.string().trim().min(1).max(5000),
+  phone: optional(50),
 });
 
 export const messageIdSchema = z.guid();
