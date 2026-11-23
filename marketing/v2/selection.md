@@ -21,7 +21,7 @@ The blank is honest by design. It never shows a sponsor, a brand or a result. It
 
 | # | Concept | Score | Where the blank is | Format |
 |---|---|---|---|---|
-| 1 | **The Line** | 41 | The sentence you rehearse: "This video is sponsored by ____" | Acted skit, then straight to camera |
+| 1 | **The Line** (approved, outtakes version) | 41 | The sentence you rehearse: "This video is sponsored by ____" | Acted skit, then straight to camera |
 | 2 | **Missing Sponsor** | 40 | The product in your hands: a plain white box with nothing on it | Spoof sponsor read |
 | 3 | **The Credits** | 40 | The last line of your credits: "Sponsored by: ____" | Type-led, works fully muted |
 | 4 | **The Gap** | 40 after revision | The segment in your video: dead air and crickets | Video within a video |
@@ -31,19 +31,39 @@ The scores are from the Critic's final check of the versions written below. Conc
 
 ---
 
-## 1. The Line (41)
+## 1. The Line (41): APPROVED by the owner on 24 November, with one change
 
-**Pitch:** A small creator rehearses "This video is sponsored by" again and again, cut off before the name every time. Then they tell you that you can apply for a sponsor, free.
+**The owner's change:** make it "cut and redo, like it was an error". So the ad is now a reel of outtakes. Every take of the sponsor line goes wrong like a real mistake, the creator calls "cut" and goes again, and the cuts are raw jump cuts.
+
+**Pitch:** The outtakes of a small creator trying to record "This video is sponsored by". Every take breaks at the same place, because there is no name to say. Then they tell you that you can apply for a sponsor, free.
 
 **Promise:** If your channel has 1,000 to 50,000 subscribers, you can apply for a sponsor, free.
 
-**On camera:** invented creator in their early 20s, bright bedroom studio in daylight, ring light, camera on a tripod, coloured wall.
+**On camera:** invented creator in their early 20s, bright bedroom studio in daylight, ring light, camera on a tripod, coloured wall. Same person, same room, same clothes in every take.
 
-**Spoken script (41 words, about 18 s):** "This video is sponsored by. Sponsored by. Sponsored by. Sponsored by. Got one thousand to fifty thousand subs? You can apply for a sponsor. It's free. A person picks a sponsor to suggest. You can say no. No deal, no commission."
+**The takes (each is its own short clip, joined by hard jump cuts):**
 
-**Must not be lost:** the line is never finished. No name, no brand, no "got it" moment, in any take.
+| Take | What goes wrong | Spoken, word for word |
+|---|---|---|
+| Take 1 | Confident start, then they run out of sentence and freeze, eyes flicking off-camera. | "This video is sponsored by" (stops) "Cut." |
+| Take 2 | They reset, shake it off, start again too fast and trip over it. | "This video is sponsored" (stumbles) "no. Again." |
+| Take 3 | Slow and careful this time. They reach the same word and stop. A long beat. They drop the act and look straight into the lens. | "Sponsored by" (silence) |
+| The offer | Relaxed, talking to the viewer, no act. | "Got one thousand to fifty thousand subs? Apply for a sponsor. It's free. A person picks a sponsor to suggest. You can say no. No deal, no commission." |
 
-**Fixes applied:** "picks one for your channel" is now "picks a sponsor to suggest". The line is burned in as a caption ("This video is sponsored by ____") so it works muted. The "1,000 to 50,000 subs" chip arrives at second 2. A "Pretend" tag sits on the rehearsal takes.
+**Spoken script (42 words, about 19 s of speech; the finished ad should run 22 to 24 s with the end card):** "This video is sponsored by. Cut. This video is sponsored. No. Again. Sponsored by. Got one thousand to fifty thousand subs? Apply for a sponsor. It's free. A person picks a sponsor to suggest. You can say no. No deal, no commission."
+
+**The outtake look (all added in the edit, never generated):**
+- A take counter top right: "TAKE 1", "TAKE 2", "TAKE 3", snapping over on each jump cut.
+- A small red recording dot beside the counter during the takes. It disappears when the creator turns to the viewer.
+- Jump cuts with a 2-frame white flash and a clapper snap. No fades.
+- Between takes, a half-second of the creator resetting: a breath, a head shake, fixing their hair.
+- The burned-in caption shows the line breaking each time: "This video is sponsored by ____", with the blank in pen blue.
+
+**Must not be lost:** the line is never finished. No name, no brand, no "got it" moment, in any take. The mistake is always the same one: there is nothing to say after "by".
+
+**Honesty:** the creator has no sponsor, and that is the joke. A "Pretend" tag and an "AI actor" tag sit on the takes. The end card carries "Applying doesn't promise a sponsor."
+
+**Fixes already applied from the Critic:** "picks a sponsor to suggest" (not "picks one for your channel"); the line is burned in as a caption so it works muted; the "1,000 to 50,000 subs" chip arrives at second 2.
 
 ## 2. Missing Sponsor (40)
 
