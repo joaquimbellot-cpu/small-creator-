@@ -127,7 +127,7 @@ Read this first in a new chat. It replaces the history of the previous one.
 - **Done (23 November):** 111 issues found, 99 fixed, 8 need the owner, 4 not fixed with reasons; a QA re-test (9/10) and a security re-audit (8/10) followed, and their follow-ups were fixed. All test suites pass. The owner's to-do list is section 8 of `docs/audit/FULL-REPORT.md`: four new migrations go to the live database BEFORE the code is deployed.
 - Reports: `docs/audit/` (`AGENT-BRIEF.md`, `FIX-BRIEF.md`, `00-project-map.md`, `01` to `08` (audit), `09` and `10` (verification), `fixes/` (one log per fix group), `FULL-REPORT.md`). Agents use the local test stack and fake data only. Database changes are new migration files: the owner applies them in production first, then deploys.
 
-## Advertising campaign (version 2 started 24 November)
+## Advertising campaign (version 2 started 23 November)
 
 - **Version 1 is archived** in `marketing/v1/`. The owner found it bland; do not reuse its ideas.
 - **Version 2 is in `marketing/v2/`.** It sells the creator offer ("a sponsor chosen for your small channel, free to apply"), never the company or its story. `product-brief.md` is the only source of facts.

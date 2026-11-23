@@ -1,6 +1,6 @@
 # The leader's selection (version 2)
 
-**Date:** 24 November 2026. This is the final choice of concepts to sketch. Scores are the Conversion Critic's, from `scorecard.md` (round 1) and its round 2 section. The fixes the Critic asked for are already applied below.
+**Date:** 23 November 2026. This is the final choice of concepts to sketch. Scores are the Conversion Critic's, from `scorecard.md` (round 1) and its round 2 section. The fixes the Critic asked for are already applied below.
 
 ## How the choice was made
 
@@ -31,7 +31,7 @@ The scores are from the Critic's final check of the versions written below. Conc
 
 ---
 
-## 1. The Line (41): APPROVED by the owner on 24 November, with one change
+## 1. The Line (41): APPROVED by the owner on 23 November, with one change
 
 **The owner's change:** make it "cut and redo, like it was an error". So the ad is now a reel of outtakes. Every take of the sponsor line goes wrong like a real mistake, the creator calls "cut" and goes again, and the cuts are raw jump cuts.
 

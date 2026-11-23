@@ -1,6 +1,6 @@
 # Product brief: the Smallfold creator offer (version 2)
 
-**Date:** 24 November 2026. **Status:** working brief, confirmed by the owner's "yes" to the interview summary.
+**Date:** 23 November 2026. **Status:** working brief, confirmed by the owner's "yes" to the interview summary.
 
 This file is the only source of product facts for version 2. If a claim is not in section 2, it does not go into an ad. Version 1 (`marketing/v1/`) is archived; none of its concepts, hooks, scripts or pictures are reused.
 
