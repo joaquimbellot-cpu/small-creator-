@@ -1,7 +1,10 @@
 import { createServer, type Server } from 'node:http';
-import { afterAll, beforeAll, describe, expect, it } from 'vitest';
+import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
 import { parseChannelUrl, channelKey } from './channel';
 import { refreshSubscribers } from './index';
+
+// index.ts imports 'server-only', which throws outside the Next.js server build.
+vi.mock('server-only', () => ({}));
 
 const UC1 = 'UC' + 'a'.repeat(22);
 const UC2 = 'UC' + 'b'.repeat(22);

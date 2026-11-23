@@ -13,4 +13,6 @@ export type CreatorFacts = {
 export type Instruction = { kind: 'template'; subject: string; body: string } | { kind: 'goal'; goal: string };
 
 export type Draft = { subject: string; body: string };
-export type DraftResult = { ok: true; draft: Draft } | { ok: false; error: string };
+/** Short reason for a failure: down = the service failed, refused = no draft came back, checks = the draft broke a rule. */
+export type DraftFailure = 'down' | 'refused' | 'checks';
+export type DraftResult = { ok: true; draft: Draft } | { ok: false; error: string; reason: DraftFailure };

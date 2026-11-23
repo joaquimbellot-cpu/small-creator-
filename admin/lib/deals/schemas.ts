@@ -11,7 +11,10 @@ const MAX_CENTS = 1_000_000_000; // 10,000,000 dollars
 
 /** "1,250.5" -> 125050. Returns null when the text is not a plain dollar amount with at most 2 decimals. */
 export function dollarsToCents(raw: string): number | null {
-  const s = raw.trim().replace(/^\$/, '').replace(/,/g, '');
+  const t = raw.trim().replace(/^\$/, '');
+  // Commas only as thousands groups: "1,250" is fine, "1,2,3" is not.
+  if (t.includes(',') && !/^\d{1,3}(,\d{3})+(\.\d*)?$/.test(t)) return null;
+  const s = t.replace(/,/g, '');
   const m = /^(\d{1,8})(?:\.(\d{1,2}))?$/.exec(s);
   if (!m) return null;
   return Number(m[1]) * 100 + Number((m[2] ?? '').padEnd(2, '0'));

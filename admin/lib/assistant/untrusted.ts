@@ -5,6 +5,11 @@
 // ASCII and look-alike angle brackets.
 const BRACKETS = /[<>‹›⟨⟩〈〉＜＞]/g;
 
+/** Removes the angle brackets only (keeps line breaks), for longer text such as a template body. */
+export function stripBrackets(v: string): string {
+  return v.replace(BRACKETS, '');
+}
+
 /** One line of cleaned text: no angle brackets, whitespace collapsed, cut to `max` characters. */
 export function cleanText(v: string | null | undefined, max = 300): string {
   return (v ?? '').replace(BRACKETS, '').replace(/\s+/g, ' ').trim().slice(0, max);

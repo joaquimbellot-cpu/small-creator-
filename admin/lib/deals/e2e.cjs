@@ -153,6 +153,8 @@ async function main() {
   // Change its stage.
   const row = page.locator('table[aria-label="Deals"] tbody tr', { hasText: BRAND });
   await row.getByRole('combobox').selectOption('signed');
+  await row.getByRole('button', { name: 'Save' }).click();
+  await row.getByText('Saved').waitFor({ timeout: 30000 });
   await until(() => psql(`select d.stage from deals d join brands b on b.id = d.brand_id where b.name = '${BRAND}'`) === 'signed', 'stage saved as signed');
   await page.reload();
   const rowAfter = page.locator('table[aria-label="Deals"] tbody tr', { hasText: BRAND });

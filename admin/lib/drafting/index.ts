@@ -33,17 +33,17 @@ export async function draftEmail(creator: CreatorFacts, instruction: Instruction
         messages: [{ role: 'user', content: buildUserPrompt(creator, instruction) }],
         output_config: { effort: 'low', format: zodOutputFormat(Output) },
       });
-      if (res.stop_reason === 'refusal' || !res.parsed_output) return { ok: false, error: 'Claude did not return a draft.' };
+      if (res.stop_reason === 'refusal' || !res.parsed_output) return { ok: false, error: 'Claude did not return a draft.', reason: 'refused' };
       raw = res.parsed_output;
     }
   } catch (e) {
     // Log the type only; the message could contain request details.
     console.error('drafting failed', e instanceof Error ? e.name : 'error');
-    return { ok: false, error: 'The drafting service failed. Try again.' };
+    return { ok: false, error: 'The drafting service failed. Try again.', reason: 'down' };
   }
   // Clean first (a subject from Claude may wrap onto two lines), then check.
   const draft = cleanDraft(raw);
-  const problem = draftProblem(draft);
-  if (problem) return { ok: false, error: problem };
+  const problem = draftProblem(draft, { allowedUrls: [creator.channelUrl] });
+  if (problem) return { ok: false, error: problem, reason: 'checks' };
   return { ok: true, draft };
 }

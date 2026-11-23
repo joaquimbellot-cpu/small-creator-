@@ -44,9 +44,28 @@ describe('filters', () => {
 
 describe('csv', () => {
   it('protects against formula injection', () => {
-    for (const c of ['=1+1', '+1', '-1', '@SUM(A1)', '\tx', '\rx']) expect(csvSafeCell(c)).toBe(`'${c}`);
+    for (const c of ['=1+1', '+1+1', '+1x', '-1', '@SUM(A1)', '\tx', '\rx']) expect(csvSafeCell(c)).toBe(`'${c}`);
     expect(csvSafeCell('plain')).toBe('plain');
     expect(toCsv(['a', 'b'], [['=cmd', 'x,"y"']])).toBe('a,b\r\n\'=cmd,"x,""y"""\r\n');
+  });
+  it('leaves phone numbers alone and an export can be imported again', () => {
+    expect(csvSafeCell('+1-555-0127')).toBe('+1-555-0127');
+    expect(csvSafeCell('+1 (555) 010')).toBe('+1 (555) 010');
+    const text = toCsv(['name', 'email', 'phone', 'notes'], [['A', 'a@x.test', '+1-555-0127', '=SUM(1)']]);
+    const p = parseCsvText(text);
+    expect(p.ok).toBe(true);
+    if (!p.ok) return;
+    const [r] = classifyRows(p.rows, { emails: new Set(), channels: new Set() }, p.badRows);
+    expect(r.status).toBe('new');
+    expect(r.data).toMatchObject({ phone: '+1-555-0127', notes: '=SUM(1)' });
+  });
+  it('marks rows with the wrong number of columns as errors', () => {
+    const p = parseCsvText('name,email,notes\nA,a@x.test,ok\nB,b@x.test\nC,c@x.test,one, two\n');
+    expect(p.ok).toBe(true);
+    if (!p.ok) return;
+    const rows = classifyRows(p.rows, { emails: new Set(), channels: new Set() }, p.badRows);
+    expect(rows.map((r) => r.status)).toEqual(['new', 'error', 'error']);
+    expect(rows[1].reason).toMatch(/columns/);
   });
   it('parses case-insensitive headers and flags rows', () => {
     const p = parseCsvText('﻿Name,EMAIL,Channel_URL,Subscribers\nA,a@x.test,https://youtube.com/@a,10\nB,A@x.test,,\nC,c@x.test,https://youtube.com/@A,\nD,bad,,\nE,e@x.test,,\nF,f@x.test,,zz\n');

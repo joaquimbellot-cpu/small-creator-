@@ -5,7 +5,7 @@ import { submitKeepingValues } from '@/lib/email/submit';
 import { Badge, Button, ConfirmButton, Input, Notice, Textarea } from '@/components/ui';
 import { backToDraftAction, discardAction, editAction, type EditState } from './actions';
 
-export type ReviewEmail = { id: string; subject: string; body: string; status: 'draft' | 'approved'; creator: string; to_email: string; drafter: string };
+export type ReviewEmail = { id: string; subject: string; body: string; status: 'draft' | 'approved'; creator: string; to_email: string; drafter: string; byClaude: boolean };
 
 export function ReviewCard({ email, footer }: { email: ReviewEmail; footer: string }) {
   const [state, action, pending] = useActionState<EditState, FormData>(editAction, {});
@@ -16,7 +16,10 @@ export function ReviewCard({ email, footer }: { email: ReviewEmail; footer: stri
         <div>
           <strong>{email.creator}</strong> <span className="muted">· {email.to_email} · drafted by {email.drafter}</span>
         </div>
-        <Badge tone={approved ? 'good' : 'warn'}>{approved ? 'Approved' : 'Draft'}</Badge>
+        <div style={{ display: 'flex', gap: 8, alignItems: 'flex-start' }}>
+          {email.byClaude ? <Badge tone="accent">Written by Claude</Badge> : null}
+          <Badge tone={approved ? 'good' : 'warn'}>{approved ? 'Approved' : 'Draft'}</Badge>
+        </div>
       </div>
 
       <form onSubmit={submitKeepingValues(action)}>

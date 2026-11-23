@@ -4,14 +4,13 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { Badge, Button, LinkButton, SortLink, Table, tableCell } from '@/components/ui';
+import { formatWhen } from '@/lib/deals/format';
 import { STATUS_LABEL, STATUS_TONE, type ListRow } from '@/lib/creators/constants';
 import { NO_KEY, RefreshResults, callRefresh, type RefreshResponse } from './RefreshResults';
 import s from './creators.module.css';
 
 export type Row = ListRow & { href: string };
 export type SortCol = { href: string; active: 'asc' | 'desc' | false };
-
-const dateFmt = (iso: string | null) => (iso ? new Intl.DateTimeFormat('en-GB', { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'UTC' }).format(new Date(iso)) : '—');
 
 export function CreatorsTable({ rows, sorts, youtubeEnabled }: { rows: Row[]; sorts: Record<'name' | 'subscribers' | 'last_contacted' | 'added', SortCol>; youtubeEnabled: boolean }) {
   const router = useRouter();
@@ -70,8 +69,8 @@ export function CreatorsTable({ rows, sorts, youtubeEnabled }: { rows: Row[]; so
               </td>
               <td><Badge tone={STATUS_TONE[r.status]}>{STATUS_LABEL[r.status]}</Badge></td>
               <td className={tableCell.num}>{r.subscribers_hidden ? 'Hidden' : r.subscribers == null ? '—' : r.subscribers.toLocaleString('en-US')}</td>
-              <td>{dateFmt(r.last_contacted_at)}</td>
-              <td>{dateFmt(r.created_at)}</td>
+              <td>{formatWhen(r.last_contacted_at)}</td>
+              <td>{formatWhen(r.created_at)}</td>
             </tr>
           ))}
         </tbody>

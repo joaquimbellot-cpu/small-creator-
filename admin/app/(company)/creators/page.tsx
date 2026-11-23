@@ -1,11 +1,13 @@
-import { notFound } from 'next/navigation';
+import { notFound, redirect } from 'next/navigation';
 import { z } from 'zod';
-import { Button, EmptyState, Input, LinkButton, Pagination, Select, buttonClass } from '@/components/ui';
+import { Button, EmptyState, Notice, Input, LinkButton, Pagination, Select, buttonClass } from '@/components/ui';
+import { logAudit } from '@/lib/audit';
 import { requireStaff } from '@/lib/auth/staff';
 import { createClient } from '@/lib/supabase/server';
 import { PAGE_SIZE, STATUSES, STATUS_LABEL, type ListRow } from '@/lib/creators/constants';
 import { filtersToQuery, parseFilters, type Filters, type SortKey } from '@/lib/creators/filters';
 import { applyFilters } from '@/lib/creators/query';
+import { youtubeEnabled } from '@/lib/youtube';
 import { CreatorDialog } from './CreatorDialog';
 import { CreatorsTable, type SortCol } from './CreatorsTable';
 
@@ -23,11 +25,24 @@ export default async function Page({ searchParams }: { searchParams: Promise<SP>
   const { data, count, error } = await applyFilters(
     supabase.from('creator_summaries').select('*', { count: 'exact' }), f,
   ).range((f.page - 1) * PAGE_SIZE, f.page * PAGE_SIZE - 1);
-  const total = count ?? 0;
-  if (error && !(f.page > 1)) throw error;
+  let total = count ?? 0;
+  let loadFailed = !!error;
   const rows = (data ?? []) as ListRow[];
 
   const link = (over: Partial<Filters> & { creator?: string; edit?: boolean; isNew?: boolean } = {}) => `/creators${filtersToQuery({ ...f, ...over })}`;
+
+  // A page number past the end gives an empty answer (or a range error): count the rows and go to the last page.
+  if (f.page > 1 && (error || rows.length === 0)) {
+    const head = await applyFilters(supabase.from('creator_summaries').select('id', { count: 'exact', head: true }), f);
+    if (head.error) loadFailed = true;
+    else {
+      total = head.count ?? 0;
+      const last = Math.max(1, Math.ceil(total / PAGE_SIZE));
+      if (f.page > last) redirect(link({ page: last }));
+    }
+  }
+
+  const ytOn = youtubeEnabled();
   const sortCol = (key: SortKey): SortCol => {
     const active = f.sort === key ? f.dir : false;
     const dir = f.sort === key ? (f.dir === 'asc' ? 'desc' : 'asc') : key === 'name' ? 'asc' : 'desc';
@@ -44,6 +59,8 @@ export default async function Page({ searchParams }: { searchParams: Promise<SP>
     if (creatorParam.success && wantsEdit && !isNew) {
       const { data: c } = await supabase.from('creators').select('*').eq('id', creatorParam.data).maybeSingle();
       if (!c) notFound();
+      // The pop-up in view mode loads through the API, which logs the view; the edit form reads the record here.
+      await logAudit('creator.viewed', 'creator', c.id, { label: c.full_name });
       editInitial = {
         name: c.full_name, email: c.email, phone: c.phone ?? '', channel_url: c.channel_url ?? '', niche: c.niche ?? '',
         subscribers: c.subscribers == null ? '' : String(c.subscribers), status: c.status, notes: c.notes ?? '',
@@ -61,7 +78,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<SP>
         editHref={link({ creator: id, edit: true })}
         back={filtersToQuery(f)}
         isOwner={staff.role === 'owner'}
-        youtubeEnabled={!!process.env.YOUTUBE_API_KEY?.trim()}
+        youtubeEnabled={ytOn}
       />
     );
   }
@@ -96,14 +113,16 @@ export default async function Page({ searchParams }: { searchParams: Promise<SP>
         {filtered ? <LinkButton href="/creators" variant="ghost">Clear</LinkButton> : null}
       </form>
 
-      {rows.length === 0 ? (
+      {loadFailed ? (
+        <Notice tone="error">Could not load the creators. Refresh to try again.</Notice>
+      ) : rows.length === 0 ? (
         <EmptyState title={filtered ? 'No creators match' : 'No creators yet'} action={filtered ? <LinkButton href="/creators" variant="ghost">Clear filters</LinkButton> : <LinkButton href={link({ isNew: true })}>Add the first creator</LinkButton>}>
           {filtered ? 'Try a different search or status.' : 'Add one by hand or import a CSV file.'}
         </EmptyState>
       ) : (
-        <CreatorsTable rows={withHref} sorts={sorts} youtubeEnabled={!!process.env.YOUTUBE_API_KEY?.trim()} />
+        <CreatorsTable rows={withHref} sorts={sorts} youtubeEnabled={ytOn} />
       )}
-      <Pagination page={f.page} pageSize={PAGE_SIZE} total={total} hrefFor={(p) => link({ page: p })} />
+      {loadFailed ? null : <Pagination page={f.page} pageSize={PAGE_SIZE} total={total} hrefFor={(p) => link({ page: p })} />}
       {dialog}
     </>
   );

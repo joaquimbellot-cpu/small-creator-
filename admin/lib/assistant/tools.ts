@@ -235,11 +235,11 @@ const createEmailDraft: Handler = async (input, ctx) => {
   if (!creator) return fail('No creator with that id.');
   if (creator.blocked) return fail(creator.blocked === 'do_not_contact' ? 'This creator is marked do not contact. No draft was saved.' : 'This creator is suppressed. No draft was saved.');
   const draft = cleanDraft({ subject: p.data.subject, body: p.data.body });
-  const problem = draftProblem(draft);
+  const problem = draftProblem(draft, { allowedUrls: [creator.channel_url] });
   if (problem) return fail(problem);
   const { data, error } = await ctx.supabase
     .from('emails')
-    .insert({ creator_id: creator.id, to_email: creator.email, subject: draft.subject, body: draft.body, template_id: null })
+    .insert({ creator_id: creator.id, to_email: creator.email, subject: draft.subject, body: draft.body, template_id: null, source: 'claude' })
     .select('id')
     .single();
   if (error || !data) return fail('The draft could not be saved.');
@@ -261,6 +261,12 @@ const proposeAddCreator: Handler = async (input, ctx) => {
   if (!p.success) return fail('Invalid input.');
   const v = validateCreator({ name: p.data.name, email: p.data.email, channel_url: p.data.channel_url, niche: p.data.niche, subscribers: p.data.subscribers, status: p.data.status });
   if (!v.ok) return fail(Object.values(v.errors)[0] ?? 'Invalid creator.');
+  // The address must be one the owner typed in this conversation, not one that came from Inbox or creator text.
+  const { data: typed, error: typedErr } = await ctx.supabase.from('assistant_messages').select('content').eq('thread_id', ctx.threadId).eq('role', 'user').eq('content->0->>type', 'text').limit(300);
+  if (typedErr) return fail('Could not check the address. Try again.');
+  const want = v.data.email.toLowerCase();
+  const wasTyped = (typed ?? []).some((m) => (m.content as { type?: string; text?: unknown }[]).some((b) => b.type === 'text' && typeof b.text === 'string' && b.text.toLowerCase().includes(want)));
+  if (!wasTyped) return fail('Use an address the owner typed. Ask the owner for the email address.');
   const payload: CreatePayload = { name: v.data.full_name, email: v.data.email, channel_url: v.data.channel_url, niche: v.data.niche, subscribers: v.data.subscribers, status: v.data.status };
   return proposed(ctx, 'creator.create', payload, `Add creator ${payload.name} (${payload.email}), status ${payload.status}`);
 };

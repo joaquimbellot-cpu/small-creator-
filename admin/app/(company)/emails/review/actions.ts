@@ -17,11 +17,13 @@ export async function editAction(_prev: EditState, form: FormData): Promise<Edit
   if (!id.success) return { error: 'Invalid input.' };
   const subject = String(form.get('subject') ?? '').trim();
   const body = String(form.get('body') ?? '').trim();
-  const problem = draftProblem({ subject, body });
-  if (problem) return { error: problem };
-
   const approve = form.get('intent') === 'approve';
   const supabase = await createClient();
+  // Same checks as a new draft; the creator's own channel link is the only link allowed.
+  const { data: owner } = await supabase.from('emails').select('creators(channel_url)').eq('id', id.data).maybeSingle();
+  const channel = (owner as unknown as { creators: { channel_url: string | null } | null } | null)?.creators?.channel_url;
+  const problem = draftProblem({ subject, body }, { allowedUrls: [channel] });
+  if (problem) return { error: problem };
   // Editing an approved email puts it back to draft (a database rule), so approval always matches what was read.
   const { error } = await supabase
     .from('emails')

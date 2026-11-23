@@ -1,6 +1,7 @@
 // YouTube Data API v3 `channels.list` (part=statistics) to refresh subscriber counts.
 // The key stays on the server: it is only read from the environment here and never returned, logged or put in an error message.
 //   refreshFromEnv(creators) -> results per creator: updated | hidden | not_found | error
+import 'server-only';
 export { parseChannelUrl, channelKey, normalizeChannelUrl, type ChannelRef } from './channel';
 import { parseChannelUrl, type ChannelRef } from './channel';
 
@@ -24,6 +25,11 @@ export function youtubeConfigFromEnv(): YouTubeConfig | null {
   const apiKey = (process.env.YOUTUBE_API_KEY ?? '').trim();
   if (!apiKey) return null;
   return { apiKey, baseUrl: (process.env.YOUTUBE_API_BASE ?? '').trim() || DEFAULT_BASE };
+}
+
+/** True when a YouTube API key is set (the page uses this to turn the refresh buttons on or off). */
+export function youtubeEnabled(): boolean {
+  return youtubeConfigFromEnv() !== null;
 }
 
 async function listChannels(cfg: YouTubeConfig, lookup: Record<string, string>): Promise<Item[]> {

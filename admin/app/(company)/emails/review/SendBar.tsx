@@ -10,7 +10,11 @@ const sleep = (s: number) => new Promise((r) => setTimeout(r, s * 1000));
 
 type Log = { text: string; tone: 'success' | 'error' | 'warn' | 'info' };
 
-export function SendBar({ ids, testMode, testEmail, delaySeconds }: { ids: string[]; testMode: boolean; testEmail: string; delaySeconds: number }) {
+export type SendItem = { id: string; to: string; subject: string; stale: boolean };
+
+export function SendBar({ items, testMode, testEmail, delaySeconds }: { items: SendItem[]; testMode: boolean; testEmail: string; delaySeconds: number }) {
+  const ids = items.map((i) => i.id);
+  const stale = items.filter((i) => i.stale).length;
   const router = useRouter();
   const [confirming, setConfirming] = useState(false);
   const [running, setRunning] = useState(false);
@@ -25,20 +29,24 @@ export function SendBar({ ids, testMode, testEmail, delaySeconds }: { ids: strin
     let delay = delaySeconds;
     let sent = 0;
     let failed = 0;
+    let unrecorded = '';
     let note: Log | null = null;
     setDone(0);
     for (const id of ids) {
       if (stop.current) { note = { text: 'Stopped. The remaining emails were not sent.', tone: 'warn' }; break; }
       // Try again after "too soon" answers (the server says how long to wait), at most 3 times.
-      let result: 'sent' | 'failed' | 'limit' = 'failed';
+      let result: 'sent' | 'failed' | 'limit' | 'unrecorded' = 'failed';
       for (let attempt = 0; attempt < 3; attempt++) {
         const res = await fetch(`/api/emails/${id}/send`, { method: 'POST' });
         const body = await res.json().catch(() => ({}));
         if (res.ok) { delay = body.delay_seconds ?? delay; result = 'sent'; break; }
+        // The mail WAS sent but could not be recorded: show the server's message and stop, so nobody sends it again.
+        if (res.status === 409 && body.reason === 'sent_not_recorded') { result = 'unrecorded'; unrecorded = typeof body.error === 'string' ? body.error : 'The email WAS sent, but it could not be recorded. Do not send it again; tell the owner.'; break; }
         if (res.status === 429 && body.reason === 'daily_limit') { result = 'limit'; break; }
         if (res.status === 429 && body.reason === 'too_soon') { await sleep((body.retry_after_seconds || delay) + 1); continue; }
         break; // any other refusal: this email is skipped, the next one is tried
       }
+      if (result === 'unrecorded') { sent++; note = { text: `${unrecorded} Sending stopped. ${sent} sent so far; the remaining emails were not sent.`, tone: 'error' }; break; }
       if (result === 'limit') { note = { text: 'The daily sending limit is reached. Sending stopped.', tone: 'warn' }; break; }
       if (result === 'sent') sent++; else failed++;
       setDone(sent + failed);
@@ -67,6 +75,11 @@ export function SendBar({ ids, testMode, testEmail, delaySeconds }: { ids: strin
           {ids.length} approved {ids.length === 1 ? 'email' : 'emails'} will be sent, one at a time, {delaySeconds} seconds apart.
           {testMode ? <strong> Test mode: all go to {testEmail}.</strong> : <strong> Test mode is off: these go to the real creators.</strong>}
         </p>
+        <ul style={{ margin: '12px 0 0', paddingLeft: 20 }}>
+          {items.slice(0, 10).map((i) => <li key={i.id}>{i.to}: {i.subject}</li>)}
+        </ul>
+        {items.length > 10 ? <p className="muted" style={{ margin: '4px 0 0' }}>and {items.length - 10} more.</p> : null}
+        {stale > 0 ? <p style={{ margin: '12px 0 0' }}><strong>{stale} {stale === 1 ? 'was' : 'were'} approved more than 24 hours ago.</strong> Check {stale === 1 ? 'it' : 'them'} again before sending.</p> : null}
       </Modal>
     </div>
   );

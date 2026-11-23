@@ -3,7 +3,6 @@
 import 'server-only';
 import { searchFilter, SORT_COLUMN, type Filters } from './filters';
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
 export function applyFilters(query: any, f: Filters): any {
   let q = query;
   const or = searchFilter(f.q);

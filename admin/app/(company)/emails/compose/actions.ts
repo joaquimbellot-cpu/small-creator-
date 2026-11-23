@@ -49,37 +49,40 @@ export async function draftAction(_prev: ComposeState, form: FormData): Promise<
   // Blocked creators are skipped here as well (the database refuses them too).
   const creators = await creatorsByIds(supabase, input.creators);
   const allowed = creators.filter((c) => !c.blocked);
-  const failed: string[] = creators.filter((c) => c.blocked).map((c) => c.full_name);
+  // Why drafts failed, as short codes with counts (names are not put in the address).
+  const failed: Record<string, number> = {};
+  const fail = (code: string, n = 1) => { failed[code] = (failed[code] ?? 0) + n; };
+  fail('blocked', creators.length - allowed.length);
   const mock = isMockMode();
+  // 'template' for template and mock drafts, 'claude' for a goal written by Claude.
+  const source = mock || instruction.kind === 'template' ? 'template' : 'claude';
   let saved = 0;
   const started = Date.now();
-  const notDrafted: string[] = [];
 
   // A few at a time: faster than one by one, gentle on the API rate limit.
   for (let i = 0; i < allowed.length; i += 5) {
     if (Date.now() - started > START_BATCHES_UNTIL_MS) {
-      notDrafted.push(...allowed.slice(i).map((c) => c.full_name));
+      fail('late', allowed.length - i);
       break;
     }
     await Promise.all(
       allowed.slice(i, i + 5).map(async (c) => {
         const result = await draftEmail(toFacts(c), instruction);
-        if (!result.ok) return void failed.push(c.full_name);
+        if (!result.ok) return void fail(result.reason);
         const { data, error } = await supabase
           .from('emails')
-          .insert({ creator_id: c.id, to_email: c.email, subject: result.draft.subject, body: result.draft.body, template_id: templateId })
+          .insert({ creator_id: c.id, to_email: c.email, subject: result.draft.subject, body: result.draft.body, template_id: templateId, source })
           .select('id')
           .single();
-        if (error || !data) return void failed.push(c.full_name);
+        if (error || !data) return void fail('save');
         saved += 1;
         await logAudit('email.drafted', 'email', data.id, { mock, by: staff.email });
       }),
     );
   }
 
-  // Creators never reached before the time ran out are listed too, so nothing is silently dropped.
-  failed.push(...notDrafted.map((n) => `${n} (not drafted, run it again)`));
   const q = new URLSearchParams({ drafted: String(saved), mock: mock ? '1' : '0' });
-  if (failed.length) q.set('failed', failed.join(', ').slice(0, 500));
+  const codes = Object.entries(failed).filter(([, n]) => n > 0).map(([code, n]) => `${code}-${n}`);
+  if (codes.length) q.set('failed', codes.join(','));
   redirect(`/emails/review?${q}`);
 }
