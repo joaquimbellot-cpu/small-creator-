@@ -127,14 +127,15 @@ Read this first in a new chat. It replaces the history of the previous one.
 - **Done (23 November):** 111 issues found, 99 fixed, 8 need the owner, 4 not fixed with reasons; a QA re-test (9/10) and a security re-audit (8/10) followed, and their follow-ups were fixed. All test suites pass. The owner's to-do list is section 8 of `docs/audit/FULL-REPORT.md`: four new migrations go to the live database BEFORE the code is deployed.
 - Reports: `docs/audit/` (`AGENT-BRIEF.md`, `FIX-BRIEF.md`, `00-project-map.md`, `01` to `08` (audit), `09` and `10` (verification), `fixes/` (one log per fix group), `FULL-REPORT.md`). Agents use the local test stack and fake data only. Database changes are new migration files: the owner applies them in production first, then deploys.
 
-## Advertising campaign (started 23 November)
+## Advertising campaign (version 2 started 24 November)
 
-- Everything is in `marketing/`. Start with `marketing/README.md`. `marketing/brand-brief.md` is the only source of facts for ads.
-- **Built, not published:** 3 static ads in 1:1 and 9:16 and 2 silent caption-led 9:16 videos, in `marketing/assets/`. They use the website's own pictures; type, logo and motion come from `marketing/tools/` (needs the two `@fontsource` packages, Playwright and ffmpeg).
-- **Not generated:** the talking-presenter video (Concept A) and the voice-over video (Concept B). Their prompts are in `marketing/generation-sheet.md`, written to be pasted into Claude chat, where the owner's Higgsfield Ultra unlimited allowance works. It does not work from Claude Code, and the sandbox cannot download from Higgsfield's file hosts.
-- Higgsfield credits spent: 0. Balance 7.6. Claude does not spend credits without the owner's explicit go.
-- For creators first, button "Apply", YouTube Shorts and Instagram, English. Brands are a later round.
-- Before publishing, the owner checks the four points in section 11 of the brief, and turns on each platform's AI-content label. Claude never publishes and never spends ad money.
+- **Version 1 is archived** in `marketing/v1/`. The owner found it bland; do not reuse its ideas.
+- **Version 2 is in `marketing/v2/`.** It sells the creator offer ("a sponsor chosen for your small channel, free to apply"), never the company or its story. `product-brief.md` is the only source of facts.
+- Done: research, angles, 30 concepts in two rounds (`ideas.md`), scoring (`scorecard.md`), the leader's choice (`selection.md`), storyboards and a sketch page (`sketches/`, open `sketches/index.html`).
+- **Waiting for the owner:** approve, change or kill each of the five sketched concepts, and set the credit budget. Nothing has been generated.
+- Higgsfield credits spent: 0. Balance 7.6. Claude does not spend credits without the owner's explicit "go" for a quoted batch. Unlimited generations do not work from Claude Code, and the sandbox cannot download from Higgsfield's file hosts, so generated files cannot be checked or saved here unless those hosts are allowed.
+- The commission rates and "reply within 2 working days" are still unconfirmed and stay out of the ads.
+- Claude never publishes and never spends ad money. The owner turns on each platform's AI-content label.
 
 ## Working in the sandbox
 
