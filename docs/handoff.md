@@ -44,6 +44,8 @@ Read this first in a new chat. It replaces the history of the previous one.
 
 - **Test mode is off** (turned off at the owner's request, in the `settings` table). No email has been sent.
 - **The sender postal address is still empty,** so the database refuses every real send (`postal_address_missing`). SMTP (Gmail) is not set either. To send, the owner needs both. Settings, then Sending, takes the postal address.
+- **Gmail variables set in Netlify on 23 November** (not secret): `SMTP_HOST`=smtp.gmail.com, `SMTP_PORT`=465, `SMTP_SECURE`=true, `SMTP_USER` and `EMAIL_FROM` = the business address on the Contact page (`src/content/site.json`). **`SMTP_PASS` is not set:** it is the Gmail app password, and only the owner types it in (Netlify, Environment variables, tick "Contains secret values"). The new variables take effect at the next deploy, so redeploy after `SMTP_PASS` is in.
+- Netlify MCP `manage-env-vars` upsert: send only `siteId`, `upsertEnvVar`, `envVarKey`, `envVarValue`. Adding `newVarContext` or `newVarScopes` gave a 403. Its `getAllEnvVars` output includes the person who last edited a variable, with their email: never copy that anywhere.
 - To turn test mode back on: Settings, then Sending, tick **Test mode**. It also needs a test address.
 
 ## Netlify environment variables (set)
