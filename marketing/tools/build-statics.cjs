@@ -28,8 +28,8 @@ function html(ad, w, h) {
 *{box-sizing:border-box;margin:0}
 body{width:${w}px;height:${h}px;overflow:hidden;background:#0E0E0E;color:#F1EFEB;font-family:"Instrument Sans",sans-serif;font-weight:500}
 .bg{position:absolute;inset:0;background:url(${img}) ${(tall ? ad.focusTall : ad.focus) || '50% 50%'}/cover no-repeat;transform:scale(${(tall ? ad.zoomTall : ad.zoom) || 1});transform-origin:${(tall ? ad.focusTall : ad.focus) || '50% 50%'}}
-.veil{position:absolute;inset:0;background:linear-gradient(180deg,rgba(14,14,14,.62) 0%,rgba(14,14,14,.12) 26%,rgba(14,14,14,.18) 46%,rgba(14,14,14,.86) 78%,rgba(14,14,14,.94) 100%)}
-.logo{position:absolute;left:${72 * u}px;top:${(tall ? 150 : 64) * u}px;height:${46 * u}px;width:auto}
+.veil{position:absolute;inset:0;background:linear-gradient(180deg,rgba(14,14,14,.78) 0%,rgba(14,14,14,.5) 14%,rgba(14,14,14,.14) 30%,rgba(14,14,14,.2) 42%,rgba(14,14,14,${ad.veil || .8}) 62%,rgba(14,14,14,.92) 80%,rgba(14,14,14,.96) 100%)}
+.logo{position:absolute;left:${72 * u}px;top:${(tall ? 192 : 64) * u}px;height:${46 * u}px;width:auto}
 .block{position:absolute;left:${72 * u}px;right:${72 * u}px;bottom:${(tall ? 330 : 84) * u}px}
 h1{font-family:Newsreader,serif;font-weight:300;font-size:${(tall ? 112 : 96) * u * (ad.scale || 1)}px;line-height:1.02;letter-spacing:-.015em;text-wrap:balance}
 h1 em{font-style:italic;color:#A8B4FF}
@@ -37,8 +37,8 @@ h1 em{font-style:italic;color:#A8B4FF}
 .row{margin-top:${40 * u}px;display:flex;align-items:center;gap:${28 * u}px}
 .btn{background:#F1EFEB;color:#0E0E0E;font-weight:600;font-size:${30 * u}px;padding:${17 * u}px ${44 * u}px;border-radius:999px;display:flex;align-items:center;gap:${14 * u}px}
 .btn i{width:${12 * u}px;height:${12 * u}px;border-radius:50%;background:#2B44D6;display:block}
-.foot{font-size:${24 * u}px;opacity:.82;line-height:1.3}
-.ai{position:absolute;right:${72 * u}px;top:${(tall ? 162 : 76) * u}px;font-size:${19 * u}px;opacity:.7;letter-spacing:.02em}
+.foot{font-size:${28 * u}px;opacity:.9;line-height:1.3}
+.ai{position:absolute;right:${72 * u}px;top:${(tall ? 200 : 72) * u}px;font-size:${27 * u}px;opacity:.92;letter-spacing:.01em;text-shadow:0 0 ${14 * u}px rgba(14,14,14,.9),0 0 ${4 * u}px rgba(14,14,14,.8)}
 </style><div class="bg"></div><div class="veil"></div>${logo}<div class="ai">Image made with AI</div>
 <div class="block"><h1>${rich(ad.headline)}</h1><p class="sub">${rich(ad.sub)}</p>
 <div class="row"><span class="btn"><i></i>Apply</span><span class="foot">${rich(ad.footer)}</span></div></div>`;

@@ -43,9 +43,9 @@ Layout for all three (as built in `marketing/assets/static/`): one of the websit
 
 ## 3. Main texts
 
-**Short (about 125 characters)** (110 characters)
+**Short (about 125 characters)** (130 characters)
 
-A person looks at your channel and chooses a sponsor to suggest. You can turn it down. Joining is free. Apply.
+A person looks at your channel and chooses a sponsor to suggest. You can turn down any sponsor we suggest. Joining is free. Apply.
 
 **Medium (about 250 characters)** (227 characters)
 

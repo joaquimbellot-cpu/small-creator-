@@ -1,8 +1,30 @@
 [
-  { "id": "static-1_no-deal-no-commission", "image": "src/assets/img/band.jpg", "focus": "30% 50%", "focusTall": "22% 50%",
-    "headline": "No deal,\n*no commission.*", "sub": "Joining is free. Commission comes only after a deal.", "footer": "Sponsors for small YouTube\nchannels, matched by hand." },
-  { "id": "static-2_your-yes", "image": "src/assets/img/difference-3.jpg", "focus": "50% 30%", "focusTall": "50% 40%",
-    "headline": "Nothing goes ahead without *your yes.*", "sub": "You can turn down any sponsor we suggest.", "footer": "For channels with 1,000\nto 50,000 subscribers." },
-  { "id": "static-3_our-work", "image": "src/assets/img/difference-2.jpg", "focus": "50% 35%", "focusTall": "50% 50%",
-    "headline": "Finding the sponsor is *our work.*", "sub": "A person looks at your channel and chooses a sponsor to suggest.", "footer": "Applying does not\npromise a sponsor." }
+  {
+    "id": "static-1_no-deal-no-commission",
+    "image": "src/assets/img/band.jpg",
+    "focus": "30% 50%",
+    "focusTall": "22% 50%",
+    "headline": "No deal,\n*no commission.*",
+    "sub": "Joining is free. Commission comes only after a deal.",
+    "footer": "Sponsors for small YouTube\nchannels, matched by hand."
+  },
+  {
+    "id": "static-2_your-yes",
+    "image": "src/assets/img/difference-3.jpg",
+    "focus": "50% 30%",
+    "focusTall": "50% 40%",
+    "headline": "Nothing goes ahead without *your yes.*",
+    "sub": "You can turn down any sponsor we suggest.",
+    "footer": "For channels with 1,000\nto 50,000 subscribers."
+  },
+  {
+    "id": "static-3_our-work",
+    "image": "src/assets/img/difference-2.jpg",
+    "focus": "20% 60%",
+    "focusTall": "30% 50%",
+    "headline": "Finding the sponsor is *our work.*",
+    "sub": "A person looks at your channel and chooses a sponsor to suggest.",
+    "footer": "Applying does not\npromise a sponsor.",
+    "veil": 0.88
+  }
 ]

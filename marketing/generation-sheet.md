@@ -12,12 +12,12 @@ Rules for every step:
 
 1. Use the Higgsfield tools only.
 2. Pass `use_unlim: true` on every generation request. It uses my unlimited allowance and makes exactly one result per request.
-3. Before each step, run the matching estimate tool (`estimate_image_cost`, `estimate_video_cost` or `estimate_audio_cost`). If anything would cost credits, STOP and tell me before generating.
+3. Before each step, run the matching estimate tool (`estimate_image_cost`, `estimate_video_cost` or `estimate_audio_cost`). If anything would cost credits, STOP and tell me before generating. This applies to every tool and step, including voice previews, the video-montage assembly, `reframe` and `virality_predictor`. If a tool has no estimate and you cannot confirm it is free, ask me first.
 4. Never publish or post anything anywhere.
 5. Never add logos, captions or text to generated frames. Logo, captions and the end card are added in Step 4 from real files.
 6. Do not rewrite, shorten or "improve" the spoken lines. Use the exact words in the quotes.
 7. No real person's likeness, no brand names, no readable text, no copyrighted music.
-8. Show me each result and wait for my OK before moving on. If a result has a flaw (extra fingers, odd eyes, stray letters, flicker, lip-sync off), say so and offer to try again.
+8. Work through Steps 1 to 4 without waiting for my OK, unless something would cost credits. Check each result yourself. If a result has a flaw (extra fingers, odd eyes, stray letters, flicker, lip-sync off, a face that looks like a known real person), generate it again, at most twice, then keep the best one and tell me about the flaw. Show me every result as you go. Stop after Step 4 and wait for me before Step 5.
 
 ---
 
@@ -32,7 +32,7 @@ Make one still of an invented presenter. It becomes the reference image for ever
 Realistic phone-camera portrait of a woman in her early 30s, light olive skin with natural texture, dark brown shoulder-length hair worn down with a slightly off-centre parting, small plain stud earrings, plain charcoal crew-neck knit sweater with no print or logo. Seated at a wooden desk, chest-up, looking straight into the lens, calm direct expression with a hint of a smile, mouth closed. Dim quiet room, one warm desk lamp to her left, plain cream wall behind, a small blue notebook with a blue pen at the lower edge of the frame. Soft film grain, muted browns, creams and blacks. Natural, not glossy. No text, no logos, no letters.
 ```
 
-Show me the portrait. Do not continue until I approve it.
+Show me the portrait, check it against the flaw list in rule 8, then continue.
 
 ---
 
@@ -47,7 +47,7 @@ Show me the portrait. Do not continue until I approve it.
 ### Clip 1 (duration 11 seconds)
 
 ```
-Handheld phone-camera video, chest-up, the woman from the reference image already in frame at the first frame, looking into the lens. Same room, same warm lamp, same blue notebook. She speaks calmly and directly, warm friendly female voice, steady even pace, short pauses between sentences, mouth moves in sync. At the start she says: "No list. No algorithm. A person chooses. Finding sponsors takes time from your videos. With Smallfold, you apply with your channel link, topic and subscriber count." She leans in slightly on the second sentence and raises one finger on "you apply". She ends with her mouth closed and a small nod. No on-screen text, no subtitles, no logos, no music.
+Handheld phone-camera video, chest-up, the woman from the reference image already in frame at the first frame, looking into the lens. Same room, same warm lamp, same blue notebook. She speaks calmly and directly, warm friendly female voice, steady even pace, short pauses between sentences, mouth moves in sync. At the start she says: "No list. No algorithm. A person chooses. You do not look for sponsors yourself. With Smallfold, you apply with your channel link, topic and subscriber count." She leans in slightly on the second sentence and raises one finger on "you apply". She ends with her mouth closed and a small nod. No on-screen text, no subtitles, no logos, no music.
 ```
 
 ### Clip 2 (duration 13 seconds)
@@ -65,7 +65,7 @@ Handheld phone-camera video, chest-up, the same woman, same room, same warm lamp
 ### 3a. Voice-over
 
 - Tool: audio generation, model `seed_audio`, voice_type `preset`, format `mp3`, `use_unlim: true`
-- Voice: use `list_voices` to confirm these two presets: "Holden" (male) `3c9d6053-6334-592c-8997-4e325286af3f` and "Maeve" (female) `64cf4f1a-61c8-5938-9aea-83d12b2e1d13`. Nobody has listened to them yet. Generate a short preview of each (the first sentence only) and let me hear both. If I do not choose, pick the calmer one. Then generate the full text with that voice.
+- Voice: use `list_voices` to confirm these two presets: "Holden" (male) `3c9d6053-6334-592c-8997-4e325286af3f` and "Maeve" (female) `64cf4f1a-61c8-5938-9aea-83d12b2e1d13`. Nobody has listened to them yet. Generate a short preview of each (the first sentence only) and let me hear both. Pick the calmer one and generate the full text with that voice. Tell me which voice you used, and remind me to listen once before publishing to be sure it does not sound like a known real person.
 - Style: calm, warm, unhurried, plain-spoken, no drama. Aim for about 22 to 24 seconds in total. If it runs outside 21 to 25 seconds, tell me.
 
 ```
@@ -120,7 +120,7 @@ First load the workflow with `get_workflow_instructions` `{workflow: "video-mont
 | Time | Caption |
 |---|---|
 | 0.0 to 2.5 s | No list. No algorithm. |
-| 2.5 to 5.5 s | Finding sponsors takes time. |
+| 2.5 to 5.5 s | No searching on your side. |
 | 5.5 to 11.0 s | 1. You apply |
 | 11.0 to 17.5 s | 2. A person chooses / 3. You say yes or no |
 | 17.5 to 19.5 s | Nothing without your yes. |
@@ -147,11 +147,11 @@ First load the workflow with `get_workflow_instructions` `{workflow: "video-mont
 
 **Both concepts**
 
-- End on the end-card image. I will upload it from `marketing/assets/end-card_9x16.png` with `media_upload`. Hold it for about 2 seconds, with a short fade from the last clip. Do not generate an end card yourself.
-- Overlay my logo file `src/assets/logo/logo-on-ink.svg` top-left for the whole video, only if the workflow allows it. If not, leave it off and tell me.
+- End on the end-card image. Import it with `media_import_url` from `https://raw.githubusercontent.com/joaquimbellot-cpu/small-creator-/refs/heads/claude/wonderful-meitner-sjwb8y/marketing/assets/end-card_9x16.png`. If the import fails, ask me to upload `marketing/assets/end-card_9x16.png`. Hold it for about 2 seconds, with a short fade from the last clip. Do not generate an end card yourself.
+- Overlay my logo top-left for the whole video, only if the workflow allows it. Import it with `media_import_url` from `https://raw.githubusercontent.com/joaquimbellot-cpu/small-creator-/refs/heads/claude/wonderful-meitner-sjwb8y/marketing/assets/logo-on-ink.png` (transparent PNG). If that is not possible, leave the logo off and tell me. Never redraw or generate the logo.
 - No added music.
 
-Show me both finished videos and wait for my OK.
+Show me both finished videos, list any flaws you noticed, and wait for my OK before Step 5.
 
 ---
 

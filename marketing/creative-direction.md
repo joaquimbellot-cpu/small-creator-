@@ -5,7 +5,7 @@ Source of facts: `marketing/brand-brief.md` (section 3 = never say, section 8 = 
 ## 1. Visual style rules
 
 - Dim, quiet room. One warm desk lamp is the only light source. Soft film grain over everything.
-- Wood desk, plain cream wall, nothing on the wall. No posters, no windows, no plants, no shelves.
+- Wood desk, plain cream wall, nothing on the wall. No posters, no shelves. For newly generated clips, also no windows and no plants (some of the website's existing pictures do show a window, a curtain or a small plant; that is fine).
 - Palette: muted browns, creams, blacks. Exactly one small cobalt-blue object in frame: a blue notebook, with a blue pen on it. Blue is never a background and never a second object.
 - Natural, not glossy. No lens flares, no neon, no sparkles, no heavy skin smoothing.
 - Concept A feels like a phone filmed it: handheld, small natural sway, chest-up, eye contact.
@@ -33,7 +33,7 @@ Two generated clips, both with the presenter. Clip 1 is 11 s, clip 2 is 13 s, to
 | Clip | Time | Framing | Action | Spoken line | On-screen caption (added later) |
 |---|---|---|---|---|---|
 | 1 | 0-2.5 s | Chest-up, handheld, eye contact | Already in frame at frame 1, looking into the lens, calm and direct | "No list. No algorithm. A person chooses." | No list. No algorithm. |
-| 1 | 2.5-5.5 s | Same, tiny lean toward camera | Leans in slightly | "Finding sponsors takes time from your videos." | Finding sponsors takes time. |
+| 1 | 2.5-5.5 s | Same, tiny lean toward camera | Leans in slightly | "You do not look for sponsors yourself." | No searching on your side. |
 | 1 | 5.5-11 s | Same | Holds up one finger on "you apply" | "With Smallfold, you apply with your channel link, topic and subscriber count." | 1. You apply |
 | 2 | 11-17.5 s | Same framing, same pose as clip 1's last frame | Small nod, then a single gentle gesture on "chooses" | "A person looks at your channel and chooses a sponsor to suggest. You say yes or no." | 2. A person chooses / 3. You say yes or no |
 | 2 | 17.5-21.5 s | Same | Steady, open hand palm up | "Nothing goes ahead without your yes. No deal, no commission." | Nothing without your yes. / No deal, no commission. |
@@ -46,7 +46,7 @@ The scripts list quick inserts (empty desk with camera, hands writing, blank car
 
 ## 4. Concept B shot list (voice-over on desk and hands, 9:16)
 
-Voice-over is the master timeline (about 23 s). Five silent clips, about 25 s of footage in total, trimmed to fit the voice.
+Voice-over is the master timeline (about 23 s). Five silent clips, about 25 s of footage in total, trimmed to fit the voice. The times in this table are the raw clip lengths; in the edit the picture follows the voice as timed in `scripts/concept-b.md` (hook 0 to 2.5 s, founder line 2.5 to 10.5 s, solution 10.5 to 16 s, proof 16 to 20 s, call to action 20 to 23 s).
 
 | Shot | Time | What we see | Camera movement | Voice-over line | On-screen text (added later) |
 |---|---|---|---|---|---|
@@ -63,15 +63,15 @@ Also added afterwards: "Made with AI" label bottom corner, logo top-left.
 
 The three static ads are already built from the website's own Higgsfield pictures with real type and logo:
 
-1. `band.jpg`
-2. `difference-3.jpg`
-3. `difference-2.jpg`
+1. `band.jpg`: a hand lifting one blank card away from a row of cards on a dark wooden table.
+2. `difference-3.jpg`: a person seen from behind with a closed laptop, near a window.
+3. `difference-2.jpg`: a camera on a tripod facing an empty wooden chair, with a lamp, a curtain and a small plant.
 
 Nothing has to be generated. Optional, only if the owner wants fresh pictures: one prompt each (nano_banana_pro, 9:16, resolution 2k, `use_unlim: true`). The prompts are written to the brand look; if a website picture shows something different, adjust the object list but keep the rules. Each leaves empty space in the upper third for real type later.
 
-- Static 1 (band.jpg): "Quiet dim room, one warm desk lamp, wooden desk, plain cream wall. A small camera on a tiny tripod on the desk, blank body, no logos. A small blue notebook with a blue pen at the lower edge. Soft film grain, muted browns, creams and blacks. Empty space in the upper third. No text, no letters, no people."
-- Static 2 (difference-3.jpg): "Overhead view of a wooden table in a dim room lit by one warm lamp. Several blank cream cards laid out in a row, a hand reaching in to choose one. One small blue pen beside the cards. Film grain, muted browns and creams. No text, no logos, no face."
-- Static 3 (difference-2.jpg): "Close view of hands from behind at a wooden desk, warm lamp light, cream wall. One hand holds a blue pen over a blue notebook with blank pages. Film grain, muted browns, creams and blacks. Empty space above. No text, no letters, no face."
+- Static 1 (replaces band.jpg): "Overhead view of a dark wooden table in a dim room lit by one warm lamp. A row of blank cream cards, one hand lifting a single card away from the row. One small blue pen beside the cards. Soft film grain, muted browns, creams and blacks. Empty space in the upper third. No text, no letters, no logos, no face."
+- Static 2 (replaces difference-3.jpg): "A person seen from behind, sitting in a dim room lit by one warm lamp, a closed laptop on their knees, a small blue notebook beside them. Plain cream wall. Soft film grain, muted browns, creams and blacks. Empty space above. No text, no letters, no logos, no face."
+- Static 3 (replaces difference-2.jpg): "A small camera on a tripod, blank body with no logos or badges, facing an empty wooden chair in the corner of a dim room lit by one warm lamp. A small blue notebook on the chair. Plain cream wall. Soft film grain, muted browns, creams and blacks. Empty space above. No text, no letters, no people."
 
 ## 6. Consistency checklist
 

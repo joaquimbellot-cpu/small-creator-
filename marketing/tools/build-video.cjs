@@ -49,19 +49,19 @@ h1 em,h2 em{font-style:italic;color:#A8B4FF}
 .line{display:block;will-change:transform,opacity}
 .small{margin-top:34px;font-size:40px;line-height:1.3;opacity:.92}
 .tag{margin-bottom:28px;font-size:30px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:#A8B4FF}
-.top{position:absolute;left:76px;right:76px;top:150px;display:flex;justify-content:space-between;align-items:center;z-index:5}
+.top{position:absolute;left:76px;right:76px;top:192px;display:flex;justify-content:space-between;align-items:center;z-index:40}
 .logo{height:50px;width:auto}
-.ai{font-size:24px;opacity:.75;letter-spacing:.02em}
+.ai{font-size:30px;opacity:.92;letter-spacing:.01em;text-shadow:0 0 14px rgba(14,14,14,.9)}
 .end{background:#F1EFEB;color:#0E0E0E}
-.endlogo{position:absolute;left:76px;top:150px;height:50px;width:auto}
+.endlogo{position:absolute;left:76px;top:192px;height:50px;width:auto}
 .endblock{position:absolute;left:76px;right:76px;top:620px}
-h2{font-family:Newsreader,serif;font-weight:300;font-size:128px;line-height:1.02;letter-spacing:-.015em}
+h2{font-family:Newsreader,serif;font-weight:300;font-size:168px;line-height:1.02;letter-spacing:-.015em}
 .end h2 em{color:#2B44D6}
 .endsub{margin-top:36px;font-size:42px;line-height:1.3;color:#5C5A55}
 .btn{margin-top:64px;display:inline-flex;align-items:center;gap:20px;background:#0E0E0E;color:#F1EFEB;font-weight:600;font-size:52px;padding:30px 84px;border-radius:999px}
 .btn i{width:18px;height:18px;border-radius:50%;background:#A8B4FF;display:block}
 .url{margin-top:44px;font-size:36px;font-weight:600}
-.aiend{position:absolute;right:76px;top:162px;font-size:24px;color:#5C5A55}
+.aiend{position:absolute;right:76px;top:201px;font-size:30px;color:#5C5A55;z-index:50}
 </style>${beats}
 <div class="top" id="top">${svg('logo-on-ink.svg', 'logo')}<span class="ai">Made with AI</span></div>
 <span class="aiend" id="aiend" style="opacity:0">Made with AI</span>

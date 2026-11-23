@@ -45,15 +45,17 @@ People who run a YouTube channel with 1,000 to 50,000 subscribers. They make vid
 
 ## 2. Angles
 
+Leader's ruling on voice: hooks that say "we" or "our" are for on-screen text, captions and ad copy only. When a presenter or voice-over speaks them, "we" becomes "Smallfold" ("Smallfold looks at the small ones.").
+
 Five angles. Each hook is 10 words or fewer and can be spoken in about 2 seconds.
 
 ### Angle 1: A Person Picks
 **Idea:** A real person looks at your channel and chooses the sponsor, by hand.
 **Rests on:** A person chooses each sponsor by hand. No automatic list, no algorithm. "Matched by hand." "Chosen by hand, one channel at a time."
 **Hooks**
-1. A person picks your sponsor. Not a list.
+1. A person chooses a sponsor to suggest. Not a list.
 2. No algorithm. Someone reads about your channel.
-3. Your sponsor is chosen by hand.
+3. Each sponsor is chosen by hand.
 
 **Best format:** talking-presenter video.
 
@@ -83,7 +85,7 @@ Five angles. Each hook is 10 words or fewer and can be spoken in about 2 seconds
 **Rests on:** For channels with 1,000 to 50,000 subscribers. "Only small channels." "We look at the small ones." Founder line: started by a YouTube creator with a small channel, who found that sponsors only looked at big ones. "Created by a small channel, for small channels." Tell the founder line as plain fact, with no mocking.
 **Hooks**
 1. We look at the small ones.
-2. Got 1,000 to 50,000 subscribers? Read on.
+2. 1,000 to 50,000 subscribers? This is for you.
 3. Created by a small channel, for small channels.
 
 **Best format:** voice-over video.
@@ -156,6 +158,6 @@ How to read them together: hook rate compares openings, CTR compares messages an
 ## 6. Open points for the owner
 
 1. The brief is still a draft. Founder line, "We reply within 2 working days", and the commission rates (10%, 8%, 5%) are all waiting for confirmation. Ads should not use them until confirmed.
-2. Voice: section 7 of the brief says "you and we", but the presenter rule says the presenter speaks about "Smallfold". Scripts should use "Smallfold" for the presenter and keep "we" for text on screen only if the owner agrees. Hooks above that use "we" are for on-screen text or may be rewritten as "Smallfold".
+2. Voice: section 7 of the brief says "you and we", but the presenter rule says the presenter speaks about "Smallfold". Scripts should use "Smallfold" for the presenter and keep "we" for text on screen only if the owner agrees. Hooks above that use "we" are for on-screen text or may be rewritten as "Smallfold". **Settled by the team leader:** see the ruling at the top of section 2.
 3. The tagline "A sponsor chosen for your channel" and "Finding the sponsor is our work" could be read as a promise of a sponsor. Scripts should add that applying does not promise a sponsor, or use wording that says the match is chosen when a sponsor is found.
 4. The brief gives no placement for the commission bands in a short video. They are best left out of the 15 to 30 s videos and kept to one static or the landing page.

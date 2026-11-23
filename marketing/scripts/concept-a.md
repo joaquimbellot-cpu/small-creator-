@@ -19,7 +19,7 @@ Reason for H1: it answers the biggest doubt (an automatic list) in seven short w
 | Time | Spoken line | On-screen text (max 6 words) | What we see |
 |---|---|---|---|
 | 0-2.5 s HOOK | No list. No algorithm. A person chooses. | No list. No algorithm. | Presenter already in frame at frame 1, looking into camera, calm and direct, warm lamp left, blue notebook on the desk. |
-| 2.5-5.5 s PROBLEM | Finding sponsors takes time from your videos. | Finding sponsors takes time. | Presenter slightly leans in. Quick insert of an empty wooden desk with a camera on a small tripod. |
+| 2.5-5.5 s PROBLEM | You do not look for sponsors yourself. | No searching on your side. | Presenter slightly leans in. Quick insert of an empty wooden desk with a camera on a small tripod. |
 | 5.5-11.0 s SOLUTION, step 1 | With Smallfold, you apply with your channel link, topic and subscriber count. | 1. You apply | Presenter counts one finger. Insert: hands writing in the blue notebook with the blue pen. |
 | **CLEAN CUT POINT at 11.0 s (end of clip 1, 11 s)** | | | Hold on the presenter, mouth closed, small nod. Start clip 2 from the same pose. |
 | 11.0-17.5 s SOLUTION, steps 2 and 3 | A person looks at your channel and chooses a sponsor to suggest. You say yes or no. | 2. A person chooses / 3. You say yes or no | Insert: blank cards laid out on a table, a hand choosing one. Back to presenter on "You say yes or no". |
@@ -32,11 +32,11 @@ Hard rule for generation: no logo and no brand name inside the generated video. 
 
 ## Text-to-speech paragraphs (one per hook, 57 words each)
 
-**H1:** No list. No algorithm. A person chooses. Finding sponsors takes time from your videos. With Smallfold, you apply with your channel link, topic and subscriber count. A person looks at your channel and chooses a sponsor to suggest. You say yes or no. Nothing goes ahead without your yes. No deal, no commission. Joining is free. Apply.
+**H1:** No list. No algorithm. A person chooses. You do not look for sponsors yourself. With Smallfold, you apply with your channel link, topic and subscriber count. A person looks at your channel and chooses a sponsor to suggest. You say yes or no. Nothing goes ahead without your yes. No deal, no commission. Joining is free. Apply.
 
-**H2:** Someone reads about your channel. No algorithm. Finding sponsors takes time from your videos. With Smallfold, you apply with your channel link, topic and subscriber count. A person looks at your channel and chooses a sponsor to suggest. You say yes or no. Nothing goes ahead without your yes. No deal, no commission. Joining is free. Apply.
+**H2:** Someone reads about your channel. No algorithm. You do not look for sponsors yourself. With Smallfold, you apply with your channel link, topic and subscriber count. A person looks at your channel and chooses a sponsor to suggest. You say yes or no. Nothing goes ahead without your yes. No deal, no commission. Joining is free. Apply.
 
-**H3:** Sponsors for small channels, matched by hand. Finding sponsors takes time from your videos. With Smallfold, you apply with your channel link, topic and subscriber count. A person looks at your channel and chooses a sponsor to suggest. You say yes or no. Nothing goes ahead without your yes. No deal, no commission. Joining is free. Apply.
+**H3:** Sponsors for small channels, matched by hand. You do not look for sponsors yourself. With Smallfold, you apply with your channel link, topic and subscriber count. A person looks at your channel and chooses a sponsor to suggest. You say yes or no. Nothing goes ahead without your yes. No deal, no commission. Joining is free. Apply.
 
 ## Caption and hashtags
 
