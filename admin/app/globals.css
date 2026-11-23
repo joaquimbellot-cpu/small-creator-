@@ -69,7 +69,8 @@ button, input, select, textarea { font: inherit; }
 .state__title { font-size: clamp(1.75rem, 3vw, 2.5rem); line-height: 1.1; margin-bottom: var(--s-3); }
 .state__text { color: var(--fg-muted); max-width: var(--measure); margin: 0 0 var(--s-5); }
 .state__actions { display: flex; gap: var(--s-3); flex-wrap: wrap; align-items: center; }
-.loading { padding: var(--s-6) 0; color: var(--fg-muted); }
-.loading__bar { height: 2px; width: 40%; background: var(--accent-fg); margin-bottom: var(--s-4); animation: loading-slide 1.2s var(--ease) infinite; }
-@keyframes loading-slide { from { transform: translateX(-100%); } to { transform: translateX(250%); } }
-@media (prefers-reduced-motion: reduce) { .loading__bar { animation: none; } }
+/* Pending line under a navigation link while its page loads (components/shell/NavLinks.tsx). */
+.nav-pending { position: absolute; left: 0; right: 0; bottom: -4px; height: 2px; overflow: hidden; pointer-events: none; }
+.nav-pending.is-pending::after { content: ''; position: absolute; inset: 0; width: 40%; background: var(--accent-fg); animation: nav-pending 1.2s var(--ease) infinite; }
+@keyframes nav-pending { from { transform: translateX(-100%); } to { transform: translateX(250%); } }
+@media (prefers-reduced-motion: reduce) { .nav-pending.is-pending::after { animation: none; width: 100%; } }

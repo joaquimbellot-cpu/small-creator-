@@ -18,7 +18,6 @@ const NEW_EMAIL = 'zz-claude-e2e@example.test';
 const PSQL_ENV = { ...process.env, PGHOST: '127.0.0.1', PGPORT: '54322', PGUSER: 'postgres', PGDATABASE: 'postgres' };
 const psql = (sql) => execFileSync('psql', ['-X', '-q', '-t', '-A', '-v', 'ON_ERROR_STOP=1', '-c', sql], { env: PSQL_ENV, encoding: 'utf8' }).trim();
 const q = (s) => `'${String(s).replace(/'/g, "''")}'`;
-const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 let passed = 0;
 const failures = [];

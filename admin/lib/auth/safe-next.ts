@@ -1,5 +1,7 @@
 // Guards ?next= redirects: only same-site paths like /creators?q=a are allowed.
 const SAFE = /^\/[A-Za-z0-9_\-/?=&%.]*$/;
+// Control characters are exactly what this rejects, so the lint rule against them does not apply here.
+// oxlint-disable-next-line no-control-regex
 const BAD = /[\\\u0000-\u001f\u007f]/;
 
 export function safeNext(next: unknown, fallback = '/overview'): string {

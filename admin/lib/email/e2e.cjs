@@ -32,7 +32,6 @@ function check(name, ok, extra = '') {
   console.log(`${ok ? 'PASS' : 'FAIL'}  ${name}${ok ? '' : '  ' + extra}`);
   if (!ok) failures++;
 }
-const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 async function mail(subjectPart) {
   // newest message whose subject contains the text
@@ -183,7 +182,7 @@ async function setSettings(page, { limit, delay, testMode, postal }) {
     await op.goto(`${SITE}/emails/${E.Alpha}`);
     check('detail shows body, footer and people', (await op.textContent('body')).includes('Smallfold, sponsors for small YouTube channels') && (await op.textContent('body')).includes('Drafted by'));
     await op.getByRole('button', { name: 'Mark as replied' }).click();
-    await op.getByText('replied', { exact: true }).first().waitFor();
+    await op.getByText(/^replied$/i).first().waitFor(); // the status badge reads "Replied"
     check('mark as replied', (await db('GET', 'emails', `?id=eq.${E.Alpha}&select=status`))[0].status === 'replied');
     await db('PATCH', 'emails', `?id=eq.${left}`, { status: 'failed', error: 'ZZ Test smtp error' });
     await op.goto(`${SITE}/emails/${left}`);
@@ -285,12 +284,15 @@ async function setSettings(page, { limit, delay, testMode, postal }) {
     console.log('FAIL  script error:', e.message);
   } finally {
     await browser.close();
-    // ---- cleanup: ZZ creators (their emails go with them), suppression rows, templates; settings restored
+    // ---- cleanup: ZZ emails first (a sent email now blocks deleting its creator), then ZZ creators,
+    // suppression rows and templates; settings restored
     if (parked.length) await db('PATCH', 'emails', `?id=in.(${parked.map((p) => p.id).join(',')})`, { status: 'approved' });
     await db('DELETE', 'suppression_list', '?email=like.zz.*');
+    const zz = await db('GET', 'creators', '?full_name=like.ZZ Test*&select=id');
+    if (zz.length) await db('DELETE', 'emails', `?creator_id=in.(${zz.map((c) => c.id).join(',')})`);
     await db('DELETE', 'creators', '?full_name=like.ZZ Test*');
     await db('DELETE', 'email_templates', '?name=like.ZZ Test*');
-    const { id, updated_at, updated_by, ...keep } = original;
+    const { id: _id, updated_at: _updatedAt, updated_by: _updatedBy, ...keep } = original;
     await db('PATCH', 'settings', '?id=eq.1', keep);
     console.log('cleaned up; settings restored');
   }

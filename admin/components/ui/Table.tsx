@@ -11,8 +11,9 @@ export const tableCell = { num: s.num, actions: s.actions };
 export function Table({ children, clickable, label }: { children: ReactNode; clickable?: boolean; label?: string }) {
   return (
     // A scroll box the keyboard can reach (it is a labelled region only when it has a label).
+    // The table keeps its own name too: screen readers announce it, and the browser tests find tables by it.
     <div className={s.tableWrap} {...(label ? { role: 'region', tabIndex: 0, 'aria-label': label } : {})}>
-      <table className={`${s.table} ${clickable ? s.clickable : ''}`}>{children}</table>
+      <table className={`${s.table} ${clickable ? s.clickable : ''}`} aria-label={label}>{children}</table>
     </div>
   );
 }
