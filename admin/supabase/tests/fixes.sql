@@ -209,6 +209,9 @@ select tests.check('M06: the owner can write them; a worker can still write crea
   (tests.run_as('authenticated', (select o from ids), $q$select public.log_audit('user.invited')$q$)).ok
   and (tests.run_as('authenticated', (select o from ids), $q$select public.log_audit('assistant.message')$q$)).ok
   and (tests.run_as('authenticated', (select w from ids), $q$select public.log_audit('creator.viewed')$q$)).ok);
+select tests.check('M06: assistant.thread_deleted is allowed for the owner only',
+  (tests.run_as('authenticated', (select o from ids), $q$select public.log_audit('assistant.thread_deleted', 'assistant_thread', 'x')$q$)).ok
+  and not (tests.run_as('authenticated', (select w from ids), $q$select public.log_audit('assistant.thread_deleted', 'assistant_thread', 'x')$q$)).ok);
 select tests.check('M06: 2FA lines: staff may write them only for their own profile',
   (tests.run_as('authenticated', (select w from ids), format($q$select public.log_audit('auth.2fa_enabled', 'profile', %L)$q$, (select w from ids)))).ok
   and (tests.run_as('authenticated', (select w from ids), format($q$select public.log_audit('auth.2fa_removed', 'profile', %L)$q$, (select w from ids)))).ok

@@ -27,7 +27,7 @@ declare
   v_ok text[] := array['creator.viewed', 'creators.exported', 'creators.imported', 'creator.subscribers_refreshed',
     'email.drafted', 'auth.login', 'auth.logout', 'auth.password_changed', 'auth.2fa_enabled', 'auth.2fa_removed',
     'user.invited', 'user.removed', 'user.restored',
-    'contact.viewed', 'assistant.message', 'assistant.proposal_approved', 'assistant.proposal_rejected'];
+    'contact.viewed', 'assistant.message', 'assistant.proposal_approved', 'assistant.proposal_rejected', 'assistant.thread_deleted'];
 begin
   if auth.uid() is not null and not public.is_staff() then
     raise exception 'forbidden' using errcode = 'insufficient_privilege';
