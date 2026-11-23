@@ -114,7 +114,7 @@ async function setSettings(page, { limit, delay, testMode, postal }) {
     })());
     await op.getByLabel('Start from').selectOption('goal');
     await op.getByLabel('Goal, in one sentence').fill('Ask if they would like to hear about sponsors.');
-    check('mock mode is labelled on compose', (await op.textContent('body')).includes('Mock mode'));
+    check('mock mode is labelled on compose', (await op.textContent('body')).includes('Practice drafts'));
     await op.getByRole('button', { name: 'Draft emails' }).click();
     await op.waitForURL('**/emails/review**');
     check('review says 4 mock drafts saved', (await op.textContent('body')).includes('4 drafts saved (mock drafts'));
@@ -182,8 +182,13 @@ async function setSettings(page, { limit, delay, testMode, postal }) {
     await op.goto(`${SITE}/emails/${E.Alpha}`);
     check('detail shows body, footer and people', (await op.textContent('body')).includes('Smallfold, sponsors for small YouTube channels') && (await op.textContent('body')).includes('Drafted by'));
     await op.getByRole('button', { name: 'Mark as replied' }).click();
-    await op.getByText(/^replied$/i).first().waitFor(); // the status badge reads "Replied"
-    check('mark as replied', (await db('GET', 'emails', `?id=eq.${E.Alpha}&select=status`))[0].status === 'replied');
+    // Wait for the database, not for the word "Replied": the page also has a "Replied" label row.
+    let repliedStatus = '';
+    for (let i = 0; i < 50 && repliedStatus !== 'replied'; i++) {
+      repliedStatus = (await db('GET', 'emails', `?id=eq.${E.Alpha}&select=status`))[0].status;
+      if (repliedStatus !== 'replied') await op.waitForTimeout(100);
+    }
+    check('mark as replied', repliedStatus === 'replied');
     await db('PATCH', 'emails', `?id=eq.${left}`, { status: 'failed', error: 'ZZ Test smtp error' });
     await op.goto(`${SITE}/emails/${left}`);
     check('failed email shows its error', (await op.textContent('body')).includes('ZZ Test smtp error'));
@@ -287,10 +292,11 @@ async function setSettings(page, { limit, delay, testMode, postal }) {
     // ---- cleanup: ZZ emails first (a sent email now blocks deleting its creator), then ZZ creators,
     // suppression rows and templates; settings restored
     if (parked.length) await db('PATCH', 'emails', `?id=in.(${parked.map((p) => p.id).join(',')})`, { status: 'approved' });
-    await db('DELETE', 'suppression_list', '?email=like.zz.*');
     const zz = await db('GET', 'creators', '?full_name=like.ZZ Test*&select=id');
     if (zz.length) await db('DELETE', 'emails', `?creator_id=in.(${zz.map((c) => c.id).join(',')})`);
     await db('DELETE', 'creators', '?full_name=like.ZZ Test*');
+    // Last: deleting a do-not-contact creator keeps their address on the suppression list (M02).
+    await db('DELETE', 'suppression_list', '?email=like.zz.*');
     await db('DELETE', 'email_templates', '?name=like.ZZ Test*');
     const { id: _id, updated_at: _updatedAt, updated_by: _updatedBy, ...keep } = original;
     await db('PATCH', 'settings', '?id=eq.1', keep);
