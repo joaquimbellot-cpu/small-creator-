@@ -1,6 +1,6 @@
 # Smallfold back office: plan for Section 1 (Company)
 
-Status: **built** (approved by the owner and built on 21 November 2026). How to run and set it up: `admin/README.md`.
+Status: **built** (approved by the owner and built on 21 November 2026). How to run and set it up: `admin/README.md`. Where the project stands now: `docs/handoff.md`. Some details below changed after the audit of 23 November; those are marked.
 Brand facts still come from `docs/brand-info.md`. Nothing in the public site (`src/`, `site/`, `build.js`) changes.
 
 ## 1. Decisions
@@ -29,15 +29,15 @@ Brand facts still come from `docs/brand-info.md`. Nothing in the public site (`s
 | View and edit creators, deals, templates | yes | yes |
 | Draft and send emails (with an explicit click) | yes | yes |
 | Delete creators, deals, templates | yes | no |
-| Export creators to CSV | yes | no (personal data leaves the system; owner only, logged) |
+| Export creators to CSV | yes | no (personal data leaves the system; owner only; the audit line is written before the file is sent) |
 | Import from CSV | yes | yes |
 | Invite and remove workers | yes | no |
 | Settings (send limit, test mode, sender details) | yes | no |
 | Read the audit log | yes | no |
 
 - Every page except login, reset and unsubscribe redirects to login without a session. Every server action and API route checks the session **and** the role again, on the server.
-- Optional 2FA (authenticator app, TOTP) for the owner, from the Settings page. Once turned on, it is asked at every login.
-- Login attempts are rate-limited: at most 5 failed tries per email and per IP address in 15 minutes, then a 15-minute wait (our own table, on top of Supabase's limits).
+- Optional 2FA (authenticator app, TOTP) for every staff member, from Settings, Security (changed 23 November: it used to be the owner only). Once turned on, it is asked at every login.
+- Login attempts are rate-limited (our own table, on top of Supabase's limits). Since 23 November: at most 5 failed tries in 15 minutes for one IP address, 5 for one email from one IP, and 20 for one email from any IP. More tries are refused until the old failures are over 15 minutes old.
 
 ### B. Creators page
 - Table of creators showing **name and email** (plus status and subscriber count as small columns). Search (name, email, channel), filter by status, sort by name, subscribers, last contacted or date added, 25 per page.
@@ -102,6 +102,8 @@ Templates: name, goal, subject and body with placeholders (`{{first_name}}`, `{{
 - Security headers on every page (no framing, strict referrer, content security policy), and `noindex` so search engines never list the back office.
 
 ## 4. Room for Sections 2 and 3 (not built)
+
+Design notes for the brand and creator logins: `docs/future-portals.md`.
 
 - `profiles.role` is a list that can grow: `brand_member` and `creator_member` can be added later without changing the existing rows.
 - `creators.user_id` (empty for now) will link a creator to their own login in the creator section.

@@ -19,7 +19,9 @@ rebuilt every time you save a file in `src/`; reload the page to see the change.
 Press Ctrl+C to stop.
 
 To build the site once, without the preview, run `node build.js`.
-The finished site is the folder `site/`. That folder is what goes online.
+This writes the site into `site/` so you can check it. The live site is not uploaded from `site/`:
+Netlify builds it from `admin/` (see `admin/README.md`, "Put it online"), which writes its own copy into
+`admin/public/`. `site/` is a generated copy that is kept in git so changes to the pages are easy to review.
 
 **Never edit files in `site/` by hand.** It is emptied and written again on every build.
 Always change the files in `src/`.
@@ -122,7 +124,7 @@ src/js/            the scripts: nav, hero, forms, motion
 src/assets/        photos (img/), illustrations (illustrations/), logo files (logo/)
 src/static/        files copied to the site as they are (robots.txt)
 build.js           joins everything into the finished site
-site/              the finished site (generated; do not edit by hand)
+site/              a generated copy of the site for checking (do not edit by hand; the live site is built from admin/)
 ```
 
 ## For the people who build the site

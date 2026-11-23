@@ -1,6 +1,6 @@
 # Launch plan: one website, a private login, and Claude in the back office
 
-Status: built on 22 November 2026, approved by the owner through their answers to four questions. The owner's setup guide is `admin/README.md`.
+Status: built on 22 November 2026, approved by the owner through their answers to four questions. The owner's setup guide is `admin/README.md`. Where the project stands now: `docs/handoff.md`. Changes made after the audit of 23 November are listed at the end of this file.
 
 ## What the owner asked for
 
@@ -23,13 +23,13 @@ Status: built on 22 November 2026, approved by the owner through their answers t
   - When the app is built, it builds the website from `src/` (with `build.js`) into `admin/public/`.
   - `/` shows the website's home page, and every other public page keeps its current address (for example `/how-it-works.html`).
   - The back office keeps its own addresses: `/login`, `/overview`, `/creators` and the rest.
-  - The website pages can be found by search engines. The back office pages keep `noindex`.
+  - Every page, website and back office, carries `noindex` for now (changed on 22 November, see `docs/handoff.md`). Remove it from the website when the owner wants the site found in search.
 - **Log in link.** It sits in the website's drop-down menu only, not in the top bar. The address is set in `src/content/site.json`.
 - **Forms.**
   - The Apply and Contact forms post to `/api/public/apply` and `/api/public/contact`. The server checks each one before saving it:
     - the request comes from the same site;
     - a hidden trap field catches bots;
-    - each visitor is limited to a few sends per hour;
+    - each visitor is limited to a few sends per hour (and the whole site to 200 an hour);
     - every field is validated.
   - An application with an email address that is already on file creates nothing new, and the visitor sees the same success message either way.
 - **Claude page (`/claude`, owner only).**
@@ -71,3 +71,14 @@ Status: built on 22 November 2026, approved by the owner through their answers t
 - Claude sending emails, deleting, exporting, or changing Settings.
 - Automatic actions on a schedule.
 - CAPTCHA on the forms (the hidden trap field and the per-visitor limit come first).
+
+## Changes after the audit (23 November)
+
+The audit and repair job did not change the plan. It changed some details:
+
+- Any staff member, owner or worker, can set up their own two-step login (Settings, Security). A worker sees only that Settings tab.
+- The creators export writes its audit line first, and refuses to export if it cannot.
+- Clearer messages when the login service or the database is down, and a public health address (`/api/health`).
+- The website forms also have a limit for the whole site, 200 an hour.
+- Claude page conversations can be deleted by the owner.
+- Details and the file-by-file list: `docs/audit/FULL-REPORT.md` and `docs/audit/fixes/`.
