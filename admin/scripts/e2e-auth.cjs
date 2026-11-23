@@ -99,9 +99,11 @@ async function login(page, [email, pw]) {
   { const wc = await ctx('10.0.0.5'); const p = await wc.newPage();
     await login(p, WORKER); await p.waitForURL('**/overview');
     check('worker login works', /worker/i.test(await p.textContent('header')));
-    check('worker sees no Settings link', !(await p.textContent('header')).includes('Settings'));
-    await p.goto(BASE + '/settings/users'); check('worker refused at /settings/users', p.url().endsWith('/overview'));
-    await p.goto(BASE + '/settings/audit'); check('worker refused at /settings/audit', p.url().endsWith('/overview'));
+    check('worker sees no link to the owner-only settings pages', (await p.locator('header a[href="/settings/users"], header a[href="/settings/audit"], header a[href="/settings/sending"]').count()) === 0);
+    await p.goto(BASE + '/settings/users'); check('worker refused at /settings/users', /\/overview\?notice=owner-only$/.test(p.url()), p.url());
+    await p.goto(BASE + '/settings/audit'); check('worker refused at /settings/audit', /\/overview\?notice=owner-only$/.test(p.url()), p.url());
+    await p.goto(BASE + '/settings'); check('worker sent from /settings to Security', p.url().endsWith('/settings/security'), p.url());
+    check('worker can set up two-step login', (await p.textContent('body')).includes('Set up two-step login'));
     const h = inviteReq.headers();
     let body = inviteReq.postData().replace(NEWBIE, 'sneaky.worker@example.test');
     await wc.request.post(BASE + '/settings/users', { headers: { 'next-action': h['next-action'], 'content-type': h['content-type'], 'next-router-state-tree': h['next-router-state-tree'] || '' }, data: body, maxRedirects: 0 });

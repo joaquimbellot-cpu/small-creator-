@@ -9,6 +9,7 @@ export const metadata: Metadata = { title: 'Log in' };
 
 const MESSAGES: Record<string, string> = {
   no_access: 'This account does not have access to the back office.',
+  busy: 'Something went wrong. Please try again.',
   link_invalid: 'That link is no longer valid. Request a new one.',
 };
 

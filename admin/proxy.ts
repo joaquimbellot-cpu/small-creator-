@@ -4,7 +4,7 @@ import { NextResponse, type NextRequest } from 'next/server';
 import { refreshSession } from '@/lib/supabase/proxy';
 import { SITE_PAGES } from '@/lib/site-pages';
 
-const PUBLIC = [/^\/login(\/|$)/, /^\/forgot-password$/, /^\/reset-password$/, /^\/auth(\/|$)/, /^\/unsubscribe(\/|$)/, /^\/api\/unsubscribe(\/|$)/, /^\/api\/public\//];
+const PUBLIC = [/^\/login(\/|$)/, /^\/forgot-password$/, /^\/reset-password$/, /^\/auth(\/|$)/, /^\/unsubscribe(\/|$)/, /^\/api\/unsubscribe(\/|$)/, /^\/api\/public\//, /^\/api\/health$/];
 
 // The public website (built from ../src into public/): the home page, its .html pages, the same pages without
 // ".html" (Netlify drops it from addresses), /assets and robots.txt.
@@ -39,6 +39,7 @@ function websiteResponse() {
   res.headers.set('X-Frame-Options', 'DENY');
   res.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin');
   res.headers.set('X-Content-Type-Options', 'nosniff');
+  res.headers.set('Permissions-Policy', 'camera=(), microphone=(), geolocation=()');
   if (process.env.NODE_ENV === 'production') res.headers.set('Strict-Transport-Security', 'max-age=63072000; includeSubDomains');
   return res;
 }

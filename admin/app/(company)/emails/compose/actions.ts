@@ -12,6 +12,8 @@ import { toFacts } from '@/lib/drafting/facts';
 export type ComposeState = { error?: string };
 
 const MAX_CREATORS = 25;
+// The host stops a long request, so no new batch starts after this long; the rest is reported as not drafted.
+const START_BATCHES_UNTIL_MS = 40_000;
 const Input = z.object({
   creators: z.array(z.guid()).min(1, 'Pick at least one creator.').max(MAX_CREATORS, `Pick at most ${MAX_CREATORS} creators per run.`),
   mode: z.enum(['template', 'goal']),
@@ -50,9 +52,15 @@ export async function draftAction(_prev: ComposeState, form: FormData): Promise<
   const failed: string[] = creators.filter((c) => c.blocked).map((c) => c.full_name);
   const mock = isMockMode();
   let saved = 0;
+  const started = Date.now();
+  const notDrafted: string[] = [];
 
   // A few at a time: faster than one by one, gentle on the API rate limit.
   for (let i = 0; i < allowed.length; i += 5) {
+    if (Date.now() - started > START_BATCHES_UNTIL_MS) {
+      notDrafted.push(...allowed.slice(i).map((c) => c.full_name));
+      break;
+    }
     await Promise.all(
       allowed.slice(i, i + 5).map(async (c) => {
         const result = await draftEmail(toFacts(c), instruction);
@@ -69,6 +77,8 @@ export async function draftAction(_prev: ComposeState, form: FormData): Promise<
     );
   }
 
+  // Creators never reached before the time ran out are listed too, so nothing is silently dropped.
+  failed.push(...notDrafted.map((n) => `${n} (not drafted, run it again)`));
   const q = new URLSearchParams({ drafted: String(saved), mock: mock ? '1' : '0' });
   if (failed.length) q.set('failed', failed.join(', ').slice(0, 500));
   redirect(`/emails/review?${q}`);

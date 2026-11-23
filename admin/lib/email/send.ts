@@ -17,16 +17,23 @@ export type SendResult =
   | { ok: true; to: string; isTest: boolean; delaySeconds: number }
   | { ok: false; reason: string; retryAfterSeconds?: number };
 
-class BookkeepingError extends Error {}
-
-// Never put secrets or long server text into the log: keep a short, plain message.
+// Stored in emails.error and shown in the email log: fixed wording only. The real detail goes to the server log,
+// because mail-server errors can contain host names or the recipient's address.
 function shortError(e: unknown): string {
-  const msg = e instanceof Error ? e.message : String(e);
-  return `Could not send: ${msg}`.slice(0, 300);
+  const code = typeof e === 'object' && e !== null ? String((e as { code?: unknown }).code ?? '') : '';
+  const msg = e instanceof Error ? e.message : '';
+  if (code === 'EAUTH') return 'Could not send: the mail server refused the login.';
+  if (code === 'EENVELOPE' || msg === 'recipient is not exactly one address') return 'Could not send: the recipient address was refused.';
+  if (['ECONNECTION', 'ESOCKET', 'ETIMEDOUT', 'ECONNREFUSED', 'EDNS', 'ENOTFOUND'].includes(code)) return 'Could not send: the mail server could not be reached.';
+  return 'Could not send: mail server error. See the server log.';
 }
 
 export async function sendEmail(supabase: SupabaseClient, staff: Staff, emailId: string): Promise<SendResult> {
   const admin = createAdminClient();
+  // 0. Repair: an email left as "sending" by a send that was cut off would block the daily limit and the gap for good.
+  // The function comes from a separate migration; if it is not there yet, carry on.
+  const { error: staleError } = await admin.rpc('release_stale_sending', { p_minutes: 15 });
+  if (staleError) console.error('send: release_stale_sending skipped', staleError.code);
   // 1. The database gate: approved? creator ok? not suppressed? daily limit? spacing? test mode?
   const { data: r, error } = await admin.rpc('reserve_send', { email_id: emailId, p_actor: staff.id });
   if (error) throw new Error('reserve_send failed');
@@ -42,22 +49,27 @@ export async function sendEmail(supabase: SupabaseClient, staff: Staff, emailId:
       .single();
     if (!email || !settings) throw new Error('email or settings not found');
 
-    const link = `${siteUrl()}/unsubscribe/${makeToken(emailId)}`;
+    const token = makeToken(emailId);
+    const link = `${siteUrl()}/unsubscribe/${token}`; // the confirm page: for the footer only
+    const oneClick = `${siteUrl()}/api/unsubscribe/${token}`; // where a mail app's Unsubscribe button POSTs (RFC 8058)
     const footer = buildFooter(settings.sender_postal_address, link);
     const messageId = await sendMail({
       to: r.to_email,
       fromName: settings.sender_name,
       subject: `${r.subject_prefix}${email.subject}`,
       text: buildText(email.body, footer),
-      unsubscribeUrl: link,
+      unsubscribeUrl: oneClick,
     });
 
     const { data: marked, error: markError } = await admin.rpc('mark_sent', { email_id: emailId, message_id: messageId, p_actor: staff.id });
-    // The message is already out. Do not mark it failed; report the bookkeeping problem instead.
-    if (markError || !marked?.ok) throw new BookkeepingError();
+    // The message is already out. Do not mark it failed and do not throw: say plainly that it WAS sent.
+    if (markError || !marked?.ok) {
+      console.error('send: mail sent but mark_sent failed for', emailId, markError?.code ?? 'not ok');
+      return { ok: false, reason: 'sent_not_recorded' };
+    }
     return { ok: true, to: r.to_email, isTest: r.is_test, delaySeconds: settings.min_seconds_between_sends };
   } catch (e) {
-    if (e instanceof BookkeepingError) throw new Error('sent, but mark_sent failed for ' + emailId);
+    console.error('send: failed for', emailId, e instanceof Error ? e.message : e);
     const { data: failed, error: failError } = await admin.rpc('mark_failed', { email_id: emailId, error: shortError(e), p_actor: staff.id });
     if (failError || !failed?.ok) console.error('mark_failed did not work for', emailId);
     return { ok: false, reason: 'send_failed' };

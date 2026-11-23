@@ -1,7 +1,6 @@
 // The Anthropic client for the assistant. SERVER ONLY.
-// ANTHROPIC_API_KEY (and ANTHROPIC_BASE_URL, used by the local fake) are read by the SDK itself.
+// The client itself comes from lib/anthropic.ts (shared with drafting).
 import 'server-only';
-import Anthropic from '@anthropic-ai/sdk';
 
 export const DEFAULT_MODEL = 'claude-opus-5-5';
 export const MAX_STEPS = 12;
@@ -30,7 +29,5 @@ export function deadlineMs(): number {
   return Number.isFinite(n) && n >= 15_000 ? Math.min(n, 270_000) : 270_000;
 }
 
-export function createAnthropic(): Anthropic {
-  // Each call also gets its own timeout: the time left before the deadline (see loop.ts).
-  return new Anthropic({ timeout: 120_000, maxRetries: 1 });
-}
+// Each call also gets its own timeout: the time left before the deadline (see loop.ts).
+export { createAnthropic } from '@/lib/anthropic';

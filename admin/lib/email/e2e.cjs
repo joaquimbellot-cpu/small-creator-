@@ -150,7 +150,7 @@ async function setSettings(page, { limit, delay, testMode, postal }) {
     const subj = await mail('ZZ Test edited subject');
     check('mail catcher got Alpha at the TEST address with [TEST]', !!subj && subj.to === 'owner@example.test' && subj.subject.startsWith('[TEST] '), JSON.stringify(subj && subj.subject));
     check('mail has footer and unsubscribe link', !!subj && subj.raw.includes('Smallfold, sponsors for small YouTube channels') && /open this link or reply 'unsubscribe': http:\/\/localhost:3000\/unsubscribe\//.test(subj.raw));
-    check('mail has List-Unsubscribe headers', !!subj && /List-Unsubscribe: <http:\/\/localhost:3000\/unsubscribe\/[^>]+>, <mailto:smallfold-test@example\.test\?subject=unsubscribe>/i.test(subj.raw.replace(/\r\n\s+/g, ' ')) && /List-Unsubscribe-Post: List-Unsubscribe=One-Click/i.test(subj.raw));
+    check('mail has List-Unsubscribe headers', !!subj && /List-Unsubscribe: <http:\/\/localhost:3000\/api\/unsubscribe\/[^>]+>, <mailto:smallfold-test@example\.test\?subject=unsubscribe>/i.test(subj.raw.replace(/\r\n\s+/g, ' ')) && /List-Unsubscribe-Post: List-Unsubscribe=One-Click/i.test(subj.raw));
     check('mail is plain text', !!subj && /Content-Type: text\/plain/i.test(subj.raw));
 
     // ================= send: UI, daily limit =================

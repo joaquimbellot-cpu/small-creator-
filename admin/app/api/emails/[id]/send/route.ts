@@ -1,9 +1,12 @@
 // POST /api/emails/<id>/send  — sends ONE approved email. Only the Send button on the review page calls this.
-// 200 { ok, delay_seconds }   429 { reason: 'too_soon' | 'daily_limit', retry_after_seconds }   409 other refusals
+// 200 { ok, delay_seconds }   429 { reason: 'too_soon' | 'daily_limit', retry_after_seconds }   409 other refusals (409 with reason 'sent_not_recorded': the mail WAS sent but could not be recorded)
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
 import { ApiError, apiHandler } from '@/lib/api/handler';
 import { sendEmail } from '@/lib/email/send';
+
+// Stops a hung mail server from keeping the request open (where the host honours it).
+export const maxDuration = 30;
 
 const MESSAGES: Record<string, string> = {
   not_found: 'That email does not exist.',
@@ -13,6 +16,7 @@ const MESSAGES: Record<string, string> = {
   test_email_missing: 'Test mode is on but no test address is set in Settings.',
   postal_address_missing: 'Real sending needs a postal address in Settings.',
   forbidden: 'Not allowed.',
+  sent_not_recorded: 'The email WAS sent, but it could not be recorded. Do not send it again; tell the owner.',
   send_failed: 'The email could not be sent. See the email log.',
 };
 
@@ -33,6 +37,10 @@ export const POST = apiHandler({ role: 'staff' }, async ({ staff, supabase, para
       },
       { status: 429, headers: wait ? { 'Retry-After': String(wait) } : {} },
     );
+  }
+  if (r.reason === 'sent_not_recorded') {
+    // The mail went out. The page must show this message, and must not offer a retry.
+    return NextResponse.json({ error: MESSAGES.sent_not_recorded, reason: r.reason }, { status: 409, headers: { 'Cache-Control': 'no-store' } });
   }
   throw new ApiError(409, MESSAGES[r.reason] ?? 'The email could not be sent.');
 });

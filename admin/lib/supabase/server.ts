@@ -4,6 +4,7 @@
 import { createServerClient } from '@supabase/ssr';
 import { cookies } from 'next/headers';
 import { supabaseAnonKey, supabaseUrl } from './env';
+import { sessionCookie } from './proxy';
 
 export async function createClient() {
   const cookieStore = await cookies();
@@ -12,7 +13,7 @@ export async function createClient() {
       getAll: () => cookieStore.getAll(),
       setAll(list) {
         try {
-          list.forEach(({ name, value, options }) => cookieStore.set(name, value, options));
+          list.forEach(({ name, value, options }) => cookieStore.set(name, value, { ...options, ...sessionCookie(options) }));
         } catch {
           // Called from a server component: cookies cannot be set there. The proxy refreshes the session.
         }

@@ -13,6 +13,18 @@ const GENERIC = 'That email or password is not right.';
 const TOO_MANY = 'Too many attempts. Try again in 15 minutes.';
 const BUSY = 'Something went wrong. Please try again.';
 
+// Supabase Auth itself failing (network error, timeout, 5xx) is not a wrong password: never count it as a failed try.
+// Wrong password / wrong code is an AuthApiError with a 4xx status (names checked in @supabase/auth-js errors.js).
+function authDown(error: { name?: string; status?: number }): boolean {
+  return error.name === 'AuthRetryableFetchError' || error.name === 'AuthUnknownError' || (error.status ?? 0) >= 500;
+}
+
+// Recording an attempt must not break the login, but a failure should leave a trace in the server log.
+async function recordAttempt(admin: ReturnType<typeof createAdminClient>, email: string, ip: string, success: boolean) {
+  const { error } = await admin.rpc('record_login_attempt', { email, ip, success });
+  if (error) console.error('login: could not record attempt', error.code);
+}
+
 const loginSchema = z.object({
   email: z.string().trim().toLowerCase().email().max(320),
   password: z.string().min(1).max(200),
@@ -37,8 +49,9 @@ export async function loginAction(_prev: FormState, formData: FormData): Promise
 
   const supabase = await createClient();
   const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+  if (error && authDown(error)) return { error: BUSY };
   if (error || !data.user) {
-    await admin.rpc('record_login_attempt', { email, ip, success: false });
+    await recordAttempt(admin, email, ip, false);
     return { error: GENERIC };
   }
 
@@ -50,14 +63,20 @@ export async function loginAction(_prev: FormState, formData: FormData): Promise
   }
 
   // Must be an active staff member with a role; otherwise treated exactly like a wrong password.
-  const { data: profile } = await supabase.from('profiles').select('role, is_active').eq('id', data.user.id).maybeSingle();
+  const { data: profile, error: profileErr } = await supabase.from('profiles').select('role, is_active').eq('id', data.user.id).maybeSingle();
+  if (profileErr) {
+    // A database problem is not a wrong password: do not count it. Sign out so no half-checked session stays.
+    console.error('login: profile lookup failed', profileErr.code);
+    await supabase.auth.signOut();
+    return { error: BUSY };
+  }
   if (!profile || !profile.is_active || (profile.role !== 'owner' && profile.role !== 'worker')) {
     await supabase.auth.signOut();
-    await admin.rpc('record_login_attempt', { email, ip, success: false });
+    await recordAttempt(admin, email, ip, false);
     return { error: GENERIC };
   }
 
-  await admin.rpc('record_login_attempt', { email, ip, success: true });
+  await recordAttempt(admin, email, ip, true);
   await logAudit('auth.login', 'profile', data.user.id, { label: email });
   redirect(next);
 }
@@ -86,11 +105,12 @@ export async function verifyCodeAction(_prev: FormState, formData: FormData): Pr
   if (!factor) redirect(next);
 
   const { error } = await supabase.auth.mfa.challengeAndVerify({ factorId: factor.id, code: parsed.data.code });
+  if (error && authDown(error)) return { error: BUSY };
   if (error) {
-    await admin.rpc('record_login_attempt', { email, ip, success: false });
+    await recordAttempt(admin, email, ip, false);
     return { error: 'That code is not right. Try the current code.' };
   }
-  await admin.rpc('record_login_attempt', { email, ip, success: true });
+  await recordAttempt(admin, email, ip, true);
   await logAudit('auth.login', 'profile', user.id, { label: email, mfa: true });
   redirect(next);
 }

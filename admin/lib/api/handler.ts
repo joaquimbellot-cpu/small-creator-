@@ -8,7 +8,8 @@
 //          query: zod schema for the search params (values are strings).
 // Context: { req, staff, supabase (as the user, RLS applies), body, query, params }
 // Errors, always JSON { error: string }: 401 not logged in, 403 wrong role, 400 invalid input,
-// 403 also for a write from another site (Origin / Sec-Fetch-Site check), 429 too many requests, 500 anything else (details only go to the server log).
+// 403 also for a write from another site (Origin / Sec-Fetch-Site check), 415 when a body is expected but the
+// Content-Type is not application/json, 429 too many requests, 500 anything else (details only go to the server log).
 // Throw `new ApiError(status, 'message')` for your own controlled errors.
 import 'server-only';
 import { NextResponse, type NextRequest } from 'next/server';
@@ -61,6 +62,9 @@ export function apiHandler<B = undefined, Q = undefined>(
 
       let body = undefined as B;
       if (opts.body) {
+        // A plain HTML form can post text/plain across sites; only a script of ours sends application/json.
+        const type = (req.headers.get('content-type') ?? '').split(';')[0].trim().toLowerCase();
+        if (type !== 'application/json') return fail(415, 'Send the data as JSON.');
         let raw: unknown;
         try {
           raw = await req.json();

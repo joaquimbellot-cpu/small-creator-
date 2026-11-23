@@ -7,7 +7,8 @@ export type UnsubscribeState = { result?: UnsubscribeResult | 'error' };
 export async function confirmUnsubscribeAction(_prev: UnsubscribeState, form: FormData): Promise<UnsubscribeState> {
   try {
     return { result: await unsubscribe(String(form.get('token') ?? '')) };
-  } catch {
+  } catch (e) {
+    console.error('unsubscribe failed', e instanceof Error ? e.message : e);
     return { result: 'error' };
   }
 }

@@ -2,7 +2,7 @@
 //   draftEmail(creator, instruction) -> { ok: true, draft } | { ok: false, error }
 // Mock mode (no key, or DRAFT_MODE=mock) never calls the network.
 import 'server-only';
-import Anthropic from '@anthropic-ai/sdk';
+import { createAnthropic } from '@/lib/anthropic';
 import { zodOutputFormat } from '@anthropic-ai/sdk/helpers/zod';
 import { z } from 'zod';
 import { mockDraft } from './mock';
@@ -24,7 +24,8 @@ export async function draftEmail(creator: CreatorFacts, instruction: Instruction
     if (isMockMode()) {
       raw = mockDraft(creator, instruction);
     } else {
-      const client = new Anthropic(); // reads ANTHROPIC_API_KEY
+      // A silent Claude must not hang the request: 25 s per try, one retry.
+      const client = createAnthropic({ timeout: 25_000, maxRetries: 1 });
       const res = await client.messages.parse({
         model: process.env.ANTHROPIC_MODEL || 'claude-sonnet-5-5',
         max_tokens: 2000,

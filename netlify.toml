@@ -21,4 +21,16 @@
   [headers.values]
     Cache-Control = "public, max-age=3600, stale-while-revalidate=86400"
     X-Content-Type-Options = "nosniff"
+    X-Frame-Options = "DENY"
+    Referrer-Policy = "strict-origin-when-cross-origin"
     Strict-Transport-Security = "max-age=63072000; includeSubDomains"
+
+# Everything else, including robots.txt, which skips the app's proxy too. The proxy sets the same values on the
+# pages it handles, so nothing conflicts.
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    X-Content-Type-Options = "nosniff"
+    Permissions-Policy = "camera=(), microphone=(), geolocation=()"

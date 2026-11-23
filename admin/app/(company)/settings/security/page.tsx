@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
-import { Badge, ConfirmButton } from '@/components/ui';
-import { requireOwner } from '@/lib/auth/staff';
+import { Badge, ConfirmButton, Notice } from '@/components/ui';
+import { requireStaff } from '@/lib/auth/staff';
 import { createClient } from '@/lib/supabase/server';
 import { EnrollPanel } from './EnrollPanel';
 import { removeFactorAction } from './actions';
@@ -8,9 +8,10 @@ import { removeFactorAction } from './actions';
 export const metadata: Metadata = { title: 'Security' };
 
 export default async function SecurityPage() {
-  await requireOwner();
+  await requireStaff();
   const supabase = await createClient();
-  const { data } = await supabase.auth.mfa.listFactors();
+  const { data, error } = await supabase.auth.mfa.listFactors();
+  if (error) return <Notice tone="error">Could not load your two-step login settings. Refresh to try again.</Notice>;
   const verified = data?.totp?.find((f) => f.status === 'verified');
   return (
     <section style={{ maxWidth: 560 }}>
