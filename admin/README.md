@@ -20,7 +20,7 @@ The app has seven pages in the back office:
 | Page | What it does |
 |---|---|
 | Overview | Shows the main numbers: how many creators, emails sent, replies, deals, commission earned, and failed sends in the last 7 days. Also a chart and a list of recent activity. |
-| Creators | The list of YouTube channels, with search, filters, sorting, and CSV import and export. Can refresh subscriber counts from YouTube. New applications from the website also land here, with status New. |
+| Creators | The list of YouTube channels, with search, filters, sorting, and CSV import and export. Tick several creators to change their status in one go ("Change status to", then confirm); only the owner can take creators off Do not contact. Can refresh subscriber counts from YouTube. New applications from the website also land here, with status New. |
 | Deals | Each deal with a creator, a brand, a stage, and an amount. Commission is worked out for you. |
 | Emails | Writes drafts with Claude, lets you review and approve them, sends them when you click Send, keeps a log of every email, and stores templates. |
 | Inbox | Messages sent through the website's brand inquiry form (the "For brands" page). |

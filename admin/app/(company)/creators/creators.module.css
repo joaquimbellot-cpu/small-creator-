@@ -5,6 +5,10 @@
 .sub { display: block; color: var(--fg-muted); font-size: .9375rem; word-break: break-all; }
 .bar { display: flex; gap: var(--s-3); align-items: center; flex-wrap: wrap; margin-bottom: var(--s-3); min-height: 44px; }
 .bar span { color: var(--fg-muted); font-size: .9375rem; }
+/* "Change status to" picker in the selection bar: same look as the other fields, sized for the bar. */
+.statusPick { min-height: 36px; padding: 0 var(--s-3); background: var(--surface); color: var(--fg);
+  border: var(--hairline) solid var(--fg-muted); border-radius: var(--r); font: var(--w-text) var(--t-small)/var(--lh-small) var(--font-sans); }
+.statusPick:disabled { opacity: .45; }
 .grow { flex: 1; }
 .dl { display: grid; grid-template-columns: minmax(0, 11rem) minmax(0, 1fr); gap: var(--s-2) var(--s-4); margin: 0 0 var(--s-4); }
 .dl dt { color: var(--fg-muted); font-size: var(--t-label); letter-spacing: var(--track-label); text-transform: uppercase; padding-top: 3px; }
