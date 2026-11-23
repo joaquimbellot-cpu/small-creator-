@@ -2,6 +2,15 @@
 
 Date: 23 November 2026. Branch: `audit-fixes` (made from commit `c3f03b6`, tag `safety-before-audit`). Eight specialist agents (six on Sonnet, two on Haiku) read the code, ran the app on the local test stack with fake data, and wrote the reports `01` to `08` in this folder. Nothing touched production. This file merges their 126 findings into one list of 111.
 
+## Result after the repair phase (read this first)
+
+- **Branch:** `audit-fixes` (26 commits after the safety tag `safety-before-audit`, 154 files changed). Not pushed: the repository is public.
+- **The 111 issues:** 99 fixed, 8 need your decision, 4 not fixed on purpose or because they are large (each with its reason in the table below).
+- **Verification:** a QA re-test (score 9/10) and a read-only security re-audit (8/10) found no regression and 10 more small issues. They also found one problem that the repairs themselves had caused: `http://` channel links were refused. All of these are fixed except two: one needs your Supabase settings (V04), and one is only partly fixed (V08). See section 7.
+- **Tests on the final code** (fresh fake data): database tests about 314 checks, 125 unit tests, and every browser suite (QA 72, creators 62, deals 47, email 51, website 28, forms 96, Claude page 51, login 29). All pass, and lint is clean.
+- **Open High issues:** none that code can fix. H02 (Supabase's own login limit) and H03 (how far to trust workers with contact details) are your decisions.
+- **Before you deploy:** apply the four new migrations to the live database first, then deploy (section 8).
+
 ## 1. Executive summary
 
 1. The back office is built on a careful foundation: every page and API checks the login and the role, the database repeats those checks, the public key reads nothing, and no secret is in the code or the git history.
@@ -19,15 +28,17 @@ Date: 23 November 2026. Branch: `audit-fixes` (made from commit `c3f03b6`, tag `
 
 | Area | Agent (model) | Report | Before | After |
 |---|---|---|---|---|
-| Architecture and code quality | 1 (Sonnet) | `01-architecture.md` | 8/10 | to do |
-| Security | 2 (Sonnet) | `02-security.md` | 7/10 | to do |
-| Database | 3 (Sonnet) | `03-database.md` | 7/10 | to do |
-| Functional QA | 4 (Sonnet) | `04-functional-qa.md` | 8/10 | to do |
-| Email and Claude | 5 (Sonnet) | `05-email-claude.md` | 7/10 | to do |
-| UI, UX and accessibility | 6 (Sonnet) | `06-ui-ux-accessibility.md` | 7/10 | to do |
-| Performance and reliability | 7 (Haiku) | `07-performance-reliability.md` | 6/10 | to do |
-| Docs and setup | 8 (Haiku) | `08-docs-setup.md` | 6/10 | to do |
-| **Average** | | | **7.0** | to do |
+| Architecture and code quality | 1 (Sonnet) | `01-architecture.md` | 8/10 | 9/10 (estimate) |
+| Security | 2 (Sonnet) | `02-security.md` | 7/10 | 8/10 (re-audited, `10-security-reaudit.md`) |
+| Database | 3 (Sonnet) | `03-database.md` | 7/10 | 8/10 (estimate) |
+| Functional QA | 4 (Sonnet) | `04-functional-qa.md` | 8/10 | 9/10 (re-tested, `09-qa-retest.md`) |
+| Email and Claude | 5 (Sonnet) | `05-email-claude.md` | 7/10 | 8/10 (estimate) |
+| UI, UX and accessibility | 6 (Sonnet) | `06-ui-ux-accessibility.md` | 7/10 | 8/10 (estimate) |
+| Performance and reliability | 7 (Haiku) | `07-performance-reliability.md` | 6/10 | 8/10 (estimate) |
+| Docs and setup | 8 (Haiku) | `08-docs-setup.md` | 6/10 | 8/10 (estimate) |
+| **Average** | | | **7.0** | **8.3** |
+
+"Re-audited" and "re-tested" scores come from the verification agents. "Estimate" is the leader's judgement from the fix logs and the passing tests, because those areas were not audited again.
 
 ## 3. Merged issue list
 
@@ -179,4 +190,35 @@ Sorted by severity. "From" names the agents' IDs, where the full detail and the 
 
 - Rules and report format for every agent: `AGENT-BRIEF.md`. Shared project map: `00-project-map.md`.
 - At most three agents ran at once. Agents that change test data or stop services ran on their own.
-- Sub-agent tokens for this phase: about 1.70 million (agents 1 to 8: 163k, 203k, 241k, 221k, 242k, 163k, 246k, 226k).
+- Sub-agent tokens, audit: about 1.70 million (agents 1 to 8: 163k, 203k, 241k, 221k, 242k, 163k, 246k, 226k).
+- Sub-agent tokens, repairs: about 1.15 million (FA database 229k, FB server 182k, FC screens 204k, FD creators and drafting 185k, FE docs and setup 206k, FR follow-ups 141k).
+- Sub-agent tokens, verification: about 0.43 million (QA re-test 203k, security re-audit 230k).
+- Total for 16 sub-agent runs: about 3.3 million tokens (Sonnet 2.8 million, Haiku 0.5 million). No sub-agent ran on Opus or Fable. The leader (this session) is extra; check `/usage` for the exact figures.
+- Fix logs per group: `docs/audit/fixes/`. Rules for the fix agents: `FIX-BRIEF.md`.
+
+## 7. Verification round (after the repairs)
+
+| ID | Severity | What was found | Status |
+|---|---|---|---|
+| V00 | High (regression from the repairs) | The new channel-link rule refused `http://` links, so a visitor typing one on the Apply form would have got an error. | Fixed: links are always stored as `https://`; the rule now allows YouTube addresses only. |
+| V01 | Medium | A stranger with about 4 IP addresses could still keep the owner's login and reset email blocked (SEC2-01). | Fixed: an IP that logged in successfully in the last 30 days is not blocked by the per-email cap; reset is limited per address and IP pair. |
+| V02 | Low | A worker could write a fake "exported" audit line (SEC2-02). | Fixed. |
+| V03 | Low | Each repeated one-click unsubscribe added an audit line (SEC2-03). | Fixed. |
+| V04 | Low | After a password-reset or invite link, the session cookie is briefly readable by scripts (SEC2-04). | Needs me: switch Supabase's email templates to the `token_hash` link (the free plan may not allow editing them). |
+| V05 | Low | A worker could aim an approved draft at an address that is not the creator's (SEC2-05). | Fixed. |
+| V06 | Low | Any `https://` link was accepted as a channel link (SEC2-06). | Fixed (YouTube only). |
+| V07 | Low | The public health check queried the database on every call (SEC2-07). | Fixed (10-second cache). |
+| V08 | Low | Lifting "do not contact" could leave an old address blocked (SEC2-08). | Fixed in part: an address edited in an earlier, separate save can still stay blocked. |
+| V09 | Low | The 404 page outside the back office had no links (QA2-01). | Fixed. |
+| V10 | Low | Acting on a deal deleted in another tab gave no message (QA2-02). | Fixed. |
+
+## 8. What you must do yourself
+
+1. **Apply the four new migrations to the live database, in this order, before you deploy:** `20261123000100_creator_and_email_guards.sql`, `20261123000200_audit_logins_forms.sql`, `20261123000300_stats_activity_indexes.sql`, `20261123000400_followups.sql` (in `admin/supabase/migrations/`). Take a backup first (see "Maintaining Smallfold" in `admin/README.md`). Each file's header says what it does and how to undo it. Then run the "listing" queries in the headers of `000100` and `000400`, and run the `VALIDATE` lines only when they return no rows.
+2. **Then deploy** the `audit-fixes` code (after you have reviewed and merged it). Deploying the code before the migrations would break the send repair, the reset limit and the Overview tile.
+3. **Supabase settings** (H02, M28, V04): turn on CAPTCHA protection and check the Auth rate limits; switch the project to asymmetric JWT signing keys, so pages stop asking Supabase Auth on every view; if your plan allows it, use the `token_hash` links in the email templates.
+4. **Delete the Supabase management token** named `smallfold` (M43), and turn on two-step login for your own account.
+5. **Email sending** (still open from before the audit): the Gmail app password as `SMTP_PASS` in Netlify, the sender postal address in Settings, then a first test send.
+6. **Legal check** (M17): the right to email creators found on YouTube, the notice line and the privacy page. Ask a lawyer; this report is not legal advice.
+7. **Your decisions** in section 5: worker access (H03), new features (M16, M20, L39, CAPTCHA on the forms), commission rules (L16), audit-log retention (L10), an uptime monitor (M31), and approval of the erasure procedure in `docs/handoff.md` (M33).
+8. **GitHub:** make the repository private, then tell Claude to push `audit-fixes`. The safety system blocked publishing it to a public repository.
