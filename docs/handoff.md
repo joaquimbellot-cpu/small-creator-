@@ -40,6 +40,12 @@ Read this first in a new chat. It replaces the history of the previous one.
 - **Owner:** the owner created their own login in the Supabase dashboard, and `bootstrap_owner` made it the owner. It's the only account. Never put the owner's email in a request or a file.
 - **Management API access:** possible through a personal access token saved as a network secret for `api.supabase.com`. The owner was told to delete it after the first successful login. On 22 November (second chat) it still worked.
 
+## Sending settings (23 November)
+
+- **Test mode is off** (turned off at the owner's request, in the `settings` table). No email has been sent.
+- **The sender postal address is still empty,** so the database refuses every real send (`postal_address_missing`). SMTP (Gmail) is not set either. To send, the owner needs both. Settings, then Sending, takes the postal address.
+- To turn test mode back on: Settings, then Sending, tick **Test mode**. It also needs a test address.
+
 ## Netlify environment variables (set)
 
 | Name | Notes |
