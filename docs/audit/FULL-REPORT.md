@@ -9,7 +9,7 @@ Date: 23 November 2026. Branch: `audit-fixes` (made from commit `c3f03b6`, tag `
 - **Verification:** a QA re-test (score 9/10) and a read-only security re-audit (8/10) found no regression and 10 more small issues. They also found one problem that the repairs themselves had caused: `http://` channel links were refused. All of these are fixed except two: one needs your Supabase settings (V04), and one is only partly fixed (V08). See section 7.
 - **Tests on the final code** (fresh fake data): database tests about 314 checks, 125 unit tests, and every browser suite (QA 72, creators 62, deals 47, email 51, website 28, forms 96, Claude page 51, login 29). All pass, and lint is clean.
 - **Open High issues:** none that code can fix. H02 (Supabase's own login limit) and H03 (how far to trust workers with contact details) are your decisions.
-- **Before you deploy:** apply the four new migrations to the live database first, then deploy (section 8).
+- **Live since 23 November:** the four migrations were applied to the live database (after a backup, and all 7 new rules validated), and the site was deployed (deploy `6b03ef4f`).
 
 ## 1. Executive summary
 
@@ -214,8 +214,8 @@ Sorted by severity. "From" names the agents' IDs, where the full detail and the 
 
 ## 8. What you must do yourself
 
-1. **Apply the four new migrations to the live database, in this order, before you deploy:** `20261123000100_creator_and_email_guards.sql`, `20261123000200_audit_logins_forms.sql`, `20261123000300_stats_activity_indexes.sql`, `20261123000400_followups.sql` (in `admin/supabase/migrations/`). Take a backup first (see "Maintaining Smallfold" in `admin/README.md`). Each file's header says what it does and how to undo it. Then run the "listing" queries in the headers of `000100` and `000400`, and run the `VALIDATE` lines only when they return no rows.
-2. **Then deploy** the `audit-fixes` code (after you have reviewed and merged it). Deploying the code before the migrations would break the send repair, the reset limit and the Overview tile.
+1. ~~Apply the four new migrations to the live database~~ **Done on 23 November** (at your request, after a backup; all 7 new rules validated, no existing row broke them).
+2. ~~Then deploy~~ **Done on 23 November** (deploy `6b03ef4f`). Please log in once and check the Overview, Creators and Emails pages.
 3. **Supabase settings** (H02, M28, V04): turn on CAPTCHA protection and check the Auth rate limits; switch the project to asymmetric JWT signing keys, so pages stop asking Supabase Auth on every view; if your plan allows it, use the `token_hash` links in the email templates.
 4. **Delete the Supabase management token** named `smallfold` (M43), and turn on two-step login for your own account.
 5. **Email sending** (still open from before the audit): the Gmail app password as `SMTP_PASS` in Netlify, the sender postal address in Settings, then a first test send.

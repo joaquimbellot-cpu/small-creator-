@@ -11,7 +11,7 @@ Read this first in a new chat. It replaces the history of the previous one.
 
 ## Live now
 
-- **Website and back office:** https://smallfold.netlify.app
+- **Website and back office:** https://smallfold.netlify.app (deploy `6b03ef4fab4c283ba7c3a5e3`, 23 November: the audit fixes from the `audit-fixes` branch)
   - Netlify project `smallfold`. The site id is on the project's page in Netlify (Project configuration, General). It is not written here.
 - **Visitor access:** the Netlify team login was turned off on 22 November at the owner's request. The site is **public**. To lock it again: Project configuration, Access & security, Visitor access, turn team login on.
 - **Search engines:** every website page has `<meta name="robots" content="noindex">` (`src/partials/head.html`), so the site is open to anyone with the link but search engines are asked to skip it. Remove that line, and fill in `siteUrl` in `src/content/seo.json`, when the owner wants the site found in search.
@@ -37,7 +37,7 @@ Read this first in a new chat. It replaces the history of the previous one.
 
 - Region Tokyo, free plan. The project reference is in the Supabase dashboard (Project Settings, General). It is not written here.
 - **Database:**
-  - The first 11 migrations in `admin/supabase/migrations/` were applied in production.
+  - All 15 migrations in `admin/supabase/migrations/` are applied in production. The last four (`20261123000100` to `000400`) were applied on 23 November at the owner's request, after a backup; their 7 new CHECK constraints were then validated (no existing row broke them).
   - **Not applied yet:** the migrations dated 23 November (`20261123...`), written by the repair job. The owner applies them in order in the SQL Editor, after taking a backup, and only then deploys the new app. Steps: "Maintaining Smallfold" in `admin/README.md`. The first of them has a `VALIDATE` step that needs a check query to come back empty first (see its header).
   - Checked: all 15 public tables have RLS on, and the `anon` role can't select any table or execute any function.
 - **Auth settings:**
