@@ -1,15 +1,15 @@
 // End-to-end check of login, rate limit, roles, reset, invite and 2FA against the local stack.
-// Needs: admin/dev/start.sh running and `npm run dev` on :3000. Run: node scripts/e2e-auth.cjs
+// Needs: admin/dev/start.sh running and `npm run dev` on :3000. Run: node scripts/e2e-auth.cjs (BASE_URL sets another address)
 const { chromium } = require('playwright');
 const crypto = require('node:crypto');
 const { execFileSync } = require('node:child_process');
 
-const BASE = 'http://localhost:3000';
+const BASE = process.env.BASE_URL || 'http://localhost:3000';
 const MAIL = 'http://localhost:8025';
 const OWNER = ['owner@example.test', 'Owner-Test-Pass-2026!'];
 const WORKER = ['worker@example.test', 'Worker-Test-Pass-2026!'];
 const NEWBIE = 'newbie.worker@example.test';
-const SHOTS = process.env.SHOTS || '/tmp/claude-0/shots';
+const SHOTS = process.env.SHOTS || require('node:path').join(require('node:os').tmpdir(), 'smallfold-shots');
 
 const psql = (sql) => execFileSync('psql', ['-h', '127.0.0.1', '-p', '54322', '-U', 'postgres', '-tAc', sql]).toString().trim();
 let failures = 0;

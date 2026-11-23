@@ -1,6 +1,6 @@
 // QA checks for the Smallfold back office, run against the local stack with FAKE seed data only.
 // Needs: local stack up (gateway :54321, Postgres :54322, mail catcher :8025) and the dev server on :3000.
-// Run:  NODE_PATH=/opt/node-tools/node_modules node admin/tests/qa.e2e.cjs
+// Run:  node admin/tests/qa.e2e.cjs   (BASE_URL sets another address; needs Playwright, see admin/README.md, Tests)
 // Prints PASS/FAIL per check and exits 1 on any failure. Records it creates are removed at the end
 // (named "ZZ QA ..."); settings are left with test mode ON.
 const { chromium } = require('playwright');
@@ -10,7 +10,7 @@ const fs = require('node:fs');
 const path = require('node:path');
 
 const ADMIN = path.resolve(__dirname, '..');
-const BASE = 'http://localhost:3000';
+const BASE = process.env.BASE_URL || 'http://localhost:3000';
 const MAIL = 'http://localhost:8025';
 const GW = 'http://localhost:54321';
 const OWNER = { email: 'owner@example.test', password: 'Owner-Test-Pass-2026!' };

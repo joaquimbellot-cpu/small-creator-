@@ -2,6 +2,7 @@
 # Start the local test stack: Postgres 16, GoTrue, PostgREST, gateway (54321), mail catcher (1025/8025).
 # Safe to run repeatedly. Nothing blocks the shell; logs go to admin/dev/.logs/.
 source "$(dirname "${BASH_SOURCE[0]}")/lib.sh"
+check_tools
 mkdir -p "$LOG_DIR" "$MAIL_DIR" "$PID_DIR" "$DATA_DIR"
 [ "$(id -u)" = 0 ] && chmod 777 "$LOG_DIR"
 
@@ -62,6 +63,8 @@ wait_http http://127.0.0.1:9999/health GoTrue
 for _ in $(seq 1 60); do   # wait for its migrations to create auth.users
   [ "$(psql -tAc "select to_regclass('auth.users') is not null")" = t ] && break; sleep 1
 done
+# Stop here with a clear message if it never did, instead of failing later with a database error.
+[ "$(psql -tAc "select to_regclass('auth.users') is not null")" = t ] || { echo "GoTrue did not create auth.users; see $LOG_DIR/gotrue.log" >&2; exit 1; }
 (docker logs -f smallfold-gotrue >"$LOG_DIR/gotrue.log" 2>&1 &) 
 
 # 4. migrations, then seed (first start only)

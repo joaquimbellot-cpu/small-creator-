@@ -5,9 +5,10 @@ const fs = require('fs');
 const path = require('path');
 const { chromium } = require('playwright');
 
-const SITE = 'http://localhost:3000';
+const SITE = process.env.BASE_URL || 'http://localhost:3000';
 const MAIL = 'http://localhost:8025';
-const SHOT = process.env.SHOT_DIR || '/tmp';
+const SHOT = process.env.SHOT_DIR || path.join(require('os').tmpdir(), 'smallfold-shots');
+fs.mkdirSync(SHOT, { recursive: true });
 
 // ---- env + tiny helpers
 const env = Object.fromEntries(

@@ -56,8 +56,9 @@ function writeEnv(s) {
     ANTHROPIC_BASE_URL: 'http://localhost:4010',
     DRAFT_MODE: 'mock',
   };
-  // An empty placeholder counts as missing for these: filled with the local fake key, a real key is never touched.
-  const fillIfEmpty = { ANTHROPIC_API_KEY: 'local-fake-key' };
+  // An empty placeholder counts as missing for these. ANTHROPIC_API_KEY gets the local fake key (a real key is never touched).
+  // EMAIL_FROM is the test sender: without it every local send fails with "EMAIL_FROM is not set", and the email suite expects this address.
+  const fillIfEmpty = { ANTHROPIC_API_KEY: 'local-fake-key', EMAIL_FROM: 'smallfold-test@example.test' };
   const lines = fs.existsSync(envFile) ? fs.readFileSync(envFile, 'utf8').split('\n') : ['# Local dev only. Written by admin/dev/start.sh. Never commit.'];
   if (lines.at(-1) === '') lines.pop();
   const seen = new Set();

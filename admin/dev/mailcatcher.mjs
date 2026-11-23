@@ -44,8 +44,8 @@ net.createServer((sock) => {
       if (p[2]) return send('235 2.7.0 Authentication successful');
       auth = 'plain'; return send('334 ');
     }
-    if (cmd === 'MAIL') { from = (l.match(/<([^>]*)>/) || [, ''])[1]; return send('250 OK'); }
-    if (cmd === 'RCPT') { rcpts.push((l.match(/<([^>]*)>/) || [, ''])[1]); return send('250 OK'); }
+    if (cmd === 'MAIL') { from = (l.match(/<([^>]*)>/) || [null, ''])[1]; return send('250 OK'); }
+    if (cmd === 'RCPT') { rcpts.push((l.match(/<([^>]*)>/) || [null, ''])[1]); return send('250 OK'); }
     if (cmd === 'DATA') { data = []; return send('354 End data with <CR><LF>.<CR><LF>'); }
     if (cmd === 'RSET') { from = ''; rcpts = []; return send('250 OK'); }
     if (cmd === 'NOOP') return send('250 OK');

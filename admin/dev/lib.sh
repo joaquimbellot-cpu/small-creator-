@@ -19,6 +19,16 @@ POSTGREST_IMAGE=postgrest/postgrest:v12.2.12
 # Run a command as the postgres OS user when we are root (initdb refuses to run as root).
 as_pg() { if [ "$(id -u)" = 0 ]; then runuser -u postgres -- "$@"; else "$@"; fi; }
 
+# Stop early, in plain words, when a tool the stack needs is missing. Called by start.sh.
+check_tools() {
+  local miss=""
+  for t in curl psql docker node; do command -v "$t" >/dev/null 2>&1 || miss="$miss $t"; done
+  if [ "$(id -u)" = 0 ]; then command -v runuser >/dev/null 2>&1 || miss="$miss runuser"; fi
+  [ -d "$PG_BIN" ] || miss="$miss postgresql-16(not found at $PG_BIN)"
+  if [ -n "$miss" ]; then echo "Missing:$miss. See \"You need these first\" in admin/README.md." >&2; return 1; fi
+  docker info >/dev/null 2>&1 || { echo "The Docker daemon is not running (or you may not use it). Start Docker first, then run this again." >&2; return 1; }
+}
+
 pg_running() { as_pg "$PG_BIN/pg_ctl" -D "$DATA_DIR/pg" status >/dev/null 2>&1; }
 
 # Wait until a URL answers (any HTTP status), or give up after ~40s.

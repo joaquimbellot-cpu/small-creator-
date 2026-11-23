@@ -6,7 +6,9 @@
 set -uo pipefail
 ADMIN="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ADMIN" || exit 1
-export NODE_PATH="${NODE_PATH:-/opt/node-tools/node_modules}"
+# Playwright comes from `npm install --no-save playwright` (see README, Tests). The build sandbox keeps a copy in
+# /opt/node-tools; use it only if that folder exists and NODE_PATH is not already set.
+if [ -z "${NODE_PATH:-}" ] && [ -d /opt/node-tools/node_modules ]; then export NODE_PATH=/opt/node-tools/node_modules; fi
 
 overall=0
 run_suite() {
