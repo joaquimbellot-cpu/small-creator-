@@ -6,7 +6,7 @@ Only the built assets are used. The two 9:16 videos run on YouTube Shorts and In
 
 ## Posting plan
 
-Captions are copied from `marketing/scripts/concept-a.md`, `marketing/scripts/concept-b.md` and `marketing/ad-copy.md`. Static captions join the headline and sub-line from `marketing/ad-copy.md`. Static posts use the Concept A hashtags.
+Captions are copied from `marketing/v1/scripts/concept-a.md`, `marketing/v1/scripts/concept-b.md` and `marketing/v1/ad-copy.md`. Static captions join the headline and sub-line from `marketing/v1/ad-copy.md`. Static posts use the Concept A hashtags.
 
 Caption A: A person looks at your channel and chooses a sponsor to suggest. You say yes or no. Joining is free. Apply.
 
@@ -24,20 +24,20 @@ Hashtags B: #smallyoutubechannels #youtubecreators #youtubesponsors #sponsorship
 
 | Day | Platform | Asset file | Caption | Hashtags | Tracking link |
 |---|---|---|---|---|---|
-| Day 1 | YouTube Shorts | `marketing/assets/video/concept-a_caption-cut_9x16.mp4` | Caption A | Hashtags A | Concept A, YouTube |
-| Day 2 | Instagram Reels | `marketing/assets/video/concept-a_caption-cut_9x16.mp4` | Caption A | Hashtags A | Concept A, Instagram |
-| Day 3 | Instagram feed | `marketing/assets/static/static-1_no-deal-no-commission_1x1.png` | Caption S1 | Hashtags A | Static 1, Instagram |
-| Day 4 | YouTube Shorts | `marketing/assets/video/concept-b_caption-cut_9x16.mp4` | Caption B | Hashtags B | Concept B, YouTube |
-| Day 5 | Instagram Reels | `marketing/assets/video/concept-b_caption-cut_9x16.mp4` | Caption B | Hashtags B | Concept B, Instagram |
-| Day 6 | Instagram feed | `marketing/assets/static/static-2_your-yes_1x1.png` | Caption S2 | Hashtags A | Static 2, Instagram |
-| Day 7 | Instagram feed | `marketing/assets/static/static-3_our-work_1x1.png` | Caption S3 | Hashtags A | Static 3, Instagram |
-| Day 8 | YouTube Shorts | `marketing/assets/video/concept-a_caption-cut_9x16.mp4` | Caption A | Hashtags A | Concept A, YouTube |
-| Day 9 | Instagram Reels | `marketing/assets/video/concept-a_caption-cut_9x16.mp4` | Caption A | Hashtags A | Concept A, Instagram |
-| Day 10 | Instagram feed | `marketing/assets/static/static-1_no-deal-no-commission_1x1.png` | Caption S1 | Hashtags A | Static 1, Instagram |
-| Day 11 | YouTube Shorts | `marketing/assets/video/concept-b_caption-cut_9x16.mp4` | Caption B | Hashtags B | Concept B, YouTube |
-| Day 12 | Instagram Reels | `marketing/assets/video/concept-b_caption-cut_9x16.mp4` | Caption B | Hashtags B | Concept B, Instagram |
-| Day 13 | Instagram feed | `marketing/assets/static/static-2_your-yes_1x1.png` | Caption S2 | Hashtags A | Static 2, Instagram |
-| Day 14 | Instagram feed | `marketing/assets/static/static-3_our-work_1x1.png` | Caption S3 | Hashtags A | Static 3, Instagram |
+| Day 1 | YouTube Shorts | `marketing/v1/assets/video/concept-a_caption-cut_9x16.mp4` | Caption A | Hashtags A | Concept A, YouTube |
+| Day 2 | Instagram Reels | `marketing/v1/assets/video/concept-a_caption-cut_9x16.mp4` | Caption A | Hashtags A | Concept A, Instagram |
+| Day 3 | Instagram feed | `marketing/v1/assets/static/static-1_no-deal-no-commission_1x1.png` | Caption S1 | Hashtags A | Static 1, Instagram |
+| Day 4 | YouTube Shorts | `marketing/v1/assets/video/concept-b_caption-cut_9x16.mp4` | Caption B | Hashtags B | Concept B, YouTube |
+| Day 5 | Instagram Reels | `marketing/v1/assets/video/concept-b_caption-cut_9x16.mp4` | Caption B | Hashtags B | Concept B, Instagram |
+| Day 6 | Instagram feed | `marketing/v1/assets/static/static-2_your-yes_1x1.png` | Caption S2 | Hashtags A | Static 2, Instagram |
+| Day 7 | Instagram feed | `marketing/v1/assets/static/static-3_our-work_1x1.png` | Caption S3 | Hashtags A | Static 3, Instagram |
+| Day 8 | YouTube Shorts | `marketing/v1/assets/video/concept-a_caption-cut_9x16.mp4` | Caption A | Hashtags A | Concept A, YouTube |
+| Day 9 | Instagram Reels | `marketing/v1/assets/video/concept-a_caption-cut_9x16.mp4` | Caption A | Hashtags A | Concept A, Instagram |
+| Day 10 | Instagram feed | `marketing/v1/assets/static/static-1_no-deal-no-commission_1x1.png` | Caption S1 | Hashtags A | Static 1, Instagram |
+| Day 11 | YouTube Shorts | `marketing/v1/assets/video/concept-b_caption-cut_9x16.mp4` | Caption B | Hashtags B | Concept B, YouTube |
+| Day 12 | Instagram Reels | `marketing/v1/assets/video/concept-b_caption-cut_9x16.mp4` | Caption B | Hashtags B | Concept B, Instagram |
+| Day 13 | Instagram feed | `marketing/v1/assets/static/static-2_your-yes_1x1.png` | Caption S2 | Hashtags A | Static 2, Instagram |
+| Day 14 | Instagram feed | `marketing/v1/assets/static/static-3_our-work_1x1.png` | Caption S3 | Hashtags A | Static 3, Instagram |
 
 ## Tracking links
 

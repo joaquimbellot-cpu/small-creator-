@@ -1,6 +1,6 @@
 # Smallfold creator campaign: strategy
 
-Source of facts: `marketing/brand-brief.md` (draft, awaiting owner confirmation, 23 November 2026). Audience pains and objections below are reasoning, not research. They must never be shown as data or statistics in any ad.
+Source of facts: `marketing/v1/brand-brief.md` (draft, awaiting owner confirmation, 23 November 2026). Audience pains and objections below are reasoning, not research. They must never be shown as data or statistics in any ad.
 
 **Goal:** applications. **One call to action:** Apply (https://smallfold.netlify.app/apply).
 **Platforms:** YouTube Shorts, Instagram Reels (9:16, 15 to 30 s), Instagram feed (1:1 and 9:16 static). English.

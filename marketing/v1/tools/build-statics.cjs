@@ -1,11 +1,11 @@
-// Builds the static ads from marketing/tools/statics.json.
+// Builds the static ads from marketing/v1/tools/statics.json.
 // Pictures: the website's own Higgsfield pictures (src/assets/img). Type and logo are set here, never generated.
-// Run: FONT_DIR=<folder holding @fontsource> node marketing/tools/build-statics.cjs
+// Run: FONT_DIR=<folder holding @fontsource> node marketing/v1/tools/build-statics.cjs
 const fs = require('fs');
 const path = require('path');
 const { chromium } = require('playwright');
 
-const root = path.resolve(__dirname, '..', '..');
+const root = path.resolve(__dirname, '..', '..', '..');
 const fontDir = process.env.FONT_DIR;
 if (!fontDir) { console.error('Set FONT_DIR to a node_modules/@fontsource folder.'); process.exit(1); }
 const b64 = (p) => fs.readFileSync(p).toString('base64');
@@ -46,7 +46,7 @@ h1 em{font-style:italic;color:#A8B4FF}
 
 (async () => {
   const ads = JSON.parse(fs.readFileSync(path.join(__dirname, 'statics.json'), 'utf8'));
-  const out = path.join(root, 'marketing/assets/static');
+  const out = path.join(root, 'marketing/v1/assets/static');
   fs.mkdirSync(out, { recursive: true });
   const browser = await chromium.launch();
   for (const ad of ads) {

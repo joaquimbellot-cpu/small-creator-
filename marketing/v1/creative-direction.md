@@ -1,6 +1,6 @@
 # Smallfold creative direction
 
-Source of facts: `marketing/brand-brief.md` (section 3 = never say, section 8 = the look). Scripts: `marketing/scripts/concept-a.md`, `concept-b.md`. Spoken lines are quoted word for word from the scripts and are never rewritten.
+Source of facts: `marketing/v1/brand-brief.md` (section 3 = never say, section 8 = the look). Scripts: `marketing/v1/scripts/concept-a.md`, `concept-b.md`. Spoken lines are quoted word for word from the scripts and are never rewritten.
 
 ## 1. Visual style rules
 

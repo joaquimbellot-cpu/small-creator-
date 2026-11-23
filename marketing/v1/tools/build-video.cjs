@@ -1,12 +1,12 @@
-// Builds the caption-led 9:16 video cuts from marketing/tools/videos.json.
+// Builds the caption-led 9:16 video cuts from marketing/v1/tools/videos.json.
 // Pictures: the website's own Higgsfield pictures. Type, logo and motion are set here. No sound is added.
-// Run: FONT_DIR=<folder holding @fontsource> node marketing/tools/build-video.cjs [video id]
+// Run: FONT_DIR=<folder holding @fontsource> node marketing/v1/tools/build-video.cjs [video id]
 const fs = require('fs');
 const path = require('path');
 const { spawn } = require('child_process');
 const { chromium } = require('playwright');
 
-const root = path.resolve(__dirname, '..', '..');
+const root = path.resolve(__dirname, '..', '..', '..');
 const fontDir = process.env.FONT_DIR;
 if (!fontDir) { console.error('Set FONT_DIR to a node_modules/@fontsource folder.'); process.exit(1); }
 const FPS = 30, W = 1080, H = 1920;
@@ -100,7 +100,7 @@ window.render = (t) => {
 (async () => {
   const all = JSON.parse(fs.readFileSync(path.join(__dirname, 'videos.json'), 'utf8'));
   const only = process.argv[2];
-  const out = path.join(root, 'marketing/assets/video');
+  const out = path.join(root, 'marketing/v1/assets/video');
   fs.mkdirSync(out, { recursive: true });
   const browser = await chromium.launch();
   for (const video of all) {

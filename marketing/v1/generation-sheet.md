@@ -147,8 +147,8 @@ First load the workflow with `get_workflow_instructions` `{workflow: "video-mont
 
 **Both concepts**
 
-- End on the end-card image. Import it with `media_import_url` from `https://raw.githubusercontent.com/joaquimbellot-cpu/small-creator-/refs/heads/claude/wonderful-meitner-sjwb8y/marketing/assets/end-card_9x16.png`. If the import fails, ask me to upload `marketing/assets/end-card_9x16.png`. Hold it for about 2 seconds, with a short fade from the last clip. Do not generate an end card yourself.
-- Overlay my logo top-left for the whole video, only if the workflow allows it. Import it with `media_import_url` from `https://raw.githubusercontent.com/joaquimbellot-cpu/small-creator-/refs/heads/claude/wonderful-meitner-sjwb8y/marketing/assets/logo-on-ink.png` (transparent PNG). If that is not possible, leave the logo off and tell me. Never redraw or generate the logo.
+- End on the end-card image. Import it with `media_import_url` from `https://raw.githubusercontent.com/joaquimbellot-cpu/small-creator-/refs/heads/claude/wonderful-meitner-sjwb8y/marketing/v1/assets/end-card_9x16.png`. If the import fails, ask me to upload `marketing/v1/assets/end-card_9x16.png`. Hold it for about 2 seconds, with a short fade from the last clip. Do not generate an end card yourself.
+- Overlay my logo top-left for the whole video, only if the workflow allows it. Import it with `media_import_url` from `https://raw.githubusercontent.com/joaquimbellot-cpu/small-creator-/refs/heads/claude/wonderful-meitner-sjwb8y/marketing/v1/assets/logo-on-ink.png` (transparent PNG). If that is not possible, leave the logo off and tell me. Never redraw or generate the logo.
 - No added music.
 
 Show me both finished videos, list any flaws you noticed, and wait for my OK before Step 5.

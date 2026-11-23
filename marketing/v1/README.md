@@ -1,5 +1,7 @@
 # Marketing folder
 
+**Archived.** This is version 1 of the campaign (23 November 2026). The owner found it bland and asked that its ideas not be reused. Version 2 is in `marketing/v2/`.
+
 This folder holds the Smallfold ad plans, scripts, built assets and tools. Nothing here has been published. The owner publishes.
 
 ## Index
@@ -21,8 +23,8 @@ This folder holds the Smallfold ad plans, scripts, built assets and tools. Nothi
 Run these from the project root:
 
 ```
-FONT_DIR=<path to node_modules/@fontsource> node marketing/tools/build-statics.cjs
-FONT_DIR=<path to node_modules/@fontsource> node marketing/tools/build-video.cjs
+FONT_DIR=<path to node_modules/@fontsource> node marketing/v1/tools/build-statics.cjs
+FONT_DIR=<path to node_modules/@fontsource> node marketing/v1/tools/build-video.cjs
 ```
 
 You need these:

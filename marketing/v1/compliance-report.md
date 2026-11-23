@@ -22,7 +22,7 @@ The report below is the checker's original finding. The team leader then applied
 Not done: the virality predictor was not run. It is a Higgsfield tool, and no Higgsfield job was run from this session. The generation sheet lists it as an optional last step.
 
 
-Checked against `marketing/brand-brief.md` (sections 2, 3, 8, 9, 11) and the team leader's extra rulings. Date: 23 November 2026. Result: 2 FAIL, 14 WARNING.
+Checked against `marketing/v1/brand-brief.md` (sections 2, 3, 8, 9, 11) and the team leader's extra rulings. Date: 23 November 2026. Result: 2 FAIL, 14 WARNING.
 
 ## 1. Verdict
 

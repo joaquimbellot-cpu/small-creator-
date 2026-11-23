@@ -1,11 +1,11 @@
 # Smallfold ad copy
 
-Source of facts: `marketing/brand-brief.md`. Voice on screen and in ad text is the brand's own ("we" allowed). One call to action everywhere: **Apply**. Link: https://smallfold.netlify.app/apply
+Source of facts: `marketing/v1/brand-brief.md`. Voice on screen and in ad text is the brand's own ("we" allowed). One call to action everywhere: **Apply**. Link: https://smallfold.netlify.app/apply
 Rules kept: no money promise, no counts of creators, sponsors or deals, no testimonials, no named brands, no guarantee of a sponsor, no exclamation marks, no superlatives. The owner turns on the platform AI-content label when publishing. No logo or brand name inside generated images; the real logo is placed on afterwards.
 
 ## 1. Static ads
 
-Layout for all three (as built in `marketing/assets/static/`): one of the website's own lamp-lit Higgsfield pictures fills the frame under a dark veil, the headline is in Newsreader (serif, light) with one stressed phrase in pen blue, the button "Apply" is in Instrument Sans, and a small footer line sits beside it. The real logo is top left and the label "Image made with AI" is top right. Each ad exists in 1:1 and 9:16.
+Layout for all three (as built in `marketing/v1/assets/static/`): one of the website's own lamp-lit Higgsfield pictures fills the frame under a dark veil, the headline is in Newsreader (serif, light) with one stressed phrase in pen blue, the button "Apply" is in Instrument Sans, and a small footer line sits beside it. The real logo is top left and the label "Image made with AI" is top right. Each ad exists in 1:1 and 9:16.
 
 ### Static 1 (angle: No Deal, No Commission)
 | Element | Text | Count |
