@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { ConfirmButton, EmptyState, LinkButton, Table, tableCell } from '@/components/ui';
+import { ConfirmButton, EmptyState, LinkButton, Notice, Table, tableCell } from '@/components/ui';
 import { requireStaff } from '@/lib/auth/staff';
 import { createClient } from '@/lib/supabase/server';
 import { deleteTemplateAction } from './actions';
@@ -10,11 +10,13 @@ export const metadata: Metadata = { title: 'Templates' };
 export default async function TemplatesPage() {
   const staff = await requireStaff();
   const supabase = await createClient();
-  const { data } = await supabase.from('email_templates').select('id, name, goal, subject').order('name');
+  const { data, error } = await supabase.from('email_templates').select('id, name, goal, subject').order('name');
   return (
     <>
       <div className="toolbar"><LinkButton href="/emails/templates/new">New template</LinkButton></div>
-      {!data?.length ? (
+      {error ? (
+        <Notice tone="error">The templates could not be loaded. Refresh the page to try again.</Notice>
+      ) : !data?.length ? (
         <EmptyState title="No templates yet">A template is a subject and body with placeholders such as {'{{first_name}}'}.</EmptyState>
       ) : (
         <Table label="Templates">

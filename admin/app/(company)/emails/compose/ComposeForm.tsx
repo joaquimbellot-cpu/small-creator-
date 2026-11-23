@@ -44,7 +44,7 @@ export function ComposeForm({ initial, templates, mock }: { initial: ComposeCrea
       <div>
         <Input label="Find creators" type="search" value={q} onChange={(e) => setQ(e.target.value)} placeholder="Name, email or channel" />
         <ul style={{ listStyle: 'none', padding: 0, margin: 0 }} aria-label="Search results">
-          {results.map((c) => (
+          {results.slice(0, 25).map((c) => (
             <CreatorLine
               key={c.id}
               c={c}
@@ -56,6 +56,7 @@ export function ComposeForm({ initial, templates, mock }: { initial: ComposeCrea
             />
           ))}
         </ul>
+        {results.length >= 20 ? <p className="muted">Showing the first 20. Type more of the name to find others.</p> : null}
       </div>
 
       <div>
@@ -81,7 +82,7 @@ export function ComposeForm({ initial, templates, mock }: { initial: ComposeCrea
           <Textarea label="Goal, in one sentence" name="goal" rows={3} maxLength={500} placeholder="Introduce Smallfold and ask if they would like to hear about sponsors." />
         )}
 
-        {mock ? <Notice tone="warn" title="Mock mode.">No Anthropic key is set, so drafts are filled in from the template or goal without Claude.</Notice> : null}
+        {mock ? <Notice tone="warn" title="Practice drafts.">Claude is not connected, so drafts are built from the template without Claude.</Notice> : null}
         {state.error ? <Notice tone="error">{state.error}</Notice> : null}
         <Button type="submit" loading={pending} disabled={usable.length === 0 || usable.length > 25}>Draft emails</Button>
       </div>

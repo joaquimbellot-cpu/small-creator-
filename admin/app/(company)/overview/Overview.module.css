@@ -111,6 +111,7 @@
 .svg {
   display: block;
   width: 100%;
+  max-width: 600px; /* the text is drawn in the SVG's own units, so a wider chart would blow it up */
   height: auto;
 }
 
@@ -129,8 +130,14 @@
 
 .tick {
   font-family: var(--font-sans);
-  font-size: 13px;
+  font-size: 12px;
   fill: var(--fg-muted);
+}
+
+/* On a phone the chart is drawn small: show every second week label, larger. */
+@media (max-width: 520px) {
+  .tick { font-size: 17px; }
+  .tickOdd { display: none; }
 }
 
 .details {

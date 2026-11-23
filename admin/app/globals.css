@@ -11,7 +11,7 @@ button, input, select, textarea { font: inherit; }
 .page-head { display: flex; align-items: flex-end; justify-content: space-between; gap: var(--s-4); flex-wrap: wrap; margin-bottom: var(--s-5); }
 .page-title { font-size: clamp(1.75rem, 3vw, 2.5rem); line-height: 1.1; }
 .page-lead { margin: var(--s-2) 0 0; color: var(--fg-muted); max-width: var(--measure); }
-.label { font-size: var(--t-label); font-weight: var(--w-label); letter-spacing: var(--track-label); text-transform: uppercase; color: var(--fg-muted); }
+.label { font-family: var(--font-sans); font-size: var(--t-label); font-weight: var(--w-label); letter-spacing: var(--track-label); text-transform: uppercase; color: var(--fg-muted); }
 .muted { color: var(--fg-muted); }
 .tile { background: var(--surface); border: var(--hairline) solid var(--rule); border-radius: var(--r); padding: var(--s-4); }
 .toolbar { display: flex; gap: var(--s-3); align-items: flex-end; flex-wrap: wrap; margin-bottom: var(--s-4); }
@@ -34,7 +34,7 @@ button, input, select, textarea { font: inherit; }
 .shell { min-height: 100vh; display: flex; flex-direction: column; }
 .shell__bar { border-bottom: var(--hairline) solid var(--rule); background: var(--bg); }
 .shell__inner { max-width: var(--wrap); margin: 0 auto; padding: 0 var(--gutter); display: flex; align-items: center; gap: var(--s-5); min-height: 64px; flex-wrap: wrap; }
-.shell__brand { font: var(--w-heading) 1.5rem/1 var(--font-serif); letter-spacing: var(--track-heading); text-decoration: none; }
+.shell__brand { display: inline-flex; align-items: center; gap: var(--s-2); font: var(--w-heading) 1.5rem/1 var(--font-serif); letter-spacing: var(--track-heading); text-decoration: none; }
 .shell__nav { display: flex; gap: var(--s-1); flex: 1; flex-wrap: wrap; }
 .shell__nav a { display: inline-flex; align-items: center; min-height: var(--tap); padding: 0 var(--s-3); text-decoration: none; color: var(--fg-muted);
   font: var(--w-label) var(--t-label)/1 var(--font-sans); letter-spacing: var(--track-label); text-transform: uppercase; border-bottom: var(--stroke) solid transparent; }
@@ -50,6 +50,26 @@ button, input, select, textarea { font: inherit; }
 .subnav a[aria-current='page'] { color: var(--fg); border-bottom-color: var(--accent-fg); }
 .split { display: grid; gap: var(--s-6); grid-template-columns: minmax(0, 1fr); }
 @media (min-width: 900px) { .split { grid-template-columns: minmax(0, 2fr) minmax(0, 1fr); } }
+@media (min-width: 900px) { .split.split--wide { grid-template-columns: minmax(0, 3fr) minmax(0, 1fr); } }
 .qr { width: 200px; height: 200px; background: #fff; padding: var(--s-2); border-radius: var(--r); border: var(--hairline) solid var(--rule); }
 .mono { font-family: var(--font-mono); font-size: .875rem; word-break: break-all; }
 .auth__linkbtn { background: none; border: 0; padding: 0; min-height: var(--tap); color: var(--accent-fg); text-decoration: underline; cursor: pointer; font: inherit; }
+
+/* Phones: brand and user on the first row, the links in one row of their own that scrolls sideways. */
+@media (max-width: 700px) {
+  .shell__inner { gap: var(--s-2) var(--s-3); min-height: 0; padding-top: var(--s-2); }
+  .shell__user { order: 2; margin-left: auto; }
+  .shell__nav { order: 3; flex: 1 0 100%; flex-wrap: nowrap; overflow-x: auto; margin: 0 calc(-1 * var(--gutter)); padding: 0 var(--gutter); }
+  .shell__nav a { white-space: nowrap; flex: none; }
+}
+
+/* Error, not-found and loading screens */
+.state { max-width: var(--narrow); padding: var(--s-8) 0; }
+.state--page { min-height: 100vh; display: grid; align-content: center; padding: var(--s-8) var(--gutter); }
+.state__title { font-size: clamp(1.75rem, 3vw, 2.5rem); line-height: 1.1; margin-bottom: var(--s-3); }
+.state__text { color: var(--fg-muted); max-width: var(--measure); margin: 0 0 var(--s-5); }
+.state__actions { display: flex; gap: var(--s-3); flex-wrap: wrap; align-items: center; }
+.loading { padding: var(--s-6) 0; color: var(--fg-muted); }
+.loading__bar { height: 2px; width: 40%; background: var(--accent-fg); margin-bottom: var(--s-4); animation: loading-slide 1.2s var(--ease) infinite; }
+@keyframes loading-slide { from { transform: translateX(-100%); } to { transform: translateX(250%); } }
+@media (prefers-reduced-motion: reduce) { .loading__bar { animation: none; } }

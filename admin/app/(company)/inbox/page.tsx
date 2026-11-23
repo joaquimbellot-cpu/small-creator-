@@ -1,10 +1,10 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { Badge, Button, EmptyState, Pagination, Select, Table, tableCell } from '@/components/ui';
+import { after } from 'next/server';
+import { Badge, Button, EmptyState, Notice, Pagination, Select, Table, tableCell } from '@/components/ui';
 import { requireStaff } from '@/lib/auth/staff';
 import { createClient } from '@/lib/supabase/server';
 import { formatWhen } from '@/lib/deals/format';
-import { logAudit } from '@/lib/audit';
 import { filterSchema } from '@/lib/forms/schemas';
 
 export const metadata: Metadata = { title: 'Inbox' };
@@ -34,7 +34,18 @@ export default async function InboxPage({ searchParams }: { searchParams: Promis
     .range((page - 1) * PAGE_SIZE, page * PAGE_SIZE - 1);
   const rows = (data ?? []) as Row[];
   // The list shows sender emails: one audit line per page view.
-  if (!error) await logAudit('contact.viewed', 'contact_message', null, { list: true, count: rows.length });
+  // Written after the response, so the page does not wait for it. It reuses this request's client:
+  // logAudit() would call cookies() again, which is not allowed inside after().
+  if (!error) {
+    after(async () => {
+      try {
+        const { error: auditError } = await supabase.rpc('log_audit', { action: 'contact.viewed', entity_type: 'contact_message', entity_id: null, details: { list: true, count: rows.length } });
+        if (auditError) console.error('audit write failed contact.viewed', auditError.code);
+      } catch (e) {
+        console.error('audit write failed contact.viewed', e instanceof Error ? e.message : e);
+      }
+    });
+  }
 
   const hrefFor = (p: number) => {
     const u = new URLSearchParams();
@@ -56,14 +67,14 @@ export default async function InboxPage({ searchParams }: { searchParams: Promis
         <Button type="submit" variant="ghost">Filter</Button>
       </form>
 
-      {error ? <p className="muted">The inbox could not be loaded. Refresh the page to try again.</p> : rows.length === 0 ? (
+      {error ? <Notice tone="error">The inbox could not be loaded. Refresh the page to try again.</Notice> : rows.length === 0 ? (
         <EmptyState title={show === 'open' ? 'Nothing waiting' : 'No messages here'}>
           {show === 'open' ? 'Every message has been handled. New ones from the website contact form appear here.' : 'Try another filter.'}
         </EmptyState>
       ) : (
         <Table label="Messages">
           <thead>
-            <tr><th>From</th><th>Message</th><th>Received</th><th>Status</th></tr>
+            <tr><th>From</th><th>Message</th><th>Received (UTC)</th><th>Status</th></tr>
           </thead>
           <tbody>
             {rows.map((m) => (

@@ -1,7 +1,8 @@
 import type { Metadata } from 'next';
-import { EmptyState, Pagination, Select, Table, Button } from '@/components/ui';
+import { EmptyState, Notice, Pagination, Select, Table, Button } from '@/components/ui';
 import { requireOwner } from '@/lib/auth/staff';
 import { createClient } from '@/lib/supabase/server';
+import { formatWhen } from '@/lib/deals/format';
 import { describeAction, describeDetails, describeRecord, type AuditRow } from './format';
 
 export const metadata: Metadata = { title: 'Audit log' };
@@ -21,17 +22,19 @@ export default async function AuditPage({ searchParams }: { searchParams: Promis
   const actor = /^[0-9a-f-]{36}$/i.test(one(sp.actor) ?? '') ? one(sp.actor) : undefined;
 
   const supabase = await createClient();
-  const [{ data: people }, { data: recent }] = await Promise.all([
+  const [{ data: people }, { data: distinct, error: actionsError }] = await Promise.all([
     supabase.from('profiles').select('id, full_name, email'),
-    supabase.from('audit_log').select('action').order('created_at', { ascending: false }).limit(1000),
+    supabase.rpc('audit_actions'), // the distinct actions, so the page does not read 1,000 log rows
   ]);
   const names = new Map((people ?? []).map((p) => [p.id, p.full_name || String(p.email)]));
-  const actions = Array.from(new Set([...KNOWN, ...(recent ?? []).map((r) => r.action)])).sort();
+  // If the function is not there yet, fall back to the known list.
+  const fromDb = actionsError ? [] : ((distinct ?? []) as unknown[]).map((r) => String(typeof r === 'object' && r ? Object.values(r)[0] : r));
+  const actions = Array.from(new Set([...KNOWN, ...fromDb])).sort();
 
-  let q = supabase.from('audit_log').select('id, actor_id, action, entity_type, entity_id, details, created_at', { count: 'exact' });
+  let q = supabase.from('audit_log').select('id, actor_id, action, entity_type, entity_id, details, created_at', { count: 'estimated' });
   if (action) q = q.eq('action', action);
   if (actor) q = q.eq('actor_id', actor);
-  const { data, count } = await q.order('created_at', { ascending: false }).order('id', { ascending: false }).range((page - 1) * PAGE_SIZE, page * PAGE_SIZE - 1);
+  const { data, count, error } = await q.order('created_at', { ascending: false }).order('id', { ascending: false }).range((page - 1) * PAGE_SIZE, page * PAGE_SIZE - 1);
   const rows = (data ?? []) as AuditRow[];
 
   const hrefFor = (p: number) => {
@@ -42,15 +45,14 @@ export default async function AuditPage({ searchParams }: { searchParams: Promis
     const s = u.toString();
     return `/settings/audit${s ? `?${s}` : ''}`;
   };
-  const fmt = new Intl.DateTimeFormat('en-GB', { dateStyle: 'medium', timeStyle: 'short', timeZone: 'UTC' });
 
   return (
     <>
-      <p className="muted" style={{ marginTop: 0 }}>Read-only. Lines are written by the system and cannot be edited or deleted. Times are UTC.</p>
+      <p className="muted" style={{ marginTop: 0 }}>Read-only. Lines are written by the system and cannot be edited or deleted. Times are UTC. Page counts are approximate on a long log.</p>
       <form method="get" className="toolbar">
         <Select label="Action" name="action" defaultValue={action ?? ''}>
           <option value="">All actions</option>
-          {actions.map((a) => <option key={a} value={a}>{describeAction(a)} ({a})</option>)}
+          {actions.map((a) => <option key={a} value={a}>{describeAction(a)}</option>)}
         </Select>
         <Select label="Person" name="actor" defaultValue={actor ?? ''}>
           <option value="">Everyone</option>
@@ -58,16 +60,18 @@ export default async function AuditPage({ searchParams }: { searchParams: Promis
         </Select>
         <Button type="submit" variant="ghost">Filter</Button>
       </form>
-      {rows.length === 0 ? (
+      {error ? (
+        <Notice tone="error">The audit log could not be loaded. Refresh the page to try again.</Notice>
+      ) : rows.length === 0 ? (
         <EmptyState title="No lines match">Try a different filter.</EmptyState>
       ) : (
         <>
           <Table label="Audit log">
-            <thead><tr><th>When</th><th>Who</th><th>What</th><th>Record</th><th>Details</th></tr></thead>
+            <thead><tr><th>When (UTC)</th><th>Who</th><th>What</th><th>Record</th><th>Details</th></tr></thead>
             <tbody>
               {rows.map((r) => (
                 <tr key={r.id}>
-                  <td style={{ whiteSpace: 'nowrap' }}>{fmt.format(new Date(r.created_at))}</td>
+                  <td style={{ whiteSpace: 'nowrap' }}>{formatWhen(r.created_at)}</td>
                   <td>{r.actor_id ? names.get(r.actor_id) ?? 'Removed user' : 'System'}</td>
                   <td>{describeAction(r.action)}</td>
                   <td>{describeRecord(r)}</td>

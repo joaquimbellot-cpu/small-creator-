@@ -1,29 +1,39 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { Badge, Button, Notice } from '@/components/ui';
+import { Badge, Notice } from '@/components/ui';
 import { requireStaff } from '@/lib/auth/staff';
 import { createClient } from '@/lib/supabase/server';
 import { siteUrl } from '@/lib/supabase/env';
 import { buildFooter } from '@/lib/email/footer';
-import { markRepliedAction, retryAction } from '../actions';
-import { STATUS_TONE } from '../status';
+import { formatWhen } from '@/lib/deals/format';
+import { EmailAction } from './EmailActions';
+import { STATUS_LABEL, STATUS_TONE } from '../status';
 
 export const metadata: Metadata = { title: 'Email' };
 
 type Person = { full_name: string } | null;
-const when = (t: string | null) => (t ? new Date(t).toISOString().slice(0, 16).replace('T', ' ') + ' UTC' : '—');
+const when = (t: string | null) => (t ? `${formatWhen(t)} UTC` : '—');
 
 export default async function EmailDetail({ params }: { params: Promise<{ id: string }> }) {
   await requireStaff();
   const { id } = await params;
   if (!/^[0-9a-f-]{36}$/i.test(id)) notFound();
   const supabase = await createClient();
-  const { data } = await supabase
+  const { data, error } = await supabase
     .from('emails')
     .select('id, subject, body, status, is_test, to_email, error, created_at, approved_at, sent_at, replied_at, creators(full_name), drafter:profiles!emails_drafted_by_fkey(full_name), approver:profiles!emails_approved_by_fkey(full_name), sender:profiles!emails_sent_by_fkey(full_name)')
     .eq('id', id)
     .maybeSingle();
+  // A failed query is not the same as a missing email.
+  if (error) {
+    return (
+      <>
+        <p><Link href="/emails">← All emails</Link></p>
+        <Notice tone="error">This email could not be loaded. Refresh the page to try again.</Notice>
+      </>
+    );
+  }
   if (!data) notFound();
   const e = data as unknown as typeof data & { creators: Person; drafter: Person; approver: Person; sender: Person };
   const { data: settings } = await supabase.from('settings').select('sender_postal_address').eq('id', 1).single();
@@ -33,8 +43,9 @@ export default async function EmailDetail({ params }: { params: Promise<{ id: st
     <>
       <p><Link href="/emails">← All emails</Link></p>
       <h2>{e.subject || '(no subject)'}</h2>
+      <p className="muted">Times are UTC.</p>
       <p>
-        <Badge tone={STATUS_TONE[e.status] ?? 'neutral'}>{e.status}</Badge> {e.is_test ? <Badge>test</Badge> : null}{' '}
+        <Badge tone={STATUS_TONE[e.status] ?? 'neutral'}>{STATUS_LABEL[e.status] ?? e.status}</Badge> {e.is_test ? <Badge>test</Badge> : null}{' '}
         <span className="muted">{e.is_test ? 'Would go to' : 'To'} {e.creators?.full_name} ({e.to_email})</span>
       </p>
       {e.is_test ? <Notice tone="info" title="Test">Delivered to the test address, not to the creator. The address above is only where a real send would go.</Notice> : null}
@@ -54,10 +65,10 @@ export default async function EmailDetail({ params }: { params: Promise<{ id: st
 
       <div style={{ display: 'flex', gap: 8 }}>
         {e.status === 'sent' ? (
-          <form action={markRepliedAction}><input type="hidden" name="id" value={e.id} /><Button type="submit">Mark as replied</Button></form>
+          <EmailAction id={e.id} kind="replied" />
         ) : null}
         {e.status === 'failed' ? (
-          <form action={retryAction}><input type="hidden" name="id" value={e.id} /><Button type="submit">Retry (back to draft)</Button></form>
+          <EmailAction id={e.id} kind="retry" />
         ) : null}
         {e.status === 'draft' || e.status === 'approved' ? <Link href="/emails/review">Open in Review</Link> : null}
       </div>

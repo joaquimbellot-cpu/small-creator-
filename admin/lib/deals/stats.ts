@@ -14,6 +14,7 @@ export type Overview = {
   deals_by_stage: Record<Stage, number>;
   active_deals: number;
   commission_earned_cents: number;
+  emails_failed_7d?: number; // added by a later migration; show 0 when missing
   weekly: WeekPoint[]; // 12 entries, oldest first
 };
 

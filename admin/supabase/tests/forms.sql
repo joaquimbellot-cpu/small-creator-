@@ -68,7 +68,8 @@ select tests.check('service role contact ok', tests.json_as('service_role', $q$s
 select tests.check('contact row stored', (select count(*) from public.contact_messages where email = 'fake@example.test') = 1);
 select tests.check('contact.received audit row has no actor',
   (select count(*) from public.audit_log where action = 'contact.received' and actor_id is null and created_at = now()) = 1);
-create temp table r1 as select tests.json_as('service_role', $q$select public.submit_application('testhash2','Fake Creator','fake.creator@example.test','+1 555 0100','@fakechannel',2500,'We make fake videos')$q$) as j;
+-- Changed on purpose (audit L05): the database refuses a channel_url that is not https://; the website route already turns a bare @handle into a YouTube link before calling the function.
+create temp table r1 as select tests.json_as('service_role', $q$select public.submit_application('testhash2','Fake Creator','fake.creator@example.test','+1 555 0100','https://www.youtube.com/@fakechannel',2500,'We make fake videos')$q$) as j;
 select tests.check('application creates a website creator',
   (select j from r1) = '{"ok": true}'
   and (select count(*) from public.creators where email = 'fake.creator@example.test' and status = 'new' and source = 'website' and niche = 'We make fake videos' and subscribers = 2500) = 1);

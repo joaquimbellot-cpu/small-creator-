@@ -1,9 +1,10 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { Badge, Button, EmptyState, Input, Pagination, Select, Table } from '@/components/ui';
+import { Badge, Button, EmptyState, Input, Notice, Pagination, Select, Table } from '@/components/ui';
 import { requireStaff } from '@/lib/auth/staff';
 import { createClient } from '@/lib/supabase/server';
-import { STATUS_TONE } from './status';
+import { formatWhen } from '@/lib/deals/format';
+import { STATUS_LABEL, STATUS_TONE } from './status';
 
 export const metadata: Metadata = { title: 'Email log' };
 
@@ -34,7 +35,7 @@ export default async function EmailLogPage({ searchParams }: { searchParams: Pro
   const creator = (sp.creator ?? '').trim();
   if (UUID.test(creator)) query = query.eq('creator_id', creator);
   else if (creator) query = query.ilike('creators.full_name', `%${creator.replace(/[%,()*\\]/g, ' ')}%`);
-  const { data, count } = await query;
+  const { data, count, error } = await query;
   const rows = (data ?? []) as unknown as Row[];
 
   const hrefFor = (p: number) => {
@@ -48,7 +49,7 @@ export default async function EmailLogPage({ searchParams }: { searchParams: Pro
       <form className="toolbar" method="get">
         <Select label="Status" name="status" defaultValue={sp.status ?? ''}>
           <option value="">All</option>
-          {STATUSES.map((s) => <option key={s} value={s}>{s}</option>)}
+          {STATUSES.map((s) => <option key={s} value={s}>{STATUS_LABEL[s]}</option>)}
         </Select>
         <Select label="Type" name="kind" defaultValue={sp.kind ?? ''}>
           <option value="">Test and real</option>
@@ -61,21 +62,23 @@ export default async function EmailLogPage({ searchParams }: { searchParams: Pro
         <Button type="submit" variant="ghost">Filter</Button>
       </form>
 
-      {rows.length === 0 ? (
+      {error ? (
+        <Notice tone="error">The email log could not be loaded. Refresh the page to try again.</Notice>
+      ) : rows.length === 0 ? (
         <EmptyState title="No emails found">Try other filters.</EmptyState>
       ) : (
         <Table label="Emails">
-          <thead><tr><th>Creator</th><th>Subject</th><th>Status</th><th>Date</th></tr></thead>
+          <thead><tr><th>Creator</th><th>Subject</th><th>Status</th><th>Date (UTC)</th></tr></thead>
           <tbody>
             {rows.map((r) => (
               <tr key={r.id}>
                 <td><Link href={`/emails/${r.id}`}>{r.creators?.full_name ?? r.to_email}</Link></td>
                 <td>{r.subject || <span className="muted">(no subject)</span>}</td>
                 <td>
-                  <Badge tone={STATUS_TONE[r.status] ?? 'neutral'}>{r.status}</Badge>{' '}
-                  {r.is_test ? <Badge>test: sent to the test address</Badge> : null}
+                  <Badge tone={STATUS_TONE[r.status] ?? 'neutral'}>{STATUS_LABEL[r.status] ?? r.status}</Badge>{' '}
+                  {r.is_test ? <span title="Test: sent to the test address"><Badge>Test</Badge></span> : null}
                 </td>
-                <td>{new Date(r.sent_at ?? r.created_at).toISOString().slice(0, 16).replace('T', ' ')}</td>
+                <td>{formatWhen(r.sent_at ?? r.created_at)}</td>
               </tr>
             ))}
           </tbody>

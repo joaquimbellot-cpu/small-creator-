@@ -5,7 +5,7 @@ import s from './ui.module.css';
 export function EmptyState({ title, children, action }: { title: string; children?: ReactNode; action?: ReactNode }) {
   return (
     <div className={s.empty}>
-      <h3>{title}</h3>
+      <h2>{title}</h2>
       {children ? <p>{children}</p> : null}
       {action}
     </div>

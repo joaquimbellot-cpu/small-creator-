@@ -65,7 +65,7 @@ export function CreatorsTable({ rows, sorts, youtubeEnabled }: { rows: Row[]; so
                 <input type="checkbox" aria-label={`Select ${r.full_name}`} checked={selected.has(r.id)} onChange={(e) => toggle(r.id, e.target.checked)} />
               </td>
               <td>
-                <Link href={r.href} className={s.nameLink}>{r.full_name}</Link>
+                <Link href={r.href} prefetch={false} className={s.nameLink}>{r.full_name}</Link>
                 <span className={s.sub}>{r.email}</span>
               </td>
               <td><Badge tone={STATUS_TONE[r.status]}>{STATUS_LABEL[r.status]}</Badge></td>

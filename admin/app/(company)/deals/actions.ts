@@ -64,17 +64,21 @@ export async function updateStageAction(_prev: DealFormState, formData: FormData
   if (error) return { error: 'Could not change the stage. Try again.' };
 
   refresh();
-  return {};
+  return { ok: 'Saved' };
 }
 
-export async function deleteDealAction(formData: FormData): Promise<void> {
+export async function deleteDealAction(_prev: DealFormState, formData: FormData): Promise<DealFormState> {
   await requireOwner();
   const parsed = deleteDealSchema.safeParse({ id: formData.get('id') });
-  if (!parsed.success) return;
+  if (!parsed.success) return { error: 'Could not delete the deal.' };
 
   const supabase = await createClient();
   const { error } = await supabase.from('deals').delete().eq('id', parsed.data.id);
-  if (error) return;
+  if (error) {
+    console.error('deals: delete failed', error.code);
+    return { error: 'Could not delete the deal. Try again.' };
+  }
 
   refresh();
+  return { ok: 'Deal deleted.' };
 }

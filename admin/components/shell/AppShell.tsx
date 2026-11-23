@@ -2,6 +2,7 @@
 import Link from 'next/link';
 import { logoutAction } from '@/lib/auth/actions';
 import type { Staff } from '@/lib/auth/staff';
+import { LogoMark } from './LogoMark';
 import { NavLinks } from './NavLinks';
 
 export function AppShell({ staff, children }: { staff: Staff; children: React.ReactNode }) {
@@ -12,14 +13,15 @@ export function AppShell({ staff, children }: { staff: Staff; children: React.Re
     { href: '/emails', label: 'Emails' },
     { href: '/inbox', label: 'Inbox' },
     ...(staff.role === 'owner' ? [{ href: '/claude', label: 'Claude' }] : []),
-    ...(staff.role === 'owner' ? [{ href: '/settings', label: 'Settings' }] : []),
+    // A worker has no other Settings page than Security, where they set up their own two-step login.
+    { href: staff.role === 'owner' ? '/settings' : '/settings/security', label: 'Settings' },
   ];
   return (
     <div className="shell">
       <a className="skip-link" href="#main">Skip to content</a>
       <header className="shell__bar">
         <div className="shell__inner">
-          <Link href="/overview" className="shell__brand">Smallfold</Link>
+          <Link href="/overview" prefetch={false} className="shell__brand"><LogoMark /> Smallfold</Link>
           <NavLinks items={items} className="shell__nav" />
           <div className="shell__user">
             <div className="shell__who">

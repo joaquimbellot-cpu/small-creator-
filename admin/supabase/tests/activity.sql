@@ -27,6 +27,9 @@ insert into public.audit_log (action, entity_type, entity_id, details)
 values ('email.status_changed','email','EXCL-test-email','{"label":"Hidden Tester","is_test":true,"status":"sent","changes":{"status":{"from":"sending","to":"sent"}}}'),
        ('email.status_changed','email','EXCL-sending','{"label":"Hidden","is_test":false,"changes":{"status":{"from":"approved","to":"sending"}}}'),
        ('creators.imported','creator',null,'{"count":12}');
+-- a real sent line, so the "sent an email to" check does not depend on what other runs left in the shared log
+insert into public.audit_log (action, entity_type, entity_id, details)
+values ('email.status_changed','email','CTRL-sent','{"label":"Control Creator","is_test":false,"changes":{"status":{"from":"sending","to":"sent"}}}');
 
 select tests.check('worker gets rows', tests.rows_as('authenticated',(select worker_id from ids),'select * from public.recent_activity()') = 20);
 select tests.check('limit is capped at 50', tests.rows_as('authenticated',(select worker_id from ids),'select * from public.recent_activity(500)') = 50);
@@ -34,7 +37,7 @@ select tests.check('limit 3 returns 3', tests.rows_as('authenticated',(select wo
 select tests.check('excluded actions and test emails never appear',
   tests.rows_as('authenticated',(select worker_id from ids),$q$select * from public.recent_activity(50) where entity_id like 'EXCL-%' or action in ('creator.viewed','creators.exported','auth.login','auth.logout','auth.password_changed','smallfold.reserve_send') or action like 'user.%' or action like 'settings.%' or action like 'profile.%' or action like 'auth.%' or action like 'future.%'$q$) = 0);
 select tests.check('newest first and the import line reads well',
-  tests.rows_as('authenticated',(select worker_id from ids),$q$select * from public.recent_activity(1) where summary = 'imported 12 creators'$q$) = 1);
+  tests.rows_as('authenticated',(select worker_id from ids),$q$select * from public.recent_activity(2) where summary = 'imported 12 creators'$q$) = 1);
 select tests.check('summaries are filled and plain',
   tests.rows_as('authenticated',(select worker_id from ids),$q$select * from public.recent_activity(50) where summary is null or summary = ''$q$) = 0
   and tests.rows_as('authenticated',(select worker_id from ids),$q$select * from public.recent_activity(50) where summary like 'sent an email to %'$q$) > 0);

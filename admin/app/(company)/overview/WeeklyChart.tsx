@@ -39,8 +39,8 @@ export function WeeklyChart({ weekly }: { weekly: WeekPoint[] }) {
               <rect x={x + BAR + GAP} y={BASE - scale(w.replies)} width={BAR} height={scale(w.replies)} className={s.barReply}>
                 <title>{`Week of ${label.day} ${label.month}: ${w.replies} replies`}</title>
               </rect>
-              <text x={i * slot + slot / 2} y={BASE + 18} textAnchor="middle" className={s.tick}>{label.day}</text>
-              <text x={i * slot + slot / 2} y={BASE + 34} textAnchor="middle" className={s.tick}>{label.month}</text>
+              <text x={i * slot + slot / 2} y={BASE + 18} textAnchor="middle" className={`${s.tick} ${i % 2 ? s.tickOdd : ''}`}>{label.day}</text>
+              <text x={i * slot + slot / 2} y={BASE + 34} textAnchor="middle" className={`${s.tick} ${i % 2 ? s.tickOdd : ''}`}>{label.month}</text>
             </g>
           );
         })}

@@ -31,6 +31,7 @@ create temp table ids as select (select id from public.profiles where email = 'o
                                 (select id from public.profiles where email = 'worker@example.test') as w,
                                 gen_random_uuid() as thread, gen_random_uuid() as other_thread;
 grant select on ids to public;
+delete from public.assistant_threads;   -- live conversations (e2e runs, real use) must not change the counts; rolled back
 -- A thread that belongs to someone else (the worker's profile id stands in for a second user).
 insert into public.assistant_threads (id, owner_id, title) select other_thread, w, 'not yours' from ids;
 insert into public.assistant_messages (thread_id, owner_id, role, content)
@@ -86,9 +87,11 @@ select tests.check('an approved proposal can only get a result or fail, never go
 select tests.check('pending -> rejected works; a rejected proposal is final',
   (tests.run_as('authenticated', (select o from ids), $q$update public.assistant_proposals set status = 'rejected', decided_at = now() where id = '00000000-0000-0000-0000-0000000000a2' and status = 'pending'$q$)).n = 1
   and (tests.run_as('authenticated', (select o from ids), $q$update public.assistant_proposals set status = 'approved' where id = '00000000-0000-0000-0000-0000000000a2'$q$)).n = 0);
-select tests.check('owner cannot delete proposals or threads',
+-- Changed on purpose (audit L38): the owner may delete their own conversation (not someone else's, not a proposal alone).
+select tests.check('owner cannot delete proposals alone, and deletes only their own threads',
   not (tests.run_as('authenticated', (select o from ids), 'delete from public.assistant_proposals')).ok
-  and not (tests.run_as('authenticated', (select o from ids), 'delete from public.assistant_threads')).ok);
+  and (tests.run_as('authenticated', (select o from ids), 'delete from public.assistant_threads')).n = 1
+  and exists (select 1 from public.assistant_threads where id = (select other_thread from ids)));
 
 -- ================================================================== audit actions
 select tests.check('log_audit accepts the new assistant and contact actions for the owner',

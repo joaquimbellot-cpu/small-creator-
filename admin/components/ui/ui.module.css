@@ -5,7 +5,7 @@
   text-decoration: none; cursor: pointer; white-space: nowrap; transition: background var(--dur-hover) var(--ease), color var(--dur-hover) var(--ease), opacity var(--dur-hover) var(--ease); }
 .btn:hover { background: transparent; color: var(--fg); }
 .btn:disabled, .btn[aria-disabled='true'] { opacity: .45; cursor: not-allowed; pointer-events: none; }
-.ghost { background: transparent; color: var(--fg); border-color: var(--line); }
+.ghost { background: transparent; color: var(--fg); border-color: var(--fg-muted); }
 .ghost:hover { border-color: var(--fg); background: var(--surface); }
 .danger { background: transparent; color: #9B2C1F; border-color: #9B2C1F; }
 .danger:hover { background: #9B2C1F; color: var(--cream); }
@@ -18,6 +18,8 @@
 .hasError .label { font-weight: var(--w-label-strong); color: #9B2C1F; }
 .control { width: 100%; min-height: var(--h-field); padding: 0 var(--s-4); background: var(--surface); color: var(--fg);
   border: var(--hairline) solid var(--fg-muted); border-radius: var(--r); font: var(--w-text) var(--t-small)/var(--lh-small) var(--font-sans); }
+.control::placeholder { color: var(--fg-muted); opacity: 1; }
+td select.control { min-width: 9rem; }
 textarea.control { padding: var(--s-3) var(--s-4); min-height: 120px; resize: vertical; }
 select.control { appearance: none; padding-right: var(--s-6); background-image: linear-gradient(45deg, transparent 50%, currentColor 50%), linear-gradient(-45deg, transparent 50%, currentColor 50%);
   background-position: calc(100% - 20px) 55%, calc(100% - 14px) 55%; background-size: 6px 6px; background-repeat: no-repeat; }
@@ -34,15 +36,20 @@ select.control { appearance: none; padding-right: var(--s-6); background-image: 
 .close:hover { color: var(--fg); }
 .modalFoot { display: flex; justify-content: flex-end; gap: var(--s-2); margin-top: var(--s-5); flex-wrap: wrap; }
 
-.tableWrap { overflow-x: auto; border-top: var(--hairline) solid var(--rule); }
+/* position: relative so visually hidden header text is clipped here, not the page. The shadows at the edges show there is more to scroll. */
+.tableWrap { position: relative; overflow-x: auto; border-top: var(--hairline) solid var(--rule);
+  background: linear-gradient(to right, var(--bg) 30%, transparent) 0 0 / 40px 100% no-repeat local,
+    linear-gradient(to left, var(--bg) 30%, transparent) 100% 0 / 40px 100% no-repeat local,
+    radial-gradient(farthest-side at 0 50%, rgba(14, 14, 14, .16), transparent) 0 0 / 12px 100% no-repeat scroll,
+    radial-gradient(farthest-side at 100% 50%, rgba(14, 14, 14, .16), transparent) 100% 0 / 12px 100% no-repeat scroll; }
 .table { width: 100%; border-collapse: collapse; font-size: .9375rem; line-height: 1.4; }
 .table th { text-align: left; padding: var(--s-3) var(--s-3); font: var(--w-label) var(--t-label)/var(--lh-label) var(--font-sans); letter-spacing: var(--track-label); text-transform: uppercase; color: var(--fg-muted); border-bottom: var(--hairline) solid var(--rule); white-space: nowrap; }
-.table td { padding: var(--s-3); border-bottom: var(--hairline) solid var(--rule); vertical-align: middle; }
+.table td { padding: var(--s-3); border-bottom: var(--hairline) solid var(--rule); vertical-align: middle; overflow-wrap: break-word; max-width: 40ch; }
 .table th a { color: inherit; text-decoration: none; }
 .table th a:hover { color: var(--fg); }
 .table tbody tr:hover { background: var(--surface); }
 .table td.num, .table th.num { text-align: right; font-variant-numeric: tabular-nums; }
-.table td.actions { text-align: right; white-space: nowrap; }
+.table td.actions { text-align: right; white-space: nowrap; max-width: none; }
 .clickable tbody tr { cursor: pointer; }
 
 .pager { display: flex; align-items: center; justify-content: space-between; gap: var(--s-4); padding: var(--s-4) 0; font-size: .9375rem; color: var(--fg-muted); flex-wrap: wrap; }
@@ -61,5 +68,5 @@ select.control { appearance: none; padding-right: var(--s-6); background-image: 
 .nWarn { border-color: #8A5A00; }
 
 .empty { text-align: center; padding: var(--s-8) var(--s-4); color: var(--fg-muted); }
-.empty h3 { margin: 0 0 var(--s-2); font: var(--w-heading) var(--t-h3)/var(--lh-h3) var(--font-serif); color: var(--fg); }
+.empty h2 { margin: 0 0 var(--s-2); font: var(--w-heading) var(--t-h3)/var(--lh-h3) var(--font-serif); color: var(--fg); }
 .empty p { margin: 0 auto var(--s-4); max-width: 32em; }

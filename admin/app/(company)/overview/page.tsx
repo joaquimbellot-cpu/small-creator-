@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { EmptyState, Notice, Table } from '@/components/ui';
+import { EmptyState, Notice } from '@/components/ui';
 import { requireStaff } from '@/lib/auth/staff';
 import { createClient } from '@/lib/supabase/server';
 import { STAGES, STAGE_LABEL, formatCount, formatUsd, formatWhen } from '@/lib/deals/format';
@@ -9,8 +9,9 @@ import s from './Overview.module.css';
 
 export const metadata: Metadata = { title: 'Overview' };
 
-export default async function OverviewPage() {
+export default async function OverviewPage({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }) {
   await requireStaff();
+  const { notice } = await searchParams;
   const supabase = await createClient();
   const [{ data: stats, error: statsError }, { data: activity, error: activityError }] = await Promise.all([
     supabase.rpc('stats_overview'),
@@ -21,6 +22,7 @@ export default async function OverviewPage() {
   return (
     <>
       <div className="page-head"><h1 className="page-title">Overview</h1></div>
+      {notice === 'owner-only' ? <Notice tone="info">Only the owner can open that page.</Notice> : null}
       <div className="split">
         <div>
           {statsError || !o ? (
@@ -33,6 +35,7 @@ export default async function OverviewPage() {
                 <Card label="Replies" value={<>{formatCount(o.replies)} <span className={s.unit}>replies · {Number(o.reply_rate).toFixed(1)}%</span></>} note="Reply rate is replies divided by emails sent." />
                 <Card label="Active deals" value={formatCount(o.active_deals)} note="Negotiating, signed or completed, not yet paid." />
                 <Card label="Commission earned" value={formatUsd(o.commission_earned_cents)} note="On deals marked paid." />
+                <Card label="Failed sends, last 7 days" value={formatCount(o.emails_failed_7d ?? 0)} note={Number(o.emails_failed_7d ?? 0) > 0 ? 'Open the Emails log and filter by Failed to see them.' : 'Emails that could not be delivered.'} />
               </section>
 
               <section className={s.block} aria-labelledby="stages-title">
@@ -56,7 +59,7 @@ export default async function OverviewPage() {
         </div>
 
         <aside className={s.block} aria-labelledby="activity-title">
-          <h2 id="activity-title" className={`label ${s.blockTitle}`}>Recent activity</h2>
+          <h2 id="activity-title" className={`label ${s.blockTitle}`}>Recent activity (times are UTC)</h2>
           {activityError ? (
             <Notice tone="error">Activity could not be loaded.</Notice>
           ) : (activity ?? []).length === 0 ? (

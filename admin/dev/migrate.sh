@@ -9,6 +9,7 @@ for f in "$ADMIN_DIR"/supabase/migrations/*.sql; do
   base=$(basename "$f" .sql); version=${base%%_*}
   if [ "$(psql -tAc "select 1 from supabase_migrations.schema_migrations where version='$version'")" = 1 ]; then continue; fi
   echo "migrate: $base"
-  psql -q -v ON_ERROR_STOP=1 -1 -f "$f"
-  psql -q -c "insert into supabase_migrations.schema_migrations (version, name) values ('$version', '$base')"
+  # The tracking row goes into the same transaction as the migration, so a crash cannot leave one without the other.
+  psql -q -v ON_ERROR_STOP=1 -1 -f "$f" \
+    -c "insert into supabase_migrations.schema_migrations (version, name) values ('$version', '$base')"
 done

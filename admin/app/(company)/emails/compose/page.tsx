@@ -18,7 +18,7 @@ export default async function ComposePage({ searchParams }: { searchParams: Prom
   const { data: templates } = await supabase.from('email_templates').select('id, name').order('name');
   return (
     <>
-      <p className="page-lead">Pick creators, then choose a template or describe the goal in one sentence. Nothing is sent from here: drafts go to Review.</p>
+      <p className="page-lead" style={{ marginBottom: 'var(--s-5)' }}>Pick creators, then choose a template or describe the goal in one sentence. Nothing is sent from here: drafts go to Review.</p>
       <ComposeForm initial={await creatorsByIds(supabase, ids)} templates={templates ?? []} mock={isMockMode()} />
     </>
   );

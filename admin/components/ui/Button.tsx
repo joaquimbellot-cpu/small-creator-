@@ -25,7 +25,7 @@ export function Button({ variant, size, loading, className, children, disabled, 
 
 export function LinkButton({ variant, size, href, children, className }: Common & { href: string; children: ReactNode; className?: string }) {
   return (
-    <Link href={href} className={buttonClass({ variant, size }, className)}>
+    <Link href={href} prefetch={false} className={buttonClass({ variant, size }, className)}>
       {children}
     </Link>
   );

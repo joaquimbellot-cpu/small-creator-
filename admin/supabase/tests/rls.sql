@@ -429,10 +429,12 @@ select public.record_login_attempt('victim@example.test', '9.9.9.9', false) from
 select tests.check('login_allowed: still true after 4 failures',
   tests.json_as('service_role', null, $q$select to_jsonb(public.login_allowed('victim@example.test', '9.9.9.9'))$q$) = 'true');
 select public.record_login_attempt('victim@example.test', '9.9.9.9', false);
-select tests.check('login_allowed: false after 5 failures for the email (case-insensitive)',
-  tests.json_as('service_role', null, $q$select to_jsonb(public.login_allowed('VICTIM@example.test', '1.2.3.4'))$q$) = 'false');
-select tests.check('login_allowed: other emails from another IP are unaffected, same IP is blocked too',
-  tests.json_as('service_role', null, $q$select to_jsonb(public.login_allowed('other@example.test', '1.2.3.4'))$q$) = 'true'
+-- Changed on purpose (audit M08): 5 failures for one email from ONE address no longer lock that email for everybody.
+select tests.check('login_allowed: false after 5 failures for the same email and IP (case-insensitive)',
+  tests.json_as('service_role', null, $q$select to_jsonb(public.login_allowed('VICTIM@example.test', '9.9.9.9'))$q$) = 'false');
+select tests.check('login_allowed: the same email from another IP is still allowed; another email on the blocked IP is not',
+  tests.json_as('service_role', null, $q$select to_jsonb(public.login_allowed('victim@example.test', '1.2.3.4'))$q$) = 'true'
+  and tests.json_as('service_role', null, $q$select to_jsonb(public.login_allowed('other@example.test', '1.2.3.4'))$q$) = 'true'
   and tests.json_as('service_role', null, $q$select to_jsonb(public.login_allowed('other@example.test', '9.9.9.9'))$q$) = 'false');
 update public.login_attempts set created_at = now() - interval '16 minutes';
 select tests.check('login_allowed: allowed again after 15 minutes',

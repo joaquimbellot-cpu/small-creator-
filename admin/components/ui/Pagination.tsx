@@ -12,7 +12,7 @@ export function Pagination({ page, pageSize, total, hrefFor }: { page: number; p
     <nav className={s.pager} aria-label="Pagination">
       <span>{from}–{to} of {total}</span>
       <span className={s.pagerLinks}>
-        {page > 1 ? <LinkButton href={hrefFor(page - 1)} variant="ghost" size="sm">Previous</LinkButton> : null}
+        {page > 1 ? <LinkButton href={hrefFor(Math.min(page - 1, pages))} variant="ghost" size="sm">Previous</LinkButton> : null}
         {page < pages ? <LinkButton href={hrefFor(page + 1)} variant="ghost" size="sm">Next</LinkButton> : null}
       </span>
     </nav>
