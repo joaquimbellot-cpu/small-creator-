@@ -70,7 +70,7 @@ Rules: yellow means the offer, coral means pretend or missing, blue means the bl
 | AI actor | x 6%, y 10.5% | 2.1% of height | Cream pill, 0.14em ink border | On every shot with a person, from the first frame of the shot until the cut. Never on the end card |
 | Pretend | x 6%, y 14.3% (directly under AI actor) | 2.1% | Coral pill, ink text, ink border | On every acted sponsor moment. It appears with the first frame of that moment and at least 0.4 s before the first spoken word of it, and stays until the moment ends |
 | Made with AI | x 6%, y 10.5% on the end card and the static | 2.1% (9:16), 3.0% (1:1) | Same pill as AI actor | On the end card and on the static; not on the video body |
-| Take counter (The Line only) | x 66%, y 10.5% | 2.1% | Same pill as AI actor | Rows 1a to 4 |
+| Take counter and recording dot (The Line only, outtakes version) | Counter "TAKE 1" to "TAKE 3" at x 66%, y 10.5% (caps, the one exception to sentence case); red dot `#E5202A`, 1.7% of height across, at x 61.8%, y 10.95% | 2.1% | Counter in the same pill as AI actor; dot is a flat red circle, used nowhere else | During the three takes and resets only; both leave when the creator turns to the viewer |
 
 The owner also switches on each platform's AI-content label when publishing.
 
@@ -111,7 +111,7 @@ Top left, under the labels, a short stack that never moves between shots of one 
 
 | Concept | Signature sound | What else you hear |
 |---|---|---|
-| 1. The Line | The pop of the cut-off line: a dry bubble pop on every "by" | Light snap-and-clap beat that builds over the takes and drops out when the creator turns to the viewer; soft tick on each caption pop |
+| 1. The Line | The clapper snap on every jump cut, with a 2-frame white flash | Record-beep at the start of each take; room tone; soft tick on each caption pop in the offer; no music |
 | 2. Missing Sponsor | The hollow knock of the empty box | Kitchen room tone; one small pop on "Something missing?"; no music |
 | 3. The Credits | The credits tune stopping dead at 3.9 s | Bouncy original ukulele-and-clap jingle before that; typewriter ticks on credit lines; one "button" note on the end card |
 | 4. The Gap | Crickets | Silence in the 2.5 s opening apart from crickets; one spoon clink; room tone after |
