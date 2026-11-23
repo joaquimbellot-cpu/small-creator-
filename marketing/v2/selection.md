@@ -22,12 +22,12 @@ The blank is honest by design. It never shows a sponsor, a brand or a result. It
 | # | Concept | Score | Where the blank is | Format |
 |---|---|---|---|---|
 | 1 | **The Line** | 41 | The sentence you rehearse: "This video is sponsored by ____" | Acted skit, then straight to camera |
-| 2 | **Missing Sponsor** | 41 | The product in your hands: a plain white box with nothing on it | Spoof sponsor read |
+| 2 | **Missing Sponsor** | 40 | The product in your hands: a plain white box with nothing on it | Spoof sponsor read |
 | 3 | **The Credits** | 40 | The last line of your credits: "Sponsored by: ____" | Type-led, works fully muted |
-| 4 | **The Gap** | 39, revised | The segment in your video: dead air and crickets | Video within a video |
+| 4 | **The Gap** | 40 after revision | The segment in your video: dead air and crickets | Video within a video |
 | 5 | **Next First** (static only) | 38 as a video | The empty stand on your milestone shelf | Still image for the Meta feed |
 
-Concepts 1 to 3 cleared the bar. Concept 4 scored 39; the Critic named one change that lifts it (open on the silence) and that change is applied here. Concept 5 did not clear the bar as a video and is kept only as a static image, where the Critic rated it the best of the pool.
+The scores are from the Critic's final check of the versions written below. Concepts 1 to 3 cleared the bar in the main scoring; Missing Sponsor lost one point when its invisible product became a blank box. Concept 4 first scored 39; the Critic named one change (open on the silence), the change was applied, and it re-scored at 40. Three of the four sit exactly on the bar, so none of them is a safe bet until it is tested. Concept 5 did not clear the bar as a video and is kept only as a static image, where the Critic rated it the best of the pool.
 
 ---
 
@@ -45,7 +45,7 @@ Concepts 1 to 3 cleared the bar. Concept 4 scored 39; the Critic named one chang
 
 **Fixes applied:** "picks one for your channel" is now "picks a sponsor to suggest". The line is burned in as a caption ("This video is sponsored by ____") so it works muted. The "1,000 to 50,000 subs" chip arrives at second 2. A "Pretend" tag sits on the rehearsal takes.
 
-## 2. Missing Sponsor (41)
+## 2. Missing Sponsor (40)
 
 **Pitch:** A cook does a full, sincere sponsor read for a plain white box with nothing on it, turns it over looking for a name, and finds none.
 
@@ -73,7 +73,7 @@ Concepts 1 to 3 cleared the bar. Concept 4 scored 39; the Critic named one chang
 
 **Fixes applied:** cut to three credit lines so "Sponsored by: ____" lands by second 3 to 4. "Sponsor offer. Free to apply." is large in the first 2 seconds. The cold-tea pour is now a mug sitting on the desk. No screen is ever in shot.
 
-## 4. The Gap (39, revised)
+## 4. The Gap (40 after revision)
 
 **Pitch:** A cook's video reaches "the sponsor segment" and nothing happens: he holds a TV-host pose at a blank wall while crickets play.
 
@@ -91,7 +91,7 @@ Concepts 1 to 3 cleared the bar. Concept 4 scored 39; the Critic named one chang
 
 **Pitch:** A shelf of a small creator's milestones, each with a handmade trophy, and one stand left empty.
 
-**On the image:** labels "First video", "First comment", "First 1,000 subs", and over the empty stand "First sponsor: ____". Below: "1,000 to 50,000 subs? Apply free." Small: "Applying doesn't promise a sponsor."
+**On the image:** labels "First video", "First comment", "First 1,000 subs", and over the empty stand "First sponsor: ____". Below: "1,000 to 50,000 subs? Free to apply." Small: "Applying doesn't promise a sponsor."
 
 **Fix applied:** the clay play-shape trophy is replaced by a plain wooden star, because the play shape imitates another company's mark.
 
@@ -105,6 +105,6 @@ Concepts 1 to 3 cleared the bar. Concept 4 scored 39; the Critic named one chang
 - **Sound:** every ad has one signature sound (the pop of the cut-off line, the hollow knock of the empty box, the credits tune stopping, crickets). No licensed music.
 - **Type:** big, heavy, high-contrast captions, burned in for every spoken line. The blank is always drawn the same way: a thick pen-blue underline.
 - **The blank:** "____" in pen blue (`#2B44D6` on light, `#A8B4FF` on dark) appears in every ad and on every end card.
-- **End card (same for all):** "Sponsored by ____" with the blank blinking, the Apply button, "Free to apply. For YouTube channels with 1,000 to 50,000 subs.", small "Applying doesn't promise a sponsor.", the real logo, and "Made with AI".
+- **End card (same for all):** "Sponsored by ____" with the blank blinking (the logo sits apart from it, never on the same line, so it cannot read as the sponsor), the Apply button, "Free to apply. For YouTube channels with 1,000 to 50,000 subs.", small "Applying doesn't promise a sponsor.", the real logo, and "Made with AI".
 - **Labels:** "AI actor" on any shot with a person. "Pretend" on any acted sponsor moment.
 - **Never generated:** words, numbers, logos, screens. All of them are graphics added afterwards.
