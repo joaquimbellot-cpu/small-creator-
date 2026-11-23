@@ -230,7 +230,9 @@ const cleanup = { emailIds: [], creatorRestore: [], zzCreatorId: null, runStart:
       const wren = await gwInsertEmail(token, { ...base, creator_id: WREN_ID, to_email: WREN_EMAIL });
       check('draft for suppressed, do_not_contact creator is refused', wren.status >= 400, `${wren.status}`);
       const sup = await gwInsertEmail(token, { ...base, creator_id: amara, to_email: WREN_EMAIL });
-      check('draft to a suppressed address is refused (suppression list)', sup.status >= 400 && sup.body.includes('suppression list'), `${sup.status} ${sup.body.slice(0, 160)}`);
+      // Refused twice over since the follow-up fixes: the address is suppressed, and it is not this creator's own
+      // address (a direct client write must use the creator's current address, SEC2-05). Either refusal is right.
+      check('draft to a suppressed address is refused (suppression list or address rule)', sup.status >= 400 && (sup.body.includes('suppression list') || sup.body.includes("creator's current address")), `${sup.status} ${sup.body.slice(0, 160)}`);
       check('no blocked-creator draft was stored', sql("select count(*) from emails where subject = 'ZZ QA blocked draft'") === '0');
       void amaraEmail;
     });
