@@ -1,6 +1,6 @@
 import { createServer, type Server } from 'node:http';
 import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
-import { parseChannelUrl, channelKey } from './channel';
+import { parseChannelUrl, channelKey, normalizeChannelUrl } from './channel';
 import { refreshSubscribers } from './index';
 
 // index.ts imports 'server-only', which throws outside the Next.js server build.
@@ -25,6 +25,22 @@ describe('parseChannelUrl', () => {
   });
   it('gives the same key for the same channel', () => {
     expect(channelKey('https://youtube.com/@Maya')).toBe(channelKey('www.youtube.com/@maya/about'));
+  });
+});
+
+describe('normalizeChannelUrl', () => {
+  it('always stores https', () => {
+    expect(normalizeChannelUrl('http://youtube.com/@name')).toBe('https://youtube.com/@name');
+    expect(normalizeChannelUrl(' HTTP://WWW.YouTube.com/@name ')).toBe('https://WWW.YouTube.com/@name');
+    expect(normalizeChannelUrl('https://youtube.com/@name')).toBe('https://youtube.com/@name');
+    expect(normalizeChannelUrl('youtube.com/@name')).toBe('https://youtube.com/@name');
+  });
+  it('matches the database rule for every accepted spelling', () => {
+    const db = /^https:\/\/((www|m)\.)?youtube\.com\//i;
+    for (const v of ['http://m.youtube.com/@a', 'HTTPS://YOUTUBE.COM/@a', 'www.youtube.com/channel/UCabcdefghijklmnopqrstuv']) {
+      expect(parseChannelUrl(v)).not.toBeNull();
+      expect(normalizeChannelUrl(v)).toMatch(db);
+    }
   });
 });
 

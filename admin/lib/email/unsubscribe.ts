@@ -16,8 +16,10 @@ export async function unsubscribe(token: string): Promise<UnsubscribeResult> {
   if (email.is_test) return 'test';
 
   // The address on the email row is the creator's real address, even in test mode (to_email is never rewritten).
-  const { error } = await admin.rpc('opt_out', { email: email.to_email, reason: 'link' });
+  const { data: res, error } = await admin.rpc('opt_out', { email: email.to_email, reason: 'link' });
   if (error) throw new Error('opt_out failed');
+  // A repeated click (or a repeated POST) changes nothing and writes no new audit line.
+  if (!(res as { newly_suppressed?: boolean } | null)?.newly_suppressed) return 'done';
   // opt_out matches creators by their CURRENT address. If the address was edited after this mail went out, the
   // creator would stay contactable under the new one, so also mark the creator this email was written to.
   if (email.creator_id) {

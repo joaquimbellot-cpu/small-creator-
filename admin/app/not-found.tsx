@@ -6,7 +6,10 @@ export default function NotFound() {
     <main className="state state--page">
       <h1 className="state__title">We could not find that page</h1>
       <p className="state__text">The address may be old, or the page may have moved.</p>
-      <div className="state__actions"><LinkButton href="/overview">Back to the Overview</LinkButton></div>
+      <div className="state__actions">
+        <LinkButton href="/">Smallfold website</LinkButton>
+        <LinkButton href="/overview">Back office</LinkButton>
+      </div>
     </main>
   );
 }

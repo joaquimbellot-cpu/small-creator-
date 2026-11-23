@@ -45,9 +45,10 @@ export function parseChannelUrl(input: string): ChannelRef | null {
   return null;
 }
 
-/** The link as we store it: trimmed, with a scheme. */
+/** The link as we store it: trimmed, always https:// (the database only accepts https YouTube links). */
 export function normalizeChannelUrl(input: string): string {
   const raw = input.trim();
+  if (/^http:\/\//i.test(raw)) return `https://${raw.slice(7)}`;
   return /^[a-z][a-z0-9+.-]*:\/\//i.test(raw) ? raw : `https://${raw}`;
 }
 

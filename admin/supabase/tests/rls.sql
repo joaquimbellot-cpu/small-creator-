@@ -298,7 +298,7 @@ select tests.check('reserve_send blocks a suppressed address',
   :'r'::jsonb ->> 'reason' = 'suppressed' and (select status = 'approved' from public.emails where id = (select id from e2)));
 select tests.check('guard: a worker cannot draft a real email to a suppressed address',
   (tests.run_as('authenticated', (select worker_id from ids),
-    $q$insert into public.emails (creator_id, to_email, subject, body) select creator_id, 'supp-target@example.test', 's', 'b' from t where n = 2$q$)).err like '%suppression list%');
+    $q$insert into public.emails (creator_id, to_email, subject, body) select creator_id, 'supp-target@example.test', 's', 'b' from t where n = 2$q$)).err ~ 'suppression list|current address');   -- a direct client must also use the creator's own address (followups.sql)
 
 -- 3. do_not_contact
 create temp table e3 as select tests.mk_email(3) as id;

@@ -9,6 +9,8 @@ import { addDealSchema, deleteDealSchema, updateStageSchema } from '@/lib/deals/
 
 export type DealFormState = { error?: string; ok?: string; fieldErrors?: Record<string, string> };
 
+const GONE = 'This deal no longer exists. Refresh the page.';
+
 function refresh() {
   revalidatePath('/deals');
   revalidatePath('/overview');
@@ -60,8 +62,9 @@ export async function updateStageAction(_prev: DealFormState, formData: FormData
   if (!parsed.success) return { error: 'Pick a valid stage.' };
 
   const supabase = await createClient();
-  const { error } = await supabase.from('deals').update({ stage: parsed.data.stage }).eq('id', parsed.data.id);
+  const { data, error } = await supabase.from('deals').update({ stage: parsed.data.stage }).eq('id', parsed.data.id).select('id');
   if (error) return { error: 'Could not change the stage. Try again.' };
+  if (!data || data.length === 0) return { error: GONE };
 
   refresh();
   return { ok: 'Saved' };
@@ -73,11 +76,12 @@ export async function deleteDealAction(_prev: DealFormState, formData: FormData)
   if (!parsed.success) return { error: 'Could not delete the deal.' };
 
   const supabase = await createClient();
-  const { error } = await supabase.from('deals').delete().eq('id', parsed.data.id);
+  const { data, error } = await supabase.from('deals').delete().eq('id', parsed.data.id).select('id');
   if (error) {
     console.error('deals: delete failed', error.code);
     return { error: 'Could not delete the deal. Try again.' };
   }
+  if (!data || data.length === 0) return { error: GONE };
 
   refresh();
   return { ok: 'Deal deleted.' };

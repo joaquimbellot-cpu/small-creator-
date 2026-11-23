@@ -114,10 +114,10 @@ select tests.check('a worker still cannot forge a send by direct update',
   (tests.run_as('authenticated', (select w from ids), 'aal1', format($q$update public.emails set status = 'sent', sent_by = %L where id = %L$q$, (select w from ids), md5('he2')::uuid))).err like '%not allowed%');
 
 -- ================================================================== 3. log_audit allow-list
--- Changed on purpose (audit M06): user.* and 2FA lines are no longer open to every worker (see fixes.sql).
+-- Changed on purpose (audit M06, SEC2-02): creators.exported is owner-only too; user.* and 2FA lines are no longer open to every worker (see fixes.sql).
 select tests.check('log_audit: every allowed action works for a worker',
   (select bool_and((tests.run_as('authenticated', (select w from ids), 'aal1', format('select public.log_audit(%L, %L, %L, %L)', a, 'creator', 'x', '{"label":"y"}'))).ok)
-     from unnest(array['creator.viewed','creators.exported','creators.imported','creator.subscribers_refreshed','email.drafted','auth.login',
+     from unnest(array['creator.viewed','creators.imported','creator.subscribers_refreshed','email.drafted','auth.login',
        'auth.logout','auth.password_changed']) a));
 select tests.check('log_audit: other actions are rejected for a worker (forged business events, unsubscribed, unknown)',
   (select bool_and((tests.run_as('authenticated', (select w from ids), 'aal1', format('select public.log_audit(%L)', a))).err like '%not allowed%')

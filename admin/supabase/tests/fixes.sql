@@ -158,10 +158,11 @@ select tests.check('M03: contact_messages.email refuses the same',
   and (tests.run_as('service_role', null,
     $q$insert into public.contact_messages (name, email, message) values ('ZZ AUDIT', 'zz-c@example.test', 'm')$q$)).ok)
 from unnest(array['a b@example.test', 'a@example.test,b@example.test', 'a@example.test;b@example.test', '<a@example.test>']) v;
+-- Tightened by 20261123000400 (SEC2-06): https YouTube links only; followups.sql tests the host rule.
 select tests.check('L05: channel_url must start with https://',
   not (tests.run_as('authenticated', (select o from ids), $q$update public.creators set channel_url = 'javascript:alert(1)' where id = '00000000-0000-0000-0000-00000000fa01'$q$)).ok
   and not (tests.run_as('authenticated', (select o from ids), $q$update public.creators set channel_url = 'http://example.test/c' where id = '00000000-0000-0000-0000-00000000fa01'$q$)).ok
-  and (tests.run_as('authenticated', (select o from ids), $q$update public.creators set channel_url = 'https://example.test/c' where id = '00000000-0000-0000-0000-00000000fa01'$q$)).ok
+  and (tests.run_as('authenticated', (select o from ids), $q$update public.creators set channel_url = 'https://youtube.com/@c' where id = '00000000-0000-0000-0000-00000000fa01'$q$)).ok
   and (tests.run_as('authenticated', (select o from ids), $q$update public.creators set channel_url = null where id = '00000000-0000-0000-0000-00000000fa01'$q$)).ok);
 select tests.check('L05: contact_messages name 300, message 5000, topic 2000 characters',
   not (tests.run_as('service_role', null, $q$insert into public.contact_messages (name, email, message) values (repeat('n', 301), 'zz-l@example.test', 'm')$q$)).ok
@@ -170,7 +171,7 @@ select tests.check('L05: contact_messages name 300, message 5000, topic 2000 cha
   and (tests.run_as('service_role', null, $q$insert into public.contact_messages (name, email, message, topic) values (repeat('n', 300), 'zz-l@example.test', repeat('m', 5000), repeat('t', 2000))$q$)).ok);
 select tests.check('M03/L05: the new checks are NOT VALID (existing rows were not scanned)',
   (select count(*) = 7 and bool_and(not convalidated) from pg_constraint where conname in
-    ('creators_email_format', 'creators_channel_url_https', 'emails_to_email_format', 'contact_messages_email_format',
+    ('creators_email_format', 'creators_channel_url_youtube', 'emails_to_email_format', 'contact_messages_email_format',
      'contact_messages_name_len', 'contact_messages_message_len', 'contact_messages_topic_len')));
 
 -- ================================================================== L14 bookkeeping columns
@@ -297,8 +298,12 @@ select tests.check('L02: allowed again once the hour has passed', public.form_ra
 select tests.check('L04: reset_allowed is true with no history',
   tests.text_as('service_role', null, $q$select public.reset_allowed('zz-r1@example.test', '10.88.5.1')::text$q$) = 'true');
 select public.record_reset_request('zz-r1@example.test', '10.88.5.' || g) from generate_series(1, 3) g;
-select tests.check('L04: 3 requests in an hour for one email: refused; another email is fine',
-  tests.text_as('service_role', null, $q$select public.reset_allowed('ZZ-R1@example.test', '10.88.5.9')::text$q$) = 'false'
+-- Changed by 20261123000400 (SEC2-01): the email limit is per (email, IP) pair; all IPs together may make 10.
+select public.record_reset_request('zz-r1@example.test', '10.88.5.1');
+select public.record_reset_request('zz-r1@example.test', '10.88.5.1');
+select tests.check('L04: 3 requests in an hour for one email from one place: refused; another email or place is fine',
+  tests.text_as('service_role', null, $q$select public.reset_allowed('ZZ-R1@example.test', '10.88.5.1')::text$q$) = 'false'
+  and tests.text_as('service_role', null, $q$select public.reset_allowed('ZZ-R1@example.test', '10.88.5.9')::text$q$) = 'true'
   and tests.text_as('service_role', null, $q$select public.reset_allowed('zz-r2@example.test', '10.88.5.9')::text$q$) = 'true');
 select public.record_reset_request('zz-r3-' || g || '@example.test', '10.88.6.1') from generate_series(1, 3) g;
 select tests.check('L04: 3 requests in an hour from one IP: refused for any email; no IP is fine',

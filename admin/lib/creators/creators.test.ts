@@ -9,6 +9,13 @@ describe('validateCreator', () => {
     const r = validateCreator({ ...ok, phone: '+1 (555) 010-0100', subscribers: '12,500', channel_url: 'youtube.com/@maya' });
     expect(r.ok && r.data).toMatchObject({ subscribers: 12500, channel_url: 'https://youtube.com/@maya', phone: '+1 (555) 010-0100', status: 'new' });
   });
+  it('stores an https link whatever scheme or case was typed, and refuses a bare @handle', () => {
+    for (const v of ['http://youtube.com/@maya', 'https://youtube.com/@maya', 'HTTP://YOUTUBE.COM/@maya']) {
+      const r = validateCreator({ ...ok, channel_url: v });
+      expect(r.ok && r.data.channel_url).toMatch(/^https:\/\/youtube\.com\/@maya$/i);
+    }
+    expect(validateCreator({ ...ok, channel_url: '@maya' }).ok).toBe(false);
+  });
   it('allows subscribers outside 1,000-50,000', () => {
     expect(validateCreator({ ...ok, subscribers: '5' }).ok).toBe(true);
   });
