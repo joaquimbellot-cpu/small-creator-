@@ -93,7 +93,7 @@ Read this first in a new chat. It replaces the history of the previous one.
 
 ## The owner's standing rules
 
-- Do what the owner asks unless told otherwise. All sub-agents run on Opus (model `opus`).
+- Do what the owner asks unless told otherwise. Sub-agents run on Sonnet (model `sonnet`), or Haiku (model `haiku`) for simple scans, never on the most powerful models, and at most 3 at once. The owner changed this on 23 November; it used to say Opus.
 - Personal data (emails, phone numbers) must never be readable from the public website. Use row-level security.
 - Every API route checks the session and the role and validates its input. Login attempts are rate-limited.
 - The audit log records who viewed, edited, exported or sent what, and when.
@@ -108,7 +108,16 @@ Read this first in a new chat. It replaces the history of the previous one.
 - Every email carries the sender's identity and an opt-out line. Opt-outs and "do not contact" block all sends.
 - Only fake data during development. Never send a real email while building.
 
+## Audit and repair job (started 23 November)
+
+- The owner asked for a full audit by 8 specialist agents, then fixes. All work is on the branch `audit-fixes`, made from commit `c3f03b6` (tag `safety-before-audit`). To undo it all, delete that branch: `claude/wonderful-meitner-sjwb8y` was not touched.
+- **The GitHub repository is public, so `audit-fixes` is NOT pushed.** The reports list weaknesses and how to use them, and the live site keeps those weaknesses until the owner deploys the fixes. Push only when the owner says so, ideally after making the repository private.
+- A first attempt (made before the owner switched the leader to another model) is kept, unpushed, on the local branch `audit-sonnet-draft`. It holds only an earlier project map.
+- Reports: `docs/audit/` (`AGENT-BRIEF.md`, `00-project-map.md`, `01` to `08`, `FULL-REPORT.md`). Agents use the local test stack and fake data only. Database changes are new migration files: the owner applies them in production first, then deploys.
+
 ## Working in the sandbox
+
+- If Docker will not start and its log says "containerd is still running", delete the stale `/var/run/docker/containerd/containerd.pid` and the `.sock` files beside it, then start `dockerd` again.
 
 - Local test stack: `admin/dev/start.sh` starts Docker (Postgres on :54322, gateway on :54321, mail catcher on :8025, fake Claude on :4010). If the Docker daemon is down, start `dockerd` first.
 - Run the app with `env -u ANTHROPIC_BASE_URL npm run build` / `npm run start` in `admin/`, because the shell exports an `ANTHROPIC_BASE_URL`.
