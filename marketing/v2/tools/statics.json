@@ -1,0 +1,664 @@
+[
+ {
+  "id": "the-line",
+  "image": "marketing/v2/assets/source/j2a-the-line.jpg",
+  "tall": {
+   "focus": "50% 50%",
+   "logo": "right:6%;top:10.5%",
+   "stacks": [
+    {
+     "x": 6,
+     "y": 10.5,
+     "w": 60,
+     "items": [
+      {
+       "type": "label",
+       "text": "Image made with AI"
+      }
+     ]
+    },
+    {
+     "x": 6,
+     "y": 15.5,
+     "w": 88,
+     "items": [
+      {
+       "type": "caption",
+       "size": 3.9,
+       "text": "This video is\nsponsored by ____"
+      },
+      {
+       "type": "headline",
+       "text": "1,000 to 50,000 subs?\nApply for a sponsor. Free.",
+       "gap": 1.4
+      }
+     ]
+    },
+    {
+     "x": 6,
+     "bottom": 20.5,
+     "w": 88,
+     "items": [
+      {
+       "type": "button",
+       "text": "Apply",
+       "gap": 0
+      },
+      {
+       "type": "small",
+       "text": "Applying doesn't promise a sponsor.",
+       "gap": 1.0
+      }
+     ]
+    }
+   ]
+  },
+  "sq": {
+   "focus": "50% 32%",
+   "logo": "right:5%;top:5%",
+   "stacks": [
+    {
+     "x": 5,
+     "y": 5,
+     "w": 60,
+     "items": [
+      {
+       "type": "label",
+       "text": "Image made with AI"
+      }
+     ]
+    },
+    {
+     "x": 5,
+     "y": 11.5,
+     "w": 90,
+     "items": [
+      {
+       "type": "caption",
+       "size": 5.6,
+       "text": "This video is\nsponsored by ____"
+      },
+      {
+       "type": "headline",
+       "text": "1,000 to 50,000 subs? Free to apply.",
+       "gap": 1.2
+      }
+     ]
+    },
+    {
+     "x": 5,
+     "bottom": 4.5,
+     "w": 90,
+     "items": [
+      {
+       "type": "button",
+       "text": "Apply",
+       "gap": 0
+      },
+      {
+       "type": "small",
+       "text": "Applying doesn't promise a sponsor.",
+       "gap": 1.0
+      }
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "id": "missing-sponsor",
+  "image": "marketing/v2/assets/source/j3b-missing-sponsor.jpg",
+  "tall": {
+   "focus": "0% 50%",
+   "zoom": 1.14,
+   "logo": "right:6%;top:10.5%",
+   "stacks": [
+    {
+     "x": 6,
+     "y": 10.5,
+     "w": 60,
+     "items": [
+      {
+       "type": "label",
+       "text": "Image made with AI"
+      },
+      {
+       "type": "label pretend",
+       "text": "Pretend",
+       "gap": 0.5
+      }
+     ]
+    },
+    {
+     "x": 36,
+     "y": 47,
+     "w": 62,
+     "items": [
+      {
+       "type": "caption",
+       "size": 2.6,
+       "text": "Today's sponsor: ____"
+      },
+      {
+       "type": "stamp",
+       "rotate": -4,
+       "text": "Missing",
+       "gap": 0.8
+      }
+     ]
+    },
+    {
+     "x": 6,
+     "bottom": 20.5,
+     "w": 88,
+     "items": [
+      {
+       "type": "headline",
+       "text": "1,000 to 50,000 subs?\nApply for a sponsor. Free."
+      },
+      {
+       "type": "button",
+       "text": "Apply",
+       "gap": 1.4
+      },
+      {
+       "type": "small",
+       "text": "Applying doesn't promise a sponsor.",
+       "gap": 1.0
+      }
+     ]
+    }
+   ]
+  },
+  "sq": {
+   "focus": "0% 36%",
+   "zoom": 1.14,
+   "logo": "right:5%;top:5%",
+   "stacks": [
+    {
+     "x": 5,
+     "y": 5,
+     "w": 60,
+     "items": [
+      {
+       "type": "label",
+       "text": "Image made with AI"
+      },
+      {
+       "type": "label pretend",
+       "text": "Pretend",
+       "gap": 0.7
+      }
+     ]
+    },
+    {
+     "x": 5,
+     "y": 17,
+     "w": 50,
+     "items": [
+      {
+       "type": "headline",
+       "size": 3.4,
+       "text": "1,000 to\n50,000 subs?\nApply for a\nsponsor. Free."
+      }
+     ]
+    },
+    {
+     "x": 40,
+     "y": 60,
+     "w": 58,
+     "items": [
+      {
+       "type": "caption",
+       "size": 4.0,
+       "text": "Today's sponsor: ____"
+      },
+      {
+       "type": "stamp",
+       "rotate": -4,
+       "text": "Missing",
+       "gap": 0.9
+      }
+     ]
+    },
+    {
+     "x": 5,
+     "bottom": 4.5,
+     "w": 60,
+     "items": [
+      {
+       "type": "button",
+       "text": "Apply",
+       "gap": 0
+      },
+      {
+       "type": "small",
+       "text": "Applying doesn't promise a sponsor.",
+       "gap": 1.0
+      }
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "id": "the-credits",
+  "image": "marketing/v2/assets/source/j8a-the-credits-clean.jpg",
+  "tall": {
+   "focus": "50% 50%",
+   "logo": "right:6%;top:10.5%",
+   "stacks": [
+    {
+     "x": 6,
+     "y": 10.5,
+     "w": 60,
+     "items": [
+      {
+       "type": "label",
+       "text": "Image made with AI"
+      }
+     ]
+    },
+    {
+     "x": 6,
+     "y": 47.5,
+     "w": 88,
+     "items": [
+      {
+       "type": "caption",
+       "size": 3.1,
+       "text": "Filmed by: you."
+      },
+      {
+       "type": "caption",
+       "size": 3.1,
+       "text": "Edited by: you.",
+       "gap": 0.6
+      },
+      {
+       "type": "caption",
+       "size": 3.1,
+       "text": "Sponsored by: ____",
+       "gap": 0.6
+      },
+      {
+       "type": "headline",
+       "text": "1,000 to 50,000 subs?\nApply for a sponsor. Free.",
+       "gap": 1.6
+      },
+      {
+       "type": "button",
+       "text": "Apply",
+       "gap": 1.4
+      },
+      {
+       "type": "small",
+       "text": "Applying doesn't promise a sponsor.",
+       "gap": 1.0
+      }
+     ]
+    }
+   ]
+  },
+  "sq": {
+   "focus": "50% 9%",
+   "logo": "right:5%;top:5%",
+   "stacks": [
+    {
+     "x": 5,
+     "y": 5,
+     "w": 60,
+     "items": [
+      {
+       "type": "label",
+       "text": "Image made with AI"
+      }
+     ]
+    },
+    {
+     "x": 5,
+     "bottom": 4.5,
+     "w": 90,
+     "items": [
+      {
+       "type": "caption",
+       "size": 4.4,
+       "text": "Filmed by: you."
+      },
+      {
+       "type": "caption",
+       "size": 4.4,
+       "text": "Edited by: you.",
+       "gap": 0.7
+      },
+      {
+       "type": "caption",
+       "size": 4.4,
+       "text": "Sponsored by: ____",
+       "gap": 0.7
+      },
+      {
+       "type": "headline",
+       "text": "1,000 to 50,000 subs? Free to apply.",
+       "gap": 1.4,
+       "size": 3.7
+      },
+      {
+       "type": "button",
+       "text": "Apply",
+       "gap": 1.2
+      },
+      {
+       "type": "small",
+       "text": "Applying doesn't promise a sponsor.",
+       "gap": 1.0
+      }
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "id": "the-gap",
+  "image": "marketing/v2/assets/source/j4-the-gap.jpg",
+  "tall": {
+   "focus": "50% 50%",
+   "logo": "right:6%;top:10.5%",
+   "stacks": [
+    {
+     "x": 58.5,
+     "y": 21,
+     "w": 34,
+     "items": [
+      {
+       "type": "headline",
+       "size": 2.5,
+       "text": "The sponsor\nsegment\n(empty)"
+      }
+     ]
+    },
+    {
+     "x": 58,
+     "y": 47.5,
+     "w": 40,
+     "items": [
+      {
+       "type": "caption",
+       "size": 2.4,
+       "text": "[crickets]"
+      },
+      {
+       "type": "label",
+       "text": "Image made with AI",
+       "gap": 0.8
+      }
+     ]
+    },
+    {
+     "x": 6,
+     "bottom": 20.5,
+     "w": 88,
+     "items": [
+      {
+       "type": "headline",
+       "text": "1,000 to 50,000 subs?\nApply for a sponsor. Free."
+      },
+      {
+       "type": "button",
+       "text": "Apply",
+       "gap": 1.4
+      },
+      {
+       "type": "small",
+       "text": "Applying doesn't promise a sponsor.",
+       "gap": 1.0
+      }
+     ]
+    }
+   ]
+  },
+  "sq": {
+   "focus": "50% 5%",
+   "logo": "right:5%;top:5%",
+   "stacks": [
+    {
+     "x": 58.5,
+     "y": 35,
+     "w": 34,
+     "items": [
+      {
+       "type": "headline",
+       "size": 3.9,
+       "text": "The sponsor\nsegment\n(empty)"
+      }
+     ]
+    },
+    {
+     "x": 58,
+     "y": 14,
+     "w": 40,
+     "items": [
+      {
+       "type": "label",
+       "text": "Image made with AI"
+      }
+     ]
+    },
+    {
+     "x": 5,
+     "bottom": 4.5,
+     "w": 90,
+     "items": [
+      {
+       "type": "headline",
+       "text": "1,000 to 50,000 subs? Free to apply.",
+       "size": 3.9
+      },
+      {
+       "type": "button",
+       "text": "Apply",
+       "gap": 1.2
+      },
+      {
+       "type": "small",
+       "text": "Applying doesn't promise a sponsor.",
+       "gap": 1.0
+      }
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "id": "next-first",
+  "image": "marketing/v2/assets/source/j6-next-first.jpg",
+  "tall": {
+   "focus": "50% 50%",
+   "logo": "right:6%;top:10.5%",
+   "stacks": [
+    {
+     "x": 6,
+     "y": 10.5,
+     "w": 60,
+     "items": [
+      {
+       "type": "label",
+       "text": "Image made with AI"
+      }
+     ]
+    },
+    {
+     "x": 6,
+     "y": 16,
+     "w": 88,
+     "items": [
+      {
+       "type": "headline",
+       "size": 3.3,
+       "text": "1,000 to 50,000 subs?\nFree to apply."
+      }
+     ]
+    },
+    {
+     "x": 8,
+     "y": 47,
+     "w": 24,
+     "items": [
+      {
+       "type": "caption",
+       "size": 1.8,
+       "text": "First\nvideo"
+      }
+     ]
+    },
+    {
+     "x": 30,
+     "y": 43,
+     "w": 26,
+     "items": [
+      {
+       "type": "caption",
+       "size": 1.8,
+       "text": "First\ncomment"
+      }
+     ]
+    },
+    {
+     "x": 50,
+     "y": 42.5,
+     "w": 26,
+     "items": [
+      {
+       "type": "caption",
+       "size": 1.8,
+       "text": "First\n1,000 subs"
+      }
+     ]
+    },
+    {
+     "x": 62,
+     "y": 49.5,
+     "w": 34,
+     "items": [
+      {
+       "type": "headline",
+       "size": 2.3,
+       "text": "First sponsor:\n____"
+      }
+     ]
+    },
+    {
+     "x": 6,
+     "y": 73.5,
+     "w": 88,
+     "items": [
+      {
+       "type": "button",
+       "text": "Apply",
+       "gap": 0
+      },
+      {
+       "type": "small",
+       "text": "Applying doesn't promise a sponsor.",
+       "gap": 1.0
+      }
+     ]
+    }
+   ]
+  },
+  "sq": {
+   "focus": "50% 66%",
+   "logo": "right:5%;top:5%",
+   "stacks": [
+    {
+     "x": 5,
+     "y": 5,
+     "w": 60,
+     "items": [
+      {
+       "type": "label",
+       "text": "Image made with AI"
+      }
+     ]
+    },
+    {
+     "x": 5,
+     "y": 11.5,
+     "w": 90,
+     "items": [
+      {
+       "type": "headline",
+       "text": "1,000 to 50,000 subs? Free to apply.",
+       "size": 4.4
+      }
+     ]
+    },
+    {
+     "x": 7,
+     "y": 33,
+     "w": 24,
+     "items": [
+      {
+       "type": "caption",
+       "size": 2.9,
+       "text": "First\nvideo"
+      }
+     ]
+    },
+    {
+     "x": 29,
+     "y": 27,
+     "w": 28,
+     "items": [
+      {
+       "type": "caption",
+       "size": 2.9,
+       "text": "First\ncomment"
+      }
+     ]
+    },
+    {
+     "x": 50,
+     "y": 26.5,
+     "w": 28,
+     "items": [
+      {
+       "type": "caption",
+       "size": 2.9,
+       "text": "First\n1,000 subs"
+      }
+     ]
+    },
+    {
+     "x": 63,
+     "y": 38,
+     "w": 34,
+     "items": [
+      {
+       "type": "headline",
+       "size": 3.5,
+       "text": "First sponsor:\n____"
+      }
+     ]
+    },
+    {
+     "x": 5,
+     "bottom": 4.5,
+     "w": 90,
+     "items": [
+      {
+       "type": "button",
+       "text": "Apply",
+       "gap": 0
+      },
+      {
+       "type": "small",
+       "text": "Applying doesn't promise a sponsor.",
+       "gap": 1.0
+      }
+     ]
+    }
+   ]
+  }
+ }
+]

@@ -17,7 +17,8 @@ Version 1 is archived in `marketing/v1/` and its ideas are not reused.
 | `selection.md` | The leader's final choice: four videos and one static, with final scripts |
 | `sketches/` | Storyboards, the visual style and the sketch page (`sketches/index.html`) |
 | `higgsfield-briefs/` | Production briefs with every prompt and quote |
-| `assets/` | Finished pictures |
+| `assets/` | Finished static ads (`static/`) and the Higgsfield pictures they are built from (`source/`) |
+| `compliance-report.md` | The honesty and quality check of the finished static ads |
 | `assets-log.md` | Every Higgsfield job and what it cost |
 | `tools/` | The scripts that add type and logo to the generated pictures |
 
@@ -26,6 +27,8 @@ Version 1 is archived in `marketing/v1/` and its ideas are not reused.
 - **Approved by the owner:** concept 1, **The Line**, as an outtakes reel ("cut and redo, like it was an error").
 - **Parked, no decision yet:** Missing Sponsor, The Credits, The Gap (videos) and Next First (static).
 - **The Line's video is not generated yet.** The owner will generate the clips later on Higgsfield, with the prompts below.
+- **Pictures made on 23 November** with the owner's remaining credits (3.44 spent, 4.16 left): five static ads, each in 1:1 and 9:16, in `assets/static/`. One is for The Line; the other four test the parked concepts as cheap stills. The job log and the decisions are in `assets-log.md`, the check in `compliance-report.md`.
+- **The presenter's portrait for the video still has to be made** (Step 1 below). The portraits generated here came out as selfies with a raised hand, not the calm medium shot the video needs.
 
 ---
 
@@ -37,7 +40,7 @@ Doing this on Higgsfield's website (or in a normal Claude chat with Higgsfield c
 
 1. Open **Image** and choose the model **Higgsfield Soul 2.0**.
 2. Aspect ratio **9:16**, quality **2K**.
-3. Paste this prompt and generate. (A portrait may already be in `assets/`; if so, use that one and skip this step.)
+3. Paste this prompt and generate.
 
 ```
 Photorealistic vertical phone-style portrait of an invented young woman in her early 20s, short wavy dark-brown hair, light freckles, mustard-yellow hoodie, sitting at a desk in a bright lived-in bedroom studio. Daylight from a window on the left, sage-green wall behind her, a ring light and a camera on a tripod beside her, a mug and a small plant on the desk, laptop shown only as a closed lid. Medium shot, eyes at 45% of frame height, relaxed neutral closed-mouth expression, looking at the lens. Candid UGC look. No text, no logos, no screens visible.

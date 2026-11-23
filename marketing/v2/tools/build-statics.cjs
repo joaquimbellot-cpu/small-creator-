@@ -13,7 +13,7 @@ const font = (w) => `url(data:font/woff2;base64,${b64(path.join(fontDir, 'inter/
 const logo = fs.readFileSync(path.join(root, 'src/assets/logo/logo.svg'), 'utf8').replace(/<svg /, '<svg class="logo" ');
 const esc = (s) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;');
 // "____" becomes the campaign's blank: a thick pen-blue underline that is never filled.
-const rich = (s) => esc(s).replace(/_{3,}/g, '<i class="blank"></i>').replace(/\n/g, '<br>');
+const rich = (s) => esc(s).replace(/(\S+) _{3,}/g, '<b class="nw">$1<i class="blank"></i></b>').replace(/_{3,}/g, '<i class="blank"></i>').replace(/\n/g, '<br>');
 const mime = (f) => (f.endsWith('.png') ? 'image/png' : f.endsWith('.webp') ? 'image/webp' : 'image/jpeg');
 
 function item(it) {
@@ -41,25 +41,26 @@ body{--u:${h / 100}px;width:${w}px;height:${h}px;overflow:hidden;background:#F1E
 .it{margin-top:calc(var(--u) * .9);line-height:1.12}
 .it:first-child{margin-top:0}
 .it span{display:inline-block;padding:.2em .42em;border-radius:.3em}
-.headline{font-weight:900;font-size:calc(var(--u) * ${fmt === 'sq' ? 6.2 : 5})}
+.headline{font-weight:900;font-size:calc(var(--u) * ${fmt === 'sq' ? 4.1 : 2.9})}
 .headline span{background:#FFD21F}
-.caption{font-size:calc(var(--u) * ${fmt === 'sq' ? 4.6 : 3.6})}
+.caption{font-weight:900;font-size:calc(var(--u) * ${fmt === 'sq' ? 5.2 : 3.3})}
 .caption span{background:#F1EFEB}
-.chip{font-size:calc(var(--u) * ${fmt === 'sq' ? 3.4 : 2.6})}
+.chip{font-size:calc(var(--u) * ${fmt === 'sq' ? 3.0 : 1.9})}
 .chip span{background:#2B44D6;color:#F1EFEB;border-radius:99em;padding:.3em .8em}
-.stamp{font-weight:900;font-size:calc(var(--u) * ${fmt === 'sq' ? 5.4 : 4.2})}
+.stamp{font-weight:900;font-size:calc(var(--u) * ${fmt === 'sq' ? 4.6 : 3.0})}
 .stamp span{background:#FF6B57;border:.12em solid #0E0E0E}
-.label{font-size:calc(var(--u) * ${fmt === 'sq' ? 2.6 : 2.1})}
+.label{font-size:calc(var(--u) * ${fmt === 'sq' ? 2.5 : 1.55})}
 .label span{background:#F1EFEB;border:.14em solid #0E0E0E;border-radius:99em;padding:.22em .7em}
 .label.pretend span{background:#FF6B57}
-.small{font-size:calc(var(--u) * ${fmt === 'sq' ? 2.8 : 2.2})}
+.small{font-size:calc(var(--u) * ${fmt === 'sq' ? 2.7 : 1.7})}
 .small span{background:#F1EFEB}
-.button{font-weight:900;font-size:calc(var(--u) * ${fmt === 'sq' ? 4.6 : 3.6})}
+.button{font-weight:900;font-size:calc(var(--u) * ${fmt === 'sq' ? 4.0 : 2.7})}
 .button span{background:#2B44D6;color:#F1EFEB;border-radius:99em;padding:.34em 1.5em}
-.blank{display:inline-block;width:2.6em;height:.17em;background:#2B44D6;vertical-align:baseline;margin-left:.12em;border-radius:.05em}
+.nw{white-space:nowrap;font-weight:inherit}
+.blank{display:inline-block;width:2.4em;height:.17em;background:#2B44D6;vertical-align:baseline;margin-left:.12em;border-radius:.05em}
 .chip .blank,.button .blank{background:#F1EFEB}
-.logoplate{position:absolute;background:#F1EFEB;border-radius:calc(var(--u) * 1.2);padding:calc(var(--u) * .9) calc(var(--u) * 1.3);line-height:0}
-.logo{height:calc(var(--u) * ${fmt === 'sq' ? 4.2 : 3.2});width:auto}
+.logoplate{position:absolute;background:#F1EFEB;border-radius:calc(var(--u) * 1.2);padding:calc(var(--u) * .7) calc(var(--u) * 1.1);line-height:0}
+.logo{height:calc(var(--u) * ${fmt === 'sq' ? 3.6 : 2.3});width:auto}
 </style><div class="bg"></div>
 <div class="logoplate" style="${f.logo || 'right:5%;top:5%'}">${logo}</div>
 ${f.stacks.map(stack).join('')}`;
