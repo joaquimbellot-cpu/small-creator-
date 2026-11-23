@@ -199,3 +199,49 @@ Ranked, with one line each on why a small YouTuber taps Apply. Slots 1 to 3 are 
 5. **L4 Next First (38), as a static, with the play-shape trophy removed.** "I have hit 1,000; the next first is a free application, not a wait for 100K."
 
 Spread: sentence, invisible product, credits, silence, milestone. Five different doors into the same wish, and the first three are the only ones that currently clear the bar.
+
+---
+
+## 8. Final check of the selected concepts
+
+Read: selection.md (sections 1 to 4 and "One visual style"), judged as now written. I raised a score only where the weakness is gone, and lowered one where the fix cost something.
+
+| Concept | Hook | Clarity | Desire | Difference | CTA | Total | Bland test | Honesty risk | Survives? |
+|---|---|---|---|---|---|---|---|---|---|
+| The Line (L1) | 8 | 8 | 9 | 8 | 8 | 41 | Pass | medium | YES |
+| Missing Sponsor (L3, blank box) | 8 | 9 | 8 | 7 | 8 | 40 | Pass | medium | YES, on the bare line |
+| The Credits (D2, three lines) | 7 | 9 | 8 | 8 | 8 | 40 | Pass | low | YES, on the bare line |
+| The Gap (E4, opens on silence) | 7 | 8 | 8 | 9 | 8 | 40 | Pass, conditional | low | YES, on the bare line |
+
+Three of the four sit exactly on 40. None is under 40. Any single point lost in sketching or in the AI result puts it out.
+
+### The Line (41, unchanged)
+- Fixes applied properly: yes. "A person picks a sponsor to suggest", the burned-in caption, the range chip at second 2, and a "Pretend" tag are all in the script.
+- Score change: none. Nothing was weak that a fix could remove. The first 6 seconds still explain little except through the caption.
+- Broke nothing.
+- Storyboard must design around: the cut-off line is the thing a fast viewer can read as "this person has a sponsor". The creator must look like someone rehearsing (shaking out shoulders, a restart, a breath), never pleased or finished. The "Pretend" tag must be visible on the first take, not only later.
+
+### Missing Sponsor (40, down 1 from 41)
+- Fixes applied properly: yes. The stamp and tag come first, "any of them" is gone, the range is at 4 to 6 s, and the box is plain with no text.
+- Score change: difference 8 to 7. The invisible product was a stranger picture. A held white box is the D1 prop, which I scored 7 on difference. The added beat (turning the box over for a name and finding none) is good and keeps hook and desire where they were. It removes the AI hand problem but is not a score gain.
+- What the fix broke: a visible object in the hands is closer to a real sponsor read than empty hands were. Nothing else has changed.
+- Storyboard must design around: (1) the thanks line must not be heard before the stamp and "Pretend" tag are on screen. Hold the voice for about half a second, or open with the box and stamp in frame and no sound, so a sound-on viewer does not hear "Huge thanks to today's sponsor" first. (2) The box must read as a prop: one plain matte colour, no text, no marks, no brand-like shape, no ribbon or tape that suggests a package from a company. Check every frame, since models add marks. (3) "Comes in three colours" is spoken about a single-colour box on purpose. The caption of that line must sit on the same screen as the stamp.
+
+### The Credits (40, unchanged)
+- Fixes applied properly: yes. Three lines, "Sponsored by: ____" by 3 to 4 s, a large "Sponsor offer. Free to apply." for 0 to 2 s, a mug on the desk, and no screen.
+- Score change: none. The chip and the earlier blank fix the clarity and the first 2 seconds, but the hook itself is still a deadpan "Filmed by: you" over a creator doing chores, so hook stays 7. Cutting "Lit by: a desk lamp" and the tea took a little of the humour; desire stays 8.
+- Watch: the spoken "Sponsored by." followed by "One line's missing" now uses L1's cut-off device. It does not change the score against competitors, but it overlaps The Line in the same test set.
+- Storyboard must design around: the blank line stays blank in every frame, with no name or logo near it. The credits voice is a narrator, not the creator, so nobody "says" a sponsor.
+
+### The Gap (40, up 1 from 39)
+- Fixes applied properly: yes. The ad opens on the silence, "You've left a gap like that" is cut, and the offer lands at about 7 s.
+- Score change: clarity 7 to 8. The clumsy line is gone, and "sponsor segment (empty)" plus the range is readable by about 3 s. Hook stays 7, not 8 as I projected. The beat now sits in 0 to 2 s, but a motionless man with no sound is exactly what a muted viewer reads as a stalled video. The beat only works if it is clearly a joke.
+- What the fix broke: the spoken setup ("And now, the sponsor segment") is gone, so the joke now relies on the title alone.
+- Storyboard must design around: the freeze must not be a frozen frame. Keep small live motion (steam from the soup, a slow blink, eyes moving to the lens, a glance at a bare wrist) and put the "[crickets]" caption in frame one. The "Free to apply" chip and the range band must stay in this ad; selection.md does not restate them. The blank wall must be plain.
+
+### Risks across all four
+- **The end card:** "Sponsored by ____" with the blinking blank and the real logo both on one card. If the logo sits next to or under the blank, a fast viewer reads it as the blank filled in: "Sponsored by [company]". Keep the logo small, away from the blank, and below the Apply button. The blank must be the only thing on its line.
+- **Label clutter:** "AI actor", "Pretend", the stamp, the chip and the captions can crowd a 9:16 frame. The "Pretend" tag and the stamp take priority over the chip in the first 2 seconds.
+
+### Next First, static for the Meta feed
+**Yes, acceptable.** The play shape is gone (a wooden star), the stand stays empty, nobody is shown with a sponsor, and "Applying doesn't promise a sponsor" is on the image. Two conditions: use the exact words "Free to apply" instead of "Apply free", and make the small print legible at feed size (it is the line that carries the honesty). Add the "Made with AI" label.
