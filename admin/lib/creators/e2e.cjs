@@ -6,7 +6,7 @@ const fs = require('node:fs');
 const os = require('node:os');
 const path = require('node:path');
 
-const BASE = 'http://localhost:3000';
+const BASE = process.env.BASE_URL || 'http://localhost:3000';
 const PG = { ...process.env, PGHOST: '127.0.0.1', PGPORT: '54322', PGUSER: 'postgres', PGDATABASE: 'postgres' };
 const sql = (q) => execSync(`psql -At -F '|' -c "${q.replace(/"/g, '\\"')}"`, { env: PG }).toString().trim();
 let pass = 0, fail = 0;

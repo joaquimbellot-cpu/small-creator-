@@ -22,7 +22,7 @@ export default async function EmailDetail({ params }: { params: Promise<{ id: st
   const supabase = await createClient();
   const { data, error } = await supabase
     .from('emails')
-    .select('id, subject, body, status, is_test, to_email, error, created_at, approved_at, sent_at, replied_at, creators(full_name), drafter:profiles!emails_drafted_by_fkey(full_name), approver:profiles!emails_approved_by_fkey(full_name), sender:profiles!emails_sent_by_fkey(full_name)')
+    .select('id, subject, body, status, is_test, source, to_email, error, created_at, approved_at, sent_at, replied_at, creators(full_name), drafter:profiles!emails_drafted_by_fkey(full_name), approver:profiles!emails_approved_by_fkey(full_name), sender:profiles!emails_sent_by_fkey(full_name)')
     .eq('id', id)
     .maybeSingle();
   // A failed query is not the same as a missing email.
@@ -46,6 +46,7 @@ export default async function EmailDetail({ params }: { params: Promise<{ id: st
       <p className="muted">Times are UTC.</p>
       <p>
         <Badge tone={STATUS_TONE[e.status] ?? 'neutral'}>{STATUS_LABEL[e.status] ?? e.status}</Badge> {e.is_test ? <Badge>test</Badge> : null}{' '}
+        {e.source === 'claude' ? <><Badge tone="accent">Written by Claude</Badge>{' '}</> : null}
         <span className="muted">{e.is_test ? 'Would go to' : 'To'} {e.creators?.full_name} ({e.to_email})</span>
       </p>
       {e.is_test ? <Notice tone="info" title="Test">Delivered to the test address, not to the creator. The address above is only where a real send would go.</Notice> : null}

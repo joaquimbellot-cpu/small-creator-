@@ -1,7 +1,7 @@
 // Browser + database check for the owner-only Claude page, against the local stack with the fake Anthropic server.
 // Needs: stack up (admin/dev/start.sh, which also starts dev/fake-anthropic.mjs on :4010) and the dev server:
 //   cd admin && npm run tokens && NEXT_DIST_DIR=.next-claude npx next dev -p 3300
-// Run:  BASE_URL=http://localhost:3300 NODE_PATH=/opt/node-tools/node_modules node admin/lib/assistant/e2e.cjs
+// Run:  BASE_URL=http://localhost:3000 NODE_PATH=/opt/node-tools/node_modules node admin/lib/assistant/e2e.cjs
 // It creates threads, one draft, one creator, and changes one creator status; everything is removed or restored at the
 // end, so the numbers in supabase/seed/EXPECTED.md stay exact (audit lines stay: the log is append-only).
 const { chromium } = require('playwright');
@@ -9,7 +9,7 @@ const { execFileSync } = require('child_process');
 const fs = require('fs');
 const path = require('path');
 
-const BASE = process.env.BASE_URL || 'http://localhost:3300';
+const BASE = process.env.BASE_URL || 'http://localhost:3000';
 const FAKE_LOG = process.env.FAKE_ANTHROPIC_LOG || path.join(__dirname, '..', '..', 'dev', '.logs', 'fake-anthropic-requests.log');
 const OWNER = { email: 'owner@example.test', password: 'Owner-Test-Pass-2026!' };
 const WORKER = { email: 'worker@example.test', password: 'Worker-Test-Pass-2026!' };

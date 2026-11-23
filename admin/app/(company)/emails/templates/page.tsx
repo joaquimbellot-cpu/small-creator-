@@ -7,13 +7,15 @@ import { deleteTemplateAction } from './actions';
 
 export const metadata: Metadata = { title: 'Templates' };
 
-export default async function TemplatesPage() {
+export default async function TemplatesPage({ searchParams }: { searchParams: Promise<{ error?: string | string[] }> }) {
   const staff = await requireStaff();
+  const sp = await searchParams;
   const supabase = await createClient();
   const { data, error } = await supabase.from('email_templates').select('id, name, goal, subject').order('name');
   return (
     <>
       <div className="toolbar"><LinkButton href="/emails/templates/new">New template</LinkButton></div>
+      {sp.error === 'delete' ? <Notice tone="error">The template could not be deleted. Refresh the page and try again.</Notice> : null}
       {error ? (
         <Notice tone="error">The templates could not be loaded. Refresh the page to try again.</Notice>
       ) : !data?.length ? (

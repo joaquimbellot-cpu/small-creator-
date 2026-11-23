@@ -1,6 +1,6 @@
 // Check of the website forms and the Inbox against the local stack (fake data only).
 // Run from admin/ with the stack and a dev server up:
-//   BASE_URL=http://localhost:3200 NODE_PATH=/opt/node-tools/node_modules node lib/forms/e2e.cjs
+//   BASE_URL=http://localhost:3000 NODE_PATH=/opt/node-tools/node_modules node lib/forms/e2e.cjs
 // Every row it creates (creators, contact messages, rate-limit rows) is removed at the start and the end.
 const { chromium, request } = require('playwright');
 const { execFileSync } = require('child_process');

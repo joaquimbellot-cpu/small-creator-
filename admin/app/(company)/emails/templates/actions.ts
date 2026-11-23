@@ -48,6 +48,9 @@ export async function deleteTemplateAction(form: FormData) {
   if (!id.success) return;
   const supabase = await createClient();
   const { error } = await supabase.from('email_templates').delete().eq('id', id.data);
-  if (error) console.error('templates: delete failed', error.code);
+  if (error) {
+    console.error('templates: delete failed', error.code);
+    redirect('/emails/templates?error=delete'); // the page says so; a silent failure looks like a lost click
+  }
   revalidatePath('/emails/templates');
 }
