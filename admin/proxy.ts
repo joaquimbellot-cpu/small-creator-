@@ -50,8 +50,9 @@ function csp(nonce: string): string {
   return [
     `default-src 'self'`,
     `script-src 'self' 'nonce-${nonce}' 'strict-dynamic'${dev ? " 'unsafe-eval'" : ''}`,
-    `style-src 'self' 'unsafe-inline' https://fonts.googleapis.com`,
-    `font-src 'self' https://fonts.gstatic.com`,
+    // The back office serves its own fonts (@fontsource, see app/layout.tsx), so Google Fonts is not allowed here.
+    `style-src 'self' 'unsafe-inline'`,
+    `font-src 'self'`,
     `img-src 'self' data: blob:`,
     `connect-src 'self' ${supabase}${dev ? ' ws://localhost:* ws://127.0.0.1:*' : ''}`.trim(),
     `frame-ancestors 'none'`,
