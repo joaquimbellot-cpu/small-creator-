@@ -6,7 +6,7 @@ Read this first in a new chat. It replaces the history of the previous one.
 
 - **Smallfold**: a public website plus a private back office for the owner. Both are one Next.js 16 app in `admin/`.
 - The website pages are built from `src/` by `build.js` into `admin/public/`. A copy is also built into `site/`.
-- Working branch: `claude/wonderful-meitner-sjwb8y`. Commit and push all work there.
+- Working branch: `claude/wonderful-meitner-sjwb8y`. Commit and push all work there. It holds the audit fixes too; the repository's default branch `claude/awesome-lamport-rlk8gy` was brought up to the same commit on 23 November.
 - Setup guide: `admin/README.md` (rewritten for Netlify on 22 November). Design decisions: `docs/launch-plan.md`.
 
 ## Live now
@@ -122,7 +122,7 @@ Read this first in a new chat. It replaces the history of the previous one.
 ## Audit and repair job (started 23 November)
 
 - The owner asked for a full audit by 8 specialist agents, then fixes. All work is on the branch `audit-fixes`, made from commit `c3f03b6` (tag `safety-before-audit`). To undo it all, delete that branch: `claude/wonderful-meitner-sjwb8y` was not touched.
-- **The GitHub repository is public, so `audit-fixes` is NOT pushed.** The reports list weaknesses and how to use them, and the live site keeps those weaknesses until the owner deploys the fixes. Push only when the owner says so, ideally after making the repository private.
+- **Pushed and merged on 23 November at the owner's request.** `audit-fixes` was pushed, the fixes went live (see "Live now"), and the branch was merged (fast-forward) into `claude/wonderful-meitner-sjwb8y` and into the repository's default branch `claude/awesome-lamport-rlk8gy`. The repository is public, so the audit reports in `docs/audit/` are public too. Push only when the owner says so, ideally after making the repository private.
 - A first attempt (made before the owner switched the leader to another model) is kept, unpushed, on the local branch `audit-sonnet-draft`. It holds only an earlier project map.
 - **Done (23 November):** 111 issues found, 99 fixed, 8 need the owner, 4 not fixed with reasons; a QA re-test (9/10) and a security re-audit (8/10) followed, and their follow-ups were fixed. All test suites pass. The owner's to-do list is section 8 of `docs/audit/FULL-REPORT.md`: four new migrations go to the live database BEFORE the code is deployed.
 - Reports: `docs/audit/` (`AGENT-BRIEF.md`, `FIX-BRIEF.md`, `00-project-map.md`, `01` to `08` (audit), `09` and `10` (verification), `fixes/` (one log per fix group), `FULL-REPORT.md`). Agents use the local test stack and fake data only. Database changes are new migration files: the owner applies them in production first, then deploys.
