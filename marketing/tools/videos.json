@@ -1,0 +1,19 @@
+[
+  { "id": "concept-a_caption-cut", "beats": [
+    { "t0": 0, "t1": 2.6, "image": "src/assets/img/difference-1.jpg", "focus": "45% 45%", "big": true, "text": "No list.\nNo algorithm.\n*A person chooses.*" },
+    { "t0": 2.6, "t1": 5.6, "image": "src/assets/img/difference-2.jpg", "focus": "50% 45%", "text": "Finding sponsors\ntakes time from\nyour videos." },
+    { "t0": 5.6, "t1": 10.4, "image": "src/assets/img/about.jpg", "focus": "58% 60%", "tag": "Step 1", "text": "You apply.", "small": "Your channel link, its topic and your subscriber count." },
+    { "t0": 10.4, "t1": 14.6, "image": "src/assets/img/band.jpg", "focus": "14% 50%", "tag": "Step 2", "text": "A person looks\nat your channel.", "small": "And chooses a sponsor to suggest." },
+    { "t0": 14.6, "t1": 17.6, "image": "src/assets/img/difference-3.jpg", "focus": "50% 40%", "tag": "Step 3", "text": "You say\n*yes or no.*" },
+    { "t0": 17.6, "t1": 21.4, "image": "src/assets/img/hero-tall.jpg", "focus": "40% 50%", "text": "Nothing goes ahead\nwithout *your yes.*", "small": "No deal, no commission." },
+    { "t0": 21.4, "t1": 24.6, "end": true, "title": "Tell us about\n*your channel.*", "sub": "Joining is free. We reply within 2 working days.", "url": "smallfold.netlify.app/apply" }
+  ] },
+  { "id": "concept-b_caption-cut", "beats": [
+    { "t0": 0, "t1": 2.6, "image": "src/assets/img/hero-tall.jpg", "focus": "40% 50%", "big": true, "text": "We look at\n*the small ones.*" },
+    { "t0": 2.6, "t1": 6.8, "image": "src/assets/img/difference-2.jpg", "focus": "50% 45%", "text": "Smallfold was started\nby a YouTube creator\nwith a small channel." },
+    { "t0": 6.8, "t1": 10.4, "image": "src/assets/img/about.jpg", "focus": "58% 60%", "text": "Who found that\nsponsors only looked\nat big ones." },
+    { "t0": 10.4, "t1": 15.4, "image": "src/assets/img/difference-1.jpg", "focus": "45% 45%", "text": "A person looks\nat your channel.", "small": "And chooses a sponsor to suggest, by hand." },
+    { "t0": 15.4, "t1": 20.0, "image": "src/assets/img/band.jpg", "focus": "14% 50%", "text": "Only small\nchannels.", "small": "1,000 to 50,000 subscribers. Nothing goes ahead without your yes." },
+    { "t0": 20.0, "t1": 23.4, "end": true, "title": "Tell us about\n*your channel.*", "sub": "For YouTube channels with 1,000 to 50,000 subscribers. Joining is free.", "url": "smallfold.netlify.app/apply" }
+  ] }
+]

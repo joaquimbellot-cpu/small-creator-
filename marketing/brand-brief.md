@@ -1,6 +1,6 @@
 # Smallfold brand brief
 
-**Status: draft, waiting for the owner's confirmation (23 November 2026).**
+**Status: working brief (23 November 2026).** The owner asked for the campaign to be finished without further check-ins, so the team worked from this version. The four points in section 11 still need the owner's own check before any ad is published.
 
 This file is the only source of facts for every script, image and ad. If a claim is not written here, it does not go into an ad. Every fact below was taken from the live website's own wording (`src/content/`).
 
@@ -157,11 +157,11 @@ For UGC-style videos the presenter does show a face, but the room keeps this loo
 | Tone | Friendly, a bit bold and punchy |
 | Real testimonials or creators | None |
 | Extra assets | None beyond the website's |
-| Test budget | 0 credits in Claude Code. Planning happens there; the owner generates in Claude chat on the Ultra plan's unlimited allowance |
+| Test budget | 0 credits in Claude Code. The static ads and caption-led video cuts are built there from the website's own pictures. The presenter and voice-over videos are generated in Claude chat on the Ultra plan's unlimited allowance, from `generation-sheet.md` |
 | Full campaign budget | Decided after the test |
 | Publishing | The owner publishes. Nothing is posted and no ad money is spent by Claude |
 
-## 11. Please confirm
+## 11. Check before publishing
 
 1. The founder line is true as written: Smallfold was started by a YouTube creator with a small channel.
 2. "We reply within 2 working days" may be used in ads.
