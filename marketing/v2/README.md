@@ -21,13 +21,16 @@ Version 1 is archived in `marketing/v1/` and its ideas are not reused.
 | `compliance-report.md` | The honesty and quality check of the finished static ads |
 | `assets-log.md` | Every Higgsfield job and what it cost |
 | `tools/` | The scripts that add type and logo to the generated pictures |
+| `posters/` | **The poster series (24 November): eight posters in two sizes, in `posters/out/`.** Brief, concepts, selection, design system, sources and render tool are beside them |
 
 ## Where things stand (23 November 2026)
 
 - **Approved by the owner:** concept 1, **The Line**, as an outtakes reel ("cut and redo, like it was an error").
 - **Parked, no decision yet:** Missing Sponsor, The Credits, The Gap (videos) and Next First (static).
 - **The Line's video is not generated yet.** The owner will generate the clips later on Higgsfield, with the prompts below.
-- **Pictures made on 23 November** with the owner's remaining credits (3.44 spent, 4.16 left): five static ads, each in 1:1 and 9:16, in `assets/static/`. One is for The Line; the other four test the parked concepts as cheap stills. The job log and the decisions are in `assets-log.md`, the check in `compliance-report.md`.
+- **Pictures made on 23 November** with the owner's remaining credits (3.44 spent, 4.16 left): five static ads in `assets/static/`. **The owner rejected them on 24 November** ("this is not the intro to a video"): they were phone selfies with captions on top. They are kept only as a record.
+- **The poster series (24 November)** replaces them: eight designed posters, each in 1080 x 1350 and 1080 x 1920, in `posters/out/`. They are built from real type and drawn shapes, so they cost no Higgsfield credits. See `posters/selection.md` for the eight and `posters/critique.md` for the check.
+- **Higgsfield:** on 24 November the account showed the **free** plan (it showed Ultra the day before), and Higgsfield refused to generate ("Requires basic plan or higher"). Two poster photographs (an empty plinth and a blank box) could not be made, so those two posters are drawn. Balance: 4.16 credits.
 - **The presenter's portrait for the video still has to be made** (Step 1 below). The portraits generated here came out as selfies with a raised hand, not the calm medium shot the video needs.
 
 ---

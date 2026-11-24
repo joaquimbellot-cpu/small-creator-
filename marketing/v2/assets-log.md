@@ -45,3 +45,9 @@ Built with `tools/build-statics.cjs` from `tools/statics.json`. All words, the b
 | `the-credits_1x1.png`, `the-credits_9x16.png` | same | The Credits (concept not yet approved) | Built, checked, awaiting owner review |
 | `the-gap_1x1.png`, `the-gap_9x16.png` | same | The Gap (concept not yet approved) | Built, checked, awaiting owner review |
 | `next-first_1x1.png`, `next-first_9x16.png` | same | Next First (static-only concept, not yet approved) | Built, checked, awaiting owner review |
+
+## 24 November 2026: poster series
+
+- The owner rejected the static ads above. A poster series replaced them: `posters/out/`, eight posters in two sizes, built from real type and drawn shapes. **No Higgsfield job was run for it and no credits were spent.**
+- Two studio photographs were planned (an empty plinth and a blank box, quoted at 1.75 credits each). Neither was generated: Higgsfield refused the first with "Requires basic plan or higher" because the account now shows the free plan, and the second was not submitted. Those two posters are drawn.
+- Balance: 4.16 credits. Total spent in version 2: 3.44.
