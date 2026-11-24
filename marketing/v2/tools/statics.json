@@ -1,10 +1,10 @@
 [
  {
   "id": "the-line",
-  "image": "marketing/v2/assets/source/j2a-the-line.jpg",
+  "image": "marketing/v2/assets/source/j2a-the-line-clean.jpg",
   "tall": {
    "focus": "50% 50%",
-   "logo": "right:6%;top:10.5%",
+   "logo": "right:6%;bottom:21%",
    "stacks": [
     {
      "x": 6,
@@ -14,12 +14,17 @@
       {
        "type": "label",
        "text": "Image made with AI"
+      },
+      {
+       "type": "label pretend",
+       "text": "Pretend",
+       "gap": 0.5
       }
      ]
     },
     {
      "x": 6,
-     "y": 15.5,
+     "y": 17.8,
      "w": 88,
      "items": [
       {
@@ -29,7 +34,7 @@
       },
       {
        "type": "headline",
-       "text": "1,000 to 50,000 subs?\nApply for a sponsor. Free.",
+       "text": "1,000 to 50,000 subs?\nFree to apply for a sponsor.",
        "gap": 1.4
       }
      ]
@@ -65,12 +70,17 @@
       {
        "type": "label",
        "text": "Image made with AI"
+      },
+      {
+       "type": "label pretend",
+       "text": "Pretend",
+       "gap": 0.7
       }
      ]
     },
     {
      "x": 5,
-     "y": 11.5,
+     "y": 15.5,
      "w": 90,
      "items": [
       {
@@ -80,7 +90,7 @@
       },
       {
        "type": "headline",
-       "text": "1,000 to 50,000 subs? Free to apply.",
+       "text": "1,000 to 50,000 subs?\nFree to apply for a sponsor.",
        "gap": 1.2
       }
      ]
@@ -107,7 +117,7 @@
  },
  {
   "id": "missing-sponsor",
-  "image": "marketing/v2/assets/source/j3b-missing-sponsor.jpg",
+  "image": "marketing/v2/assets/source/j3b-missing-sponsor-clean.jpg",
   "tall": {
    "focus": "0% 50%",
    "zoom": 1.14,
@@ -154,7 +164,7 @@
      "items": [
       {
        "type": "headline",
-       "text": "1,000 to 50,000 subs?\nApply for a sponsor. Free."
+       "text": "1,000 to 50,000 subs?\nFree to apply for a sponsor."
       },
       {
        "type": "button",
@@ -199,7 +209,7 @@
       {
        "type": "headline",
        "size": 3.4,
-       "text": "1,000 to\n50,000 subs?\nApply for a\nsponsor. Free."
+       "text": "1,000 to\n50,000 subs?\nFree to apply\nfor a sponsor."
       }
      ]
     },
@@ -261,7 +271,7 @@
     },
     {
      "x": 6,
-     "y": 47.5,
+     "y": 45,
      "w": 88,
      "items": [
       {
@@ -283,7 +293,7 @@
       },
       {
        "type": "headline",
-       "text": "1,000 to 50,000 subs?\nApply for a sponsor. Free.",
+       "text": "1,000 to 50,000 subs?\nFree to apply for a sponsor.",
        "gap": 1.6
       },
       {
@@ -339,7 +349,7 @@
       },
       {
        "type": "headline",
-       "text": "1,000 to 50,000 subs? Free to apply.",
+       "text": "1,000 to 50,000 subs?\nFree to apply for a sponsor.",
        "gap": 1.4,
        "size": 3.7
       },
@@ -360,7 +370,7 @@
  },
  {
   "id": "the-gap",
-  "image": "marketing/v2/assets/source/j4-the-gap.jpg",
+  "image": "marketing/v2/assets/source/j4-the-gap-clean.jpg",
   "tall": {
    "focus": "50% 50%",
    "logo": "right:6%;top:10.5%",
@@ -401,7 +411,7 @@
      "items": [
       {
        "type": "headline",
-       "text": "1,000 to 50,000 subs?\nApply for a sponsor. Free."
+       "text": "1,000 to 50,000 subs?\nFree to apply for a sponsor."
       },
       {
        "type": "button",
@@ -445,13 +455,25 @@
      ]
     },
     {
+     "x": 58.5,
+     "y": 63,
+     "w": 36,
+     "items": [
+      {
+       "type": "caption",
+       "size": 3.4,
+       "text": "[crickets]"
+      }
+     ]
+    },
+    {
      "x": 5,
      "bottom": 4.5,
      "w": 90,
      "items": [
       {
        "type": "headline",
-       "text": "1,000 to 50,000 subs? Free to apply.",
+       "text": "1,000 to 50,000 subs?\nFree to apply for a sponsor.",
        "size": 3.9
       },
       {
@@ -495,7 +517,7 @@
       {
        "type": "headline",
        "size": 3.3,
-       "text": "1,000 to 50,000 subs?\nFree to apply."
+       "text": "1,000 to 50,000 subs?\nFree to apply for a sponsor."
       }
      ]
     },
@@ -549,7 +571,7 @@
     },
     {
      "x": 6,
-     "y": 73.5,
+     "y": 71.6,
      "w": 88,
      "items": [
       {
@@ -560,7 +582,7 @@
       {
        "type": "small",
        "text": "Applying doesn't promise a sponsor.",
-       "gap": 1.0
+       "gap": 0.6
       }
      ]
     }
@@ -588,7 +610,7 @@
      "items": [
       {
        "type": "headline",
-       "text": "1,000 to 50,000 subs? Free to apply.",
+       "text": "1,000 to 50,000 subs?\nFree to apply for a sponsor.",
        "size": 4.4
       }
      ]
