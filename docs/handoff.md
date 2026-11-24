@@ -133,7 +133,7 @@ Read this first in a new chat. It replaces the history of the previous one.
 - **Version 2 is in `marketing/v2/`** (start with its `README.md`). It sells the creator offer, never the company or its story. `product-brief.md` is the only source of facts. The campaign idea is the blank: "Sponsored by ____".
 - **Approved by the owner:** the video concept "The Line", as an outtakes reel. Its video is not generated; the prompts and steps for doing it on Higgsfield are in `marketing/v2/README.md`.
 - **Rejected by the owner (24 November):** the first static ads in `marketing/v2/assets/static/` (phone selfies with captions). Do not make more like them.
-- **Current work: the poster series** in `marketing/v2/posters/`: eight designed posters in two sizes (`out/`), built in HTML and CSS from `src/` with `tools/render.cjs`, following `design-system.md`. Waiting for the owner's reaction.
+- **Current work: the poster series** in `marketing/v2/posters/`: seven designed posters in two sizes (`out/`), built in HTML and CSS from `src/` with `tools/render.cjs`, following `design-system.md`. Waiting for the owner's reaction.
 - **Higgsfield:** 3.44 credits spent in total, 4.16 left. On 24 November the account showed the free plan and refused generation. Claude does not spend credits without the owner's explicit "go" for a quoted batch. Unlimited generations do not work from Claude Code.
 - The commission rates and "reply within 2 working days" are still unconfirmed and stay out of the ads.
 - Claude never publishes and never spends ad money. The owner turns on each platform's AI-content label where a generated picture or video is used.

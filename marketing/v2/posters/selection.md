@@ -1,5 +1,7 @@
 # Poster series: the leader's selection
 
+**Update after the critic's check:** poster 8, The Packshot, was cut. A white box with no clue what is offered, and "Today's sponsor" hints that one is picked daily. Its source is kept in `cut/`. The series is seven posters.
+
 **Date:** 24 November 2026. Eight posters, chosen from the twelve concepts in `concepts.md`. One voice, eight different surfaces, the blank always in pen blue.
 
 | # | File name | Poster | Headline as set | Look | Picture |

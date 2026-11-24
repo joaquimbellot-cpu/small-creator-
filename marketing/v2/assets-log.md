@@ -48,6 +48,6 @@ Built with `tools/build-statics.cjs` from `tools/statics.json`. All words, the b
 
 ## 24 November 2026: poster series
 
-- The owner rejected the static ads above. A poster series replaced them: `posters/out/`, eight posters in two sizes, built from real type and drawn shapes. **No Higgsfield job was run for it and no credits were spent.**
-- Two studio photographs were planned (an empty plinth and a blank box, quoted at 1.75 credits each). Neither was generated: Higgsfield refused the first with "Requires basic plan or higher" because the account now shows the free plan, and the second was not submitted. Those two posters are drawn.
+- The owner rejected the static ads above. A poster series replaced them: `posters/out/`, seven posters in two sizes, built from real type and drawn shapes. **No Higgsfield job was run for it and no credits were spent.**
+- Two studio photographs were planned (an empty plinth and a blank box, quoted at 1.75 credits each). Neither was generated: Higgsfield refused the first with "Requires basic plan or higher" because the account now shows the free plan, and the second was not submitted. The plinth poster is drawn; the box poster was cut after the critic's check.
 - Balance: 4.16 credits. Total spent in version 2: 3.44.
