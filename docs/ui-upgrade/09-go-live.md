@@ -1,6 +1,8 @@
 # 09 - Going live with the back office upgrade
 
-Written 25 November 2026. The upgrade is built and tested on the branch `ui-upgrade`. **Nothing is live yet.** The live site and the live database are unchanged.
+**Done on 25 November 2026.** With the owner's approval, Claude made a safety copy in the live database (schema `backup_20261125`), applied the eleven database files one at a time with a check after each, and deployed the app from `ui-upgrade` (deploy `6b076cb0969b11ad0db431be`). Step 4, the owner's look at the live site, is still open. The rest of this file is kept as the record of the steps.
+
+Written 25 November 2026, before going live.
 
 Going live has two parts that belong together: the database changes first, then the new app. Do not do one without the other on the same day.
 

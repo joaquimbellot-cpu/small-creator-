@@ -2,27 +2,31 @@
 
 Read this first in a new chat. It replaces the history of the previous one.
 
-## Back office upgrade: built on the branch `ui-upgrade`, NOT live (25 November)
+## Back office upgrade: LIVE since 25 November 2026
 
 - **What it is:** creators list with a filter panel, creator and sponsor profiles with a sponsorship history (Confirmed and Detected labels), a new Sponsors tab, linking with match suggestions, a deals board with a new first stage "Matched", pitch drafts with Claude from confirmed facts only, a global search (Ctrl+K) and a sponsorship price calculator.
-- **Where:** branch `ui-upgrade` (made from `claude/wonderful-meitner-sjwb8y` at `c7f15d1`). It is not merged anywhere. To undo everything, do not deploy it and delete the branch.
-- **Read these, in this order:** `docs/ui-upgrade/09-go-live.md` (the owner's steps), `04-ui-spec.md` (the screens), `05-build-plan.md` (decisions and the database contract), `06-security-review.md`, `07-qa-report.md`, `08-retest.md`, and `build/*.md` (one note per agent). The approved clickable prototype is `docs/ui-upgrade/prototype/smallfold-ui-prototype.html` (fake data).
-- **Tested:** on a production build against a database rebuilt from scratch, `admin/tests/run-all.sh` ends "ALL SUITES PASSED" (database, 490 unit tests, twelve browser suites). The security review gave 8/10 with no critical or high finding; its four medium findings are fixed and were re-tested.
-- **To go live:** the owner takes a backup, then the **eleven** migration files `20261125*` are applied to the live database in name order, then the app is deployed from `ui-upgrade` the same day. Neither has been done. On 25 November the owner asked for it to go live; Claude made a safety copy inside the live database (schema `backup_20261125`, all 16 tables, not readable by the app), but the session's safety system refused the migration step itself, so the live database is otherwise unchanged and nothing was deployed. `docs/ui-upgrade/apply-to-live-database.sql` holds the eleven files as one paste. The fake seed (`admin/supabase/seed/seed-upgrade.sql`) is for the local stack only: never load it in production.
+- **Live deploy:** `6b076cb0969b11ad0db431be`, made from the branch `ui-upgrade`. The deploy before it, `6b040d4192fa3138c25671aa` (23 November), is kept by Netlify: to go back, open Netlify, Deploys, pick it and "Publish deploy". The old app works with the upgraded database, except that an export writes two audit lines.
+- **Live database:** the eleven migration files `20261125*` were applied on 25 November with the owner's approval, one file per transaction, each checked. The 117 creators were compared row by row with the copy afterwards: nothing changed. All 27 public tables have RLS on and `anon` can read none of them. The fake seed was not loaded.
+- **Safety copy in the live database:** schema `backup_20261125` holds a copy of all 16 tables as they were just before the upgrade (117 creators, 285 audit lines). The app and the public cannot read it. Remove it with `drop schema backup_20261125 cascade;` once the upgrade has run well for a few weeks. It is not a backup against losing the whole project.
+- **Not checked yet:** nobody has opened the live site since the deploy. Claude's sandbox cannot reach `*.netlify.app`, so the owner has to log in and look at Overview, Creators, Sponsors, Deals and the search.
+- **Branches:** `claude/wonderful-meitner-sjwb8y` was fast-forwarded to `ui-upgrade` after the deploy, so both hold the live code. **Never deploy a commit older than this one: it would put the old app back on the upgraded database.**
+- **Read these:** `docs/ui-upgrade/04-ui-spec.md` (the screens), `05-build-plan.md` (decisions and the database contract), `06-security-review.md`, `07-qa-report.md`, `08-retest.md`, `09-go-live.md`, and `build/*.md` (one note per agent). The approved clickable prototype is `docs/ui-upgrade/prototype/smallfold-ui-prototype.html` (fake data).
+- **Tested before going live:** on a production build against a database rebuilt from scratch, `admin/tests/run-all.sh` ended "ALL SUITES PASSED" (database, 490 unit tests, twelve browser suites). The security review gave 8/10 with no critical or high finding; its four medium findings were fixed and re-tested.
 - **Open decisions for the owner:** (1) the price calculator uses its own margin field (20% in the example) while the database still takes 10%, 8% or 5% by deal size; (2) any staff member, a worker too, can approve and send an email, although the rule says "the owner's click"; (3) the creators list now opens sorted by subscribers, high to low; (4) the niche list is the 12 from the prototype.
-- **Known limits:** no YouTube scanner, so Detected records only come from imports marked unverified, and there is no list of videos on a profile; no screen to delete a list or a tag; the pitch draft checker catches common mistakes only (its limits are listed in `docs/ui-upgrade/build/retest-fixes.md`), so a person must read every draft before sending; real Claude drafts were tested only against the local stand-in.
-- **Local stack after this work:** `admin/dev/reset.sh` loads both seeds (60 creators, 26 sponsors, 34 contact people, 115 sponsorship records, 19 deals). After a reset, rebuild the app before testing a production build, because the local keys change.
+- **What the owner needs to enter:** sponsors with their details and a contact person; each creator's niche (from the fixed list), country, language, average views and engagement; past sponsorships on each creator's profile. Until then the new filters and suggestions show little.
+- **Known limits:** no YouTube scanner, so Detected records only come from imports marked unverified, and there is no list of videos on a profile; no screen to delete a list or a tag; the pitch draft checker catches common mistakes only (its limits are in `docs/ui-upgrade/build/retest-fixes.md`), so a person must read every draft before sending; real Claude drafts were tested only against the local stand-in.
+- **Local stack:** `admin/dev/reset.sh` loads both seeds (60 creators, 26 sponsors, 34 contact people, 115 sponsorship records, 19 deals). After a reset, rebuild the app before testing a production build, because the local keys change.
 
 ## What this is
 
 - **Smallfold**: a public website plus a private back office for the owner. Both are one Next.js 16 app in `admin/`.
 - The website pages are built from `src/` by `build.js` into `admin/public/`. A copy is also built into `site/`.
-- Working branch: `claude/wonderful-meitner-sjwb8y`. Commit and push all work there. It holds the audit fixes too; the repository's default branch `claude/awesome-lamport-rlk8gy` was brought up to the same commit on 23 November.
+- Working branch: `claude/wonderful-meitner-sjwb8y`. Commit and push all work there. It holds the audit fixes and, since 25 November, the back office upgrade. The repository's default branch `claude/awesome-lamport-rlk8gy` is still at the 23 November commit, without the upgrade.
 - Setup guide: `admin/README.md` (rewritten for Netlify on 22 November). Design decisions: `docs/launch-plan.md`.
 
 ## Live now
 
-- **Website and back office:** https://smallfold.netlify.app (deploy `6b040d4192fa3138c25671aa`, 23 November: the audit fixes plus the bulk status change on Creators).
+- **Website and back office:** https://smallfold.netlify.app (deploy `6b076cb0969b11ad0db431be`, 25 November: the back office upgrade; see the section above).
 - **Creators in production (24 November): 117,** all status New, source Import: 17 from the first sheet and 100 from the sheet "Small YouTube Creators Worldwide - 100 with emails (Nov 2026)". Each one's notes give the country, score, growth outlook, average views, the reason and the sheet row. Nobody has been emailed yet.
 - **Bulk status change:** on Creators, tick creators, then "Change status to", "Change status", "Yes, change" (route `POST /api/creators/status`, at most 200). Only the owner can take creators off Do not contact; a worker's attempt is skipped and counted.
   - Netlify project `smallfold`. The site id is on the project's page in Netlify (Project configuration, General). It is not written here.
@@ -51,7 +55,7 @@ Read this first in a new chat. It replaces the history of the previous one.
 - Region Tokyo, free plan. The project reference is in the Supabase dashboard (Project Settings, General). It is not written here.
 - **Database:**
   - All 15 migrations in `admin/supabase/migrations/` are applied in production. The last four (`20261123000100` to `000400`) were applied on 23 November at the owner's request, after a backup; their 7 new CHECK constraints were then validated (no existing row broke them).
-  - **Not applied yet (25 November):** the eleven migrations dated 25 November (`20261125...`) of the back office upgrade. See the section at the top and `docs/ui-upgrade/09-go-live.md`.
+  - The eleven migrations dated 25 November (`20261125...`) of the back office upgrade were applied on 25 November. In total 26 migration files are applied in production. There is no migration tracking table in production: check by the objects (for example `select count(*) from niches;` returns 12).
   - Checked: all 15 public tables have RLS on, and the `anon` role can't select any table or execute any function.
 - **Auth settings:**
   - sign-up off;
