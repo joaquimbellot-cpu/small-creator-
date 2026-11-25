@@ -16,7 +16,7 @@ import { Button, LinkButton } from './Button';
 import k from './kit.module.css';
 import { inOtherDialog, lockBodyScroll, trapTab } from './overlayUtils';
 
-export function SidePanel({ open, onClose, label, children, position, onPrevious, onNext, fullPageHref, headerExtra, scrollKey }: {
+export function SidePanel({ open, onClose, label, children, position, onPrevious, onNext, fullPageHref, headerExtra, scrollKey, restoreFocus }: {
   open: boolean;
   onClose: () => void;
   /** Accessible name of the dialog (the record name). */
@@ -30,12 +30,20 @@ export function SidePanel({ open, onClose, label, children, position, onPrevious
   /** More buttons in the header, before "Open full page". */
   headerExtra?: ReactNode;
   scrollKey?: string | number;
+  /**
+   * Where focus goes when the panel closes: return the element (for example the row link of the record last shown).
+   * The list may be a skeleton for a moment after closing, so this is asked again for about 3 seconds until it finds one.
+   * Without it, focus goes back to what had focus when the panel opened.
+   */
+  restoreFocus?: () => HTMLElement | null;
 }) {
   const ref = useRef<HTMLDivElement>(null);
   const bodyRef = useRef<HTMLDivElement>(null);
   const closeBtn = useRef<HTMLButtonElement>(null);
   const closeRef = useRef(onClose);
   closeRef.current = onClose;
+  const restoreRef = useRef(restoreFocus);
+  restoreRef.current = restoreFocus;
 
   useEffect(() => {
     if (!open) return;
@@ -52,8 +60,17 @@ export function SidePanel({ open, onClose, label, children, position, onPrevious
     return () => {
       document.removeEventListener('keydown', onKey);
       unlock();
-      // The opener may have gone (a row that was re-rendered). Then focus stays where the browser puts it.
-      if (opener && document.contains(opener)) opener.focus();
+      // The opener may have gone (the rows show a skeleton while the list reloads, and the rows are then drawn again).
+      // So for about 3 seconds: whenever focus is lost, give it to the target again. Any key or click by the person ends this.
+      const find = () => restoreRef.current?.() ?? (opener && document.contains(opener) ? opener : null);
+      const lost = () => { const a = document.activeElement; return !a || a === document.body || node.contains(a) || !document.contains(a); };
+      const retry = () => { if (!lost()) return; const t = find(); if (t) t.focus(); };
+      retry();
+      let tries = 0;
+      const stop = () => { window.clearInterval(timer); document.removeEventListener('keydown', stop, true); document.removeEventListener('pointerdown', stop, true); };
+      const timer = window.setInterval(() => { tries += 1; if (tries > 60) stop(); else retry(); }, 50);
+      document.addEventListener('keydown', stop, true);
+      document.addEventListener('pointerdown', stop, true);
     };
   }, [open]);
 

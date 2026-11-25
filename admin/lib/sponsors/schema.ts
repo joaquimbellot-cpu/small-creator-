@@ -106,7 +106,14 @@ export function parseNiches(input: string | string[]): { slugs: string[]; unknow
   return { slugs, unknown };
 }
 
-const EMAIL_RE = /^[^@\s,;<>]+@[^@\s,;<>]+$/;
+const EMAIL_RE = /^[^@\s,;<>?&%]+@[^@\s,;<>?&%]+$/; // no ? & % : a mailto: link must not carry mail-header text (SR-18)
+
+/** A mailto: link only for a plain address with no ? (SR-18); anything else is shown as text. */
+export const safeMailto = (email: string | null | undefined): string | null =>
+  email && email.length <= 320 && EMAIL_RE.test(email) ? `mailto:${email}` : null;
+
+/** A stored LinkedIn link, checked again at render time: https on linkedin.com only (SR-09). */
+export const safeLinkedIn = (url: string | null | undefined): string | null => (url ? normalizeLinkedIn(url) : null);
 const PHONE_RE = /^[0-9 +()./-]{3,50}$/;
 
 // Text limits as zod schemas (the rest of the checks, such as "5k" or "https only", need their own parsing below).

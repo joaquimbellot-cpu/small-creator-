@@ -120,7 +120,7 @@ export default async function DealsPage({ searchParams }: { searchParams: Promis
               <summary>Add a deal</summary>
               {addForm}
             </details>
-            <DealsBoard deals={deals} now={new Date().toISOString()} drafts={drafts} />
+            <DealsBoard deals={deals} now={new Date().toISOString()} drafts={drafts} isOwner={staff.role === 'owner'} />
           </>
         )}
       </>
@@ -150,7 +150,7 @@ export default async function DealsPage({ searchParams }: { searchParams: Promis
             <Table label="Deals">
               <thead>
                 <tr>
-                  <th>Creator</th><th>Brand</th><th>Stage</th>
+                  <th>Creator</th><th>Sponsor</th><th>Stage</th>
                   <th className={tableCell.num}>Amount</th><th className={tableCell.num}>Commission</th><th>Last change (UTC)</th>
                   <th className={tableCell.actions}><span className="sr-only">Actions</span></th>
                 </tr>

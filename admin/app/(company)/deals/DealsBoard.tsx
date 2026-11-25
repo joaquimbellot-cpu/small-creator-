@@ -7,6 +7,7 @@ import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } fro
 import { Button, useToast } from '@/components/ui';
 import { STAGES, STAGE_LABEL, formatUsd, timeInStage, type Stage } from '@/lib/deals/format';
 import { AmountEditor } from './AmountEditor';
+import { DeleteDealForm } from './DeleteDealForm';
 import { moveDealAction } from './actions';
 import s from './deals.module.css';
 
@@ -16,7 +17,7 @@ export type BoardDeal = {
 };
 const STEP = 50;
 
-export function DealsBoard({ deals: initial, now, drafts }: { deals: BoardDeal[]; now: string; drafts: Record<string, ReactNode> }) {
+export function DealsBoard({ deals: initial, now, drafts, isOwner = false }: { deals: BoardDeal[]; now: string; drafts: Record<string, ReactNode>; isOwner?: boolean }) {
   const toast = useToast();
   const [deals, setDeals] = useState(initial);
   const [shown, setShown] = useState<Record<string, number>>({});
@@ -90,7 +91,12 @@ export function DealsBoard({ deals: initial, now, drafts }: { deals: BoardDeal[]
                       <select id={`mv-${d.id}`} className={s.move} value={d.stage} disabled={busy.has(d.id)} onChange={(e) => void move(d.id, e.target.value as Stage)}>
                         {STAGES.map((o) => <option key={o} value={o}>{o === d.stage ? 'Stage: ' : 'Move to: '}{STAGE_LABEL[o]}</option>)}
                       </select>
-                      {d.stage === 'matched' || d.stage === 'contacted' ? <div className={s.cardActions}>{drafts[d.id] ?? null}</div> : null}
+                      {d.stage === 'matched' || d.stage === 'contacted' || isOwner ? (
+                        <div className={s.cardActions}>
+                          {d.stage === 'matched' || d.stage === 'contacted' ? (drafts[d.id] ?? null) : null}
+                          {isOwner ? <DeleteDealForm id={d.id} brand={d.brand} /> : null}
+                        </div>
+                      ) : null}
                     </article>
                   );
                 })}
@@ -107,7 +113,7 @@ export function DealsBoard({ deals: initial, now, drafts }: { deals: BoardDeal[]
           );
         })}
       </div>
-      <p className={s.hint}>Drag a card, or use its “Move to” menu. Moving a deal to Completed or Paid adds a Confirmed sponsorship to both histories. “Matched” is a pair that is linked but not contacted yet.</p>
+      <p className={s.hint}>Drag a card, or use its “Move to” menu.{isOwner ? ' The owner can delete a deal from its card.' : ''} Moving a deal to Completed or Paid adds a Confirmed sponsorship to both histories. “Matched” is a pair that is linked but not contacted yet.</p>
     </div>
   );
 }

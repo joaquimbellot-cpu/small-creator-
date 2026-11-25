@@ -1,6 +1,8 @@
 // Shared display helpers for the Overview and Deals pages. Plain functions only (used in server and client code).
 // Money is stored in cents (USD). Dates are shown in UTC so the server and the browser agree.
 
+import { dateFormatter } from '../lists/dates';
+
 export const STAGES = ['matched', 'contacted', 'replied', 'negotiating', 'signed', 'completed', 'paid'] as const;
 export type Stage = (typeof STAGES)[number];
 
@@ -16,9 +18,9 @@ export const STAGE_LABEL: Record<Stage, string> = {
 
 const usd = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' });
 const count = new Intl.NumberFormat('en-US');
-const when = new Intl.DateTimeFormat('en-GB', { dateStyle: 'medium', timeStyle: 'short', timeZone: 'UTC' });
+const when = dateFormatter({ dateStyle: 'medium', timeStyle: 'short' });
 const day = new Intl.DateTimeFormat('en-GB', { day: 'numeric', timeZone: 'UTC' });
-const month = new Intl.DateTimeFormat('en-GB', { month: 'short', timeZone: 'UTC' });
+const month = dateFormatter({ month: 'short' });
 
 /** 219000 -> "$2,190.00". Null or undefined counts as zero. */
 export function formatUsd(cents: number | string | null | undefined): string {

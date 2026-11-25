@@ -1,6 +1,8 @@
 import type { Metadata } from 'next';
+import { headers } from 'next/headers';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
+import { after } from 'next/server';
 import { Badge, Notice } from '@/components/ui';
 import { requireStaff } from '@/lib/auth/staff';
 import { createClient } from '@/lib/supabase/server';
@@ -38,6 +40,21 @@ export default async function EmailDetail({ params }: { params: Promise<{ id: st
   if (!data) notFound();
   const e = data as unknown as typeof data & { creators: Person; drafter: Person; approver: Person; sender: Person; recipient_kind: string; brands: { id: string; name: string } | null; brand_contacts: Person; pitch_facts: { used?: string[]; left_out?: string[] } | null };
   const toContact = e.recipient_kind === 'brand_contact';
+  // The address on this page is personal data: one audit line per real view, written after the response (the page does not wait).
+  // A contact person's address is logged as contact.viewed, a creator's as creator.viewed. Skipped for prefetches and for
+  // refreshes caused by this page's own buttons. It reuses this request's client (cookies() is not allowed inside after()).
+  const h = await headers();
+  if (!h.get('next-action') && !h.get('next-router-prefetch')) {
+    const action = toContact ? 'contact.viewed' : 'creator.viewed';
+    after(async () => {
+      try {
+        const { error: auditError } = await supabase.rpc('log_audit', { action, entity_type: 'email', entity_id: e.id, details: { kind: e.recipient_kind } });
+        if (auditError) console.error('audit write failed', action, auditError.code);
+      } catch (err) {
+        console.error('audit write failed', action, err instanceof Error ? err.message : err);
+      }
+    });
+  }
   const { data: settings } = await supabase.from('settings').select('sender_postal_address').eq('id', 1).single();
   const footer = buildFooter(settings?.sender_postal_address, `${siteUrl()}/unsubscribe/<personal link>`);
 
@@ -56,6 +73,7 @@ export default async function EmailDetail({ params }: { params: Promise<{ id: st
         {e.brands ? <span className="muted"> · Sponsor: <Link href={`/sponsors/${e.brands.id}`}>{e.brands.name}</Link></span> : null}
       </p>
       {e.is_test ? <Notice tone="info" title="Test">Delivered to the test address, not to the creator. The address above is only where a real send would go.</Notice> : null}
+      {toContact && e.brands ? <p className="muted">If {e.brand_contacts?.full_name ?? 'the contact person'} opts out, only this address is blocked. Other contacts at {e.brands.name} can still be written to.</p> : null}
       {e.error ? <Notice tone="error" title="Error">{e.error}</Notice> : null}
 
       <div className="split">

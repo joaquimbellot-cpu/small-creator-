@@ -19,15 +19,18 @@ function refresh(creatorIds: (string | null | undefined)[], brandIds: (string | 
   revalidatePath('/sponsors');
 }
 
-/** Finds a sponsor by name (the column is citext, so case is ignored) or creates it. */
-async function findOrCreateBrand(supabase: Db, name: string): Promise<{ id: string; created: boolean } | null> {
+/** Finds a sponsor by name (the column is citext, so case is ignored). Creates it only when `allowCreate` is true (B-4). */
+async function findOrCreateBrand(supabase: Db, name: string, allowCreate: boolean): Promise<{ id: string; created: boolean } | { missing: true } | null> {
   const { data: found } = await supabase.from('brands').select('id').eq('name', name).maybeSingle();
   if (found) return { id: found.id as string, created: false };
+  if (!allowCreate) return { missing: true };
   const { data: created, error } = await supabase.from('brands').insert({ name }).select('id').single();
   if (!error && created) return { id: created.id as string, created: true };
   const { data: again } = await supabase.from('brands').select('id').eq('name', name).maybeSingle(); // made a moment ago by someone else
   return again ? { id: again.id as string, created: false } : null;
 }
+
+const noSponsor = (name: string) => `No sponsor called “${name}” yet. Use “Add ${name} as a new sponsor”, or pick one from the list.`;
 
 /** Add a record. It is saved as Confirmed: the database stamps the signed-in person and the time. */
 export async function addSponsorship(input: unknown): Promise<ActionResult> {
@@ -41,8 +44,9 @@ export async function addSponsorship(input: unknown): Promise<ActionResult> {
   let created: string | undefined;
   if (!brandId) {
     if (!d.brandName) return { ok: false, error: 'Choose the sponsor, or type its name.' };
-    const b = await findOrCreateBrand(supabase, d.brandName);
+    const b = await findOrCreateBrand(supabase, d.brandName, d.createBrand);
     if (!b) return { ok: false, error: 'Could not save the sponsor name. Try again.' };
+    if ('missing' in b) return { ok: false, error: noSponsor(d.brandName) };
     brandId = b.id;
     if (b.created) created = d.brandName;
   }
@@ -53,7 +57,7 @@ export async function addSponsorship(input: unknown): Promise<ActionResult> {
   });
   if (error) return { ok: false, error: plainError(error) };
   refresh([d.creatorId], [brandId]);
-  return { ok: true, message: created ? `Record added as Confirmed. “${created}” was not in the list, so it was added as a new sponsor.` : 'Record added as Confirmed.', brandCreated: created };
+  return { ok: true, message: created ? `Record added as Confirmed. “${created}” was added as a new sponsor.` : 'Record added as Confirmed.', brandCreated: created };
 }
 
 /** Edit a record. A detected record stays detected; a confirmed one keeps who confirmed it. */
@@ -73,8 +77,9 @@ export async function updateSponsorship(input: unknown): Promise<ActionResult> {
   let brandId: string | null = d.brandId ?? null;
   let created: string | undefined;
   if (!brandId && d.brandName) {
-    const b = await findOrCreateBrand(supabase, d.brandName);
+    const b = await findOrCreateBrand(supabase, d.brandName, d.createBrand);
     if (!b) return { ok: false, error: 'Could not save the sponsor name. Try again.' };
+    if ('missing' in b) return { ok: false, error: noSponsor(d.brandName) };
     brandId = b.id;
     if (b.created) created = d.brandName;
   }
@@ -91,7 +96,7 @@ export async function updateSponsorship(input: unknown): Promise<ActionResult> {
   if (error) return { ok: false, error: plainError(error) };
   if (!rows?.length) return { ok: false, error: GONE };
   refresh([cur.creator_id, d.creatorId], [cur.brand_id, brandId]);
-  return { ok: true, message: created ? `Record updated. “${created}” was not in the list, so it was added as a new sponsor.` : 'Record updated.', brandCreated: created };
+  return { ok: true, message: created ? `Record updated. “${created}” was added as a new sponsor.` : 'Record updated.', brandCreated: created };
 }
 
 /** Detected -> Confirmed. The note ("how did you check it") is required here and by the database. */

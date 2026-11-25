@@ -33,7 +33,7 @@ export const optionalAmountSchema = z.string().trim().transform((raw, ctx): numb
 
 export const addDealSchema = z.object({
   creator_id: idSchema,
-  brand_name: z.string().trim().min(1, 'Enter a brand name.').max(200, 'Brand names can be at most 200 characters.'),
+  brand_name: z.string().trim().min(1, 'Enter a sponsor name.').max(200, 'Sponsor names can be at most 200 characters.'),
   stage: stageSchema,
   amount: optionalAmountSchema,
 });

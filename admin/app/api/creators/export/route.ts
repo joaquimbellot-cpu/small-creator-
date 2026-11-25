@@ -1,10 +1,9 @@
 // GET /api/creators/export?<the list's filters>  -> CSV of the creators that match the filters (same address keys as the
 // Creators list page). OWNER ONLY (checked here on the server).
-import { ApiError, apiHandler } from '@/lib/api/handler';
-import { logAudit } from '@/lib/audit';
+import { apiHandler } from '@/lib/api/handler';
 import { CSV_COLUMNS, toCsv } from '@/lib/creators/csv';
 import { NICHES } from '@/lib/creators/constants';
-import { filtersToQuery, parseFilters, toRpcArgs } from '@/lib/creators/filters';
+import { parseFilters, toRpcArgs } from '@/lib/creators/filters';
 
 // The columns of the import template first (so an export can be imported again), then the list's extra columns.
 const HEADER = [...CSV_COLUMNS, 'niche_category', 'country', 'language', 'average_views'] as const;
@@ -12,14 +11,8 @@ const HEADER = [...CSV_COLUMNS, 'niche_category', 'country', 'language', 'averag
 export const GET = apiHandler({ role: 'owner' }, async ({ req, supabase }) => {
   const f = parseFilters(Object.fromEntries(req.nextUrl.searchParams));
   const args = toRpcArgs(f);
-  // The audit line comes FIRST, with the row count, and the export is refused when it cannot be written:
-  // personal data must never leave without a record (and a cut-off export must still leave one).
-  const { data: head, error: countError } = await supabase.rpc('creators_list', { ...args, p_limit: 1 });
-  if (countError) throw countError;
-  const count = head?.length ? Number((head as { total: number }[])[0].total) : 0;
-  const query = filtersToQuery({ ...f, page: 1, open: '', for: '' }).replace(/^\?/, '');
-  const audited = await logAudit('creators.exported', null, null, { count, filters: { query } });
-  if (!audited) throw new ApiError(500, 'Could not record the export in the audit log. Nothing was exported.');
+  // The database function itself checks the owner and writes the audit line (creators.exported, with the row count) on the
+  // first page, so an export cannot happen without a record; a failure there stops the export.
   const rows: unknown[][] = [];
   for (let from = 0; ; from += 1000) {
     const { data, error } = await supabase.rpc('creators_export', { ...args, p_limit: 1000, p_offset: from });

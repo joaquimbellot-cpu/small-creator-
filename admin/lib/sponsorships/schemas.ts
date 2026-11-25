@@ -45,6 +45,8 @@ export function recordSchema(now: Date = new Date()) {
     creatorId: uuid,
     brandId: uuid.nullish(),
     brandName: optionalText(200, 'The sponsor name'),
+    /** True only when the person pressed "Add <name> as a new sponsor". Without it a typed name that matches no sponsor is refused. */
+    createBrand: z.boolean().optional().default(false),
     date: z.string().trim().min(1, 'Pick the date of the video.')
       .refine(isRealDate, 'Enter the date as day, month and year.')
       .refine((v) => !isRealDate(v) || !isFutureDate(v, now), 'The date cannot be in the future.'),

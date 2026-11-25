@@ -2,6 +2,7 @@
 // Both modes parse and check the file again on the server, so the browser cannot smuggle in unchecked rows.
 import { apiHandler, ApiError } from '@/lib/api/handler';
 import { logAudit } from '@/lib/audit';
+import { readFormLimited, UploadTooLarge } from '@/lib/lists/readUpload';
 import { MAX_IMPORT_BYTES } from '@/lib/creators/constants';
 import { classifyRows, parseCsvText, type ExistingKeys } from '@/lib/creators/csv';
 import { channelKey, parseChannelUrl } from '@/lib/youtube/channel';
@@ -15,7 +16,10 @@ const quotedLike = (text: string, wrap: boolean) => {
 export const POST = apiHandler({}, async ({ req, supabase }) => {
   const mode = req.nextUrl.searchParams.get('mode') === 'commit' ? 'commit' : 'preview';
   let form: FormData;
-  try { form = await req.formData(); } catch { throw new ApiError(400, 'Upload a CSV file.'); }
+  try { form = await readFormLimited(req, MAX_IMPORT_BYTES); } catch (e) {
+    if (e instanceof UploadTooLarge) throw new ApiError(400, 'The file is larger than 1 MB.');
+    throw new ApiError(400, 'Upload a CSV file.');
+  }
   const file = form.get('file');
   if (!(file instanceof File)) throw new ApiError(400, 'Choose a CSV file first.');
   if (file.size === 0) throw new ApiError(400, 'The file is empty.');

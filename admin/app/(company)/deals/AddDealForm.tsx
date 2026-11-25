@@ -22,7 +22,7 @@ export function AddDealForm({ creators, brands }: { creators: { id: string; full
         <option value="" disabled>Choose a creator</option>
         {creators.map((c) => <option key={c.id} value={c.id}>{c.full_name}</option>)}
       </Select>
-      <Input label="Brand" name="brand_name" required maxLength={200} list="brand-names" autoComplete="off" hint="Type a new name to add the brand." error={fe.brand_name} />
+      <Input label="Sponsor" name="brand_name" required maxLength={200} list="brand-names" autoComplete="off" hint="Type a new name to add the sponsor." error={fe.brand_name} />
       <datalist id="brand-names">
         {brands.map((b) => <option key={b} value={b} />)}
       </datalist>

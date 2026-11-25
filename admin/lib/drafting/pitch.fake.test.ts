@@ -43,6 +43,7 @@ describe('draftPitch with the fake Claude', () => {
     }
     const sent = fs.readFileSync(LOG, 'utf8');
     expect(sent).toContain('You write pitch emails for Smallfold');
+    expect(sent).toContain('untrusted_facts');
     expect(sent).not.toMatch(/@example\.test|\+1 555/);
   });
 

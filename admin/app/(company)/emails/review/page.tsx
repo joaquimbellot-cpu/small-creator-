@@ -1,5 +1,7 @@
 import type { Metadata } from 'next';
+import { headers } from 'next/headers';
 import Link from 'next/link';
+import { after } from 'next/server';
 import { Badge, EmptyState, Notice } from '@/components/ui';
 import { requireStaff } from '@/lib/auth/staff';
 import { createClient } from '@/lib/supabase/server';
@@ -53,6 +55,27 @@ export default async function ReviewPage({ searchParams }: { searchParams: Promi
   const rows = (data ?? []) as unknown as Row[];
   const drafted = /^\d{1,3}$/.test(sp.drafted ?? '') ? sp.drafted : undefined;
   const notes = failureNotes(sp.failed);
+
+  // The page shows addresses of contact persons and creators: one audit line per kind and view, written after the response so
+  // the page does not wait. Skipped for prefetches and for refreshes caused by the buttons on this page.
+  const h = await headers();
+  if (!error && rows.length > 0 && !h.get('next-action') && !h.get('next-router-prefetch')) {
+    const groups: [string, number][] = [
+      ['contact.viewed', rows.filter((r) => r.recipient_kind === 'brand_contact').length],
+      ['creator.viewed', rows.filter((r) => r.recipient_kind !== 'brand_contact').length],
+    ];
+    after(async () => {
+      for (const [action, count] of groups) {
+        if (!count) continue;
+        try {
+          const { error: auditError } = await supabase.rpc('log_audit', { action, entity_type: 'email', entity_id: null, details: { list: true, count, page: 'review' } });
+          if (auditError) console.error('audit write failed', action, auditError.code);
+        } catch (e) {
+          console.error('audit write failed', action, e instanceof Error ? e.message : e);
+        }
+      }
+    });
+  }
 
   const { data: settings } = await supabase.from('settings').select('test_mode, test_email, min_seconds_between_sends, sender_postal_address').eq('id', 1).single();
   const footer = buildFooter(settings?.sender_postal_address, `${siteUrl()}/unsubscribe/<personal link>`);

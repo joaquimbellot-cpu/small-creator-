@@ -7,6 +7,7 @@ import { SponsorProfile } from '../profile/SponsorProfile';
 import s from '../sponsors.module.css';
 
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }) {
+  await requireStaff();
   const { id } = await params;
   if (!UUID_RE.test(id)) return { title: 'Sponsor' };
   const supabase = await createClient();

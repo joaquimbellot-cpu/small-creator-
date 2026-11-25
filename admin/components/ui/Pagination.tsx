@@ -1,6 +1,6 @@
 // Previous / next pager made of links (works in server components).
 //   <Pagination page={1} pageSize={25} total={140} hrefFor={(p) => `?page=${p}`} />
-// Pages start at 1. Shows "26–50 of 140". Renders nothing when there is only one page and total is 0.
+// Pages start at 1. Shows "26–50 of 140", or "0 results" when the list is empty. Renders nothing when there is only one page and total is 0.
 import { LinkButton } from './Button';
 import s from './ui.module.css';
 
@@ -10,7 +10,7 @@ export function Pagination({ page, pageSize, total, hrefFor }: { page: number; p
   const to = Math.min(total, page * pageSize);
   return (
     <nav className={s.pager} aria-label="Pagination">
-      <span>{from}–{to} of {total}</span>
+      <span>{total === 0 ? '0 results' : `${from}–${to} of ${total}`}</span>
       <span className={s.pagerLinks}>
         {page > 1 ? <LinkButton href={hrefFor(Math.min(page - 1, pages))} variant="ghost" size="sm">Previous</LinkButton> : null}
         {page < pages ? <LinkButton href={hrefFor(page + 1)} variant="ghost" size="sm">Next</LinkButton> : null}

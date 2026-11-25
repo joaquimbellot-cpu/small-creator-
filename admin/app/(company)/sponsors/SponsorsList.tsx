@@ -2,14 +2,14 @@
 // The sponsors list: filter rail, toolbar, chips, bulk bar, table or cards, side panel. The server page does the
 // querying and passes rows, totals and the count beside every option; this component owns the page address.
 import Link from 'next/link';
-import { useEffect, useMemo, useState, useTransition, type ReactNode } from 'react';
+import { useEffect, useMemo, useRef, useState, useTransition, type ReactNode } from 'react';
 import { useRouter } from 'next/navigation';
 import {
   ANY_YES_NO, Badge, Button, Card, CardGrid, CheckList, Checkbox, Chips, CompactSelect, EmptyState, FacetGroup, FilterRail, FilterRailButton, KeyValue,
   Notice, Pagination, RadioList, SearchBox, Segmented, SidePanel, SkeletonCards, SkeletonRows, Table, TABLE_CARDS, cardLinkClass, cardRaiseClass, cardTitleClass,
   tableCell, useToast,
 } from '@/components/ui';
-import { clearFilters, chipsFromParams, removeChip, useListNav, type ChipItem } from '@/lib/lists';
+import { clearFilters, chipsFromParams, removeChip, rowLinkToFocus, useListNav, type ChipItem } from '@/lib/lists';
 import {
   BUDGET_BANDS, COMPANY_SIZES, COMPANY_SIZE_LABEL, COUNT_OPTIONS, LAST_OPTIONS, NICHES, PAGE_SIZE, RELATIONSHIPS, RELATIONSHIP_LABEL, RELATIONSHIP_TONE,
   SORT_OPTIONS, TARGET_BANDS, countryName, type FacetCounts, type SponsorRow,
@@ -76,6 +76,8 @@ export function SponsorsList({ rows, total, all, page, counts, industries, count
 
   const idx = openId ? rows.findIndex((r) => r.id === openId) : -1;
   const openRow = idx >= 0 ? rows[idx] : null;
+  const lastShown = useRef<string | null>(null); // for the focus return when the panel closes (B-2)
+  if (openId) lastShown.current = openId;
   const withOpen = (id: string) => { const p = new URLSearchParams(nav.params); p.set('open', id); return `?${p.toString()}`; };
   const open = (id: string) => nav.set('open', id);
   const hrefForPage = (p: number) => { const q = new URLSearchParams(nav.params); q.delete('open'); if (p > 1) q.set('page', String(p)); else q.delete('page'); const t = q.toString(); return t ? `?${t}` : '?'; };
@@ -97,7 +99,7 @@ export function SponsorsList({ rows, total, all, page, counts, industries, count
 
   const nameLink = (r: SponsorRow) => (
     <a
-      href={withOpen(r.id)} className={s.nameLink}
+      href={withOpen(r.id)} data-open-id={r.id} className={s.nameLink}
       onClick={(e) => { if (e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) return; e.preventDefault(); open(r.id); }}
     >{r.name}</a>
   );
@@ -231,7 +233,7 @@ export function SponsorsList({ rows, total, all, page, counts, industries, count
                     <span className={cardRaiseClass}><Checkbox aria-label={`Select ${r.name}`} label="" checked={sel.has(r.id)} onChange={() => toggle(r.id)} /></span>
                   </div>
                   <h3 className={cardTitleClass}>
-                    <a href={withOpen(r.id)} className={cardLinkClass} onClick={(e) => { if (e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) return; e.preventDefault(); open(r.id); }}>{r.name}</a>
+                    <a href={withOpen(r.id)} data-open-id={r.id} className={cardLinkClass} onClick={(e) => { if (e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) return; e.preventDefault(); open(r.id); }}>{r.name}</a>
                   </h3>
                   <p className={`${s.muted} ${s.small}`} style={{ margin: 0 }}>{placeText(r.industry, r.country)}</p>
                   <KeyValue label="Target size">{formatTarget(r.target_min_subs, r.target_max_subs)}</KeyValue>
@@ -274,6 +276,7 @@ export function SponsorsList({ rows, total, all, page, counts, industries, count
       <SidePanel
         open={!!openId}
         onClose={() => nav.set('open', null)}
+        restoreFocus={() => rowLinkToFocus(lastShown.current)}
         label={openRow?.name ?? 'Sponsor'}
         position={idx >= 0 ? { index: idx + 1, total: rows.length } : undefined}
         onPrevious={idx > 0 ? () => open(rows[idx - 1].id) : undefined}

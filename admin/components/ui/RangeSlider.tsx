@@ -104,8 +104,10 @@ export function RangeSlider({
   const commitFields = () => {
     const a = fa.trim() === '' ? null : parseShortNumber(fa);
     const b = fb.trim() === '' ? null : parseShortNumber(fb);
-    if ((fa.trim() !== '' && a == null) || (fb.trim() !== '' && b == null)) { setError('Enter a number such as 10000, 10k or 1.5M.'); return; }
-    if (a != null && b != null && a > b) { setError('"From" cannot be above "To".'); return; }
+    // A refused entry never reaches the address: the fields go back to the last good pair, so fields, handles and address agree (B-6).
+    const refuse = (msg: string) => { setError(msg); setFa(fieldText(vals[0])); setFb(fieldText(vals[1])); };
+    if ((fa.trim() !== '' && a == null) || (fb.trim() !== '' && b == null)) { refuse('Enter a number such as 10000, 10k or 1.5M.'); return; }
+    if (a != null && b != null && a > b) { refuse('"From" cannot be above "To". The last good range is kept.'); return; }
     setError('');
     setVals([a, b]);
     setTa(a == null ? 0 : Math.min(sc.toPosition(a), 100 - GAP));
@@ -152,14 +154,14 @@ export function RangeSlider({
           <label className={k.labelText} htmlFor={`${id}-from`}>From</label>
           <input id={`${id}-from`} className={k.controlSm} inputMode="text" autoComplete="off" placeholder="Any" value={fa}
             aria-invalid={error ? true : undefined} aria-describedby={error ? `${id}-err` : undefined}
-            onChange={(e) => setFa(e.target.value)} onBlur={commitFields} onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); commitFields(); } }} />
+            onChange={(e) => { setFa(e.target.value); setError(''); }} onBlur={commitFields} onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); commitFields(); } }} />
         </div>
         <span className={k.minmaxTo} aria-hidden="true">to</span>
         <div className={k.fieldSm}>
           <label className={k.labelText} htmlFor={`${id}-to`}>To</label>
           <input id={`${id}-to`} className={k.controlSm} inputMode="text" autoComplete="off" placeholder="Any" value={fb}
             aria-invalid={error ? true : undefined} aria-describedby={error ? `${id}-err` : undefined}
-            onChange={(e) => setFb(e.target.value)} onBlur={commitFields} onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); commitFields(); } }} />
+            onChange={(e) => { setFb(e.target.value); setError(''); }} onBlur={commitFields} onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); commitFields(); } }} />
         </div>
       </div>
       {error ? <p id={`${id}-err`} className={k.rangeError} role="alert">{error}</p> : null}

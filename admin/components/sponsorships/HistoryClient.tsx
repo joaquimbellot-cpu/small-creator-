@@ -5,6 +5,7 @@ import { useEffect, useId, useState, useTransition } from 'react';
 import { Button, Input, Notice, SourceBadge, Timeline, TimelineItem, useToast } from '@/components/ui';
 import { addSponsorship, confirmSponsorship, listParties, rejectSponsorship, restoreSponsorship, updateSponsorship } from '@/lib/sponsorships/actions';
 import { fmtDate, plural, sourceSentence } from '@/lib/sponsorships/format';
+import { cleanVideoUrl } from '@/lib/sponsorships/schemas';
 import type { HistoryRecord, PartyOption, SponsorshipSide } from '@/lib/sponsorships/types';
 import s from './sponsorships.module.css';
 
@@ -53,7 +54,7 @@ export function HistoryClient({ side, ownerId, records }: Props) {
     return (
       <>
         {r.videoTitle ? <>Video: “{r.videoTitle}”</> : 'Video'}
-        {r.videoUrl ? <> · <a href={r.videoUrl} target="_blank" rel="noopener noreferrer">Watch on YouTube</a></> : null}
+        {r.videoUrl && cleanVideoUrl(r.videoUrl) ? <> · <a href={cleanVideoUrl(r.videoUrl)!} target="_blank" rel="noopener noreferrer">Watch on YouTube</a></> : null}
       </>
     );
   }
@@ -173,13 +174,14 @@ function RecordForm({ side, ownerId, record, onDone }: { side: SponsorshipSide; 
   const match = options?.find((o) => o.label.toLowerCase() === typed.toLowerCase()) ?? null;
   const isNewBrand = side === 'creator' && options !== null && typed !== '' && !match;
 
-  function save() {
+  function save(createBrand = false) {
     setError('');
     if (!typed && !(side === 'creator' && record && !record.brandId)) { setError(side === 'creator' ? 'Choose the sponsor, or type its name.' : 'Choose the creator from the list.'); return; }
-    if (side === 'brand' && !match) { setError('Choose the creator from the list.'); return; }
+    if (side === 'brand' && !match) { setError(typed ? `No creator called “${typed}” yet. Add the creator first, then come back.` : 'Choose the creator from the list.'); return; }
+    if (isNewBrand && !createBrand) { setError(`No sponsor called “${typed}” yet. Use “Add ${typed} as a new sponsor”, or pick one from the list.`); return; }
     const common = { id: record?.id, date, videoTitle: title, videoUrl: url, note };
     const payload = side === 'creator'
-      ? { ...common, creatorId: ownerId, brandId: match?.id ?? null, brandName: match ? '' : typed }
+      ? { ...common, creatorId: ownerId, brandId: match?.id ?? null, brandName: match ? '' : typed, createBrand: !match && createBrand }
       : { ...common, creatorId: match!.id, brandId: ownerId };
     start(async () => {
       const r = await (record ? updateSponsorship(payload) : addSponsorship(payload));
@@ -197,8 +199,19 @@ function RecordForm({ side, ownerId, record, onDone }: { side: SponsorshipSide; 
         <div>
           <Input label={otherLabel} list={listId} value={other} onChange={(e) => setOther(e.target.value)} maxLength={200} autoComplete="off" autoFocus
             placeholder={side === 'creator' ? 'Start typing a sponsor' : 'Start typing a creator'}
-            hint={isNewBrand ? `“${typed}” is not in the list. Saving adds it as a new sponsor.` : undefined} />
+            />
           <datalist id={listId}>{(options ?? []).map((o) => <option key={o.id} value={o.label} />)}</datalist>
+          {isNewBrand ? (
+            <div role="status" className={s.newParty}>
+              <p className={`muted ${s.small}`} style={{ margin: 0 }}>No sponsor called “{typed}” yet.</p>
+              <Button size="sm" variant="ghost" onClick={() => save(true)} loading={pending}>Add {typed} as a new sponsor</Button>
+            </div>
+          ) : null}
+          {side === 'brand' && options !== null && typed !== '' && !match ? (
+            <p role="status" className={`muted ${s.small}`} style={{ margin: 0 }}>
+              No creator called “{typed}” yet. <Link href="/creators?new=1">Add the creator first</Link>, then come back.
+            </p>
+          ) : null}
         </div>
         <Input label="Date of the video" type="date" value={date} onChange={(e) => setDate(e.target.value)} max={today} required />
         <Input label="Video title" value={title} onChange={(e) => setTitle(e.target.value)} maxLength={300} placeholder="Optional" />
@@ -213,7 +226,7 @@ function RecordForm({ side, ownerId, record, onDone }: { side: SponsorshipSide; 
           : 'A record you enter yourself is saved as Confirmed, with your name and today’s date.'}
       </p>
       <div className={s.row}>
-        <Button size="sm" onClick={save} loading={pending}>Save record</Button>
+        <Button size="sm" onClick={() => save()} loading={pending} disabled={isNewBrand}>Save record</Button>
         <Button size="sm" variant="ghost" onClick={onDone} disabled={pending}>Cancel</Button>
       </div>
     </div>

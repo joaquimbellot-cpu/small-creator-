@@ -4,7 +4,7 @@
 import { useActionState, useEffect, useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 import { Badge, Button, ConfirmButton, Input, Modal, Notice, Checkbox, useToast } from '@/components/ui';
-import { isHttpsUrl } from '@/lib/sponsors/schema';
+import { safeLinkedIn, safeMailto } from '@/lib/sponsors/schema';
 import { deleteContact, saveContact, setMainContact, type FormState } from '../actions';
 import s from '../sponsors.module.css';
 
@@ -40,9 +40,9 @@ export function ContactPeople({ brandId, contacts, isOwner }: { brandId: string;
             {c.role_title ? <span className={s.personMeta}>{c.role_title}</span> : null}
           </div>
           <div className={s.personMeta}>
-            {c.email ? <a href={`mailto:${c.email}`}>{c.email}</a> : <span>No email</span>}
+            {c.email ? (safeMailto(c.email) ? <a href={safeMailto(c.email)!}>{c.email}</a> : <span>{c.email}</span>) : <span>No email</span>}
             {c.phone ? <span> · {c.phone}</span> : null}
-            {c.linkedin_url && isHttpsUrl(c.linkedin_url) ? <span> · <a href={c.linkedin_url} target="_blank" rel="noopener noreferrer">LinkedIn</a></span> : null}
+            {safeLinkedIn(c.linkedin_url) ? <span> · <a href={safeLinkedIn(c.linkedin_url)!} target="_blank" rel="noopener noreferrer">LinkedIn</a></span> : null}
           </div>
           <div className={s.personActions}>
             <Button variant="ghost" size="sm" onClick={() => setEditing(c)}>Edit</Button>

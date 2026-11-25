@@ -1,6 +1,7 @@
 // One sponsor's profile, used by the side panel (mode "panel") and the full page (mode "page").
 // Server component: loads the sponsor, its contact people, tags and deals, and puts the shared slots where the prototype shows them.
 // Showing contact details writes the audit line "brand.viewed" after the response (no email or phone in it).
+import { headers } from 'next/headers';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { after } from 'next/server';
@@ -45,14 +46,18 @@ export async function SponsorProfile({ id, mode }: { id: string; mode: 'panel' |
 
   // One line per profile view, written after the response so the page does not wait. It reuses this request's client
   // (logAudit() would read cookies again, which is not allowed inside after()). Only the name goes in, never an email or phone.
-  after(async () => {
-    try {
-      const { error } = await supabase.rpc('log_audit', { action: 'brand.viewed', entity_type: 'brand', entity_id: id, details: { label: String(b.name).slice(0, 200), mode } });
-      if (error) console.error('audit write failed brand.viewed', error.code);
-    } catch (e) {
-      console.error('audit write failed brand.viewed', e instanceof Error ? e.message : e);
-    }
-  });
+  // Skipped for a refresh caused by this profile's own actions ("next-action") and for link prefetches, so one view is one line.
+  const h = await headers();
+  if (!h.get('next-action') && !h.get('next-router-prefetch')) {
+    after(async () => {
+      try {
+        const { error } = await supabase.rpc('log_audit', { action: 'brand.viewed', entity_type: 'brand', entity_id: id, details: { label: String(b.name).slice(0, 200), mode } });
+        if (error) console.error('audit write failed brand.viewed', error.code);
+      } catch (e) {
+        console.error('audit write failed brand.viewed', e instanceof Error ? e.message : e);
+      }
+    });
+  }
 
   const contacts = (people.data ?? []) as Contact[];
   const tags = (tagRows.data ?? []).flatMap((r) => (Array.isArray(r.tags) ? r.tags : r.tags ? [r.tags] : [])) as { id: string; name: string }[];

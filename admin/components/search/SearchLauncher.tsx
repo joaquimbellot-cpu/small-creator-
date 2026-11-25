@@ -4,7 +4,7 @@
 // option (aria-activedescendant); Tab cycles between the input and Close. Esc closes and gives focus back.
 import { useCallback, useEffect, useId, useMemo, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { addRecent, loadRecent, type Recent } from '@/lib/search/recent';
+import { addRecent, loadRecent, RECENT_KEY, type Recent } from '@/lib/search/recent';
 import { flatten, GO_TO, type SearchGroup, type SearchItem } from '@/lib/search/results';
 import { MAX_QUERY } from '@/lib/search/schema';
 import s from './search.module.css';
@@ -41,6 +41,21 @@ export function SearchLauncher() {
   const hide = useCallback((restoreFocus: boolean) => {
     setOpen(false);
     if (restoreFocus) setTimeout(() => returnTo.current?.focus?.(), 0);
+  }, []);
+
+  // Log out (the form in the top bar): forget "Recently opened" and the ticked creators of this tab (SR-17).
+  useEffect(() => {
+    function onSubmit(e: Event) {
+      const form = e.target instanceof HTMLFormElement ? e.target : null;
+      if (!form?.closest('.shell__user')) return;
+      try {
+        const st = window.sessionStorage;
+        st.removeItem(RECENT_KEY);
+        st.removeItem('creators.selection');
+      } catch { /* storage blocked: nothing was kept */ }
+    }
+    document.addEventListener('submit', onSubmit, true);
+    return () => document.removeEventListener('submit', onSubmit, true);
   }, []);
 
   // Ctrl+K / Cmd+K anywhere on the page.

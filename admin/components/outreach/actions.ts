@@ -146,7 +146,7 @@ export async function draftPitchAction(input: { creatorId: string; brandId: stri
     const b = (d as unknown as { brands: { name: string } | null }).brands;
     return { brand_name: b?.name ?? d.brand_name_raw, sponsored_on: d.sponsored_on, rejected: d.rejected };
   });
-  const { facts, lists } = buildPitchFacts({
+  const { facts, lists, blocked } = buildPitchFacts({
     direction: to === 'creator' ? 'to_creator' : 'to_sponsor',
     creator,
     sponsor: { ...sponsor, target_niches: sponsor.target_niches ?? [] },
@@ -156,6 +156,7 @@ export async function draftPitchAction(input: { creatorId: string; brandId: stri
     similarChannels: similar,
     contactName: contact?.full_name ?? null,
   });
+  if (blocked) return { ok: false, error: `No draft was written: ${blocked}. Correct it on the sponsor page and try again.` };
   // Every sponsor name we know: the validator refuses a draft that names any sponsor that is not in the facts.
   const known = [...new Set([...(knownRes.data ?? []).map((b) => b.name as string), ...detected.map((d) => d.brand_name).filter((n): n is string => !!n)])];
 

@@ -48,6 +48,12 @@ export async function addDealAction(_prev: DealFormState, formData: FormData): P
   const { creator_id, brand_name, stage, amount } = parsed.data; // amount: whole cents, or null when left empty
 
   const supabase = await createClient();
+  // The same block rules as the Link dialog, checked here on the server (before a sponsor is created).
+  const { data: creator } = await supabase.from('creators').select('status').eq('id', creator_id).maybeSingle();
+  if (!creator) return { error: 'This creator no longer exists. Refresh the page.' };
+  if (creator.status === 'do_not_contact') return { error: 'The creator is marked Do not contact. This deal cannot be added.', fieldErrors: { creator_id: 'The creator is marked Do not contact.' } };
+  const { data: known } = await supabase.from('brands').select('relationship').eq('name', brand_name).maybeSingle();
+  if (known?.relationship === 'do_not_contact') return { error: 'The sponsor is marked Do not contact. This deal cannot be added.', fieldErrors: { brand_name: 'The sponsor is marked Do not contact.' } };
   const brandId = await findOrCreateBrand(supabase, brand_name);
   if (!brandId) return { error: 'Could not save the brand name. Try again.' };
 

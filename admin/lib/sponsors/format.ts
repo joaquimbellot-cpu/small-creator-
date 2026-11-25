@@ -1,8 +1,9 @@
 // Text for sponsor numbers and dates. Fixed locales, so the server and the browser print the same text.
 import { formatShort } from '../lists/numbers';
+import { dateFormatter } from '../lists/dates';
 import { COMPANY_SIZE_LABEL, countryName, nicheName, type Relationship, type SponsorRow } from './constants';
 
-const dateFmt = new Intl.DateTimeFormat('en-GB', { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'UTC' });
+const dateFmt = dateFormatter({ day: 'numeric', month: 'short', year: 'numeric' });
 /** "12 Oct 2026" from an ISO date or time; "" when empty. */
 export const formatDate = (iso: string | null | undefined) => (iso ? dateFmt.format(new Date(iso)) : '');
 

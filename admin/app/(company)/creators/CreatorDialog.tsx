@@ -1,5 +1,6 @@
 'use client';
 // The pop-up: view (loads from the API, which logs "viewed"), edit and add.
+import { dateFormatter } from '@/lib/lists/dates';
 import { useActionState, useCallback, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Badge, Button, ConfirmButton, Input, LinkButton, Modal, Notice, Select, Textarea } from '@/components/ui';
@@ -21,8 +22,8 @@ type Props = {
   youtubeEnabled: boolean;
 };
 
-const dateTime = (iso: string | null) => (iso ? new Intl.DateTimeFormat('en-GB', { dateStyle: 'medium', timeStyle: 'short', timeZone: 'UTC' }).format(new Date(iso)) + ' UTC' : null);
-const dateOnly = (iso: string | null) => (iso ? new Intl.DateTimeFormat('en-GB', { dateStyle: 'medium', timeZone: 'UTC' }).format(new Date(iso)) : 'Never');
+const dateTime = (iso: string | null) => (iso ? dateFormatter({ dateStyle: 'medium', timeStyle: 'short' }).format(new Date(iso)) + ' UTC' : null);
+const dateOnly = (iso: string | null) => (iso ? dateFormatter({ dateStyle: 'medium' }).format(new Date(iso)) : 'Never');
 
 export function CreatorDialog(p: Props) {
   const router = useRouter();

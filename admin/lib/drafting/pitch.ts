@@ -17,6 +17,8 @@ import { cleanDraft } from './validate';
 const Output = z.object({ subject: z.string(), body: z.string() });
 
 export async function draftPitch(facts: PitchFacts, knownNames: string[] = []): Promise<DraftResult> {
+  // A sponsor name that was held back as unsafe (see pitch-facts) leaves the name empty: nothing is drafted.
+  if (!facts.sponsor.name.trim()) return { ok: false, error: 'The sponsor\u2019s name could not be used in a draft.', reason: 'checks' };
   let raw: { subject: string; body: string };
   try {
     if (isMockMode()) {

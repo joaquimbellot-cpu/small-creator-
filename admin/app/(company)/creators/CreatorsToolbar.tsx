@@ -2,7 +2,7 @@
 // Above the results: sort, table or cards, saved views and "Copy link".
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
-import { Button, Checkbox, CompactSelect, Input, Menu, MenuItem, MenuRule, Segmented, TABLE_CARDS, useToast } from '@/components/ui';
+import { Button, Checkbox, CompactSelect, ConfirmButton, Input, Menu, MenuItem, MenuRule, Segmented, TABLE_CARDS, useToast } from '@/components/ui';
 import { cleanQuery, DEFAULT_SORT, type SortKey } from '@/lib/creators/filters';
 import type { ListNav } from '@/lib/lists/useListNav';
 import { ForPicker } from '@/components/matching/ForPicker';
@@ -77,9 +77,13 @@ export function CreatorsToolbar({ nav, sort, dir, view, savedViews, staffId }: {
                 <MenuItem onSelect={() => { nav.replaceAll(new URLSearchParams(cleanQuery(v.query))); close(); }}>
                   {v.name}<span className={s.viewMeta}>{v.owner_id === staffId ? (v.is_shared ? 'Mine, shared' : 'Mine') : 'Shared'}</span>
                 </MenuItem>
-                {v.owner_id === staffId ? <Button size="sm" variant="ghost" aria-label={`Delete saved view ${v.name}`} onClick={() => remove(v)}>Delete</Button> : null}
+                {v.owner_id === staffId ? (
+                  <ConfirmButton title={`Delete the view "${v.name}"?`} message="The saved view is removed for everyone it was shared with. The filters on the page stay as they are." confirmLabel="Delete view" onConfirm={() => remove(v)}>Delete</ConfirmButton>
+                ) : null}
               </div>
             ))}
+            <MenuRule />
+            <MenuItem onSelect={() => { void copyLink(); close(); }}>Copy link to these filters</MenuItem>
             <MenuRule />
             <form className={s.viewForm} onSubmit={save}>
               <Input label="Name for this view" value={name} maxLength={100} onChange={(e) => setName(e.target.value)} placeholder="For example: UK tech" autoComplete="off" />

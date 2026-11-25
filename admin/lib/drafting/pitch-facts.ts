@@ -1,5 +1,6 @@
 // Turns database rows into the facts Claude may see in pitch mode, plus the two lists the screen shows.
 // Pure functions, so the tests can prove what is and is not included.
+import { safeChannelUrl, safeFirstName, safeNiche, safeText, scrub, unsafeReason } from './pitch-safety';
 import type { PitchFacts, PitchInput, PitchLists } from './pitch-types';
 
 const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
@@ -11,7 +12,6 @@ export function monthYear(d: string | null | undefined): string {
   return `${MONTHS[Number(m[2]) - 1]} ${m[1]}`;
 }
 
-const first = (name: string | null | undefined) => (name ?? '').trim().split(/\s+/)[0] ?? '';
 const sameName = (a: string, b: string) => a.trim().toLowerCase() === b.trim().toLowerCase();
 const fmt = (n: number) => n.toLocaleString('en-US');
 export function short(n: number): string {
@@ -20,17 +20,24 @@ export function short(n: number): string {
   return String(n);
 }
 
-export function buildPitchFacts(input: PitchInput): { facts: PitchFacts; lists: PitchLists } {
+/**
+ * `blocked` is set when the pitched sponsor's own name holds an address, a link or wording that reads as an instruction:
+ * no draft may be written until the name is fixed. Every other stored value that looks unsafe is simply left out.
+ * Niche names from the fixed list are ours; everything else (names, channel, free-text niche, industry) is stranger-controlled.
+ */
+export function buildPitchFacts(input: PitchInput): { facts: PitchFacts; lists: PitchLists; blocked: string | null } {
   const { creator, sponsor } = input;
-  const nicheName = (input.creator.niche_slug && input.nicheNames[input.creator.niche_slug]) || creator.niche || null;
+  const nicheName = (input.creator.niche_slug && input.nicheNames[input.creator.niche_slug]) || safeNiche(creator.niche) || null;
+  const sponsorName = scrub(sponsor.name, 80);
+  const blocked = !sponsorName ? 'the sponsor has no name' : unsafeReason(sponsorName) ? `the sponsor's name contains ${unsafeReason(sponsorName)}` : null;
 
   // Past sponsors: confirmed records only, newest first, one per sponsor, never the sponsor being pitched.
   const seen = new Set<string>();
   const past: { name: string; month: string }[] = [];
   const rows = [...input.confirmed].sort((a, b) => (b.sponsored_on ?? '').localeCompare(a.sponsored_on ?? ''));
   for (const r of rows) {
-    const name = (r.brand_name ?? '').trim();
-    if (!name || r.brand_id === sponsor.id || sameName(name, sponsor.name)) continue;
+    const name = safeText(r.brand_name, 80) ?? '';
+    if (!name || r.brand_id === sponsor.id || sameName(name, sponsorName)) continue;
     const key = name.toLowerCase();
     if (seen.has(key)) continue;
     const month = monthYear(r.sponsored_on);
@@ -44,23 +51,23 @@ export function buildPitchFacts(input: PitchInput): { facts: PitchFacts; lists: 
   const facts: PitchFacts = {
     direction: input.direction,
     creator: {
-      firstName: first(creator.full_name),
-      channelName: creator.channel_name,
-      channelUrl: creator.channel_url,
+      firstName: safeFirstName(creator.full_name),
+      channelName: safeText(creator.channel_name, 80),
+      channelUrl: safeChannelUrl(creator.channel_url),
       niche: nicheName,
       subscribers: creator.subscribers_hidden ? null : creator.subscribers,
       avgViews: creator.avg_views ?? null,
     },
     sponsor: {
-      name: sponsor.name,
-      industry: sponsor.industry,
+      name: blocked ? '' : sponsorName,
+      industry: safeText(sponsor.industry, 60),
       targetNiches,
       targetMinSubs: sponsor.target_min_subs,
       targetMaxSubs: sponsor.target_max_subs,
     },
     pastSponsors: past,
     similarChannels: Math.max(0, input.similarChannels | 0),
-    contactFirstName: input.direction === 'to_sponsor' ? first(input.contactName) || null : null,
+    contactFirstName: input.direction === 'to_sponsor' ? safeFirstName(input.contactName) || null : null,
   };
 
   // The two lists for the screen.
@@ -78,7 +85,7 @@ export function buildPitchFacts(input: PitchInput): { facts: PitchFacts; lists: 
   }
   for (const p of past) used.push(`Confirmed sponsorship: ${p.name}, ${p.month}`);
   if (facts.similarChannels > 0 && f.niche) {
-    used.push(`${sponsor.name} has confirmed sponsorships with ${facts.similarChannels} other ${f.niche.toLowerCase()} ${facts.similarChannels === 1 ? 'channel' : 'channels'}`);
+    used.push(`${facts.sponsor.name} has confirmed sponsorships with ${facts.similarChannels} other ${f.niche.toLowerCase()} ${facts.similarChannels === 1 ? 'channel' : 'channels'}`);
   }
   if (facts.contactFirstName) used.push(`Contact's first name: ${facts.contactFirstName}`);
 
@@ -92,5 +99,5 @@ export function buildPitchFacts(input: PitchInput): { facts: PitchFacts; lists: 
     'Prices, budgets and commission (never in a first email)',
     input.direction === 'to_creator' ? "The creator's email, phone and notes (Claude never receives them)" : "The contact person's email and phone, and the creator's email, phone and notes (Claude never receives them)",
   );
-  return { facts, lists: { used, leftOut } };
+  return { facts, lists: { used, leftOut }, blocked };
 }

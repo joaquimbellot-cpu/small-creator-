@@ -19,6 +19,7 @@ import { cpmGroupForNiche, defaultPriceInput, formatMoney, priceSponsorship } fr
 import { fmtDate } from '@/lib/sponsorships/format';
 import { createClient } from '@/lib/supabase/server';
 import { youtubeEnabled } from '@/lib/youtube';
+import { cleanVideoUrl } from '@/lib/sponsorships/schemas';
 import { STATUS_LABEL as EMAIL_LABEL, STATUS_TONE as EMAIL_TONE } from '../../emails/status';
 import { ago } from './format';
 import { NotesEditor } from './NotesEditor';
@@ -28,6 +29,7 @@ import s from './profile.module.css';
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const num = (n: number) => n.toLocaleString('en-US');
+const cap = (t: string) => t.charAt(0).toUpperCase() + t.slice(1); // a sentence starts with a capital (C-2)
 const NOT_KNOWN = <span className="muted">Not known</span>;
 const NONE_ON_FILE = <span className="muted">None on file</span>;
 const STAGE: Record<string, string> = { matched: 'Matched', contacted: 'Contacted', replied: 'Replied', negotiating: 'Negotiating', signed: 'Signed', completed: 'Completed', paid: 'Paid' };
@@ -96,7 +98,7 @@ export async function CreatorProfile({ id, mode }: { id: string; mode: 'panel' |
   const niche = nicheName(c.niche_slug) ?? c.niche;
   const where = [countryName(c.country), languageName(c.language)].filter(Boolean).join(', ');
   const contacted = c.last_contacted_at ? `${fmtDate(c.last_contacted_at)} (${ago(c.last_contacted_at)})` : 'Never';
-  const secure = c.channel_url?.startsWith('https://') ?? false;
+  const secure = !!c.channel_url && cleanVideoUrl(c.channel_url) !== null; // https on a YouTube host, checked again at render (SR-09)
 
   const head = (
     <div className={s.head}>
@@ -225,7 +227,7 @@ function PriceBox({ c }: { c: Creator }) {
           <p className={s.price}>{formatMoney(result.price[0])} to {formatMoney(result.price[2])} <span className={`muted ${s.small}`} style={{ fontFamily: 'var(--font-sans)' }}>for a 60-second integration</span></p>
           <p className={s.priceNote}>
             Suggested asking price: {formatMoney(result.ask)}. From {num(c.avg_views!)} average views and the usual CPM for the niche.
-            {missing.length ? ` ${missing.join(' and ')} ${missing.length === 1 ? 'is' : 'are'} not on file, so nothing was adjusted for ${missing.length === 1 ? 'it' : 'them'}.` : ''} A starting point, never used in a first email.
+            {missing.length ? ` ${cap(missing.join(' and '))} ${missing.length === 1 ? 'is' : 'are'} not on file, so nothing was adjusted for ${missing.length === 1 ? 'it' : 'them'}.` : ''} A starting point, never used in a first email.
           </p>
         </>
       ) : (

@@ -1,8 +1,9 @@
 // Small display helpers of the Creators list. Dates are shown in UTC so the server and the browser print the same text.
 import { NICHES } from '@/lib/creators/constants';
 import type { ListRow } from '@/lib/creators/constants';
+import { dateFormatter } from '@/lib/lists/dates';
 
-const day = new Intl.DateTimeFormat('en-GB', { dateStyle: 'medium', timeZone: 'UTC' });
+const day = dateFormatter({ dateStyle: 'medium' });
 export const fmtDay = (iso: string | null) => (iso ? day.format(new Date(iso)) : null);
 
 export const nicheName = (slug: string | null) => (slug && slug in NICHES ? NICHES[slug as keyof typeof NICHES] : null);

@@ -12,3 +12,5 @@
 .rejected { margin: var(--s-2) 0 0; padding-left: var(--s-4); font-size: .9375rem; color: var(--fg-muted); }
 .rejected li { margin: 4px 0; }
 .rejected button { background: none; border: 0; padding: 0; color: var(--fg); text-decoration: underline; cursor: pointer; font: inherit; }
+
+.newParty { display: flex; gap: var(--s-2); align-items: center; flex-wrap: wrap; margin-top: var(--s-2); }

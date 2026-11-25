@@ -3,13 +3,17 @@
 // Staff may import. Each row is marked new, duplicate (same name, any letter case) or error; commit saves only the new rows.
 import { ApiError, apiHandler } from '@/lib/api/handler';
 import { logAudit } from '@/lib/audit';
+import { readFormLimited, UploadTooLarge } from '@/lib/lists/readUpload';
 import { MAX_IMPORT_BYTES } from '@/lib/sponsors/constants';
 import { classifyRows, parseCsvText } from '@/lib/sponsors/csv';
 
 export const POST = apiHandler({}, async ({ req, supabase }) => {
   const mode = req.nextUrl.searchParams.get('mode') === 'commit' ? 'commit' : 'preview';
   let form: FormData;
-  try { form = await req.formData(); } catch { throw new ApiError(400, 'Upload a CSV file.'); }
+  try { form = await readFormLimited(req, MAX_IMPORT_BYTES); } catch (e) {
+    if (e instanceof UploadTooLarge) throw new ApiError(400, 'The file is larger than 1 MB.');
+    throw new ApiError(400, 'Upload a CSV file.');
+  }
   const file = form.get('file');
   if (!(file instanceof File)) throw new ApiError(400, 'Choose a CSV file first.');
   if (file.size === 0) throw new ApiError(400, 'The file is empty.');

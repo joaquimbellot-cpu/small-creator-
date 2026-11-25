@@ -201,7 +201,7 @@ function pitchReply(body) {
   const invent = /ZZ INVENT/.test(sponsorName) ? 'We also work with Zentora Labs and Globex Corp.' : null;
   if (direction === 'to_sponsor') {
     lines.push('We connect brands with small YouTube channels, and a person at Smallfold chooses each match by hand.', '',
-      `${channel} is a ${niche || 'YouTube'} channel${subs && subs !== 'hidden' ? ` with ${Number(subs).toLocaleString('en-US')} subscribers` : ''}${views && views !== 'unknown' ? ` and about ${Number(views).toLocaleString('en-US')} views per video` : ''}.`);
+      `${tag('channel_name') ? `${tag('channel_name')} is` : 'This is'} a ${niche || 'YouTube'} channel${subs && subs !== 'hidden' ? ` with ${Number(subs).toLocaleString('en-US')} subscribers` : ''}${views && views !== 'unknown' ? ` and about ${Number(views).toLocaleString('en-US')} views per video` : ''}.`);
     if (past.length) lines.push('', `The channel has completed sponsorships with ${past.join(' and ')}.`);
     if (Number(similar) > 0) lines.push('', `You have sponsored ${similar} similar ${Number(similar) === 1 ? 'channel' : 'channels'} before.`);
     if (invent) lines.push('', invent);

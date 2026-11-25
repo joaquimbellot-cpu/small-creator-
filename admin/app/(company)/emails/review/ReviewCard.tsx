@@ -38,6 +38,9 @@ export function ReviewCard({ email, footer }: { email: ReviewEmail; footer: stri
         {email.sponsor ? (
           <p className="muted" style={{ fontSize: '.875rem' }}>Facts you add by hand are not checked: you are responsible for them. Prices and details of other sponsors do not belong in a first email.</p>
         ) : null}
+        {email.toContact ? (
+          <p className="muted" style={{ fontSize: '.875rem' }}>If {email.toContact} opts out, only this address is blocked. Other contacts at {email.sponsor} can still be written to.</p>
+        ) : null}
         <div className="label">Added by the server when sent</div>
         <pre className="muted" style={{ whiteSpace: 'pre-wrap', fontFamily: 'inherit', margin: '4px 0 16px' }}>{footer}</pre>
         {state.error ? <Notice tone="error">{state.error}</Notice> : null}

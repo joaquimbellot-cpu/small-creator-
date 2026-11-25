@@ -1,7 +1,8 @@
 // Text for the timeline. Fixed en-GB and UTC so the server and the browser print the same thing.
 import type { HistoryRecord } from './types';
+import { dateFormatter } from '../lists/dates';
 
-const dateFmt = new Intl.DateTimeFormat('en-GB', { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'UTC' });
+const dateFmt = dateFormatter({ day: 'numeric', month: 'short', year: 'numeric' });
 /** "25 Nov 2026" from YYYY-MM-DD or a full timestamp; "Date not known" when empty. */
 export const fmtDate = (v: string | null | undefined) => (v ? dateFmt.format(new Date(v.length === 10 ? `${v}T00:00:00Z` : v)) : 'Date not known');
 

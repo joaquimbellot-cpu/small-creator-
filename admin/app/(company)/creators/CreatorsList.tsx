@@ -3,7 +3,7 @@
 // The server (page.tsx) sends the rows and every count; this component only writes to the page address (useListNav)
 // and keeps the ticked creators in the browser, so they survive a page or filter change.
 import { useRouter } from 'next/navigation';
-import { useCallback, useEffect, useMemo, useState, type ReactNode } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import {
   Button, Chips, EmptyState, FilterRailButton, LinkButton, Notice, Pagination, SidePanel, SkeletonCards, SkeletonRows, useToast,
 } from '@/components/ui';
@@ -11,6 +11,7 @@ import { MAX_BULK_IDS, PAGE_SIZE, type ListRow } from '@/lib/creators/constants'
 import { creatorFilterDefs, parseFilters } from '@/lib/creators/filters';
 import { chipsFromParams, removeChip, clearFilters } from '@/lib/lists/query';
 import { useListNav, type ListNav } from '@/lib/lists/useListNav';
+import { rowLinkToFocus } from '@/lib/lists/focus';
 import { BulkBar } from './BulkBar';
 import { CreatorsFilters, type Named, type OptionNames } from './CreatorsFilters';
 import { CreatorsCards, CreatorsRows } from './CreatorsTable';
@@ -89,6 +90,8 @@ export function CreatorsList({ rows, total, all, counts, names, savedViews, staf
   const open = (id: string) => rawNav.setMany({ open: id, page: rawNav.get('page') });
   const close = () => rawNav.setMany({ open: null, page: rawNav.get('page') });
   const openId = f.open;
+  const lastShown = useRef<string | null>(null); // for the focus return when the panel closes (B-2)
+  if (openId) lastShown.current = openId;
   const index = rows.findIndex((r) => r.id === openId);
   const label = rows[index]?.full_name ?? (panelFor === openId ? openName : '') ?? '';
 
@@ -150,6 +153,7 @@ export function CreatorsList({ rows, total, all, counts, names, savedViews, staf
 
       <SidePanel
         open={!!openId} onClose={close} label={label || 'Creator'} scrollKey={openId}
+        restoreFocus={() => rowLinkToFocus(lastShown.current)}
         position={index >= 0 ? { index: index + 1, total: rows.length } : undefined}
         onPrevious={index > 0 ? () => open(rows[index - 1].id) : undefined}
         onNext={index >= 0 && index < rows.length - 1 ? () => open(rows[index + 1].id) : undefined}

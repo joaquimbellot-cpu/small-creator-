@@ -33,7 +33,7 @@ export function CreatorsRows({ rows, selected, onToggle, onToggleAll, hrefFor, o
   const allOn = rows.length > 0 && rows.every((r) => selected.has(r.id));
   const showMatch = rows.some((r) => r.match); // only with sort=match&for=<sponsor>
   const nameLink = (r: ListRow) => (
-    <Link href={hrefFor(r.id)} prefetch={false} scroll={false} className={s.rowLink} onClick={(e) => { if (plainClick(e)) { e.preventDefault(); onOpen(r.id); } }}>{r.full_name}</Link>
+    <Link href={hrefFor(r.id)} data-open-id={r.id} prefetch={false} scroll={false} className={s.rowLink} onClick={(e) => { if (plainClick(e)) { e.preventDefault(); onOpen(r.id); } }}>{r.full_name}</Link>
   );
   return (
     <Table clickable label="Creators">
@@ -89,7 +89,7 @@ export function CreatorsCards({ rows, selected, onToggle, hrefFor, onOpen, detec
               </span>
             </div>
             <h3 className={cardTitleClass}>
-              <Link href={hrefFor(r.id)} prefetch={false} scroll={false} className={cardLinkClass} onClick={(e) => { if (plainClick(e)) { e.preventDefault(); onOpen(r.id); } }}>{r.full_name}</Link>
+              <Link href={hrefFor(r.id)} data-open-id={r.id} prefetch={false} scroll={false} className={cardLinkClass} onClick={(e) => { if (plainClick(e)) { e.preventDefault(); onOpen(r.id); } }}>{r.full_name}</Link>
             </h3>
             <p className={s.cardMeta}>{channelLine(r)} · {nicheName(r.niche_slug) ?? 'No niche'}{places(r) ? ` · ${places(r)}` : ''}</p>
             <KeyValue label="Subscribers">{subs(r)}</KeyValue>
