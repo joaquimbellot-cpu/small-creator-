@@ -5,7 +5,7 @@
   "emails_sent_30d": 16,
   "replies": 12,
   "reply_rate": 42.9,
-  "deals_by_stage": { "contacted": 2, "replied": 2, "negotiating": 3, "signed": 3, "completed": 2, "paid": 3 },
+  "deals_by_stage": { "matched": 4, "contacted": 2, "replied": 2, "negotiating": 3, "signed": 3, "completed": 2, "paid": 3 },
   "active_deals": 8,
   "commission_earned_cents": 21900,
   "weekly_points": 12,

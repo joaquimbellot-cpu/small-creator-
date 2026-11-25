@@ -100,9 +100,7 @@ export function FilterRail({ activeCount, onClearAll, search, children, title = 
             <h2 className={k.railTitle}>{title}</h2>
             <span className={k.railHeadActions}>
               {activeCount > 0 ? <button type="button" className={`${k.link} ${k.small}`} onClick={onClearAll}>Clear all</button> : null}
-              <button ref={doneRef} type="button" className={`${k.railDone} btn-done`} onClick={close}>
-                <DoneLabel />
-              </button>
+              <Button ref={doneRef} variant="ghost" size="sm" className={k.railDone} onClick={close}>Done</Button>
             </span>
           </div>
           {search ? <div className={k.railSearch}>{search}</div> : null}
@@ -112,6 +110,3 @@ export function FilterRail({ activeCount, onClearAll, search, children, title = 
     </>
   );
 }
-
-// "Done" is styled like a small ghost button without importing the whole Button (a <Button> inside would nest awkwardly in the ref).
-function DoneLabel() { return <span>Done</span>; }

@@ -47,7 +47,7 @@ select.controlSm { appearance: none; width: auto; padding-right: var(--s-6); bac
 .railHead { display: flex; justify-content: space-between; align-items: center; gap: var(--s-3); padding: var(--s-3) 0; }
 .railTitle { font-size: 1.375rem; line-height: 1.2; }
 .railHeadActions { display: flex; align-items: center; gap: var(--s-3); }
-.railDone { display: none; }
+@media (min-width: 900px) { .railDone { display: none !important; } }
 .railSearch { margin-bottom: var(--s-3); }
 .facet { border-bottom: var(--hairline) solid var(--rule); }
 .facet > summary { display: flex; align-items: center; gap: var(--s-2); min-height: var(--tap); cursor: pointer; list-style: none; }
@@ -57,16 +57,14 @@ select.controlSm { appearance: none; width: auto; padding-right: var(--s-6); bac
 .facetLabel { font: var(--w-label) var(--t-label)/var(--lh-label) var(--font-sans); letter-spacing: var(--track-label); text-transform: uppercase; color: var(--fg); }
 .facetDot { width: 7px; height: 7px; border-radius: 50%; background: var(--accent-fg); flex: none; }
 .facetBody { padding: 0 0 var(--s-4); }
-.filterBtn { display: none; }
+@media (min-width: 900px) { .filterBtn { display: none !important; } }
 .veil { display: none; }
 @media (max-width: 899px) {
-  .filterBtn { display: inline-flex; }
   .railBox { display: none; }
   .railBox.railOpen { display: block; position: fixed; inset: 0 auto 0 0; z-index: 45; width: min(92vw, 340px); background: var(--bg); overflow-y: auto;
     padding: calc(var(--s-3) + env(safe-area-inset-top, 0px)) var(--s-4) calc(var(--s-5) + env(safe-area-inset-bottom, 0px)) max(var(--s-4), env(safe-area-inset-left, 0px));
     border-right: var(--hairline) solid var(--rule); }
   .railBox.railOpen .rail { border-top: 0; }
-  .railDone { display: inline-flex; }
   .veil.veilOpen { display: block; position: fixed; inset: 0; z-index: 44; background: rgba(14, 14, 14, .45); }
 }
 

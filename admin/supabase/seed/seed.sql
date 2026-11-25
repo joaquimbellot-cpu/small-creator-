@@ -12,6 +12,8 @@ alter table public.emails           disable trigger trg_audit;
 alter table public.email_templates  disable trigger trg_audit;
 alter table public.suppression_list disable trigger trg_audit;
 alter table public.settings         disable trigger trg_audit;
+-- completed and paid deals make sponsorship records through a trigger (20261125000200); keep them out of the audit log too
+alter table public.sponsorships     disable trigger trg_audit;
 -- creators 59-60 are do_not_contact; without this the manual-suppression trigger would add both to the opt-out
 -- list, but the seed lists exactly two opt-outs (creator 59 plus one stranger) below.
 alter table public.creators         disable trigger creators_suppress_manual;
@@ -208,6 +210,7 @@ alter table public.emails           enable trigger trg_audit;
 alter table public.email_templates  enable trigger trg_audit;
 alter table public.suppression_list enable trigger trg_audit;
 alter table public.settings         enable trigger trg_audit;
+alter table public.sponsorships     enable trigger trg_audit;
 alter table public.creators         enable trigger creators_suppress_manual;
 
 commit;

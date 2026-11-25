@@ -2,6 +2,7 @@
 import Link from 'next/link';
 import { logoutAction } from '@/lib/auth/actions';
 import type { Staff } from '@/lib/auth/staff';
+import { ToastProvider } from '@/components/ui/Toast';
 import { LogoMark } from './LogoMark';
 import { NavLinks } from './NavLinks';
 
@@ -17,6 +18,7 @@ export function AppShell({ staff, children }: { staff: Staff; children: React.Re
     { href: staff.role === 'owner' ? '/settings' : '/settings/security', label: 'Settings' },
   ];
   return (
+    <ToastProvider>
     <div className="shell">
       <a className="skip-link" href="#main">Skip to content</a>
       <header className="shell__bar">
@@ -38,5 +40,6 @@ export function AppShell({ staff, children }: { staff: Staff; children: React.Re
       </header>
       <main id="main" className="shell__main">{children}</main>
     </div>
+    </ToastProvider>
   );
 }

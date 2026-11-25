@@ -318,8 +318,9 @@ select tests.check('L04: functions are service_role only; the table has RLS on a
   and tests.rows_as('service_role', null, 'select * from public.reset_requests') = -1);
 
 -- ================================================================== L07 summaries, L09 indexes
+-- the first 20 columns and their order stay as they were; 20261125000400 appends the new creator columns after them
 select tests.check('L07: creator_summaries keeps its columns and security_invoker',
-  (select array_agg(attname::text order by attnum) = array['id','full_name','email','phone','channel_url','youtube_channel_id','channel_name','niche',
+  (select (array_agg(attname::text order by attnum))[1:20] = array['id','full_name','email','phone','channel_url','youtube_channel_id','channel_name','niche',
      'subscribers','subscribers_hidden','subscribers_checked_at','status','notes','user_id','created_by','created_at','updated_at',
      'deal_count','total_earned_cents','last_contacted_at']
      from pg_attribute where attrelid = 'public.creator_summaries'::regclass and attnum > 0 and not attisdropped)

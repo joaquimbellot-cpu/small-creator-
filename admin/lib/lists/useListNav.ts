@@ -24,6 +24,8 @@ export type ListNav = {
   setMany: (values: Record<string, string | null | undefined>) => void;
   /** Remove these keys. */
   clear: (keys: string[]) => void;
+  /** Replace the whole query string, for example with `removeChip(nav.params, chip, FILTERS)` or `clearFilters(nav.params, FILTERS)`. */
+  replaceAll: (next: URLSearchParams) => void;
   /** True from the moment the address is sent until the server has answered. Show `SkeletonRows` or dim the list. */
   isPending: boolean;
 };
@@ -90,6 +92,10 @@ export function useListNav(delay = DELAY): ListNav {
       for (const [k, v] of Object.entries(values)) { if (v == null || v === '') p.delete(k); else p.set(k, v); }
     }, 'page' in values),
     clear: (keys) => apply((p) => { for (const k of keys) p.delete(k); }),
+    replaceAll: (next) => apply((p) => {
+      Array.from(new Set(p.keys())).forEach((k) => p.delete(k));
+      next.forEach((v, k) => p.append(k, v));
+    }),
     isPending,
   }), [params, apply, isPending]);
 }

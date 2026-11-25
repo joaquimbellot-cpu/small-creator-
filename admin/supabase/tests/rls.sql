@@ -133,8 +133,8 @@ select tests.check('authenticated cannot read login_attempts (even the owner)',
 select tests.check('worker: reads all 60 creators',  tests.rows_as('authenticated', (select worker_id from ids), 'select * from public.creators') = 60);
 select tests.check('worker: reads creator_summaries (60)', tests.rows_as('authenticated', (select worker_id from ids), 'select * from public.creator_summaries') = 60);
 select tests.check('worker: reads brands, deals, templates, emails, suppression, settings',
-  tests.rows_as('authenticated', (select worker_id from ids), 'select * from public.brands') = 10
-  and tests.rows_as('authenticated', (select worker_id from ids), 'select * from public.deals') = 15
+  tests.rows_as('authenticated', (select worker_id from ids), 'select * from public.brands') = 26
+  and tests.rows_as('authenticated', (select worker_id from ids), 'select * from public.deals') = 19
   and tests.rows_as('authenticated', (select worker_id from ids), 'select * from public.email_templates') = 3
   and tests.rows_as('authenticated', (select worker_id from ids), 'select * from public.emails') = 40
   and tests.rows_as('authenticated', (select worker_id from ids), 'select * from public.suppression_list') = 2
@@ -153,7 +153,7 @@ select tests.check('worker: cannot delete creators, brands, deals, templates',
   and tests.rows_as('authenticated', (select worker_id from ids), $q$delete from public.brands where name = 'Worker Brand'$q$) <= 0
   and tests.rows_as('authenticated', (select worker_id from ids), $q$delete from public.deals$q$) <= 0
   and tests.rows_as('authenticated', (select worker_id from ids), $q$delete from public.email_templates$q$) <= 0);
-select tests.check('worker: nothing was deleted', (select count(*) from public.creators) = 61 and (select count(*) from public.deals) = 16);
+select tests.check('worker: nothing was deleted', (select count(*) from public.creators) = 61 and (select count(*) from public.deals) = 20);
 select tests.check('worker: cannot update settings',
   tests.rows_as('authenticated', (select worker_id from ids), $q$update public.settings set daily_send_limit = 999$q$) <= 0
   and (select daily_send_limit from public.settings) = 30);
