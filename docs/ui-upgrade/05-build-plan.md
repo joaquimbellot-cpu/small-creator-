@@ -78,3 +78,19 @@ Fake seed data lives in `admin/supabase/seed/` and is applied only to the local 
 2. Creators list and filters; Creator profile; Sponsors.
 3. Matching and Link (with the deals board); Outreach (pitch drafts); Search and polish.
 4. Security review (read-only), then QA in the browser. Fix, then re-test.
+
+## 6. Shared slots (placeholders already in the repo; import them, do not copy them)
+
+| Import | Props | Built by |
+|---|---|---|
+| `@/app/(company)/creators/profile/CreatorProfile` → `CreatorProfile` | `{ id, mode: 'panel' \| 'page' }` (server component) | Creator profile agent |
+| `@/components/sponsorships/SponsorshipHistory` → `SponsorshipHistory` | `{ side: 'creator' \| 'brand', id }` (server component, renders its own section) | Creator profile agent |
+| `@/components/matching/Suggestions` → `Suggestions` | `{ side: 'creator' \| 'brand', id }` (server component, renders its own section) | Matching and Link agent (wave 3) |
+| `@/components/matching/LinkButton` → `LinkButton` | `{ creatorId?, brandId?, size?, label? }` | Matching and Link agent (wave 3) |
+| `@/components/outreach/DraftPitchButton` → `DraftPitchButton` | `{ creatorId?, brandId?, size?, label? }` | Outreach agent (wave 3) |
+
+Until its owner builds it, a placeholder renders nothing. Put it where the prototype shows it and leave it.
+
+Built in wave 1, ready to use: the UI kit (`docs/ui-upgrade/build/ui-kit.md`), the database (`docs/ui-upgrade/build/database.md`), the pricing library and `CreatorsSubnav` (`docs/ui-upgrade/build/price-calculator.md`).
+
+There is no table of videos (the YouTube scanner is not part of this build). Where the prototype shows "Recent videos", show a "Performance" box instead: average views, uploads a month, last upload, each "Not known" when empty.
