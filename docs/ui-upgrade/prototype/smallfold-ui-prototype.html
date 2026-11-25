@@ -1,0 +1,1027 @@
+<title>Smallfold Back Office Prototype</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;1,6..72,300&display=swap">
+<style>
+/* Layout: a top bar with the main tabs. List screens put a 280px filter rail beside the results.
+   A record opens in a right side panel, with a full-page option. One light look on purpose:
+   it mirrors the real back office, which has no dark mode. */
+:root{
+  --cream:#F1EFEB; --ink:#0E0E0E; --paper:#FAF8F4; --muted:#5C5A55; --faint:#B9B5AC;
+  --line:rgba(14,14,14,.14); --accent:#2B44D6; --red:#9B2C1F; --green:#2F6B3C; --amber:#8A5A00;
+  --veil:rgba(14,14,14,.45); --banner:#0E0E0E; --banner-fg:#F1EFEB; --banner-muted:#A9A59C;
+  --serif:"Newsreader",Georgia,"Times New Roman",serif;
+  --sans:"Instrument Sans","Helvetica Neue",Arial,sans-serif;
+  --r:8px; --wrap:1320px;
+  --gl:max(clamp(16px,4vw,56px),env(safe-area-inset-left,0px));
+  --gr:max(clamp(16px,4vw,56px),env(safe-area-inset-right,0px));
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+body{background:var(--cream);color:var(--ink);font:400 1rem/1.5 var(--sans);-webkit-font-smoothing:antialiased}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:80;background:var(--banner)}
+h1,h2,h3{font-family:var(--serif);font-weight:300;letter-spacing:-.01em;margin:0}
+p{margin:0}
+a{color:inherit}
+button,input,select,textarea{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.label{font:500 .75rem/1.4 var(--sans);letter-spacing:.07em;text-transform:uppercase;color:var(--muted)}
+.muted{color:var(--muted)} .small{font-size:.875rem} .num{font-variant-numeric:tabular-nums}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.grow{flex:1;min-width:0}
+
+/* prototype banner */
+.banner{position:sticky;top:env(safe-area-inset-top,0px);z-index:30;background:var(--banner);color:var(--banner-fg)}
+.banner__in{max-width:var(--wrap);margin:0 auto;padding:8px var(--gr) 8px var(--gl);display:flex;gap:8px 20px;align-items:center;flex-wrap:wrap;font-size:.875rem}
+.banner strong{font:600 .75rem/1.4 var(--sans);letter-spacing:.09em;text-transform:uppercase;border:1px solid var(--banner-fg);border-radius:4px;padding:2px 8px;white-space:nowrap}
+.banner span.m{color:var(--banner-muted)}
+.banner select,.banner button{background:transparent;color:var(--banner-fg);border:1px solid var(--banner-muted);border-radius:6px;min-height:32px;padding:0 10px;font-size:.8125rem;cursor:pointer}
+.banner select option{color:#0E0E0E}
+.banner :focus-visible{outline-color:#A8B4FF}
+.banner__in{position:relative}
+.banner details:not([open]) ol{display:none}
+.banner summary{cursor:pointer;text-decoration:underline;list-style:none}
+.banner summary::-webkit-details-marker{display:none}
+.banner details ol{position:absolute;left:var(--gl);top:100%;width:min(calc(100% - 32px),420px);margin:0;padding:16px 16px 16px 36px;background:var(--paper);color:var(--ink);border:1px solid var(--line);border-radius:var(--r);z-index:5}
+.banner details li{margin-bottom:6px}
+
+/* shell */
+.bar{border-bottom:1px solid var(--line)}
+.bar__in{max-width:var(--wrap);margin:0 auto;padding:0 var(--gr) 0 var(--gl);display:flex;align-items:center;gap:8px 24px;min-height:64px;flex-wrap:wrap}
+.brand{display:inline-flex;gap:8px;align-items:center;font:300 1.5rem/1 var(--serif);text-decoration:none}
+.brand i{width:24px;height:24px;border-radius:50%;background:var(--ink);color:var(--cream);display:grid;place-items:center;font:400 .9rem/1 var(--serif);font-style:normal;position:relative}
+.brand i::after{content:"";position:absolute;right:-1px;top:-1px;width:7px;height:7px;border-radius:50%;background:var(--accent)}
+.nav{display:flex;gap:4px;flex:1;min-width:0;overflow-x:auto}
+.nav a{display:inline-flex;align-items:center;min-height:44px;padding:0 12px;color:var(--muted);font:500 .75rem/1.4 var(--sans);letter-spacing:.07em;text-transform:uppercase;text-decoration:none;border-bottom:2px solid transparent;white-space:nowrap}
+.nav a:hover{color:var(--ink)}
+.nav a[aria-current=page]{color:var(--ink);border-bottom-color:var(--accent)}
+.nav a.new::after{content:"New";margin-left:6px;font-size:.625rem;color:var(--accent);border:1px solid var(--accent);border-radius:4px;padding:0 4px}
+.who{text-align:right;font-size:.9375rem;line-height:1.2}
+.who small{display:block;font:500 .6875rem/1.4 var(--sans);letter-spacing:.07em;text-transform:uppercase;color:var(--muted)}
+.searchbtn{display:inline-flex;gap:10px;align-items:center;min-height:40px;padding:0 12px;background:var(--paper);border:1px solid var(--muted);border-radius:var(--r);color:var(--muted);cursor:pointer;font-size:.9375rem}
+kbd{font:500 .6875rem/1 var(--sans);border:1px solid var(--line);border-radius:4px;padding:3px 5px;color:var(--muted);background:var(--cream)}
+main{max-width:var(--wrap);margin:0 auto;padding:32px var(--gr) 72px var(--gl)}
+@media (max-width:1040px){.bar__in{padding-top:8px}.nav{order:3;flex:1 0 100%}.who{margin-left:auto}}
+@media (max-width:700px){.banner{position:static}}
+
+/* page */
+.page-head{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:16px}
+.page-title{font-size:clamp(1.75rem,3vw,2.5rem);line-height:1.1}
+.page-lead{color:var(--muted);max-width:34em;margin-top:8px}
+.addr{display:flex;gap:8px 12px;align-items:center;flex-wrap:wrap;padding:8px 12px;border:1px dashed var(--faint);border-radius:var(--r);margin-bottom:24px;font-size:.875rem}
+.addr code{font:400 .8125rem/1.4 ui-monospace,"SF Mono",Menlo,Consolas,monospace;overflow-wrap:anywhere;flex:1;min-width:0}
+.layout{display:grid;grid-template-columns:280px minmax(0,1fr);gap:32px;align-items:start}
+.results{min-width:0}
+
+/* buttons, fields, badges */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:48px;padding:0 24px;border:1px solid var(--ink);border-radius:var(--r);background:var(--ink);color:var(--cream);font:500 .75rem/1.4 var(--sans);letter-spacing:.07em;text-transform:uppercase;white-space:nowrap;cursor:pointer;text-decoration:none;transition:background .2s,color .2s}
+.btn:hover{background:transparent;color:var(--ink)}
+.btn.ghost{background:transparent;color:var(--ink);border-color:var(--muted)}
+.btn.ghost:hover{border-color:var(--ink);background:var(--paper)}
+.btn.danger{background:transparent;color:var(--red);border-color:var(--red)}
+.btn.danger:hover{background:var(--red);color:var(--cream)}
+.btn.sm{min-height:40px;padding:0 16px}
+.btn.xs{min-height:36px;padding:0 12px}
+.btn[disabled]{opacity:.45;cursor:not-allowed;pointer-events:none}
+.link{background:none;border:0;padding:0;color:var(--ink);text-decoration:underline;cursor:pointer;text-align:left}
+.link.blue{color:var(--accent)}
+.control{width:100%;min-height:52px;padding:0 16px;background:var(--paper);color:var(--ink);border:1px solid var(--muted);border-radius:var(--r)}
+.control.sm{min-height:40px;padding:0 12px;font-size:.9375rem}
+textarea.control{padding:12px 16px;min-height:120px;resize:vertical;line-height:1.5}
+select.control{appearance:none;-webkit-appearance:none;padding-right:32px;background-image:linear-gradient(45deg,transparent 50%,var(--ink) 50%),linear-gradient(135deg,var(--ink) 50%,transparent 50%);background-position:calc(100% - 17px) 50%,calc(100% - 12px) 50%;background-size:5px 5px;background-repeat:no-repeat}
+.field{display:grid;gap:4px;margin-bottom:16px}
+.field .hint{font-size:.875rem;color:var(--muted)}
+.two{display:grid;gap:0 16px}
+@media (min-width:640px){.two{grid-template-columns:1fr 1fr}}
+input[type=checkbox],input[type=radio]{width:20px;height:20px;accent-color:var(--accent);margin:0;flex:none}
+.badge{display:inline-block;padding:2px 8px;border-radius:4px;border:1px solid var(--line);font:500 .75rem/1.4 var(--sans);letter-spacing:.07em;text-transform:uppercase;color:var(--muted);white-space:nowrap}
+.badge.accent{color:var(--accent);border-color:var(--accent)} .badge.good{color:var(--green);border-color:var(--green)}
+.badge.warn{color:var(--amber);border-color:var(--amber)} .badge.bad{color:var(--red);border-color:var(--red)}
+.badge.confirmed{color:var(--green);border-color:var(--green)}
+.badge.detected{color:var(--amber);border-color:var(--amber);border-style:dashed}
+.tag{display:inline-block;padding:1px 8px;border-radius:999px;border:1px solid var(--line);font-size:.8125rem;color:var(--muted);white-space:nowrap}
+.tile{background:var(--paper);border:1px solid var(--line);border-radius:var(--r);padding:16px}
+.notice{padding:12px 16px;border:1px solid var(--line);border-radius:var(--r);background:var(--paper);font-size:.9375rem;margin-bottom:16px}
+.notice.error{border-color:var(--red)} .notice.warn{border-color:var(--amber)} .notice.success{border-color:var(--green)}
+
+/* filter rail */
+.rail{border-top:1px solid var(--line)}
+.rail__head{display:flex;justify-content:space-between;align-items:center;padding:12px 0}
+.rail details{border-bottom:1px solid var(--line)}
+.rail summary{display:flex;justify-content:space-between;align-items:center;gap:8px;min-height:44px;cursor:pointer;list-style:none}
+.rail summary::-webkit-details-marker{display:none}
+.rail summary::after{content:"+";color:var(--muted);font-size:1.125rem;line-height:1}
+.rail details[open]>summary::after{content:"\2212"}
+.rail summary .on{width:7px;height:7px;border-radius:50%;background:var(--accent);margin-left:auto}
+.rail .body{padding:0 0 16px}
+.opt{display:flex;gap:10px;align-items:center;min-height:36px;cursor:pointer;font-size:.9375rem}
+.opt span.t{flex:1;min-width:0}
+.opt .cnt{color:var(--muted);font-size:.8125rem;font-variant-numeric:tabular-nums}
+.opt.zero span.t,.opt.zero .cnt{color:var(--faint)}
+.scroll{position:relative;max-height:196px;overflow-y:auto;border:1px solid var(--line);border-radius:var(--r);padding:4px 10px;margin-top:8px;background:var(--paper)}
+.seg{display:flex;border:1px solid var(--muted);border-radius:var(--r);overflow:hidden}
+.seg label{flex:1;text-align:center;cursor:pointer;position:relative}
+.seg input{position:absolute;opacity:0;inset:0;width:100%;height:100%;cursor:pointer}
+.seg span{display:block;padding:9px 6px;font-size:.875rem;border-left:1px solid var(--line)}
+.seg label:first-child span{border-left:0}
+.seg input:checked+span{background:var(--ink);color:var(--cream)}
+.seg input:focus-visible+span{outline:2px solid var(--accent);outline-offset:-3px}
+.seg small{opacity:.7;font-variant-numeric:tabular-nums}
+.dual{position:relative;height:36px;margin:4px 0 8px}
+.dual .track,.dual .fill{position:absolute;top:17px;height:2px}
+.dual .track{left:0;right:0;background:var(--faint)}
+.dual .fill{background:var(--ink)}
+.dual input{position:absolute;left:0;top:0;width:100%;height:36px;margin:0;padding:0;background:none;pointer-events:none;-webkit-appearance:none;appearance:none;accent-color:auto}
+.dual input::-webkit-slider-runnable-track{background:none;height:36px}
+.dual input::-moz-range-track{background:none;height:2px}
+.dual input::-webkit-slider-thumb{-webkit-appearance:none;pointer-events:auto;width:22px;height:22px;margin-top:7px;border-radius:50%;background:var(--paper);border:2px solid var(--ink);cursor:grab}
+.dual input::-moz-range-thumb{pointer-events:auto;width:18px;height:18px;border-radius:50%;background:var(--paper);border:2px solid var(--ink);cursor:grab}
+.dual input:focus-visible{outline:none}
+.dual input:focus-visible::-webkit-slider-thumb{outline:2px solid var(--accent);outline-offset:3px}
+.dual input:focus-visible::-moz-range-thumb{outline:2px solid var(--accent);outline-offset:3px}
+.scale{display:flex;justify-content:space-between;font-size:.75rem;color:var(--muted);font-variant-numeric:tabular-nums;margin-bottom:10px}
+.minmax{display:grid;grid-template-columns:1fr auto 1fr;gap:8px;align-items:center;margin-bottom:10px}
+.presets{display:flex;gap:6px;flex-wrap:wrap}
+.chip{display:inline-flex;align-items:center;gap:6px;min-height:32px;padding:0 6px 0 12px;border:1px solid var(--muted);border-radius:999px;background:var(--paper);font-size:.875rem}
+.chip button{width:24px;height:24px;border:0;border-radius:50%;background:none;cursor:pointer;font-size:1rem;line-height:1;color:var(--muted)}
+.chip button:hover{background:var(--ink);color:var(--cream)}
+.pre{min-height:32px;padding:0 12px;border:1px solid var(--muted);border-radius:999px;background:transparent;font-size:.8125rem;cursor:pointer}
+.pre[aria-pressed=true]{background:var(--ink);color:var(--cream);border-color:var(--ink)}
+.filterbtn{display:none}
+@media (max-width:899px){
+  .layout{grid-template-columns:minmax(0,1fr)}
+  .filterbtn{display:inline-flex}
+  .rail{display:none}
+  .rail.open{display:block;position:fixed;inset:0 auto 0 0;z-index:45;width:min(92vw,340px);background:var(--cream);overflow-y:auto;padding:calc(12px + env(safe-area-inset-top,0px)) 16px calc(24px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));border-right:1px solid var(--line);border-top:0}
+  .railveil{position:fixed;inset:0;background:var(--veil);z-index:44}
+}
+@media (min-width:900px){.railclose,.railveil{display:none}}
+
+/* results */
+.tools{display:flex;gap:10px 12px;align-items:center;flex-wrap:wrap;margin-bottom:12px}
+.count{font:300 1.375rem/1.2 var(--serif)}
+.tools select.control{width:auto}
+.chips{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:16px}
+.bulk{display:flex;gap:8px 12px;align-items:center;flex-wrap:wrap;padding:8px 12px;border:1px solid var(--ink);border-radius:var(--r);background:var(--paper);margin-bottom:12px;font-size:.9375rem}
+.bulk select.control{width:auto;max-width:210px}
+.tw{border-top:1px solid var(--line);overflow-x:auto;position:relative}
+td.name{min-width:10.5rem} td.sp{min-width:9.5rem} td.nw{white-space:nowrap}
+table{width:100%;border-collapse:collapse;font-size:.9375rem;line-height:1.4}
+th{text-align:left;padding:12px;font:500 .75rem/1.4 var(--sans);letter-spacing:.07em;text-transform:uppercase;color:var(--muted);border-bottom:1px solid var(--line);white-space:nowrap}
+td{padding:12px;border-bottom:1px solid var(--line);vertical-align:middle}
+tbody tr.click{cursor:pointer}
+tbody tr:hover{background:var(--paper)}
+td.r,th.r{text-align:right;font-variant-numeric:tabular-nums}
+td .sub{display:block;color:var(--muted);font-size:.8125rem}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:16px}
+.card{display:grid;gap:8px;align-content:start;cursor:pointer}
+.card h3{font-size:1.25rem;line-height:1.2}
+.kv{display:flex;justify-content:space-between;gap:12px;font-size:.875rem}
+.pager{display:flex;justify-content:space-between;align-items:center;gap:16px;padding:16px 0;font-size:.9375rem;color:var(--muted)}
+.empty{text-align:center;padding:56px 16px;color:var(--muted)}
+.empty h2{font-size:1.5rem;color:var(--ink);margin-bottom:8px}
+.empty .row{justify-content:center;margin-top:16px}
+.skel td span{display:block;height:14px;border-radius:4px;background:var(--line);animation:pulse 1.1s ease-in-out infinite alternate}
+@keyframes pulse{from{opacity:.45}to{opacity:1}}
+@media (prefers-reduced-motion:reduce){.skel td span{animation:none}*{transition:none!important}}
+details.menu{position:relative}
+details.menu>summary{list-style:none}
+details.menu>summary::-webkit-details-marker{display:none}
+details.menu .pop{position:absolute;right:0;top:calc(100% + 6px);z-index:20;width:min(86vw,340px);background:var(--paper);border:1px solid var(--muted);border-radius:var(--r);padding:8px}
+.pop button.item{display:block;width:100%;text-align:left;background:none;border:0;border-radius:6px;padding:9px 10px;cursor:pointer;font-size:.9375rem}
+.pop button.item:hover{background:var(--cream)}
+.pop hr{border:0;border-top:1px solid var(--line);margin:8px 0}
+details.why summary{cursor:pointer;white-space:nowrap}
+.band{font:500 .75rem/1.4 var(--sans);letter-spacing:.07em;text-transform:uppercase}
+.band.strong{color:var(--green)} .band.possible{color:var(--amber)} .band.weak{color:var(--muted)}
+
+/* profile */
+.overlay{position:fixed;inset:0;background:var(--veil);z-index:40}
+.panel{position:fixed;inset:0 0 0 auto;z-index:41;width:min(100%,680px);background:var(--cream);border-left:1px solid var(--line);display:flex;flex-direction:column}
+.panel__head{display:flex;gap:8px;align-items:center;flex-wrap:wrap;padding:calc(10px + env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) 10px 20px;border-bottom:1px solid var(--line)}
+.panel__body{overflow-y:auto;padding:20px max(16px,env(safe-area-inset-right,0px)) calc(40px + env(safe-area-inset-bottom,0px)) 20px}
+.x{width:44px;height:44px;border:0;background:none;font-size:1.5rem;cursor:pointer;border-radius:var(--r)}
+.phead h2{font-size:clamp(1.625rem,3vw,2.25rem);line-height:1.1}
+.dl{display:grid;grid-template-columns:minmax(0,10rem) 1fr;gap:8px 16px;margin:16px 0}
+.dl dt{font:500 .75rem/1.4 var(--sans);letter-spacing:.07em;text-transform:uppercase;color:var(--muted);padding-top:3px}
+.dl dd{margin:0;min-width:0;overflow-wrap:anywhere}
+@media (max-width:520px){.dl{grid-template-columns:1fr;gap:2px 0}.dl dd{margin-bottom:8px}}
+.sec{border-top:1px solid var(--line);padding:20px 0}
+.sec>h3{font-size:1.375rem;margin-bottom:12px}
+.sec__head{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:12px}
+.sec__head h3{font-size:1.375rem}
+.tl{list-style:none;margin:0;padding:0;border-left:1px solid var(--faint);margin-left:5px}
+.tl li{position:relative;padding:0 0 20px 20px}
+.tl li::before{content:"";position:absolute;left:-6px;top:6px;width:11px;height:11px;border-radius:50%;background:var(--ink);border:2px solid var(--cream)}
+.tl li.det::before{background:var(--cream);border:2px dashed var(--amber)}
+.tl .when{font:500 .75rem/1.4 var(--sans);letter-spacing:.07em;text-transform:uppercase;color:var(--muted)}
+.tl .what{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:2px 0}
+.sug{border:1px solid var(--line);border-radius:var(--r);background:var(--paper);padding:14px;margin-bottom:12px}
+.sug__head{display:flex;justify-content:space-between;gap:8px 12px;align-items:baseline;flex-wrap:wrap}
+.meter{height:4px;background:var(--line);border-radius:2px;margin:8px 0;overflow:hidden}
+.meter i{display:block;height:100%;background:var(--ink)}
+.reasons{list-style:none;margin:0 0 10px;padding:0;font-size:.9375rem}
+.reasons li{display:grid;grid-template-columns:2.6rem 1fr;gap:8px;padding:3px 0}
+.reasons .p{font-variant-numeric:tabular-nums;color:var(--muted);text-align:right}
+.pgrid{display:grid;gap:0 40px}
+@media (min-width:1000px){.pgrid{grid-template-columns:minmax(0,3fr) minmax(0,2fr)}}
+.person{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:10px 0;border-bottom:1px solid var(--line);font-size:.9375rem}
+
+/* board */
+.board{position:relative;display:grid;grid-auto-flow:column;grid-auto-columns:minmax(220px,1fr);gap:12px;overflow-x:auto;padding-bottom:12px;align-items:start}
+.col{border:1px solid var(--line);border-radius:var(--r);background:var(--paper);min-height:160px}
+.col.over{border-color:var(--accent)}
+.col__head{padding:10px 12px;border-bottom:1px solid var(--line)}
+.col__body{padding:8px;display:grid;gap:8px}
+.deal{position:relative;background:var(--cream);border:1px solid var(--line);border-radius:var(--r);padding:10px;font-size:.875rem;display:grid;gap:6px;cursor:grab}
+.deal.flash{border-color:var(--accent)}
+.deal select{min-height:36px;font-size:.8125rem;padding-left:8px}
+
+/* modal, palette, toast */
+.movl{position:fixed;inset:0;z-index:50;display:grid;place-items:center;padding:16px;background:var(--veil)}
+.modal{width:min(100%,640px);max-height:calc(100vh - 32px);overflow-y:auto;background:var(--cream);border:1px solid var(--line);border-radius:var(--r);padding:24px}
+.modal__head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:12px}
+.modal__head h2{font-size:1.5rem;line-height:1.25}
+.modal__foot{display:flex;justify-content:flex-end;gap:8px;flex-wrap:wrap;margin-top:20px}
+.palette{align-items:start;padding-top:min(14vh,120px);z-index:60}
+.palette .modal{padding:0;width:min(100%,600px)}
+.palette input{width:100%;min-height:56px;border:0;border-bottom:1px solid var(--line);background:var(--paper);padding:0 20px;font-size:1.0625rem;border-radius:var(--r) var(--r) 0 0}
+.palette input:focus-visible{outline-offset:-2px}
+.pal__list{max-height:52vh;overflow-y:auto;padding:8px}
+.pal__group{padding:10px 12px 4px}
+.pal__item{display:flex;justify-content:space-between;gap:12px;width:100%;text-align:left;background:none;border:0;border-radius:6px;padding:9px 12px;cursor:pointer}
+.pal__item.act{background:var(--ink);color:var(--cream)}
+.pal__item.act .muted{color:var(--faint)}
+.pal__foot{display:flex;gap:16px;padding:10px 20px;border-top:1px solid var(--line);font-size:.8125rem;color:var(--muted)}
+.toasts{position:fixed;left:0;right:0;bottom:calc(20px + env(safe-area-inset-bottom,0px));z-index:70;display:grid;justify-items:center;gap:8px;pointer-events:none;padding:0 16px}
+.toast{pointer-events:auto;background:var(--ink);color:var(--cream);border-radius:var(--r);padding:12px 16px;font-size:.9375rem;max-width:560px;display:flex;gap:16px;align-items:center}
+.toast button{background:none;border:0;color:var(--cream);text-decoration:underline;cursor:pointer;white-space:nowrap}
+.facts{display:grid;gap:12px;margin-top:16px}
+@media (min-width:640px){.facts{grid-template-columns:1fr 1fr}}
+.facts ul{margin:6px 0 0;padding-left:18px;font-size:.875rem}
+</style>
+
+<div id="app"></div>
+
+<script>
+(() => {
+'use strict';
+/* ---------- helpers ---------- */
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+const esc = s => String(s ?? '').replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m]));
+const DAY = 864e5, TODAY = Date.UTC(2026, 10, 25);
+let seed = 20261125;
+const R = () => { seed = seed + 0x6D2B79F5 | 0; let t = Math.imul(seed ^ seed >>> 15, 1 | seed); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; };
+const ri = (a, b) => a + Math.floor(R() * (b - a + 1));
+const pick = a => a[Math.floor(R() * a.length)];
+const chance = p => R() < p;
+const ago = d => TODAY - d * DAY;
+const MON = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+const fmtDate = t => { const d = new Date(t); return `${d.getUTCDate()} ${MON[d.getUTCMonth()]} ${d.getUTCFullYear()}`; };
+const monYear = t => { const d = new Date(t); return `${MON[d.getUTCMonth()]} ${d.getUTCFullYear()}`; };
+const since = t => Math.round((TODAY - t) / DAY);
+const rel = t => { if (t == null) return 'Never'; const n = since(t); return n <= 0 ? 'Today' : n === 1 ? 'Yesterday' : n < 60 ? `${n} days ago` : `${Math.round(n / 30)} months ago`; };
+const num = n => Number(n).toLocaleString('en-US');
+const short = n => n >= 1e6 ? (n / 1e6).toFixed(1).replace(/\.0$/, '') + 'M' : n >= 1000 ? (n / 1000).toFixed(n < 1e4 ? 1 : 0).replace(/\.0$/, '') + 'k' : String(n);
+const usd = n => '$' + num(n);
+const plural = (n, w) => `${n} ${w}${n === 1 ? '' : 's'}`;
+const parseNum = s => { const m = /^\s*\$?\s*([\d.,]+)\s*([kKmM]?)\s*$/.exec(String(s)); if (!m) return null; let v = parseFloat(m[1].replace(/,/g, '')); if (isNaN(v)) return null; if (/k/i.test(m[2])) v *= 1e3; if (/m/i.test(m[2])) v *= 1e6; return Math.round(v); };
+const nice = v => { const p = Math.pow(10, Math.floor(Math.log10(v)) - 1); return Math.round(v / p) * p; };
+
+/* ---------- fake data (everything here is invented) ---------- */
+const NICHES = { tech: 'Tech and gadgets', gaming: 'Gaming', diy: 'Woodworking and DIY', cooking: 'Cooking and food', fitness: 'Fitness and health', finance: 'Personal finance', travel: 'Travel', education: 'Education and science', beauty: 'Beauty and style', music: 'Music and audio', photo: 'Photo and film', outdoors: 'Outdoors' };
+const COUNTRIES = { US: 'United States', GB: 'United Kingdom', CA: 'Canada', AU: 'Australia', DE: 'Germany', FR: 'France', ES: 'Spain', BR: 'Brazil', IN: 'India', NL: 'Netherlands' };
+const LANG_OF = { US: 'English', GB: 'English', CA: 'English', AU: 'English', DE: 'German', FR: 'French', ES: 'Spanish', BR: 'Portuguese', IN: 'English', NL: 'English' };
+const STATUS = { new: ['New', 'neutral'], contacted: ['Contacted', 'accent'], replied: ['Replied', 'good'], active: ['Active', 'good'], inactive: ['Inactive', 'warn'], do_not_contact: ['Do not contact', 'bad'] };
+const RELS = { prospect: ['Prospect', 'neutral'], contacted: ['Contacted', 'accent'], talks: ['In talks', 'accent'], partner: ['Partner', 'good'], past: ['Past partner', 'warn'], do_not_contact: ['Do not contact', 'bad'] };
+const STAGES = [['matched', 'Matched'], ['contacted', 'Contacted'], ['replied', 'Replied'], ['negotiating', 'Negotiating'], ['signed', 'Signed'], ['completed', 'Completed'], ['paid', 'Paid']];
+const STAGE_LABEL = Object.fromEntries(STAGES);
+const SIZES = ['1 to 10', '11 to 50', '51 to 200', '201 to 1,000', 'Over 1,000'];
+const TAGS = ['Quick replier', 'Premium', 'Long-form', 'Shorts first', 'Family friendly', 'Needs follow-up'];
+const STAFF = { owner: 'Maya Ostrander', worker: 'Jonas Reyes' };
+const CH = {
+  tech: [['Pocket Circuit', 'Bench Volt', 'Tiny Teardown', 'Second Screen Lab'], ['I rebuilt a 2012 laptop for $40', 'The cheapest mechanical keyboard worth buying', 'Home server tour, one year later', 'Five small gadgets I use every day']],
+  gaming: [['Cozy Save Point', 'Low Spec Legends', 'Patch Notes Pal', 'Speedrun Sundays'], ['Finishing a 100-hour RPG without fast travel', 'Indie games you missed this year', 'Can this $200 PC run it?', 'Ranking every boss, worst to best']],
+  diy: [['Oak and Offcut', 'Shed Hours', 'The Square Cut', 'Glue-Up Garage'], ['A workbench from one sheet of plywood', 'Hand-cut dovetails for beginners', 'Restoring a rusty hand plane', 'Small shop storage that works']],
+  cooking: [['One Pan Nina', 'Weeknight Ladle', 'Crumb Theory', 'Tiny Kitchen Table'], ['Five dinners from one roast chicken', 'Sourdough without the stress', 'The 15-minute noodle bowl', 'What I cook when I am tired']],
+  fitness: [['Slow Miles Club', 'Kettlebell Corner', 'Stretch Before Coffee', 'Garage Gym Notes'], ['Couch to 10k: week six check-in', 'A 20-minute kettlebell routine', 'Fixing desk shoulders', 'What I eat on long run days']],
+  finance: [['Plain Money Talk', 'The Thrifty Ledger', 'Index and Chill', 'First Paycheck'], ['Budgeting on an irregular income', 'Index funds explained in ten minutes', 'Seven fees you can stop paying', 'My first year of investing, reviewed']],
+  travel: [['Carry-On Only', 'Slow Train South', 'Offseason Atlas', 'Weekend Elsewhere'], ['Three days in Porto on a small budget', 'Night trains that are worth it', 'Packing one bag for two weeks', 'A quiet island most people skip']],
+  education: [['Curious Margins', 'Chalk and Orbit', 'The Small Why', 'Footnote Science'], ['Why bridges hum in the wind', 'The maths behind fair voting', 'How vaccines train your body', 'A short history of the calendar']],
+  beauty: [['Soft Focus Sara', 'Shelf Edit', 'Low Light Glam', 'Ten Minute Face'], ['My whole routine under $60', 'Testing five drugstore foundations', 'Winter skin: what helped', 'An honest empties review']],
+  music: [['Four Track Mind', 'Open Tuning', 'Bedroom Mixdown', 'Pedalboard Diaries'], ['Recording a song in one afternoon', 'Three chord tricks for better songs', 'Mixing vocals at home', 'Budget pedals that surprised me']],
+  photo: [['Golden Hour Notes', 'Grain and Glass', 'The 35mm Walk', 'Edit Bay Eli'], ['Street photography with one lens', 'Colour grading in ten minutes', 'Film versus digital in 2026', 'How I light interviews at home']],
+  outdoors: [['Ridge and Kettle', 'Wet Boots Weekly', 'Tarp Life', 'The Long Way Round'], ['Solo overnight in the rain', 'Lightweight cook kit: full list', 'First winter hike mistakes', 'A 40-mile loop with one bag']]
+};
+const FIRST = ['Nina', 'Tomas', 'Aisha', 'Leo', 'Priya', 'Jonah', 'Mireille', 'Kofi', 'Elena', 'Ravi', 'Sofia', 'Marcus', 'Hana', 'Diego', 'Freya', 'Omar', 'Lucia', 'Theo', 'Amara', 'Felix', 'Ingrid', 'Mateo', 'Zara', 'Callum', 'Yuki', 'Bruno', 'Leila', 'Anders', 'Carmen', 'Idris', 'Noor', 'Pascal', 'Tess', 'Emeka', 'Greta', 'Samir', 'Ines'];
+const LAST = ['Okafor', 'Lindgren', 'Marchetti', 'Abara', 'Castellan', 'Whitlow', 'Nakagawa', 'Brandt', 'Oyelaran', 'Delacroix', 'Hartley', 'Vasquez', 'Sorensen', 'Kimura', 'Adeyemi', 'Fontaine', 'Rahman', 'Kowalczyk', 'Mbeki', 'Thorne', 'Alvarez', 'Bergstrom', 'Chaudhry', 'Dunmore', 'Eze', 'Farrow', 'Galanis', 'Holt', 'Ishikawa', 'Janssen', 'Keane', 'Lombardi', 'Moreau', 'Novak', 'Osei', 'Pemberton'];
+const SP_ROWS = [
+  ['Quillbyte VPN', 'Software', ['tech', 'gaming', 'education'], 2, 'US', 300, 1500, 10000, 100000],
+  ['Tindra Keyboards', 'Consumer electronics', ['tech', 'gaming'], 1, 'DE', 200, 900, 5000, 50000],
+  ['Ostrel Chargers', 'Consumer electronics', ['tech', 'travel'], 1, 'US', 150, 600, 2000, 30000],
+  ['Mossgate Games', 'Games', ['gaming'], 2, 'CA', 500, 3000, 20000, 250000],
+  ['Pixelbrook Chairs', 'Furniture', ['gaming', 'tech'], 3, 'US', 400, 2000, 15000, 150000],
+  ['Fernhollow Tools', 'Tools and hardware', ['diy'], 2, 'US', 250, 1200, 5000, 60000],
+  ['Grainwell Finishes', 'Tools and hardware', ['diy'], 0, 'GB', 100, 400, 1000, 20000],
+  ['Saltwick Knives', 'Kitchenware', ['cooking'], 1, 'GB', 200, 800, 3000, 40000],
+  ['Pepperlane Meal Kits', 'Food and drink', ['cooking', 'fitness'], 3, 'US', 600, 4000, 20000, 300000],
+  ['Brightoat Snacks', 'Food and drink', ['fitness', 'cooking', 'outdoors'], 2, 'AU', 250, 1000, 5000, 50000],
+  ['Stridewell Bands', 'Sports equipment', ['fitness'], 1, 'US', 150, 700, 2000, 40000],
+  ['Corvane Protein', 'Food and drink', ['fitness'], 2, 'NL', 300, 1500, 10000, 100000],
+  ['Ledgerleaf', 'Finance apps', ['finance', 'education'], 2, 'GB', 800, 5000, 20000, 200000],
+  ['Pennyfield Budgeting', 'Finance apps', ['finance'], 1, 'US', 300, 1200, 5000, 50000],
+  ['Tarnby Packs', 'Travel gear', ['travel', 'outdoors'], 1, 'CA', 200, 900, 3000, 40000],
+  ['Roamlet eSIM', 'Travel services', ['travel'], 2, 'ES', 400, 2000, 10000, 120000],
+  ['Skillharbor Courses', 'Online learning', ['education', 'finance', 'photo', 'music'], 3, 'US', 500, 3500, 10000, 250000],
+  ['Notewren', 'Software', ['education', 'tech'], 1, 'FR', 200, 1000, 5000, 60000],
+  ['Velaine Skincare', 'Beauty', ['beauty'], 2, 'FR', 300, 1800, 8000, 100000],
+  ['Hushpetal Cosmetics', 'Beauty', ['beauty'], 1, 'GB', 150, 600, 2000, 30000],
+  ['Tonewick Strings', 'Music gear', ['music'], 0, 'US', 100, 500, 1000, 25000],
+  ['Loopmeadow Plugins', 'Software', ['music'], 1, 'DE', 200, 900, 3000, 50000],
+  ['Halden Camera Straps', 'Camera gear', ['photo', 'travel'], 0, 'NL', 100, 450, 1000, 25000],
+  ['Framewell Lights', 'Camera gear', ['photo', 'tech'], 2, 'US', 300, 1500, 8000, 90000],
+  ['Cragmoor Boots', 'Outdoor gear', ['outdoors', 'travel'], 3, 'GB', 500, 3000, 15000, 200000],
+  ['Emberlow Stoves', 'Outdoor gear', ['outdoors', 'cooking'], 1, 'CA', 200, 900, 3000, 40000],
+  ['Driftmark Insurance', 'Insurance', ['finance', 'travel'], 4, 'US', 1500, 8000, 50000, 500000],
+  ['Paperkite Planners', 'Stationery', ['education', 'beauty'], 0, 'AU', 80, 350, 1000, 15000]
+];
+const SIGNALS = [['The words "sponsored by" in the video description', 'High'], ['YouTube paid-promotion flag, plus a link to the brand', 'High'], ['A discount code in the video description', 'Medium'], ['The hashtag #ad in the video description', 'Medium'], ['A tracking link to the brand in the description', 'Low']];
+const slug = s => s.toLowerCase().replace(/[^a-z0-9]+/g, '');
+const wpick = pairs => { let t = R() * pairs.reduce((a, p) => a + p[1], 0); for (const p of pairs) { if ((t -= p[1]) < 0) return p[0]; } return pairs[0][0]; };
+
+const DB = { creators: [], sponsors: [], sp: [], deals: [], emails: [], lists: [], views: { creators: [], sponsors: [] } };
+let uid = 1;
+Object.keys(NICHES).forEach(nk => CH[nk][0].forEach(channel => {
+  const i = DB.creators.length, first = FIRST[i % FIRST.length], last = LAST[(i * 7 + 3) % LAST.length];
+  const country = wpick([['US', 34], ['GB', 16], ['CA', 9], ['AU', 7], ['DE', 7], ['FR', 6], ['ES', 6], ['BR', 5], ['IN', 6], ['NL', 4]]);
+  const subs = Math.round(Math.pow(10, 3.06 + Math.pow(R(), 1.35) * 2.25) / 10) * 10;
+  const status = wpick([['new', 38], ['contacted', 22], ['replied', 10], ['active', 15], ['inactive', 9], ['do_not_contact', 6]]);
+  DB.creators.push({
+    id: i + 1, name: `${first} ${last}`, first, channel, niche: nk, country, lang: LANG_OF[country], subs,
+    avgViews: Math.round(subs * (0.08 + R() * 0.4) / 10) * 10, uploads: ri(1, 9), lastVideo: ago(ri(1, 40)), checked: ago(ri(0, 20)),
+    status, lastContacted: status === 'new' ? null : ago(ri(2, 220)),
+    email: chance(.9) ? `${slug(first)}.${slug(last)}@example.test` : null, phone: chance(.3) ? `+1 555 01${ri(10, 99)}` : null,
+    tags: TAGS.filter(() => chance(.16)), notes: chance(.4) ? pick(['Prefers email in the morning. Friendly and quick.', 'Asked us to come back after the summer.', 'Only wants sponsors that fit the channel closely.', 'Has a manager for larger deals.']) : '', added: ago(ri(2, 60))
+  });
+}));
+DB.creators[5].subs = 412000; DB.creators[5].avgViews = 96000; DB.creators[30].subs = 268000; DB.creators[30].avgViews = 41000;
+SP_ROWS.forEach((r, i) => {
+  const [name, industry, niches, size, country, b0, b1, t0, t1] = r;
+  const contacts = [];
+  const nC = wpick([[0, 15], [1, 55], [2, 30]]);
+  for (let k = 0; k < nC; k++) {
+    const f = FIRST[(i * 3 + k * 11 + 5) % FIRST.length], l = LAST[(i * 5 + k * 13 + 9) % LAST.length];
+    contacts.push({ name: `${f} ${l}`, first: f, role: k ? pick(['Brand manager', 'Marketing coordinator']) : pick(['Partnerships manager', 'Influencer marketing lead', 'Founder']), email: `${slug(f)}.${slug(l)}@${slug(name)}.example.test`, phone: chance(.5) ? `+1 555 01${ri(10, 99)}` : null, linkedin: `linkedin.example/in/${slug(f)}-${slug(l)}`, primary: k === 0 });
+  }
+  DB.sponsors.push({
+    id: i + 1, name, industry, niches, size: SIZES[size], country, budget: [b0, b1], target: [t0, t1], site: `${slug(name)}.example.test`, contacts,
+    rel: wpick([['prospect', 40], ['contacted', 20], ['talks', 12], ['partner', 14], ['past', 9], ['do_not_contact', 5]]),
+    lastContacted: chance(.55) ? ago(ri(3, 200)) : null, tags: ['Pays on time', 'Slow to reply', 'Wants long-form', 'Seasonal'].filter(() => chance(.18)),
+    notes: chance(.4) ? pick(['Plans campaigns one quarter ahead.', 'Wants a draft script before signing.', 'Prefers channels that review products hands-on.']) : ''
+  });
+});
+const CR = id => DB.creators.find(c => c.id === id), SPN = id => DB.sponsors.find(s => s.id === id);
+const vurl = () => `youtube.example/watch?v=${Math.floor(R() * 36 ** 6).toString(36).padStart(6, 'a')}`;
+DB.creators.forEach(c => {
+  if (!chance(.64)) return;
+  const pool = DB.sponsors.filter(s => s.niches.includes(c.niche));
+  for (let k = 0, n = ri(1, 5); k < n; k++) {
+    const confirmed = chance(.56), date = ago(ri(4, 520));
+    let s = chance(.84) ? pick(pool) : pick(DB.sponsors);
+    const rec = { id: uid++, c: c.id, s: s.id, date, title: pick(CH[c.niche][1]), url: vurl(), views: Math.round(c.avgViews * (0.6 + R())), rejected: false };
+    if (confirmed) Object.assign(rec, { label: 'confirmed', origin: pick(['Entered by the team', 'Entered by the team', 'Import, checked by the team']), by: pick([STAFF.owner, STAFF.worker]), at: Math.min(TODAY, date + ri(1, 30) * DAY), note: pick(['Watched the video: spoken ad at the start.', 'The creator confirmed it by email.', 'Sponsor is named on screen and in the description.']) });
+    else { const sg = pick(SIGNALS); Object.assign(rec, { label: 'detected', signal: sg[0], conf: sg[1], at: Math.min(TODAY, date + ri(1, 9) * DAY) }); if (chance(.13)) { rec.s = null; rec.signal = 'YouTube paid-promotion flag only. The brand is not named.'; rec.conf = 'Medium'; } }
+    DB.sp.push(rec);
+  }
+});
+(() => {
+  const seen = new Set();
+  let guard = 0;
+  while (DB.deals.length < 22 && guard++ < 500) {
+    const c = pick(DB.creators); if (c.status === 'do_not_contact') continue;
+    const pool = DB.sponsors.filter(s => s.niches.includes(c.niche) && s.rel !== 'do_not_contact'); if (!pool.length) continue;
+    const s = pick(pool), key = c.id + '-' + s.id; if (seen.has(key)) continue; seen.add(key);
+    const stage = wpick([['matched', 4], ['contacted', 5], ['replied', 3], ['negotiating', 3], ['signed', 2], ['completed', 2], ['paid', 3]]);
+    const changed = ago(ri(1, 55));
+    const d = { id: uid++, c: c.id, s: s.id, stage, amount: stage === 'matched' && chance(.6) ? null : ri(Math.round(s.budget[0] / 10), Math.round(s.budget[1] / 10)) * 10, changed };
+    DB.deals.push(d);
+    if (stage !== 'matched') { if (c.status === 'new') c.status = 'contacted'; if (!c.lastContacted) c.lastContacted = ago(since(changed) + ri(3, 30)); if (s.rel === 'prospect') s.rel = 'talks'; }
+    if (stage === 'completed' || stage === 'paid') { c.status = 'active'; s.rel = 'partner'; DB.sp.push({ id: uid++, c: c.id, s: s.id, date: changed, title: pick(CH[c.niche][1]), url: vurl(), views: Math.round(c.avgViews * (0.7 + R())), rejected: false, label: 'confirmed', origin: 'A Smallfold deal', by: STAFF.owner, at: changed, note: 'Created when the deal was completed.' }); }
+  }
+})();
+DB.creators.forEach(c => {
+  if (c.status === 'new') return;
+  for (let k = 0, n = ri(1, 3); k < n; k++) DB.emails.push({ id: uid++, c: c.id, subject: pick(['A sponsorship idea for your channel', 'Following up on my last note', 'Quick question about your channel', 'A sponsor that fits your videos']), date: (c.lastContacted || TODAY) - k * ri(6, 20) * DAY, status: k === 0 && (c.status === 'replied' || c.status === 'active') ? 'replied' : 'sent' });
+});
+DB.sponsors.forEach(s => { if (!s.lastContacted || !s.contacts.length) return; DB.emails.push({ id: uid++, s: s.id, subject: pick(['Small channels that fit your brand', 'Three creators for your next campaign']), date: s.lastContacted, status: s.rel === 'talks' || s.rel === 'partner' ? 'replied' : 'sent' }); });
+DB.lists = [{ id: 'spring', name: 'Spring campaign shortlist', ids: DB.creators.filter((c, i) => i % 9 === 2).map(c => c.id) }, { id: 'fern', name: 'Fernhollow Tools shortlist', ids: DB.creators.filter(c => c.niche === 'diy').map(c => c.id) }];
+DB.views.creators = [
+  { name: 'Small channels with a sponsor history', mine: false, f: { subs: [1000, 10000], sponsored: 'yes' }, sort: 'sp' },
+  { name: 'Sponsored in the last 90 days, never contacted', mine: true, f: { recent: '90', contacted: 'never' }, sort: 'sp' },
+  { name: 'Gaming and tech, 10k to 50k', mine: true, f: { niche: ['gaming', 'tech'], subs: [10000, 50000] }, sort: 'subs-desc' }];
+DB.views.sponsors = [
+  { name: 'Active sponsors of small channels', mine: false, f: { active: 'yes', target: '1000-10000' }, sort: 'last' },
+  { name: 'Prospects with a contact person', mine: true, f: { rel: ['prospect'], contact: true }, sort: 'name' }];
+
+function reindex() {
+  DB.creators.forEach(c => { c._all = []; c._conf = []; });
+  DB.sponsors.forEach(s => { s._all = []; s._conf = []; });
+  DB.sp.forEach(x => { if (x.rejected) return; const c = CR(x.c), s = x.s && SPN(x.s); c._all.push(x); if (x.label === 'confirmed') c._conf.push(x); if (s) { s._all.push(x); if (x.label === 'confirmed') s._conf.push(x); } });
+  const byDate = (a, b) => b.date - a.date;
+  DB.creators.forEach(c => { c._all.sort(byDate); c._conf.sort(byDate); });
+  DB.sponsors.forEach(s => { s._all.sort(byDate); s._conf.sort(byDate); });
+}
+reindex();
+const recs = (it, F) => F && F.detected ? it._all : it._conf;
+const lastOf = (it, F) => { const r = recs(it, F); return r.length ? r[0].date : null; };
+const distinct = (arr, k) => new Set(arr.map(x => x[k])).size;
+const overlap = (v, r) => { const [a, b] = v.split('-'); return r[1] >= +a && (b === '' || r[0] <= +b); };
+const openDeal = (c, s) => DB.deals.find(d => d.c === c && d.s === s && d.stage !== 'paid' && d.stage !== 'completed');
+
+/* ---------- match score ---------- */
+function score(c, s) {
+  const rs = [], nn = NICHES[c.niche], low = nn.toLowerCase();
+  let p = s.niches.includes(c.niche) ? 40 : 0;
+  rs.push({ k: 'Niche fit', p, t: p ? `${nn} is a niche ${s.name} targets.` : `${s.name} targets ${s.niches.map(n => NICHES[n].toLowerCase()).join(', ')}. This channel is ${low}.` });
+  const [a, b] = s.target;
+  p = c.subs >= a && c.subs <= b ? 25 : c.subs >= a * .5 && c.subs <= b * 1.5 ? 12 : 0;
+  rs.push({ k: 'Size fit', p, t: `${num(c.subs)} subscribers is ${p === 25 ? 'inside' : p ? 'just outside' : 'far from'} the sponsor's target of ${short(a)} to ${short(b)}.` });
+  const sim = arr => new Set(arr.filter(x => x.c !== c.id && CR(x.c).niche === c.niche).map(x => x.c)).size;
+  const conf = sim(s._conf), det = sim(s._all.filter(x => x.label === 'detected')), pts = n => n >= 3 ? 20 : n === 2 ? 14 : n === 1 ? 8 : 0;
+  if (conf) rs.push({ k: 'Similar creators', p: pts(conf), t: `${s.name} has sponsored ${conf} other ${low} ${conf === 1 ? 'channel' : 'channels'} (confirmed).` });
+  else if (det) rs.push({ k: 'Similar creators', p: pts(det) / 2, un: true, t: `Possibly sponsored ${det} similar ${det === 1 ? 'channel' : 'channels'}. Not confirmed yet.` });
+  else rs.push({ k: 'Similar creators', p: 0, t: `No record yet of ${s.name} sponsoring other ${low} channels.` });
+  const last = s._conf.length ? s._conf[0].date : null, d = last == null ? 9999 : since(last);
+  p = d <= 90 ? 15 : d <= 180 ? 10 : d <= 365 ? 5 : 0;
+  rs.push({ k: 'Recency', p, t: last == null ? `No confirmed sponsorship by ${s.name} on record.` : `${s.name} last sponsored a creator ${rel(last).toLowerCase()} (confirmed).` });
+  const total = rs.reduce((x, r) => x + r.p, 0);
+  return { total, rs, band: total >= 70 ? 'Strong' : total >= 40 ? 'Possible' : 'Weak' };
+}
+function blocked(c, s) {
+  if (c.status === 'do_not_contact') return 'The creator is marked Do not contact.';
+  if (s.rel === 'do_not_contact') return 'The sponsor is marked Do not contact.';
+  return null;
+}
+function suggest(kind, it) {
+  const others = kind === 'creator' ? DB.sponsors : DB.creators;
+  return others.map(o => { const c = kind === 'creator' ? it : o, s = kind === 'creator' ? o : it; return { c, s, o, sc: score(c, s) }; })
+    .filter(x => !blocked(x.c, x.s) && x.sc.total >= 40 && !openDeal(x.c.id, x.s.id) && !x.c._conf.some(r => r.s === x.s.id && since(r.date) <= 180))
+    .sort((x, y) => y.sc.total - x.sc.total).slice(0, 5);
+}
+
+/* ---------- list config ---------- */
+const optCountries = items => () => [...new Set(items().map(i => i.country))].sort().map(k => [k, COUNTRIES[k]]);
+const CFG = {
+  creators: {
+    title: 'Creators', one: 'creator', items: () => DB.creators, hay: c => `${c.name} ${c.channel} ${c.email || ''}`,
+    facets: [
+      { id: 'subs', label: 'Subscribers', type: 'range', get: c => c.subs, open: true },
+      { id: 'sponsored', label: 'Has done sponsorships', type: 'radio', seg: true, open: true, opts: () => [['yes', 'Yes'], ['no', 'No']], test: (c, v, F) => (recs(c, F).length > 0) === (v === 'yes'), extra: 'detected' },
+      { id: 'detected', label: 'Count detected records too', type: 'bool', hidden: true },
+      { id: 'recent', label: 'Sponsored recently', type: 'radio', open: true, opts: () => [['30', 'Last 30 days'], ['90', 'Last 90 days'], ['180', 'Last 180 days']], test: (c, v, F) => recs(c, F).some(x => since(x.date) <= +v) },
+      { id: 'by', label: 'Sponsored by', type: 'multi', search: true, open: true, opts: () => DB.sponsors.filter(s => s._all.length).map(s => [String(s.id), s.name]), vals: (c, F) => recs(c, F).map(x => String(x.s)) },
+      { id: 'niche', label: 'Niche', type: 'multi', open: true, opts: () => Object.entries(NICHES), vals: c => [c.niche] },
+      { id: 'status', label: 'Pipeline status', type: 'multi', open: true, opts: () => Object.entries(STATUS).map(([k, v]) => [k, v[0]]), vals: c => [c.status] },
+      { id: 'contacted', label: 'Last contacted', type: 'radio', opts: () => [['never', 'Never contacted'], ['in30', 'In the last 30 days'], ['over30', 'Over 30 days ago'], ['over90', 'Over 90 days ago']], test: (c, v) => v === 'never' ? c.lastContacted == null : c.lastContacted != null && (v === 'in30' ? since(c.lastContacted) <= 30 : since(c.lastContacted) > (v === 'over30' ? 30 : 90)) },
+      { id: 'views', label: 'Average views', type: 'radio', opts: () => [['1000', '1k or more'], ['5000', '5k or more'], ['10000', '10k or more'], ['25000', '25k or more']], test: (c, v) => c.avgViews >= +v },
+      { id: 'lang', label: 'Language', type: 'multi', opts: () => [...new Set(DB.creators.map(c => c.lang))].sort().map(l => [l, l]), vals: c => [c.lang] },
+      { id: 'country', label: 'Country', type: 'multi', opts: optCountries(() => DB.creators), vals: c => [c.country] },
+      { id: 'email', label: 'Has an email address', type: 'bool', test: c => !!c.email },
+      { id: 'tag', label: 'Tag', type: 'multi', opts: () => [...new Set([...TAGS, ...DB.creators.flatMap(c => c.tags)])].map(t => [t, t]), vals: c => c.tags },
+      { id: 'list', label: 'List', type: 'multi', opts: () => DB.lists.map(l => [l.id, l.name]), vals: c => DB.lists.filter(l => l.ids.includes(c.id)).map(l => l.id) }
+    ],
+    sorts: [['subs-desc', 'Subscribers, high to low'], ['subs-asc', 'Subscribers, low to high'], ['sp', 'Most recent sponsorship'], ['contacted', 'Last contacted'], ['name', 'Name, A to Z'], ['match', 'Best match for a sponsor']],
+    cmp: { 'subs-desc': (a, b) => b.subs - a.subs, 'subs-asc': (a, b) => a.subs - b.subs, sp: (a, b, F) => (lastOf(b, F) || 0) - (lastOf(a, F) || 0), contacted: (a, b) => (b.lastContacted || 0) - (a.lastContacted || 0), name: (a, b) => a.name.localeCompare(b.name) }
+  },
+  sponsors: {
+    title: 'Sponsors', one: 'sponsor', items: () => DB.sponsors, hay: s => `${s.name} ${s.industry} ${s.site}`,
+    facets: [
+      { id: 'industry', label: 'Industry', type: 'multi', open: true, opts: () => [...new Set(DB.sponsors.map(s => s.industry))].sort().map(x => [x, x]), vals: s => [s.industry] },
+      { id: 'niches', label: 'Niches they sponsor', type: 'multi', open: true, opts: () => Object.entries(NICHES), vals: s => s.niches },
+      { id: 'target', label: 'Target creator size', type: 'radio', open: true, opts: () => [['1000-10000', '1k to 10k'], ['10000-50000', '10k to 50k'], ['50000-100000', '50k to 100k'], ['100000-', '100k and above']], test: (s, v) => overlap(v, s.target) },
+      { id: 'budget', label: 'Typical budget per creator', type: 'radio', open: true, opts: () => [['0-250', 'Under $250'], ['250-1000', '$250 to $1,000'], ['1000-5000', '$1,000 to $5,000'], ['5000-', '$5,000 and above']], test: (s, v) => overlap(v, s.budget) },
+      { id: 'active', label: 'Currently active', type: 'radio', seg: true, open: true, opts: () => [['yes', 'Yes'], ['no', 'No']], test: (s, v, F) => (recs(s, F).some(x => since(x.date) <= 90)) === (v === 'yes'), extra: 'detected', hint: 'Active means a sponsorship in the last 90 days.' },
+      { id: 'detected', label: 'Count detected records too', type: 'bool', hidden: true },
+      { id: 'count', label: 'Creators sponsored', type: 'radio', open: true, opts: () => [['1', '1 or more'], ['3', '3 or more'], ['5', '5 or more']], test: (s, v, F) => distinct(recs(s, F), 'c') >= +v },
+      { id: 'last', label: 'Last sponsorship', type: 'radio', opts: () => [['30', 'Last 30 days'], ['90', 'Last 90 days'], ['180', 'Last 180 days']], test: (s, v, F) => recs(s, F).some(x => since(x.date) <= +v) },
+      { id: 'rel', label: 'Our contact status', type: 'multi', open: true, opts: () => Object.entries(RELS).map(([k, v]) => [k, v[0]]), vals: s => [s.rel] },
+      { id: 'size', label: 'Company size (people)', type: 'multi', opts: () => SIZES.map(x => [x, x]), vals: s => [s.size] },
+      { id: 'country', label: 'Location', type: 'multi', opts: optCountries(() => DB.sponsors), vals: s => [s.country] },
+      { id: 'contact', label: 'Has a contact person', type: 'bool', test: s => s.contacts.length > 0 },
+      { id: 'tag', label: 'Tag', type: 'multi', opts: () => [...new Set(DB.sponsors.flatMap(s => s.tags))].sort().map(t => [t, t]), vals: s => s.tags }
+    ],
+    sorts: [['name', 'Name, A to Z'], ['count', 'Most creators sponsored'], ['last', 'Most recent sponsorship'], ['budget', 'Budget, high to low'], ['match', 'Best match for a creator']],
+    cmp: { name: (a, b) => a.name.localeCompare(b.name), count: (a, b, F) => distinct(recs(b, F), 'c') - distinct(recs(a, F), 'c'), last: (a, b, F) => (lastOf(b, F) || 0) - (lastOf(a, F) || 0), budget: (a, b) => b.budget[1] - a.budget[1] }
+  }
+};
+const PAGE = 25;
+const S = {
+  role: 'owner', panel: null, modal: null, pal: null, railOpen: false, open: {}, demo: null, flash: null, recent: ['creator-3', 'sponsor-6', 'creator-17'],
+  L: { creators: { f: {}, q: '', sort: 'subs-desc', view: 'table', page: 1, sel: new Set(), against: null, ids: [] }, sponsors: { f: {}, q: '', sort: 'name', view: 'table', page: 1, sel: new Set(), against: null, ids: [] } },
+  edit: null, confirming: null, showRejected: false, dealView: 'board'
+};
+const isOn = v => !(v == null || v === '' || v === false || (Array.isArray(v) && !v.length));
+function passes(kind, it, F, q, skip) {
+  if (q && !CFG[kind].hay(it).toLowerCase().includes(q.toLowerCase())) return false;
+  for (const fc of CFG[kind].facets) {
+    if (fc.id === skip) continue; const v = F[fc.id]; if (!isOn(v)) continue;
+    if (fc.type === 'multi') { const vs = fc.vals(it, F); if (!v.some(x => vs.includes(x))) return false; }
+    else if (fc.type === 'range') { const g = fc.get(it); if ((v[0] != null && g < v[0]) || (v[1] != null && g > v[1])) return false; }
+    else if (fc.test && !fc.test(it, fc.type === 'bool' ? true : v, F)) return false;
+  }
+  return true;
+}
+function filtered(kind) {
+  const st = S.L[kind], cfg = CFG[kind];
+  const arr = cfg.items().filter(it => passes(kind, it, st.f, st.q));
+  if (st.sort === 'match') { const o = against(kind); arr.sort((a, b) => (kind === 'creators' ? score(b, o).total - score(a, o).total : score(o, b).total - score(o, a).total)); }
+  else arr.sort((a, b) => cfg.cmp[st.sort](a, b, st.f) || a.name.localeCompare(b.name));
+  return arr;
+}
+function against(kind) {
+  const st = S.L[kind], pool = kind === 'creators' ? DB.sponsors : DB.creators;
+  return pool.find(x => x.id === st.against) || (kind === 'creators' && st.f.by && st.f.by.length && SPN(+st.f.by[0])) || pool[0];
+}
+function optCount(kind, fc, val) {
+  const st = S.L[kind];
+  return CFG[kind].items().filter(it => passes(kind, it, st.f, st.q, fc.id) && (fc.type === 'multi' ? fc.vals(it, st.f).includes(val) : fc.type === 'bool' ? fc.test(it, true, st.f) : fc.test(it, val, st.f))).length;
+}
+function chips(kind) {
+  const st = S.L[kind], out = [];
+  if (st.q) out.push({ t: `Search: "${st.q}"`, id: 'q' });
+  CFG[kind].facets.forEach(fc => {
+    const v = st.f[fc.id]; if (!isOn(v)) return;
+    if (fc.type === 'multi') { const m = Object.fromEntries(fc.opts()); v.forEach(x => out.push({ t: `${fc.label}: ${m[x] || x}`, id: fc.id, val: x })); }
+    else if (fc.type === 'range') out.push({ t: `${fc.label}: ${v[0] != null ? short(v[0]) : 'any'} to ${v[1] != null ? short(v[1]) : 'any'}`, id: fc.id });
+    else if (fc.type === 'bool') out.push({ t: fc.label, id: fc.id });
+    else out.push({ t: `${fc.label}: ${Object.fromEntries(fc.opts())[v]}`, id: fc.id });
+  });
+  return out;
+}
+function address(kind) {
+  const st = S.L[kind], p = [];
+  if (st.q) p.push('q=' + encodeURIComponent(st.q));
+  CFG[kind].facets.forEach(fc => { const v = st.f[fc.id]; if (!isOn(v)) return; p.push(fc.id + '=' + (fc.type === 'multi' ? v.map(encodeURIComponent).join(',') : fc.type === 'range' ? `${v[0] ?? ''}-${v[1] ?? ''}` : fc.type === 'bool' ? '1' : v)); });
+  if (st.sort !== CFG[kind].sorts[0][0]) p.push('sort=' + st.sort);
+  if (st.sort === 'match') p.push('for=' + against(kind).id);
+  if (st.view !== 'table') p.push('view=' + st.view);
+  if (st.page > 1) p.push('page=' + st.page);
+  return `smallfold.example/${kind}${p.length ? '?' + p.join('&') : ''}`;
+}
+
+/* ---------- small pieces ---------- */
+const badge = (pair) => `<span class="badge ${pair[1]}">${esc(pair[0])}</span>`;
+const srcBadge = l => l === 'confirmed' ? '<span class="badge confirmed">Confirmed</span>' : '<span class="badge detected">Detected, not verified</span>';
+const btn = (act, label, cls = '', attrs = '') => `<button type="button" class="btn ${cls}" data-act="${act}" ${attrs}>${label}</button>`;
+const fakeLink = t => `<button type="button" class="link" data-act="fake">${esc(t)}</button>`;
+const scoreHtml = sc => `<span class="band ${sc.band.toLowerCase()}">${sc.band} match · ${sc.total}</span>`;
+const reasonsHtml = sc => `<div class="meter" role="img" aria-label="Score ${sc.total} out of 100"><i style="width:${sc.total}%"></i></div><ul class="reasons">${sc.rs.map(r => `<li><span class="p">+${r.p}</span><span>${esc(r.t)} ${r.un ? '<span class="badge detected">Detected</span>' : ''}</span></li>`).join('')}</ul>`;
+function toast(msg, action) {
+  const box = $('#toasts'), el = document.createElement('div');
+  el.className = 'toast'; el.setAttribute('role', 'status');
+  el.innerHTML = `<span>${esc(msg)}</span>${action ? `<button type="button" data-act="${action[0]}" ${action[2] || ''}>${esc(action[1])}</button>` : ''}`;
+  box.appendChild(el); setTimeout(() => el.remove(), 6000);
+}
+function keep(fn) {
+  const a = document.activeElement, id = a && a.id; let pos = null; try { pos = a && a.selectionStart; } catch (e) { }
+  fn();
+  if (id) { const n = document.getElementById(id); if (n && n !== document.activeElement) { n.focus({ preventScroll: true }); try { if (pos != null) n.setSelectionRange(pos, pos); } catch (e) { } } }
+}
+
+/* ---------- filter rail ---------- */
+const T2V = t => t >= 100 ? 1e6 : nice(1000 * Math.pow(10, t / 100 * 3));
+const V2T = v => Math.max(0, Math.min(100, Math.round(Math.log10(v / 1000) / 3 * 100)));
+const PRESETS = [[1000, 10000, '1k to 10k'], [10000, 50000, '10k to 50k'], [50000, 100000, '50k to 100k'], [100000, null, '100k and above']];
+function rail(kind) {
+  const st = S.L[kind], cfg = CFG[kind], n = chips(kind).length;
+  const groups = cfg.facets.filter(fc => !fc.hidden).map(fc => {
+    const v = st.f[fc.id], key = kind + fc.id, open = key in S.open ? S.open[key] : (fc.open || isOn(v));
+    let body = '';
+    if (fc.type === 'range') {
+      const a = v ? v[0] : null, b = v ? v[1] : null, ta = a == null ? 0 : V2T(a), tb = b == null ? 100 : V2T(b);
+      body = `<div class="dual" id="dual-${kind}"><div class="track"></div><div class="fill"></div>
+        <input type="range" min="0" max="100" value="${ta}" id="sl-${kind}-a" data-slider="a" aria-label="Fewest subscribers">
+        <input type="range" min="0" max="100" value="${tb}" id="sl-${kind}-b" data-slider="b" aria-label="Most subscribers"></div>
+        <div class="scale" aria-hidden="true"><span>1k</span><span>10k</span><span>100k</span><span>1M+</span></div>
+        <div class="minmax"><div><label class="label" for="mn-${kind}">From</label><input class="control sm" id="mn-${kind}" data-minmax="a" inputmode="numeric" placeholder="Any" value="${a == null ? '' : num(a)}"></div><span class="muted" style="padding-top:18px">to</span>
+        <div><label class="label" for="mx-${kind}">To</label><input class="control sm" id="mx-${kind}" data-minmax="b" inputmode="numeric" placeholder="Any" value="${b == null ? '' : num(b)}"></div></div>
+        <div class="presets">${PRESETS.map((p, i) => `<button type="button" class="pre" data-act="preset" data-i="${i}" aria-pressed="${!!v && v[0] === p[0] && v[1] === p[1]}">${p[2]}</button>`).join('')}</div>
+        <p class="small muted" style="margin-top:8px">You can type 10k or 1.5M.</p>`;
+    } else if (fc.type === 'radio') {
+      const opts = fc.opts();
+      if (fc.seg) body = `<div class="seg" role="radiogroup" aria-label="${esc(fc.label)}">${[['', 'Any'], ...opts].map(o => `<label><input type="radio" name="f-${kind}-${fc.id}" id="f-${kind}-${fc.id}-${o[0] || 'any'}" data-f="${fc.id}" value="${o[0]}" ${(v || '') === o[0] ? 'checked' : ''}><span>${o[1]}${o[0] ? ` <small data-cnt="${fc.id}|${o[0]}"></small>` : ''}</span></label>`).join('')}</div>`;
+      else body = [['', 'Any'], ...opts].map(o => `<label class="opt"><input type="radio" name="f-${kind}-${fc.id}" id="f-${kind}-${fc.id}-${o[0] || 'any'}" data-f="${fc.id}" value="${o[0]}" ${(v || '') === o[0] ? 'checked' : ''}><span class="t">${esc(o[1])}</span>${o[0] ? `<span class="cnt" data-cnt="${fc.id}|${o[0]}"></span>` : ''}</label>`).join('');
+      if (fc.hint) body += `<p class="small muted" style="margin-top:8px">${fc.hint}</p>`;
+      if (fc.extra) body += `<label class="opt" style="margin-top:8px"><input type="checkbox" id="f-${kind}-detected" data-f="detected" data-bool ${st.f.detected ? 'checked' : ''}><span class="t">Count detected records too <span class="muted small">(not verified)</span></span></label>`;
+    } else if (fc.type === 'multi') {
+      const opts = fc.opts(), list = opts.map(o => `<label class="opt" data-name="${esc(o[1].toLowerCase())}"><input type="checkbox" id="f-${kind}-${fc.id}-${esc(slug(String(o[0])))}" data-f="${fc.id}" value="${esc(o[0])}" ${(v || []).includes(o[0]) ? 'checked' : ''}><span class="t">${esc(o[1])}</span><span class="cnt" data-cnt="${fc.id}|${esc(o[0])}"></span></label>`).join('');
+      body = fc.search ? `<label class="sr" for="fs-${kind}-${fc.id}">Find a sponsor in this list</label><input class="control sm" id="fs-${kind}-${fc.id}" data-fsearch placeholder="Find a sponsor"><div class="scroll">${list}</div>` : opts.length > 7 ? `<div class="scroll">${list}</div>` : list || '<p class="small muted">Nothing to pick yet.</p>';
+    } else body = `<label class="opt"><input type="checkbox" id="f-${kind}-${fc.id}" data-f="${fc.id}" data-bool ${v ? 'checked' : ''}><span class="t">Only show these</span><span class="cnt" data-cnt="${fc.id}|1"></span></label>`;
+    return `<details data-key="${key}" ${open ? 'open' : ''}><summary><span class="label" style="color:var(--ink)">${esc(fc.label)}</span>${isOn(v) || (fc.extra && st.f[fc.extra]) ? '<span class="on" title="Filter is on"></span>' : ''}</summary><div class="body">${body}</div></details>`;
+  }).join('');
+  return `<div class="rail__head"><h2 style="font-size:1.375rem">Filters</h2><span class="row">${n ? `<button type="button" class="link small" data-act="clear">Clear all</button>` : ''}<button type="button" class="btn ghost xs railclose" data-act="rail">Done</button></span></div>
+    <div class="field"><label class="label" for="q-${kind}">Search</label><input class="control sm" id="q-${kind}" data-q placeholder="${kind === 'creators' ? 'Name, channel or email' : 'Name, industry or website'}" value="${esc(st.q)}"></div>${groups}`;
+}
+function syncSlider(kind) {
+  const d = $('#dual-' + kind); if (!d) return;
+  const a = +$('[data-slider=a]', d).value, b = +$('[data-slider=b]', d).value, f = $('.fill', d);
+  f.style.left = `calc(11px + (100% - 22px) * ${a / 100})`; f.style.width = `calc((100% - 22px) * ${(b - a) / 100})`;
+}
+function updateCounts(kind) {
+  const cfg = CFG[kind];
+  $$('#rail [data-cnt]').forEach(el => { const [id, val] = el.dataset.cnt.split('|'), fc = cfg.facets.find(f => f.id === id), n = optCount(kind, fc, val); el.textContent = n; const o = el.closest('.opt'); if (o) o.classList.toggle('zero', n === 0 && !$('input', o).checked); });
+  syncSlider(kind);
+}
+
+/* ---------- results ---------- */
+function spCell(it, F, kind) {
+  const c = it._conf.length, d = it._all.length - c, last = lastOf(it, F);
+  if (!it._all.length) return '<span class="muted">None found</span>';
+  const n = kind === 'sponsors' ? `${plural(distinct(it._conf, 'c'), 'creator')}` : `${c} confirmed`;
+  return `${n}${d ? ` <span class="muted">+ ${d} detected</span>` : ''}<span class="sub">${last ? 'Last: ' + fmtDate(last) : 'No confirmed date'}</span>`;
+}
+function results(kind) {
+  const st = S.L[kind], cfg = CFG[kind], all = filtered(kind), total = cfg.items().length;
+  st.ids = all.map(x => x.id);
+  const pages = Math.max(1, Math.ceil(all.length / PAGE)); if (st.page > pages) st.page = pages;
+  const rows = all.slice((st.page - 1) * PAGE, st.page * PAGE), ch = chips(kind), ag = st.sort === 'match' ? against(kind) : null;
+  const pool = kind === 'creators' ? DB.sponsors : DB.creators;
+  const views = DB.views[kind];
+  let html = `<div class="tools">
+    <button type="button" class="btn ghost sm filterbtn" data-act="rail">Filters${ch.length ? ` (${ch.length})` : ''}</button>
+    <div class="count grow" role="status" aria-live="polite">${all.length === total ? `${total} ${cfg.one}s` : `${all.length} of ${total} ${cfg.one}s`}</div>
+    <label class="sr" for="sort-${kind}">Sort by</label><select class="control sm" id="sort-${kind}" data-sort>${cfg.sorts.map(s => `<option value="${s[0]}" ${st.sort === s[0] ? 'selected' : ''}>Sort: ${s[1]}</option>`).join('')}</select>
+    ${ag ? `<label class="sr" for="ag-${kind}">Match against</label><select class="control sm" id="ag-${kind}" data-against>${pool.slice().sort((a, b) => a.name.localeCompare(b.name)).map(o => `<option value="${o.id}" ${o.id === ag.id ? 'selected' : ''}>For: ${esc(kind === 'creators' ? o.name : o.channel)}</option>`).join('')}</select>` : ''}
+    <div class="seg" role="radiogroup" aria-label="View">${[['table', 'Table'], ['cards', 'Cards']].map(v => `<label><input type="radio" name="view-${kind}" id="view-${kind}-${v[0]}" data-view value="${v[0]}" ${st.view === v[0] ? 'checked' : ''}><span>${v[1]}</span></label>`).join('')}</div>
+    <details class="menu" id="views-${kind}"><summary class="btn ghost sm">Saved views</summary><div class="pop">
+      ${views.map((v, i) => `<button type="button" class="item" data-act="view" data-i="${i}">${esc(v.name)} <span class="muted small">${v.mine ? 'Mine' : 'Shared'}</span></button>`).join('')}
+      <hr><div class="row"><label class="sr" for="vn-${kind}">Name for this view</label><input class="control sm grow" id="vn-${kind}" placeholder="Name this view"><button type="button" class="btn sm" data-act="saveview">Save</button></div></div></details>
+  </div>`;
+  if (ch.length) html += `<div class="chips">${ch.map(c => `<span class="chip">${esc(c.t)}<button type="button" data-act="unchip" data-id="${c.id}" data-val="${esc(c.val ?? '')}" aria-label="Remove filter ${esc(c.t)}">×</button></span>`).join('')}<button type="button" class="link small" data-act="clear">Clear all</button></div>`;
+  if (st.sel.size) html += `<div class="bulk"><strong>${st.sel.size} selected</strong>
+    ${kind === 'creators' ? `<label class="sr" for="bl-list">List</label><select class="control sm" id="bl-list">${DB.lists.map(l => `<option value="${l.id}">${esc(l.name)}</option>`).join('')}<option value="_new">New list</option></select>${btn('addlist', 'Add to list', 'ghost xs')}` : ''}
+    <label class="sr" for="bl-tag">Tag</label><select class="control sm" id="bl-tag">${(kind === 'creators' ? TAGS : ['Pays on time', 'Slow to reply', 'Wants long-form', 'Seasonal']).map(t => `<option>${t}</option>`).join('')}</select>${btn('addtag', 'Add tag', 'ghost xs')}
+    ${btn('bulkdraft', 'Start outreach drafts', 'xs')}${btn('unsel', 'Clear selection', 'ghost xs')}</div>`;
+  if (S.demo === 'loading') html += `<div class="tw" aria-busy="true"><table><tbody class="skel">${Array.from({ length: 8 }, (_, i) => `<tr><td style="width:${28 + (i % 3) * 8}%"><span></span></td><td><span></span></td><td><span></span></td><td style="width:12%"><span></span></td></tr>`).join('')}</tbody></table></div><p class="muted small" style="margin-top:8px">Loading state: this is what the list shows while it waits for data.</p>`;
+  else if (S.demo === 'error') html += `<div class="notice error" role="alert"><strong>The ${cfg.one}s could not be loaded.</strong> Check your connection, then try again. Your filters are kept.<div style="margin-top:10px">${btn('demo-off', 'Try again', 'sm')}</div></div>`;
+  else if (!rows.length) {
+    const relax = ch.map(c => { const F = JSON.parse(JSON.stringify(st.f)); let q = st.q; if (c.id === 'q') q = ''; else if (c.val != null && c.val !== '') F[c.id] = F[c.id].filter(x => x !== c.val); else delete F[c.id]; return { c, n: cfg.items().filter(it => passes(kind, it, F, q)).length }; }).filter(x => x.n > 0).sort((a, b) => b.n - a.n).slice(0, 3);
+    html += `<div class="empty"><h2>No ${cfg.one}s match all of these filters</h2><p>${relax.length ? 'Removing one filter brings results back:' : 'Try clearing the filters.'}</p><div class="row">${relax.map(x => `<button type="button" class="btn ghost sm" data-act="unchip" data-id="${x.c.id}" data-val="${esc(x.c.val ?? '')}">Remove "${esc(x.c.t)}" (${x.n})</button>`).join('')}${btn('clear', 'Clear all filters', 'sm')}</div></div>`;
+  } else if (st.view === 'cards') {
+    html += `<div class="cards">${rows.map(it => {
+      const sc = ag ? (kind === 'creators' ? score(it, ag) : score(ag, it)) : null;
+      return kind === 'creators' ? `<article class="tile card" data-act="open" data-kind="creator" data-id="${it.id}"><div class="row" style="justify-content:space-between">${badge(STATUS[it.status])}<label class="row small muted"><input type="checkbox" data-act="sel" data-id="${it.id}" ${st.sel.has(it.id) ? 'checked' : ''} aria-label="Select ${esc(it.name)}"></label></div><h3><button type="button" class="link" data-act="open" data-kind="creator" data-id="${it.id}">${esc(it.name)}</button></h3><p class="muted small">${esc(it.channel)} · ${esc(NICHES[it.niche])}</p><div class="kv"><span class="muted">Subscribers</span><span class="num">${num(it.subs)}</span></div><div class="kv"><span class="muted">Average views</span><span class="num">${num(it.avgViews)}</span></div><div class="kv"><span class="muted">Sponsorships</span><span>${it._conf.length} confirmed${it._all.length - it._conf.length ? `, ${it._all.length - it._conf.length} detected` : ''}</span></div>${sc ? `<div>${scoreHtml(sc)}${reasonsHtml(sc)}</div>` : ''}</article>`
+        : `<article class="tile card" data-act="open" data-kind="sponsor" data-id="${it.id}"><div class="row" style="justify-content:space-between">${badge(RELS[it.rel])}<label class="row small muted"><input type="checkbox" data-act="sel" data-id="${it.id}" ${st.sel.has(it.id) ? 'checked' : ''} aria-label="Select ${esc(it.name)}"></label></div><h3><button type="button" class="link" data-act="open" data-kind="sponsor" data-id="${it.id}">${esc(it.name)}</button></h3><p class="muted small">${esc(it.industry)} · ${esc(COUNTRIES[it.country])}</p><div class="kv"><span class="muted">Target size</span><span class="num">${short(it.target[0])} to ${short(it.target[1])}</span></div><div class="kv"><span class="muted">Budget</span><span class="num">${usd(it.budget[0])} to ${usd(it.budget[1])}</span></div><div class="kv"><span class="muted">Creators sponsored</span><span>${distinct(it._conf, 'c')} confirmed</span></div>${sc ? `<div>${scoreHtml(sc)}${reasonsHtml(sc)}</div>` : ''}</article>`;
+    }).join('')}</div>`;
+  } else {
+    const allSel = rows.every(r => st.sel.has(r.id));
+    const head = kind === 'creators' ? ['Name', 'Niche', '<span class="r">Subscribers</span>', '<span class="r">Avg views</span>', 'Sponsorships', 'Status', 'Last contacted'] : ['Sponsor', 'Niches', 'Target size', 'Budget per creator', 'Creators sponsored', 'Contact status', 'Last contacted'];
+    html += `<div class="tw" tabindex="0" role="region" aria-label="${cfg.title}"><table><thead><tr><th><input type="checkbox" data-act="selall" ${allSel ? 'checked' : ''} aria-label="Select all on this page"></th>${head.map((h, i) => `<th class="${/class="r"/.test(h) ? 'r' : ''}">${h.replace(/<[^>]+>/g, '')}</th>`).join('')}${ag ? '<th>Match</th>' : ''}</tr></thead><tbody>${rows.map(it => {
+      const sc = ag ? (kind === 'creators' ? score(it, ag) : score(ag, it)) : null;
+      const why = sc ? `<td><details class="why"><summary>${scoreHtml(sc)}</summary>${reasonsHtml(sc)}</details></td>` : '';
+      return kind === 'creators' ? `<tr class="click" data-act="open" data-kind="creator" data-id="${it.id}"><td><input type="checkbox" data-act="sel" data-id="${it.id}" ${st.sel.has(it.id) ? 'checked' : ''} aria-label="Select ${esc(it.name)}"></td><td class="name"><button type="button" class="link" data-act="open" data-kind="creator" data-id="${it.id}">${esc(it.name)}</button><span class="sub">${esc(it.channel)}${it.email ? '' : ' · no email'}</span></td><td>${esc(NICHES[it.niche])}<span class="sub">${esc(COUNTRIES[it.country])} · ${esc(it.lang)}</span></td><td class="r">${num(it.subs)}</td><td class="r">${num(it.avgViews)}</td><td class="sp">${spCell(it, st.f, kind)}</td><td>${badge(STATUS[it.status])}</td><td class="nw">${rel(it.lastContacted)}</td>${why}</tr>`
+        : `<tr class="click" data-act="open" data-kind="sponsor" data-id="${it.id}"><td><input type="checkbox" data-act="sel" data-id="${it.id}" ${st.sel.has(it.id) ? 'checked' : ''} aria-label="Select ${esc(it.name)}"></td><td class="name"><button type="button" class="link" data-act="open" data-kind="sponsor" data-id="${it.id}">${esc(it.name)}</button><span class="sub">${esc(it.industry)} · ${esc(COUNTRIES[it.country])}</span></td><td>${it.niches.slice(0, 2).map(n => esc(NICHES[n])).join(', ')}${it.niches.length > 2 ? ` <span class="muted">+${it.niches.length - 2}</span>` : ''}</td><td class="num">${short(it.target[0])} to ${short(it.target[1])}</td><td class="num">${usd(it.budget[0])} to ${usd(it.budget[1])}</td><td class="sp">${spCell(it, st.f, kind)}</td><td>${badge(RELS[it.rel])}</td><td class="nw">${rel(it.lastContacted)}</td>${why}</tr>`;
+    }).join('')}</tbody></table></div>`;
+  }
+  if (rows.length && !S.demo) html += `<div class="pager"><span>${(st.page - 1) * PAGE + 1}–${Math.min(st.page * PAGE, all.length)} of ${all.length}</span><span class="row">${btn('page', 'Previous', 'ghost sm', `data-d="-1" ${st.page <= 1 ? 'disabled' : ''}`)}${btn('page', 'Next', 'ghost sm', `data-d="1" ${st.page >= pages ? 'disabled' : ''}`)}</span></div>`;
+  return html;
+}
+function listPage(kind) {
+  const cfg = CFG[kind], owner = S.role === 'owner';
+  return `<div class="page-head"><div><h1 class="page-title">${cfg.title}</h1><p class="page-lead">${kind === 'creators' ? 'Find channels by size, niche and what they have done with sponsors before.' : 'Brands that sponsor creators, who they like to work with, and who to talk to.'}</p></div>
+    <div class="row">${btn(kind === 'creators' ? 'add-creator' : 'add-sponsor', 'Add ' + cfg.one)}${btn('import', 'Import CSV', 'ghost')}${owner ? btn('export', 'Export CSV', 'ghost') : ''}</div></div>
+    <div class="addr"><span class="label">Page address</span><code id="addr"></code><button type="button" class="link small" data-act="copy">Copy link</button></div>
+    <div class="layout">${S.railOpen ? '<div class="railveil" data-act="rail"></div>' : ''}<aside class="rail ${S.railOpen ? 'open' : ''}" id="rail" aria-label="Filters">${rail(kind)}</aside><section class="results" id="results" aria-label="Results">${results(kind)}</section></div>`;
+}
+function renderResults(kind) { keep(() => { $('#results').innerHTML = results(kind); }); $('#addr').textContent = address(kind); updateCounts(kind); }
+function renderList(kind) { keep(() => { $('#main').innerHTML = listPage(kind); }); $('#addr').textContent = address(kind); updateCounts(kind); }
+
+/* ---------- profiles ---------- */
+function tlItem(x, side) {
+  const c = CR(x.c), s = x.s && SPN(x.s);
+  const who = side === 'creator' ? (s ? `<button type="button" class="link" data-act="open" data-kind="sponsor" data-id="${s.id}"><strong>${esc(s.name)}</strong></button>` : '<strong>Brand not named</strong>') : `<button type="button" class="link" data-act="open" data-kind="creator" data-id="${c.id}"><strong>${esc(c.name)}</strong></button> <span class="muted small">${esc(c.channel)} · ${short(c.subs)} subscribers</span>`;
+  const src = x.label === 'confirmed' ? `Confirmed by ${esc(x.by)} on ${fmtDate(x.at)}. Source: ${esc(x.origin.toLowerCase())}.${x.note ? ' ' + esc(x.note) : ''}` : `Found automatically on ${fmtDate(x.at)}: ${esc(x.signal.charAt(0).toLowerCase() + x.signal.slice(1))}. Confidence: ${esc(x.conf.toLowerCase())}. Nobody has checked it.`;
+  const actions = S.confirming === x.id ? `<div class="tile" style="margin-top:8px"><div class="field"><label class="label" for="ev-${x.id}">How did you check it?</label><input class="control sm" id="ev-${x.id}" placeholder="For example: watched the video, ad read at 0:45"><span class="hint">Needed, so the next person knows why this is confirmed.</span></div><div class="row">${btn('confirm-save', 'Confirm record', 'xs', `data-id="${x.id}"`)}${btn('confirm-cancel', 'Cancel', 'ghost xs')}</div></div>`
+    : `<div class="row" style="margin-top:6px">${x.label === 'detected' ? btn('confirm', 'Confirm', 'xs', `data-id="${x.id}"`) + btn('reject', 'Reject', 'ghost xs', `data-id="${x.id}"`) : ''}${btn('rec-edit', 'Edit', 'ghost xs', `data-id="${x.id}" data-side="${side}"`)}</div>`;
+  return `<li class="${x.label === 'detected' ? 'det' : ''}"><div class="when">${fmtDate(x.date)}</div><div class="what">${who} ${srcBadge(x.label)}</div><div class="small">Video: "${esc(x.title)}" · ${fakeLink(x.url)} · ${num(x.views)} views</div><div class="small muted">${src}</div>${actions}</li>`;
+}
+function recForm(side, owner, x) {
+  const others = side === 'creator' ? DB.sponsors : DB.creators;
+  const d = new Date(x ? x.date : TODAY).toISOString().slice(0, 10);
+  return `<div class="tile" style="margin-bottom:16px"><h4 class="label" style="margin:0 0 12px;color:var(--ink)">${x ? 'Edit this record' : 'Add a sponsorship record'}</h4><div class="two">
+    <div class="field"><label class="label" for="rec-other">${side === 'creator' ? 'Sponsor' : 'Creator'}</label><select class="control sm" id="rec-other">${others.slice().sort((a, b) => a.name.localeCompare(b.name)).map(o => `<option value="${o.id}" ${x && (side === 'creator' ? x.s : x.c) === o.id ? 'selected' : ''}>${esc(o.name)}</option>`).join('')}</select></div>
+    <div class="field"><label class="label" for="rec-date">Date of the video</label><input class="control sm" type="date" id="rec-date" value="${d}" max="2026-11-25"></div>
+    <div class="field"><label class="label" for="rec-title">Video title</label><input class="control sm" id="rec-title" value="${esc(x ? x.title : '')}" placeholder="Optional"></div>
+    <div class="field"><label class="label" for="rec-note">How do you know?</label><input class="control sm" id="rec-note" value="${esc(x && x.note ? x.note : '')}" placeholder="For example: creator told us by email"></div></div>
+    <p class="small muted" style="margin-bottom:12px">${x && x.label === 'detected' ? 'Saving keeps this record as Detected. Use Confirm when someone has checked it.' : 'A record you enter yourself is saved as Confirmed, with your name and today\'s date.'}</p>
+    <div class="row">${btn('rec-save', 'Save record', 'xs', `data-side="${side}" data-owner="${owner}" data-id="${x ? x.id : ''}"`)}${btn('rec-cancel', 'Cancel', 'ghost xs')}</div></div>`;
+}
+function historySec(side, it) {
+  const all = DB.sp.filter(x => (side === 'creator' ? x.c : x.s) === it.id).sort((a, b) => b.date - a.date), live = all.filter(x => !x.rejected), rej = all.filter(x => x.rejected);
+  const conf = live.filter(x => x.label === 'confirmed').length;
+  const form = S.edit && S.edit.side === side && S.edit.owner === it.id ? recForm(side, it.id, S.edit.id ? DB.sp.find(x => x.id === S.edit.id) : null) : '';
+  return `<section class="sec"><div class="sec__head"><div><h3>${side === 'creator' ? 'Sponsorship history' : 'Creators they sponsored'}</h3><p class="small muted">${conf} confirmed, ${live.length - conf} detected and not verified</p></div>${btn('rec-add', 'Add a record', 'ghost xs', `data-side="${side}" data-owner="${it.id}"`)}</div>${form}
+    ${live.length ? `<ol class="tl">${live.map(x => tlItem(x, side)).join('')}</ol>` : `<p class="muted">No sponsorships found yet. That is not proof there were none: spoken ads leave no trace in a description. Add a record when you know of one.</p>`}
+    ${rej.length ? `<button type="button" class="link small muted" data-act="toggle-rej">${S.showRejected ? 'Hide' : 'Show'} ${plural(rej.length, 'rejected record')}</button>${S.showRejected ? `<ul class="small muted" style="margin:8px 0 0;padding-left:18px">${rej.map(x => `<li>${fmtDate(x.date)} · ${esc(side === 'creator' ? (x.s ? SPN(x.s).name : 'Brand not named') : CR(x.c).name)} · rejected, kept so it is not detected again. <button type="button" class="link" data-act="unreject" data-id="${x.id}">Restore</button></li>`).join('')}</ul>` : ''}` : ''}</section>`;
+}
+function suggestSec(kind, it) {
+  const sg = suggest(kind, it), dnc = kind === 'creator' ? it.status === 'do_not_contact' : it.rel === 'do_not_contact';
+  return `<section class="sec"><h3>Suggested ${kind === 'creator' ? 'sponsors' : 'creators'}</h3>${dnc ? `<div class="notice warn">Marked Do not contact, so nothing is suggested and no pitch can be drafted.</div>` : sg.length ? sg.map(x => `<div class="sug"><div class="sug__head"><button type="button" class="link" data-act="open" data-kind="${kind === 'creator' ? 'sponsor' : 'creator'}" data-id="${x.o.id}"><strong>${esc(x.o.name)}</strong></button>${scoreHtml(x.sc)}</div><p class="small muted">${kind === 'creator' ? `${esc(x.o.industry)} · budget ${usd(x.o.budget[0])} to ${usd(x.o.budget[1])}` : `${esc(x.o.channel)} · ${esc(NICHES[x.o.niche])} · ${short(x.o.subs)} subscribers`}</p>${reasonsHtml(x.sc)}<div class="row">${btn('link', 'Link', 'xs', `data-c="${x.c.id}" data-s="${x.s.id}"`)}${btn('draft', 'Draft pitch with Claude', 'ghost xs', `data-c="${x.c.id}" data-s="${x.s.id}"`)}</div></div>`).join('') : '<p class="muted">No match scores 40 or more yet. Scores improve as sponsor targets and confirmed sponsorships are filled in.</p>'}
+    <p class="small muted">Score out of 100: niche fit 40, size fit 25, similar creators 20, recency 15. Pairs already linked, or sponsored in the last 180 days, are left out.</p></section>`;
+}
+function dealsSec(kind, it) {
+  const ds = DB.deals.filter(d => (kind === 'creator' ? d.c : d.s) === it.id);
+  return `<section class="sec"><h3>Deals</h3>${ds.length ? ds.map(d => `<div class="person"><span>${esc(kind === 'creator' ? SPN(d.s).name : CR(d.c).name)} <span class="badge">${STAGE_LABEL[d.stage]}</span></span><span class="num muted">${d.amount ? usd(d.amount) : 'Amount not set'} · ${rel(d.changed)}</span></div>`).join('') : '<p class="muted">No deals yet. Use Link to start one.</p>'}</section>`;
+}
+function outreachSec(kind, it) {
+  const es = DB.emails.filter(e => (kind === 'creator' ? e.c : e.s) === it.id).sort((a, b) => b.date - a.date);
+  return `<section class="sec"><h3>Outreach history</h3>${es.length ? es.map(e => `<div class="person"><span>${esc(e.subject)}</span><span class="row">${badge(e.status === 'replied' ? ['Replied', 'good'] : e.status === 'draft' ? ['Draft, not sent', 'neutral'] : ['Sent', 'good'])}<span class="muted small">${fmtDate(e.date)}</span></span></div>`).join('') : '<p class="muted">Nobody has written to them yet.</p>'}</section>`;
+}
+const notesSec = (kind, it) => `<section class="sec"><h3>Notes</h3><label class="sr" for="notes-${kind}-${it.id}">Notes</label><textarea class="control" id="notes-${kind}-${it.id}" placeholder="Anything the team should know">${esc(it.notes)}</textarea><div class="row" style="margin-top:8px">${btn('save-notes', 'Save notes', 'ghost xs', `data-kind="${kind}" data-id="${it.id}"`)}</div></section>`;
+function creatorBody(c, full) {
+  const owner = S.role === 'owner';
+  const vids = [...c._all.filter(x => since(x.date) <= 200).map(x => ({ t: x.title, d: x.date, v: x.views, paid: x.label })), ...CH[c.niche][1].map((t, i) => ({ t, d: c.lastVideo - i * 9 * DAY, v: Math.round(c.avgViews * (0.7 + ((c.id * 7 + i * 13) % 10) / 14)), paid: null }))].sort((a, b) => b.d - a.d).slice(0, 6);
+  const head = `<div class="phead"><div class="row" style="margin-bottom:8px">${badge(STATUS[c.status])}${c.tags.map(t => `<span class="tag">${esc(t)}</span>`).join('')}</div><h2>${esc(c.name)}</h2><p class="muted">${esc(c.channel)} · ${fakeLink('youtube.example/@' + slug(c.channel))}</p>
+    <dl class="dl"><dt>Subscribers</dt><dd class="num">${num(c.subs)} <span class="muted small">checked ${rel(c.checked).toLowerCase()}</span></dd><dt>Average views</dt><dd class="num">${num(c.avgViews)} <span class="muted small">over the last 20 videos</span></dd><dt>Niche</dt><dd>${esc(NICHES[c.niche])}</dd><dt>Country, language</dt><dd>${esc(COUNTRIES[c.country])}, ${esc(c.lang)}</dd><dt>Email</dt><dd>${c.email ? esc(c.email) : '<span class="muted">None on file</span>'}</dd><dt>Phone</dt><dd>${c.phone ? esc(c.phone) : '<span class="muted">None on file</span>'}</dd><dt>Last contacted</dt><dd>${rel(c.lastContacted)}</dd><dt>Uploads</dt><dd>About ${c.uploads} a month, last one ${rel(c.lastVideo).toLowerCase()}</dd></dl>
+    <div class="row">${btn('link', 'Link to a sponsor', 'sm', `data-c="${c.id}"`)}${btn('draft', 'Draft pitch with Claude', 'ghost sm', `data-c="${c.id}"`)}${btn('edit-rec', 'Edit', 'ghost sm')}${owner ? btn('delete', 'Delete', 'danger sm') : ''}</div></div>`;
+  const videos = `<section class="sec"><h3>Recent videos</h3><div class="tw"><table><thead><tr><th>Video</th><th>Date</th><th class="r">Views</th><th>Paid sign</th></tr></thead><tbody>${vids.map(v => `<tr><td>${esc(v.t)}</td><td>${fmtDate(v.d)}</td><td class="r">${num(v.v)}</td><td>${v.paid ? srcBadge(v.paid) : '<span class="muted">None found</span>'}</td></tr>`).join('')}</tbody></table></div></section>`;
+  const main = head + historySec('creator', c) + videos, side = suggestSec('creator', c) + dealsSec('creator', c) + outreachSec('creator', c) + notesSec('creator', c);
+  return full ? `<div class="pgrid"><div>${main}</div><aside>${side}</aside></div>` : head + historySec('creator', c) + suggestSec('creator', c) + videos + dealsSec('creator', c) + outreachSec('creator', c) + notesSec('creator', c);
+}
+function sponsorBody(s, full) {
+  const owner = S.role === 'owner';
+  const head = `<div class="phead"><div class="row" style="margin-bottom:8px">${badge(RELS[s.rel])}${s.tags.map(t => `<span class="tag">${esc(t)}</span>`).join('')}</div><h2>${esc(s.name)}</h2><p class="muted">${esc(s.industry)} · ${fakeLink(s.site)}</p>
+    <dl class="dl"><dt>Location</dt><dd>${esc(COUNTRIES[s.country])}</dd><dt>Company size</dt><dd>${esc(s.size)} people</dd><dt>Niches they sponsor</dt><dd>${s.niches.map(n => esc(NICHES[n])).join(', ')}</dd><dt>Target creator size</dt><dd class="num">${num(s.target[0])} to ${num(s.target[1])} subscribers</dd><dt>Typical budget</dt><dd class="num">${usd(s.budget[0])} to ${usd(s.budget[1])} per creator</dd><dt>Creators sponsored</dt><dd>${distinct(s._conf, 'c')} confirmed${s._all.length - s._conf.length ? `, ${s._all.length - s._conf.length} more detected` : ''}</dd><dt>Last contacted</dt><dd>${rel(s.lastContacted)}</dd></dl>
+    <div class="row">${btn('link', 'Link to a creator', 'sm', `data-s="${s.id}"`)}${btn('draft', 'Draft pitch with Claude', 'ghost sm', `data-s="${s.id}"`)}${btn('edit-rec', 'Edit', 'ghost sm')}${owner ? btn('delete', 'Delete', 'danger sm') : ''}</div></div>`;
+  const people = `<section class="sec"><div class="sec__head"><h3>Contact people</h3>${btn('add-contact', 'Add a person', 'ghost xs')}</div>${s.contacts.length ? s.contacts.map(p => `<div class="person"><span><strong>${esc(p.name)}</strong> ${p.primary ? '<span class="badge accent">Main contact</span>' : ''}<br><span class="muted">${esc(p.role)}</span></span><span style="text-align:right">${esc(p.email)}<br><span class="muted">${p.phone ? esc(p.phone) + ' · ' : ''}${esc(p.linkedin)}</span></span></div>`).join('') : '<p class="muted">No contact person yet. A pitch to this sponsor needs one.</p>'}</section>`;
+  const main = head + people + historySec('sponsor', s), side = suggestSec('sponsor', s) + dealsSec('sponsor', s) + outreachSec('sponsor', s) + notesSec('sponsor', s);
+  return full ? `<div class="pgrid"><div>${main}</div><aside>${side}</aside></div>` : head + people + historySec('sponsor', s) + suggestSec('sponsor', s) + dealsSec('sponsor', s) + outreachSec('sponsor', s) + notesSec('sponsor', s);
+}
+function renderPanel() {
+  const host = $('#panel');
+  if (!S.panel) { host.innerHTML = ''; return; }
+  const { kind, id } = S.panel, it = kind === 'creator' ? CR(id) : SPN(id), ids = S.L[kind + 's'].ids, i = ids.indexOf(id);
+  host.innerHTML = `<div class="overlay" data-act="close-panel"></div><aside class="panel" role="dialog" aria-modal="true" aria-label="${esc(it.name)}"><div class="panel__head"><button type="button" class="x" id="panel-x" data-act="close-panel" aria-label="Close">×</button><span class="grow"></span>
+    ${i >= 0 ? `<span class="small muted num">${i + 1} of ${ids.length}</span>${btn('step', 'Previous', 'ghost xs', `data-d="-1" id="panel-prev" ${i <= 0 ? 'disabled' : ''}`)}${btn('step', 'Next', 'ghost xs', `data-d="1" id="panel-next" ${i >= ids.length - 1 ? 'disabled' : ''}`)}` : ''}
+    <a class="btn ghost xs" href="#${kind}-${id}" data-act="fullpage">Open full page</a></div><div class="panel__body" id="panel-body">${kind === 'creator' ? creatorBody(it, false) : sponsorBody(it, false)}</div></aside>`;
+}
+
+/* ---------- deals ---------- */
+const commission = a => Math.round(a * (a < 500 ? .10 : a < 2000 ? .08 : .05));
+function dealsPage() {
+  const total = arr => arr.reduce((x, d) => x + (d.amount || 0), 0);
+  const head = `<div class="page-head"><div><h1 class="page-title">Deals</h1><p class="page-lead">A link between a creator and a sponsor starts on the left and moves right as it progresses.</p></div><div class="seg" role="radiogroup" aria-label="View">${[['board', 'Board'], ['table', 'Table']].map(v => `<label><input type="radio" name="dealview" id="dealview-${v[0]}" data-dealview value="${v[0]}" ${S.dealView === v[0] ? 'checked' : ''}><span>&nbsp;${v[1]}&nbsp;</span></label>`).join('')}</div></div>`;
+  if (S.dealView === 'table') return head + `<div class="tw" tabindex="0" role="region" aria-label="Deals"><table><thead><tr><th>Creator</th><th>Sponsor</th><th>Stage</th><th class="r">Amount</th><th class="r">Commission</th><th>Last change</th></tr></thead><tbody>${DB.deals.slice().sort((a, b) => b.changed - a.changed).map(d => `<tr><td><button type="button" class="link" data-act="open" data-kind="creator" data-id="${d.c}">${esc(CR(d.c).name)}</button></td><td><button type="button" class="link" data-act="open" data-kind="sponsor" data-id="${d.s}">${esc(SPN(d.s).name)}</button></td><td><span class="badge">${STAGE_LABEL[d.stage]}</span></td><td class="r">${d.amount ? usd(d.amount) : '<span class="muted">Not set</span>'}</td><td class="r">${d.amount ? usd(commission(d.amount)) : '<span class="muted">–</span>'}</td><td>${rel(d.changed)}</td></tr>`).join('')}</tbody></table></div>`;
+  return head + `<div class="board" tabindex="0" role="region" aria-label="Deals board">${STAGES.map(([k, l]) => { const ds = DB.deals.filter(d => d.stage === k).sort((a, b) => b.changed - a.changed); return `<section class="col" data-stage="${k}" aria-label="${l}"><div class="col__head"><div class="label" style="color:var(--ink)">${l} <span class="muted">${ds.length}</span></div><div class="small muted num">${total(ds) ? usd(total(ds)) : 'No amounts yet'}</div></div><div class="col__body">${ds.map(d => `<article class="deal ${S.flash === d.id ? 'flash' : ''}" draggable="true" data-deal="${d.id}"><div><button type="button" class="link" data-act="open" data-kind="creator" data-id="${d.c}"><strong>${esc(CR(d.c).name)}</strong></button><br><span class="muted">with</span> <button type="button" class="link" data-act="open" data-kind="sponsor" data-id="${d.s}">${esc(SPN(d.s).name)}</button></div><div class="kv"><span class="num">${d.amount ? usd(d.amount) : 'Amount not set'}</span><span class="muted">${rel(d.changed)}</span></div><label class="sr" for="mv-${d.id}">Move this deal to</label><select class="control sm" id="mv-${d.id}" data-move="${d.id}">${STAGES.map(s => `<option value="${s[0]}" ${s[0] === k ? 'selected' : ''}>${s[0] === k ? 'Stage: ' : 'Move to: '}${s[1]}</option>`).join('')}</select>${k === 'matched' || k === 'contacted' ? btn('draft', 'Draft pitch', 'ghost xs', `data-c="${d.c}" data-s="${d.s}"`) : ''}</article>`).join('') || '<p class="small muted" style="padding:8px">Nothing here.</p>'}</div></section>`; }).join('')}</div><p class="small muted">Drag a card, or use its "Move to" menu. "Matched" is a proposed new first stage for a pair that is linked but not contacted yet.</p>`;
+}
+
+/* ---------- pitch draft ---------- */
+function draftFor(c, s, to) {
+  const used = [], out = [], nn = NICHES[c.niche].toLowerCase(), inRange = c.subs >= s.target[0] && c.subs <= s.target[1];
+  const conf = c._conf.filter(x => x.s && x.s !== s.id), names = [...new Set(conf.map(x => SPN(x.s).name))].slice(0, 2);
+  const det = c._all.filter(x => x.label === 'detected');
+  const sim = [...new Set(s._conf.filter(x => x.c !== c.id && CR(x.c).niche === c.niche).map(x => x.c))].length;
+  used.push(`Subscribers: ${num(c.subs)} (checked ${rel(c.checked).toLowerCase()})`, `Niche: ${NICHES[c.niche]}`, `Sponsor's target size: ${short(s.target[0])} to ${short(s.target[1])} subscribers`);
+  conf.slice(0, 2).forEach(x => used.push(`Confirmed sponsorship: ${SPN(x.s).name}, ${monYear(x.date)} (confirmed by ${x.by})`));
+  if (sim) used.push(`${s.name} sponsored ${sim} other ${nn} ${sim === 1 ? 'channel' : 'channels'} (confirmed)`);
+  det.slice(0, 3).forEach(x => out.push(`Detected sponsorship: ${x.s ? SPN(x.s).name : 'brand not named'}, ${monYear(x.date)} (not confirmed)`));
+  out.push('Prices and budgets (never in a first email)', "The creator's email, phone and notes (Claude never receives them)");
+  const hist = names.length ? (names.length === 2 ? `${names[0]} and ${names[1]}` : names[0]) : null;
+  const foot = `\n\n${STAFF[S.role]}\nSmallfold · [sender postal address from Settings]\nIf you would rather not hear from us, use this link and we will not write again: [opt-out link]`;
+  let subject, body;
+  if (to === 'creator') {
+    subject = `A sponsor that fits ${c.channel}: ${s.name}`;
+    body = `Hi ${c.first},\n\nI'm ${STAFF[S.role].split(' ')[0]} from Smallfold. We connect small YouTube channels with sponsors and handle the back and forth for you.\n\n${s.name} is looking for ${nn} channels with ${short(s.target[0])} to ${short(s.target[1])} subscribers. ${c.channel} has ${num(c.subs)} subscribers${inRange ? ', so it is the size they ask for' : ''}.${hist ? `\n\nYou have already worked with ${hist}, so you know how a sponsored video works.` : ''}${sim ? `\n\n${s.name} has sponsored ${sim} other ${nn} ${sim === 1 ? 'channel' : 'channels'} before.` : ''}\n\nWould you like to hear more? A short reply is enough.` + foot;
+  } else {
+    const p = s.contacts[0]; used.push(`Average views: ${num(c.avgViews)} over the last 20 videos`);
+    subject = `A ${nn} channel for ${s.name}: ${c.channel}`;
+    body = `Hi ${p ? p.first : '[contact name]'},\n\nI'm ${STAFF[S.role].split(' ')[0]} from Smallfold. We connect brands with small YouTube channels and handle the back and forth.\n\n${c.channel} is a ${nn} channel with ${num(c.subs)} subscribers and about ${num(c.avgViews)} views per video${inRange ? `, inside the size ${s.name} usually works with` : ''}.${hist ? `\n\nThe channel has completed sponsorships with ${hist}.` : ''}${sim ? `\n\nYou have sponsored ${sim} similar ${sim === 1 ? 'channel' : 'channels'} before, so the audience should feel familiar.` : ''}\n\nIf this sounds useful, I can send more detail and set up an introduction.` + foot;
+  }
+  return { subject, body, used, out };
+}
+
+/* ---------- modals ---------- */
+function modalHtml() {
+  const m = S.modal; if (!m) return '';
+  const wrap = (title, body, foot) => `<div class="movl" data-act="close-modal-bg"><div class="modal" role="dialog" aria-modal="true" aria-label="${esc(title)}"><div class="modal__head"><h2>${title}</h2><button type="button" class="x" id="modal-x" data-act="close-modal" aria-label="Close">×</button></div>${body}<div class="modal__foot">${foot}</div></div></div>`;
+  const pickers = (needC, needS) => {
+    const c = m.c && CR(m.c), s = m.s && SPN(m.s);
+    const ranked = (pool, f) => pool.map(o => ({ o, sc: f(o) })).sort((a, b) => b.sc.total - a.sc.total);
+    let h = '<div class="two">';
+    h += `<div class="field"><label class="label" for="m-c">Creator</label><select class="control sm" id="m-c" data-mpick="c"><option value="">Choose a creator</option>${(s ? ranked(DB.creators, o => score(o, s)) : DB.creators.map(o => ({ o }))).map(x => `<option value="${x.o.id}" ${m.c === x.o.id ? 'selected' : ''}>${esc(x.o.name)}${x.sc ? ` · ${x.sc.band} ${x.sc.total}` : ''}</option>`).join('')}</select></div>`;
+    h += `<div class="field"><label class="label" for="m-s">Sponsor</label><select class="control sm" id="m-s" data-mpick="s"><option value="">Choose a sponsor</option>${(c ? ranked(DB.sponsors, o => score(c, o)) : DB.sponsors.map(o => ({ o }))).map(x => `<option value="${x.o.id}" ${m.s === x.o.id ? 'selected' : ''}>${esc(x.o.name)}${x.sc ? ` · ${x.sc.band} ${x.sc.total}` : ''}</option>`).join('')}</select></div></div>`;
+    return h;
+  };
+  if (m.type === 'link') {
+    const c = m.c && CR(m.c), s = m.s && SPN(m.s), both = c && s, sc = both && score(c, s), blk = both && blocked(c, s), dup = both && openDeal(c.id, s.id);
+    return wrap('Link a creator and a sponsor', `${pickers()}${both ? `<div class="sug"><div class="sug__head"><strong>${esc(c.name)} with ${esc(s.name)}</strong>${scoreHtml(sc)}</div>${reasonsHtml(sc)}</div>` : '<p class="muted" style="margin-bottom:16px">Pick both sides. The lists are ordered by match score once one side is chosen.</p>'}
+      ${blk ? `<div class="notice error" role="alert">${blk} This pair cannot be linked.</div>` : ''}${dup ? `<div class="notice warn">These two already have an open deal at "${STAGE_LABEL[dup.stage]}".</div>` : ''}
+      <div class="two"><div class="field"><label class="label" for="m-amount">Expected amount (USD)</label><input class="control sm" id="m-amount" inputmode="decimal" placeholder="Optional"><span class="hint">You can set it later.</span></div>
+      <div class="field"><label class="label" for="m-stage">Starting stage</label><select class="control sm" id="m-stage"><option value="matched">Matched (not contacted yet)</option><option value="contacted">Contacted</option></select></div></div>`,
+      btn('close-modal', 'Cancel', 'ghost sm') + btn('link-save', 'Create link', 'sm', both && !blk && !dup ? '' : 'disabled'));
+  }
+  if (m.type === 'draft') {
+    const c = m.c && CR(m.c), s = m.s && SPN(m.s), both = c && s, blk = both && blocked(c, s);
+    const noAddr = both && (m.to === 'creator' ? !c.email : !s.contacts.length);
+    const d = both && !blk ? draftFor(c, s, m.to) : null;
+    return wrap('Draft pitch with Claude', `${pickers()}<div class="field"><span class="label">The email goes to</span><div class="seg" role="radiogroup" aria-label="The email goes to">${[['creator', 'The creator'], ['sponsor', "The sponsor's contact"]].map(o => `<label><input type="radio" name="m-to" id="m-to-${o[0]}" data-mto value="${o[0]}" ${m.to === o[0] ? 'checked' : ''}><span>${o[1]}</span></label>`).join('')}</div></div>
+      ${blk ? `<div class="notice error" role="alert">${blk} No pitch can be drafted.</div>` : ''}${noAddr ? `<div class="notice warn">${m.to === 'creator' ? 'This creator has no email address on file.' : 'This sponsor has no contact person yet.'} The draft can be saved, but not sent.</div>` : ''}
+      ${d ? `<div class="notice">An example of what Claude would write. This prototype does not call Claude.</div><div class="field"><label class="label" for="m-subject">Subject</label><input class="control sm" id="m-subject" value="${esc(d.subject)}"></div><div class="field"><label class="label" for="m-body">Email</label><textarea class="control" id="m-body" rows="13">${esc(d.body)}</textarea></div>
+      <div class="facts"><div class="tile"><div class="label" style="color:var(--green)">Facts used</div><ul>${d.used.map(u => `<li>${esc(u)}</li>`).join('')}</ul></div><div class="tile"><div class="label" style="color:var(--amber)">Left out</div><ul>${d.out.map(u => `<li>${esc(u)}</li>`).join('')}</ul></div></div>
+      <p class="small muted" style="margin-top:12px">Test mode is on. Nothing is sent from here. A saved draft waits in Emails, Review, and only the owner's click on Send sends it.</p>` : both ? '' : '<p class="muted">Pick both sides to see the draft.</p>'}`,
+      btn('close-modal', 'Close', 'ghost sm') + btn('draft-save', 'Save draft to Review', 'sm', d ? '' : 'disabled'));
+  }
+  if (m.type === 'bulk') {
+    const kind = m.kind, items = [...S.L[kind].sel].map(id => kind === 'creators' ? CR(id) : SPN(id));
+    const ok = items.filter(it => kind === 'creators' ? it.status !== 'do_not_contact' && it.email : it.rel !== 'do_not_contact' && it.contacts.length);
+    return wrap(`Start outreach drafts for ${plural(items.length, CFG[kind].one)}`, `<p style="margin-bottom:12px">Claude writes one draft each, from confirmed facts only. They wait in Emails, Review. Nothing is sent.</p><div class="tw"><table><tbody>${items.map(it => { const why = kind === 'creators' ? (it.status === 'do_not_contact' ? 'Skipped: Do not contact' : !it.email ? 'Skipped: no email address' : null) : (it.rel === 'do_not_contact' ? 'Skipped: Do not contact' : !it.contacts.length ? 'Skipped: no contact person' : null); return `<tr><td>${esc(it.name)}</td><td>${why ? `<span class="badge bad">${why}</span>` : '<span class="badge good">Draft will be made</span>'}</td></tr>`; }).join('')}</tbody></table></div>`,
+      btn('close-modal', 'Cancel', 'ghost sm') + btn('bulk-save', `Create ${plural(ok.length, 'draft')}`, 'sm', `data-n="${ok.length}" ${ok.length ? '' : 'disabled'}`));
+  }
+  if (m.type === 'add-sponsor') return wrap('Add a sponsor', `<div class="two"><div class="field"><label class="label" for="as-name">Company name</label><input class="control sm" id="as-name" data-autofocus></div><div class="field"><label class="label" for="as-ind">Industry</label><input class="control sm" id="as-ind" placeholder="For example: Kitchenware"></div>
+      <div class="field"><label class="label" for="as-niche">Main niche they sponsor</label><select class="control sm" id="as-niche">${Object.entries(NICHES).map(n => `<option value="${n[0]}">${n[1]}</option>`).join('')}</select></div><div class="field"><label class="label" for="as-country">Location</label><select class="control sm" id="as-country">${Object.entries(COUNTRIES).map(n => `<option value="${n[0]}">${n[1]}</option>`).join('')}</select></div>
+      <div class="field"><label class="label" for="as-t0">Target size, from</label><input class="control sm" id="as-t0" value="5k"></div><div class="field"><label class="label" for="as-t1">Target size, to</label><input class="control sm" id="as-t1" value="50k"></div>
+      <div class="field"><label class="label" for="as-b0">Budget per creator, from (USD)</label><input class="control sm" id="as-b0" value="200"></div><div class="field"><label class="label" for="as-b1">Budget per creator, to (USD)</label><input class="control sm" id="as-b1" value="1,000"></div></div><p class="small muted" id="as-err" role="alert"></p>`,
+      btn('close-modal', 'Cancel', 'ghost sm') + btn('add-sponsor-save', 'Add sponsor', 'sm'));
+  return wrap(m.title, `<p>${m.text}</p>`, btn('close-modal', 'Close', 'sm'));
+}
+function renderModal() { $('#modal').innerHTML = modalHtml(); }
+function openModal(m) { S.modal = m; renderModal(); const f = $('#modal [data-autofocus]') || $('#modal-x'); if (f) f.focus(); }
+const info = (title, text) => openModal({ type: 'info', title, text });
+
+/* ---------- palette ---------- */
+function palItems(q) {
+  q = q.trim().toLowerCase();
+  if (!q) return [{ g: 'Recently opened', items: S.recent.map(r => { const [k, id] = r.split('-'), it = k === 'creator' ? CR(+id) : SPN(+id); return { to: r, t: it.name, m: k === 'creator' ? `Creator · ${it.channel}` : `Sponsor · ${it.industry}` }; }) }, { g: 'Go to', items: [['creators', 'Creators'], ['sponsors', 'Sponsors'], ['deals', 'Deals']].map(p => ({ to: p[0], t: p[1], m: 'Page' })) }];
+  const cs = DB.creators.filter(c => `${c.name} ${c.channel} ${NICHES[c.niche]}`.toLowerCase().includes(q)).slice(0, 6).map(c => ({ to: 'creator-' + c.id, t: c.name, m: `${c.channel} · ${short(c.subs)} subscribers` }));
+  const ss = DB.sponsors.filter(s => `${s.name} ${s.industry}`.toLowerCase().includes(q)).slice(0, 6).map(s => ({ to: 'sponsor-' + s.id, t: s.name, m: s.industry }));
+  const ds = DB.deals.filter(d => `${CR(d.c).name} ${SPN(d.s).name}`.toLowerCase().includes(q)).slice(0, 5).map(d => ({ to: 'deals', deal: d.id, t: `${CR(d.c).name} with ${SPN(d.s).name}`, m: STAGE_LABEL[d.stage] }));
+  return [{ g: 'Creators', items: cs }, { g: 'Sponsors', items: ss }, { g: 'Deals', items: ds }].filter(g => g.items.length);
+}
+function renderPalette() {
+  const host = $('#palette'); if (!S.pal) { host.innerHTML = ''; return; }
+  const groups = palItems(S.pal.q); let i = 0; S.pal.flat = groups.flatMap(g => g.items);
+  if (S.pal.i >= S.pal.flat.length) S.pal.i = Math.max(0, S.pal.flat.length - 1);
+  const list = groups.length ? groups.map(g => `<div class="pal__group label">${g.g}</div>${g.items.map(it => { const n = i++; return `<button type="button" class="pal__item ${n === S.pal.i ? 'act' : ''}" data-act="pal-go" data-n="${n}" role="option" aria-selected="${n === S.pal.i}"><span>${esc(it.t)}</span><span class="muted small">${esc(it.m)}</span></button>`; }).join('')}`).join('') : `<p class="muted" style="padding:20px">Nothing matches "${esc(S.pal.q)}". Try a name, a channel or a brand.</p>`;
+  if (!$('#pal-input')) { host.innerHTML = `<div class="movl palette" data-act="close-pal-bg"><div class="modal" role="dialog" aria-modal="true" aria-label="Search"><label class="sr" for="pal-input">Search creators, sponsors and deals</label><input id="pal-input" placeholder="Search creators, sponsors and deals" autocomplete="off"><div class="pal__list" id="pal-list" role="listbox"></div><div class="pal__foot"><span><kbd>↑</kbd> <kbd>↓</kbd> to move</span><span><kbd>Enter</kbd> to open</span><span><kbd>Esc</kbd> to close</span></div></div></div>`; $('#pal-input').focus(); }
+  $('#pal-list').innerHTML = list;
+  const a = $('.pal__item.act'); if (a) a.scrollIntoView({ block: 'nearest' });
+}
+function palGo(n) { const it = S.pal.flat[n]; if (!it) return; S.pal = null; renderPalette(); if (it.deal) { S.flash = it.deal; S.dealView = 'board'; } S.panel = null; if (location.hash === '#' + it.to) render(); else location.hash = it.to; }
+
+/* ---------- shell and routing ---------- */
+const NAV = [['overview', 'Overview'], ['creators', 'Creators'], ['sponsors', 'Sponsors', 1], ['deals', 'Deals'], ['emails', 'Emails'], ['inbox', 'Inbox'], ['claude', 'Claude'], ['app-settings', 'Settings']];
+function shell() {
+  $('#app').innerHTML = `<div class="banner"><div class="banner__in"><strong>Prototype, fake data</strong><span class="m">Every person, company, email and number here is invented. Today is set to 25 Nov 2026.</span>
+    <details id="try"><summary>What to try</summary><ol><li>Creators: drag the subscriber slider, tick a niche, then remove a chip.</li><li>Click a creator. Confirm or reject a Detected record. Read the suggested sponsors.</li><li>Press Link on a suggestion, then find the new card on the Deals board.</li><li>Press "Draft pitch with Claude" and compare "Facts used" with "Left out".</li><li>Press Ctrl+K or ⌘K and search for a brand.</li></ol></details>
+    <span class="grow"></span><label for="role" class="m">Viewing as</label><select id="role" data-role><option value="owner">Owner</option><option value="worker">Worker</option></select>
+    <button type="button" data-act="demo" data-d="loading">Show loading state</button><button type="button" data-act="demo" data-d="error">Show error state</button></div></div>
+    <header class="bar"><div class="bar__in"><a class="brand" href="#creators"><i aria-hidden="true">S</i> Smallfold</a><nav class="nav" aria-label="Main" id="nav"></nav>
+    <button type="button" class="searchbtn" data-act="pal" aria-label="Search, shortcut Control K">Search <kbd>Ctrl K</kbd></button><div class="who" id="who"></div></div></header>
+    <main id="main"></main><div id="panel"></div><div id="modal"></div><div id="palette"></div><div class="toasts" id="toasts"></div>`;
+}
+function route() { const h = location.hash.slice(1) || 'creators'; const m = /^(creator|sponsor)-(\d+)$/.exec(h); return m ? { page: m[1], id: +m[2] } : { page: NAV.some(n => n[0] === h) ? h : 'creators' }; }
+function render() {
+  const r = route(), cur = r.page === 'creator' ? 'creators' : r.page === 'sponsor' ? 'sponsors' : r.page;
+  $('#nav').innerHTML = NAV.filter(n => n[0] !== 'claude' || S.role === 'owner').map(n => `<a href="#${n[0]}" class="${n[2] ? 'new' : ''}" ${n[0] === cur ? 'aria-current="page"' : ''}>${n[1]}</a>`).join('');
+  $('#who').innerHTML = `${STAFF[S.role]}<small>${S.role}</small>`;
+  const main = $('#main');
+  if (r.page === 'creators' || r.page === 'sponsors') renderList(r.page);
+  else if (r.page === 'deals') { main.innerHTML = dealsPage(); const f = $('.deal.flash'); if (f) f.scrollIntoView({ block: 'center', inline: 'center' }); }
+  else if (r.page === 'creator' || r.page === 'sponsor') {
+    const it = r.page === 'creator' ? CR(r.id) : SPN(r.id);
+    main.innerHTML = it ? `<p style="margin-bottom:16px"><a href="#${cur}">← Back to ${cur}</a></p>${r.page === 'creator' ? creatorBody(it, true) : sponsorBody(it, true)}` : `<div class="empty"><h2>This ${r.page} does not exist</h2><p>It may have been deleted.</p><div class="row"><a class="btn sm" href="#${cur}">Back to ${cur}</a></div></div>`;
+  } else main.innerHTML = `<div class="empty"><h2>${NAV.find(n => n[0] === r.page)[1]} stays as it is today</h2><p>This screen is not changed by the upgrade, so the prototype does not rebuild it.</p><div class="row"><a class="btn sm" href="#creators">Go to Creators</a></div></div>`;
+  renderPanel();
+}
+function refresh() { reindex(); const top = $('#panel-body') && $('#panel-body').scrollTop; keep(() => { const r = route(); if (r.page === 'creators' || r.page === 'sponsors') renderResults(r.page), updateCounts(r.page); else render(); renderPanel(); }); if (top && $('#panel-body')) $('#panel-body').scrollTop = top; if (S.modal) renderModal(); }
+const curKind = () => { const p = route().page; return p === 'sponsors' ? 'sponsors' : 'creators'; };
+
+/* ---------- actions ---------- */
+function setF(kind, id, v) { const st = S.L[kind]; if (isOn(v)) st.f[id] = v; else delete st.f[id]; st.page = 1; }
+const ACT = {
+  fake: () => toast('Links to other sites are switched off in the prototype.'),
+  open: (el) => { S.panel = { kind: el.dataset.kind, id: +el.dataset.id }; S.edit = S.confirming = null; const k = el.dataset.kind + '-' + el.dataset.id; S.recent = [k, ...S.recent.filter(x => x !== k)].slice(0, 5); renderPanel(); $('#panel-x').focus(); },
+  'close-panel': () => { S.panel = null; renderPanel(); },
+  fullpage: () => { S.panel = null; },
+  step: el => { const kind = S.panel.kind, ids = S.L[kind + 's'].ids, i = ids.indexOf(S.panel.id) + +el.dataset.d; if (ids[i] != null) { S.panel.id = ids[i]; S.edit = S.confirming = null; renderPanel(); ($('#panel-' + (el.dataset.d > 0 ? 'next' : 'prev') + ':not([disabled])') || $('#panel-x')).focus(); } },
+  rail: () => { S.railOpen = !S.railOpen; renderList(curKind()); },
+  clear: () => { const st = S.L[curKind()]; st.f = {}; st.q = ''; st.page = 1; renderList(curKind()); },
+  unchip: el => { const kind = curKind(), st = S.L[kind], id = el.dataset.id, val = el.dataset.val; if (id === 'q') st.q = ''; else if (val) setF(kind, id, st.f[id].filter(x => x !== val)); else delete st.f[id]; st.page = 1; renderList(kind); },
+  preset: el => { const kind = curKind(), p = PRESETS[+el.dataset.i], v = S.L[kind].f.subs, same = v && v[0] === p[0] && v[1] === p[1]; setF(kind, 'subs', same ? null : [p[0], p[1]]); renderList(kind); },
+  page: el => { const kind = curKind(); S.L[kind].page += +el.dataset.d; renderResults(kind); window.scrollTo({ top: 0 }); },
+  sel: el => { const st = S.L[curKind()], id = +el.dataset.id; el.checked ? st.sel.add(id) : st.sel.delete(id); renderResults(curKind()); },
+  selall: el => { const kind = curKind(), st = S.L[kind], ids = st.ids.slice((st.page - 1) * PAGE, st.page * PAGE); ids.forEach(id => el.checked ? st.sel.add(id) : st.sel.delete(id)); renderResults(kind); },
+  unsel: () => { S.L[curKind()].sel.clear(); renderResults(curKind()); },
+  addlist: () => { const st = S.L.creators, v = $('#bl-list').value; let l = DB.lists.find(x => x.id === v); if (!l) { l = { id: 'list' + uid++, name: `New list ${DB.lists.length + 1}`, ids: [] }; DB.lists.push(l); } st.sel.forEach(id => { if (!l.ids.includes(id)) l.ids.push(id); }); toast(`${plural(st.sel.size, 'creator')} added to "${l.name}".`); renderList('creators'); },
+  addtag: () => { const kind = curKind(), st = S.L[kind], t = $('#bl-tag').value; st.sel.forEach(id => { const it = kind === 'creators' ? CR(id) : SPN(id); if (!it.tags.includes(t)) it.tags.push(t); }); toast(`Tag "${t}" added to ${plural(st.sel.size, CFG[kind].one)}.`); renderList(kind); },
+  bulkdraft: () => openModal({ type: 'bulk', kind: curKind() }),
+  'bulk-save': el => { S.modal = null; renderModal(); toast(`${plural(+el.dataset.n, 'draft')} saved to Emails, Review. Nothing was sent.`); },
+  view: el => { const kind = curKind(), v = DB.views[kind][+el.dataset.i], st = S.L[kind]; st.f = JSON.parse(JSON.stringify(v.f)); st.q = ''; st.sort = v.sort; st.page = 1; renderList(kind); toast(`View "${v.name}" applied.`); },
+  saveview: () => { const kind = curKind(), st = S.L[kind], n = $('#vn-' + kind).value.trim(); if (!n) { $('#vn-' + kind).focus(); return toast('Give the view a name first.'); } DB.views[kind].push({ name: n, mine: true, f: JSON.parse(JSON.stringify(st.f)), sort: st.sort }); renderResults(kind); toast(`View "${n}" saved. Only you see it until you share it.`); },
+  copy: () => { const t = $('#addr').textContent; const done = () => toast('Link copied. Anyone on the team who opens it sees the same filtered list.'); try { navigator.clipboard.writeText(t).then(done, done); } catch (e) { done(); } },
+  'add-creator': () => info('Add a creator', 'The add and edit form for creators stays as it is today, with new fields for niche (from a fixed list), country and language. It is not rebuilt in this prototype.'),
+  'add-sponsor': () => openModal({ type: 'add-sponsor' }),
+  'add-sponsor-save': () => { const name = $('#as-name').value.trim(), t0 = parseNum($('#as-t0').value), t1 = parseNum($('#as-t1').value), b0 = parseNum($('#as-b0').value), b1 = parseNum($('#as-b1').value); if (!name) { $('#as-err').textContent = 'Enter the company name.'; return $('#as-name').focus(); } if (DB.sponsors.some(s => s.name.toLowerCase() === name.toLowerCase())) { $('#as-err').textContent = 'A sponsor with this name already exists.'; return; } if ([t0, t1, b0, b1].some(x => x == null) || t0 > t1 || b0 > b1) { $('#as-err').textContent = 'Check the size and budget: each needs a number, and "from" cannot be above "to".'; return; } const s = { id: Math.max(...DB.sponsors.map(x => x.id)) + 1, name, industry: $('#as-ind').value.trim() || 'Not set', niches: [$('#as-niche').value], size: SIZES[1], country: $('#as-country').value, budget: [b0, b1], target: [t0, t1], site: slug(name) + '.example.test', contacts: [], rel: 'prospect', lastContacted: null, tags: [], notes: '' }; DB.sponsors.push(s); S.modal = null; renderModal(); reindex(); if (route().page === 'sponsors') renderList('sponsors'); S.panel = { kind: 'sponsor', id: s.id }; renderPanel(); toast(`${name} added as a prospect.`); },
+  import: () => info('Import from CSV', curKind() === 'sponsors' ? 'Works like the creators import today: upload a file, see a preview that marks each row as new, duplicate or error, then confirm. Columns: name, website, industry, country, company size, niches, target size, budget, contact name, contact role, contact email. The prototype does not read files.' : 'The creators import stays as it is today, with three new optional columns: niche, country and language. The prototype does not read files.'),
+  export: () => info('Export to CSV', 'Only the owner sees this button. The export contains the rows that match the current filters, and each export is written to the audit log first. The prototype does not create files.'),
+  'edit-rec': () => info('Edit', 'Opens the edit form. For creators it is the form that exists today, with the new fields added. For sponsors it is the same form as "Add a sponsor".'),
+  delete: () => info('Delete', 'Only the owner sees this button. The real back office asks "Are you sure?" and refuses when deals or sent emails exist, as it does today. Nothing is deleted in the prototype.'),
+  'add-contact': () => info('Add a contact person', 'A short form: name, role, email, phone, LinkedIn, and whether this is the main contact. Contact details are personal data, so viewing and exporting them is written to the audit log, the same as for creators.'),
+  confirm: el => { S.confirming = +el.dataset.id; refresh(); const f = $('#ev-' + el.dataset.id); if (f) f.focus(); },
+  'confirm-cancel': () => { S.confirming = null; refresh(); },
+  'confirm-save': el => { const x = DB.sp.find(r => r.id === +el.dataset.id), f = $('#ev-' + x.id), note = f.value.trim(); if (!note) { f.focus(); return toast('Say how you checked it first.'); } Object.assign(x, { label: 'confirmed', by: STAFF[S.role], at: TODAY, origin: 'Detected, then checked by the team', note }); S.confirming = null; refresh(); toast('Record confirmed. It can now be used in pitches and counts in filters.'); },
+  reject: el => { const x = DB.sp.find(r => r.id === +el.dataset.id); x.rejected = true; refresh(); toast('Record rejected. It is hidden and will not be detected again.', ['unreject', 'Undo', `data-id="${x.id}"`]); },
+  unreject: el => { DB.sp.find(r => r.id === +el.dataset.id).rejected = false; refresh(); },
+  'toggle-rej': () => { S.showRejected = !S.showRejected; refresh(); },
+  'rec-add': el => { S.edit = { side: el.dataset.side, owner: +el.dataset.owner, id: null }; refresh(); $('#rec-other').focus(); },
+  'rec-edit': el => { const x = DB.sp.find(r => r.id === +el.dataset.id), side = el.dataset.side; S.edit = { side, owner: side === 'creator' ? x.c : x.s, id: x.id }; refresh(); const f = $('#rec-other'); if (f) { f.focus(); f.scrollIntoView({ block: 'center' }); } },
+  'rec-cancel': () => { S.edit = null; refresh(); },
+  'rec-save': el => { const side = el.dataset.side, owner = +el.dataset.owner, other = +$('#rec-other').value, date = Date.parse($('#rec-date').value + 'T00:00:00Z'); if (isNaN(date) || date > TODAY) { $('#rec-date').focus(); return toast('Pick a date that is not in the future.'); } const cId = side === 'creator' ? owner : other, sId = side === 'creator' ? other : owner, c = CR(cId); const title = $('#rec-title').value.trim() || pick(CH[c.niche][1]), note = $('#rec-note').value.trim(); if (el.dataset.id) { const x = DB.sp.find(r => r.id === +el.dataset.id); Object.assign(x, { c: cId, s: sId, date, title }); if (x.label === 'confirmed') x.note = note; toast('Record updated.'); } else { DB.sp.push({ id: uid++, c: cId, s: sId, date, title, url: vurl(), views: c.avgViews, rejected: false, label: 'confirmed', origin: 'Entered by the team', by: STAFF[S.role], at: TODAY, note }); toast('Record added as Confirmed.'); } S.edit = null; refresh(); },
+  'save-notes': el => { const it = el.dataset.kind === 'creator' ? CR(+el.dataset.id) : SPN(+el.dataset.id); it.notes = $(`#notes-${el.dataset.kind}-${el.dataset.id}`).value; toast('Notes saved.'); },
+  link: el => openModal({ type: 'link', c: +el.dataset.c || null, s: +el.dataset.s || null }),
+  'link-save': () => { const m = S.modal, amt = parseNum($('#m-amount').value), stage = $('#m-stage').value; const d = { id: uid++, c: m.c, s: m.s, stage, amount: amt || null, changed: TODAY }; DB.deals.push(d); S.flash = d.id; S.modal = null; renderModal(); refresh(); toast(`${CR(m.c).name} is now linked with ${SPN(m.s).name} at "${STAGE_LABEL[stage]}".`, ['go-deals', 'View on the board']); },
+  'go-deals': () => { S.panel = null; S.dealView = 'board'; if (location.hash === '#deals') render(); else location.hash = 'deals'; },
+  draft: el => openModal({ type: 'draft', c: +el.dataset.c || null, s: +el.dataset.s || null, to: 'creator' }),
+  'draft-save': () => { const m = S.modal; DB.emails.push({ id: uid++, [m.to === 'creator' ? 'c' : 's']: m.to === 'creator' ? m.c : m.s, subject: $('#m-subject').value, date: TODAY, status: 'draft' }); S.modal = null; renderModal(); refresh(); toast('Draft saved to Emails, Review. Nothing was sent.'); },
+  'close-modal': () => { S.modal = null; renderModal(); },
+  'close-modal-bg': (el, e) => { if (e.target === el) { S.modal = null; renderModal(); } },
+  pal: () => { S.pal = { q: '', i: 0 }; renderPalette(); },
+  'close-pal-bg': (el, e) => { if (e.target === el) { S.pal = null; renderPalette(); } },
+  'pal-go': el => palGo(+el.dataset.n),
+  demo: el => { const p = route().page; if (p !== 'creators' && p !== 'sponsors') return toast('Open Creators or Sponsors first. The state is shown on the list.'); S.demo = el.dataset.d; renderResults(p); if (S.demo === 'loading') setTimeout(() => { if (S.demo === 'loading') { S.demo = null; renderResults(p); } }, 2500); },
+  'demo-off': () => { S.demo = null; renderResults(curKind()); }
+};
+document.addEventListener('click', e => {
+  const el = e.target.closest('[data-act]'); if (!el) { const open = $('details.menu[open]'); if (open && !e.target.closest('details.menu')) open.open = false; const t = $('#try'); if (t && t.open && !e.target.closest('#try')) t.open = false; return; }
+  const act = el.dataset.act;
+  if (act === 'open' && el.matches('tr,article') && e.target.closest('button,input,a,label,select,details')) return;
+  if (el.matches('input[type=checkbox]') && act !== 'sel' && act !== 'selall') return;
+  if (ACT[act]) ACT[act](el, e);
+});
+document.addEventListener('input', e => {
+  const t = e.target, kind = curKind(), st = S.L[kind];
+  if (t.matches('[data-q]')) { st.q = t.value; st.page = 1; renderResults(kind); }
+  else if (t.matches('[data-slider]')) {
+    const d = t.closest('.dual'), A = $('[data-slider=a]', d), B = $('[data-slider=b]', d);
+    if (+A.value > +B.value - 3) { if (t === A) A.value = +B.value - 3; else B.value = +A.value + 3; }
+    const a = +A.value <= 0 ? null : T2V(+A.value), b = +B.value >= 100 ? null : T2V(+B.value);
+    setF(kind, 'subs', a == null && b == null ? null : [a, b]);
+    $('#mn-' + kind).value = a == null ? '' : num(a); $('#mx-' + kind).value = b == null ? '' : num(b);
+    $$('#rail .pre').forEach((p, i) => p.setAttribute('aria-pressed', String(a === PRESETS[i][0] && b === PRESETS[i][1])));
+    renderResults(kind);
+  }
+  else if (t.matches('[data-fsearch]')) { const q = t.value.toLowerCase(); $$('.opt', t.parentElement).forEach(o => { o.hidden = !!q && !o.dataset.name.includes(q); }); }
+  else if (t.id === 'pal-input') { S.pal.q = t.value; S.pal.i = 0; renderPalette(); }
+});
+document.addEventListener('change', e => {
+  const t = e.target, kind = curKind(), st = S.L[kind];
+  if (t.matches('[data-f]')) {
+    const id = t.dataset.f, fc = CFG[kind].facets.find(f => f.id === id);
+    if (fc.type === 'multi') { const cur = new Set(st.f[id] || []); t.checked ? cur.add(t.value) : cur.delete(t.value); setF(kind, id, [...cur]); }
+    else if (fc.type === 'bool') setF(kind, id, t.checked);
+    else setF(kind, id, t.value);
+    renderResults(kind);
+    $$('#rail details').forEach(d => { const f = CFG[kind].facets.find(x => kind + x.id === d.dataset.key), s = $('summary', d), on = isOn(st.f[f.id]) || (f.extra && st.f[f.extra]), dot = $('.on', s); if (on && !dot) s.insertAdjacentHTML('beforeend', '<span class="on" title="Filter is on"></span>'); if (!on && dot) dot.remove(); });
+    const ra = $('#rail .rail__head .row'); if (ra && !$('[data-act=clear]', ra) && chips(kind).length) ra.insertAdjacentHTML('afterbegin', '<button type="button" class="link small" data-act="clear">Clear all</button>');
+  }
+  else if (t.matches('[data-minmax]')) {
+    const a = parseNum($('#mn-' + kind).value), b = parseNum($('#mx-' + kind).value);
+    if ((a != null && b != null && a > b)) { toast('"From" cannot be above "To".'); return; }
+    setF(kind, 'subs', a == null && b == null ? null : [a, b]); renderList(kind);
+  }
+  else if (t.matches('[data-sort]')) { st.sort = t.value; st.page = 1; renderResults(kind); }
+  else if (t.matches('[data-against]')) { st.against = +t.value; renderResults(kind); }
+  else if (t.matches('[data-view]')) { st.view = t.value; renderResults(kind); }
+  else if (t.matches('[data-role]')) { S.role = t.value; render(); toast(t.value === 'owner' ? 'Viewing as the owner: Export, Delete and the Claude tab are shown.' : 'Viewing as a worker: Export, Delete and the Claude tab are hidden.'); }
+  else if (t.matches('[data-dealview]')) { S.dealView = t.value; render(); const f = $('#dealview-' + t.value); if (f) f.focus(); }
+  else if (t.matches('[data-move]')) { const d = DB.deals.find(x => x.id === +t.dataset.move); moveDeal(d, t.value); }
+  else if (t.matches('[data-mpick]')) { S.modal[t.dataset.mpick] = +t.value || null; keep(renderModal); }
+  else if (t.matches('[data-mto]')) { S.modal.to = t.value; keep(renderModal); }
+});
+function moveDeal(d, stage) {
+  if (d.stage === stage) return; const was = d.stage; d.stage = stage; d.changed = TODAY; S.flash = d.id;
+  if ((stage === 'completed' || stage === 'paid') && !DB.sp.some(x => x.deal === d.id)) { const c = CR(d.c); DB.sp.push({ id: uid++, deal: d.id, c: d.c, s: d.s, date: TODAY, title: pick(CH[c.niche][1]), url: vurl(), views: c.avgViews, rejected: false, label: 'confirmed', origin: 'A Smallfold deal', by: STAFF[S.role], at: TODAY, note: 'Created when the deal was completed.' }); toast(`Moved to "${STAGE_LABEL[stage]}". A Confirmed sponsorship was added to both histories.`); }
+  else toast(`Moved from "${STAGE_LABEL[was]}" to "${STAGE_LABEL[stage]}".`);
+  reindex(); keep(render);
+}
+document.addEventListener('toggle', e => { const d = e.target; if (d.matches && d.matches('#rail details[data-key]')) S.open[d.dataset.key] = d.open; }, true);
+document.addEventListener('dragstart', e => { const c = e.target.closest && e.target.closest('.deal'); if (c) e.dataTransfer.setData('text/plain', c.dataset.deal); });
+document.addEventListener('dragover', e => { const c = e.target.closest && e.target.closest('.col'); if (c) { e.preventDefault(); $$('.col.over').forEach(x => x !== c && x.classList.remove('over')); c.classList.add('over'); } });
+document.addEventListener('drop', e => { const c = e.target.closest && e.target.closest('.col'); if (!c) return; e.preventDefault(); const d = DB.deals.find(x => x.id === +e.dataTransfer.getData('text/plain')); if (d) moveDeal(d, c.dataset.stage); });
+document.addEventListener('keydown', e => {
+  if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') { e.preventDefault(); S.pal ? (S.pal = null, renderPalette()) : ACT.pal(); return; }
+  if (S.pal) {
+    if (e.key === 'Escape') { S.pal = null; renderPalette(); }
+    else if (e.key === 'ArrowDown' || e.key === 'ArrowUp') { e.preventDefault(); const n = S.pal.flat.length; if (n) { S.pal.i = (S.pal.i + (e.key === 'ArrowDown' ? 1 : n - 1)) % n; renderPalette(); } }
+    else if (e.key === 'Enter') { e.preventDefault(); palGo(S.pal.i); }
+    return;
+  }
+  if (e.key === 'Escape') { if (S.modal) { S.modal = null; renderModal(); } else if (S.panel) { S.panel = null; renderPanel(); } else if (S.railOpen) { S.railOpen = false; renderList(curKind()); } return; }
+  if (e.key === 'Tab') { const box = $('#modal .modal') || $('#panel .panel'); if (!box) return; const f = $$('a[href],button:not([disabled]),input:not([disabled]),select,textarea,summary,[tabindex="0"]', box).filter(x => x.offsetParent !== null); if (!f.length) return; const first = f[0], last = f[f.length - 1]; if (!box.contains(document.activeElement)) { e.preventDefault(); first.focus(); } else if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); } else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); } }
+});
+window.addEventListener('hashchange', () => { S.panel = null; S.railOpen = false; S.edit = S.confirming = null; S.demo = null; render(); window.scrollTo({ top: 0 }); });
+shell(); render();
+window.__proto = { DB, S, score, filtered };
+})();
+</script>
