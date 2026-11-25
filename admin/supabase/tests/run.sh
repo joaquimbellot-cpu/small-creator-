@@ -8,7 +8,7 @@ T="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 export PGOPTIONS='-c client_min_messages=notice'
 echo "== SQL tests =="
 out=$(psql -q -o /dev/null -v ON_ERROR_STOP=1 -f "$T/rls.sql" 2>&1) && rc=0 || rc=$?
-out2=$(for f in activity hardening forms assistant fixes followups sponsors creators_list sponsors_list search outreach; do [ -f "$T/$f.sql" ] || continue; psql -q -o /dev/null -v ON_ERROR_STOP=1 -f "$T/$f.sql" 2>&1 || exit 1; done) && rc2=0 || rc2=$?
+out2=$(for f in activity hardening forms assistant fixes followups sponsors creators_list sponsors_list search outreach matching; do [ -f "$T/$f.sql" ] || continue; psql -q -o /dev/null -v ON_ERROR_STOP=1 -f "$T/$f.sql" 2>&1 || exit 1; done) && rc2=0 || rc2=$?
 out="$out
 $out2"; [ "$rc2" = 0 ] || rc=$rc2
 echo -e "$out" | sed -n 's/^.*NOTICE:  //p'
