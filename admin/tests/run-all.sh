@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Runs every suite, in order, against the running local stack (fake data only):
-#   DB tests -> vitest -> QA e2e (this folder) -> creators, deals, email, website, forms, assistant e2e -> auth e2e (last: it trips the login rate limit)
+#   DB tests -> vitest -> QA e2e (this folder) -> creators, profile, sponsors, deals, email, website, forms, assistant e2e -> auth e2e (last: it trips the login rate limit)
 # Needs: the stack from admin/dev/start.sh and the dev server on :3000. Starts and resets nothing.
 # Prints one summary line per suite. Exits 1 if any suite fails.
 set -uo pipefail
@@ -27,6 +27,8 @@ run_suite "DB tests"         bash supabase/tests/run.sh
 run_suite "vitest"           npx vitest run
 run_suite "QA e2e"           node tests/qa.e2e.cjs
 run_suite "creators e2e"     node lib/creators/e2e.cjs
+run_suite "profile e2e"      node lib/creators/profile.e2e.cjs
+run_suite "sponsors e2e"     node lib/sponsors/e2e.cjs
 run_suite "deals e2e"        node lib/deals/e2e.cjs
 run_suite "email e2e"        node lib/email/e2e.cjs
 run_suite "website e2e"      node tests/website.e2e.cjs
