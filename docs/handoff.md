@@ -11,7 +11,9 @@ Read this first in a new chat. It replaces the history of the previous one.
 
 ## Live now
 
-- **Website and back office:** https://smallfold.netlify.app (deploy `6b03ef4fab4c283ba7c3a5e3`, 23 November: the audit fixes from the `audit-fixes` branch)
+- **Website and back office:** https://smallfold.netlify.app (deploy `6b040d4192fa3138c25671aa`, 23 November: the audit fixes plus the bulk status change on Creators).
+- **Creators in production (24 November): 117,** all status New, source Import: 17 from the first sheet and 100 from the sheet "Small YouTube Creators Worldwide - 100 with emails (Nov 2026)". Each one's notes give the country, score, growth outlook, average views, the reason and the sheet row. Nobody has been emailed yet.
+- **Bulk status change:** on Creators, tick creators, then "Change status to", "Change status", "Yes, change" (route `POST /api/creators/status`, at most 200). Only the owner can take creators off Do not contact; a worker's attempt is skipped and counted.
   - Netlify project `smallfold`. The site id is on the project's page in Netlify (Project configuration, General). It is not written here.
 - **Visitor access:** the Netlify team login was turned off on 22 November at the owner's request. The site is **public**. To lock it again: Project configuration, Access & security, Visitor access, turn team login on.
 - **Search engines:** every website page has `<meta name="robots" content="noindex">` (`src/partials/head.html`), so the site is open to anyone with the link but search engines are asked to skip it. Remove that line, and fill in `siteUrl` in `src/content/seo.json`, when the owner wants the site found in search.
