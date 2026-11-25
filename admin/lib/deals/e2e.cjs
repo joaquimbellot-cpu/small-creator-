@@ -289,7 +289,7 @@ async function main() {
   // ----- Drag and drop (on top of the menu)
   await column(page, 'paid').locator('article[data-deal]', { hasText: CREATOR }).waitFor();
   await sleep(1500); // let the refresh that follows a move settle, so the drag is not interrupted by a re-render
-  await card(page, CREATOR).dragTo(column(page, 'signed'));
+  await card(page, CREATOR).dragTo(column(page, 'signed'), { sourcePosition: { x: 8, y: 6 } }); // grab the card's padding: its centre may be a menu or a button
   await page.getByText('Moved from "Paid" to "Signed".').waitFor({ timeout: 30000 });
   await until(() => dealOf(BRAND).split('|')[1] === 'signed', 'drag and drop saved the stage');
   check(true, 'board: drag and drop moves a card');
@@ -320,7 +320,7 @@ async function main() {
   await page.goto(`${BASE}/deals?view=table`);
   const addForm = page.locator('form.tile');
   await addForm.getByLabel('Creator', { exact: true }).selectOption({ label: CREATOR });
-  await addForm.getByLabel('Brand', { exact: true }).fill(BRAND_ADD);
+  await addForm.getByLabel('Sponsor', { exact: true }).fill(BRAND_ADD);
   await addForm.getByLabel('Amount (USD)', { exact: true }).fill('1234.56');
   await addForm.getByLabel('Stage', { exact: true }).selectOption('contacted');
   await addForm.getByRole('button', { name: 'Add deal' }).click();
@@ -337,6 +337,16 @@ async function main() {
   await until(() => psql(`select count(*) from deals d join brands b on b.id = d.brand_id where b.name = '${BRAND_ADD}'`) === '0', 'deal deleted');
   await page.reload();
   check((await page.locator('table[aria-label="Deals"] tbody tr', { hasText: BRAND_ADD }).count()) === 0, 'owner: deleted deal is gone from the list');
+  // ----- B-1: the owner can delete a deal that reached Paid; its record stays, with the deal link cleared
+  psql(`insert into deals (creator_id, brand_id, stage, amount_cents) select c.id, b.id, 'contacted', 50000 from creators c, brands b where c.email = '${CREATOR_EMAIL}' and b.name = '${BRAND_ADD}'`);
+  psql(`update deals set stage = 'paid' where brand_id = (select id from brands where name = '${BRAND_ADD}')`);
+  check(psql(`select count(*) from sponsorships where brand_id = (select id from brands where name = '${BRAND_ADD}') and origin = 'deal'`) === '1', 'owner: a Paid deal has its record');
+  await page.goto(`${BASE}/deals?view=table`);
+  const paidRow = page.locator('table[aria-label="Deals"] tbody tr', { hasText: BRAND_ADD });
+  await paidRow.getByRole('button', { name: 'Delete' }).click();
+  await page.getByRole('dialog').getByRole('button', { name: 'Delete' }).click();
+  await until(() => psql(`select count(*) from deals d join brands b on b.id = d.brand_id where b.name = '${BRAND_ADD}'`) === '0', 'the Paid deal was deleted');
+  check(psql(`select count(*) from sponsorships where brand_id = (select id from brands where name = '${BRAND_ADD}') and origin = 'deal' and deal_id is null`) === '1', 'owner: the record of the deleted Paid deal stays, deal link empty');
   if (owner.pageErrors.length) failures.push(`owner page errors: ${owner.pageErrors.join(' | ')}`);
   await owner.ctx.close();
 
