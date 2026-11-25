@@ -359,7 +359,7 @@ const cleanup = { emailIds: [], creatorRestore: [], zzCreatorId: null, runStart:
       await dlg.locator('dl').first().waitFor({ timeout: 15000 });
       check('worker side panel has no Delete button', (await dlg.getByRole('button', { name: /delete/i }).count()) === 0);
       await wp.keyboard.press('Escape');
-      await wp.goto(`${BASE}/deals`);
+      await wp.goto(`${BASE}/deals?view=table`); // Delete lives in the table view; the board (default) has no Delete
       await wp.waitForLoadState('networkidle');
       check('worker /deals has no Delete button', (await wp.getByRole('button', { name: /^Delete$/ }).count()) === 0);
     });
@@ -373,7 +373,7 @@ const cleanup = { emailIds: [], creatorRestore: [], zzCreatorId: null, runStart:
       await dlg.locator('dl').first().waitFor({ timeout: 15000 });
       check('owner side panel has a Delete button', (await dlg.getByRole('button', { name: /^Delete$/ }).count()) >= 1);
       await owner.page.keyboard.press('Escape');
-      await owner.page.goto(`${BASE}/deals`);
+      await owner.page.goto(`${BASE}/deals?view=table`); // Delete lives in the table view; the board (default) has no Delete
       await owner.page.waitForLoadState('networkidle');
       check('owner /deals has a Delete button', (await owner.page.getByRole('button', { name: /^Delete$/ }).count()) >= 1);
     });

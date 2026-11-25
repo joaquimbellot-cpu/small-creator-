@@ -149,7 +149,7 @@ const rowsCount = (page) => page.locator('table tbody tr').count();
     await d.locator('select[name=status]').selectOption('contacted');
     await d.getByRole('button', { name: 'Save changes' }).click();
     await page.waitForURL(/open=|creator=/);
-    await page.getByRole('dialog').getByText('Tech and gadgets').waitFor();
+    await page.getByRole('dialog').getByText('Tech and gadgets', { exact: true }).first().waitFor();
     ok(sql(`select status||'/'||niche_slug from creators where id='${aid}'`) === 'contacted/tech', 'edit saved');
     // worker cannot delete
     const wp = w.page;
@@ -166,7 +166,7 @@ const rowsCount = (page) => page.locator('table tbody tr').count();
     await wp.goto(BASE + `/creators?creator=${aid}&edit=1`);
     await wp.getByRole('dialog').locator('select[name=niche_slug]').selectOption('gaming');
     await wp.getByRole('dialog').getByRole('button', { name: 'Save changes' }).click();
-    await wp.getByRole('dialog').getByText('Gaming').waitFor();
+    await wp.getByRole('dialog').getByText('Gaming', { exact: true }).first().waitFor();
     ok(true, 'worker can edit');
     // anonymous
     const anon = await browser.newContext();
