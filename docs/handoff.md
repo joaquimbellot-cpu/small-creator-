@@ -1,6 +1,17 @@
-# Handoff: where Smallfold stands (updated 23 November 2026)
+# Handoff: where Smallfold stands (updated 25 November 2026)
 
 Read this first in a new chat. It replaces the history of the previous one.
+
+## Back office upgrade: built on the branch `ui-upgrade`, NOT live (25 November)
+
+- **What it is:** creators list with a filter panel, creator and sponsor profiles with a sponsorship history (Confirmed and Detected labels), a new Sponsors tab, linking with match suggestions, a deals board with a new first stage "Matched", pitch drafts with Claude from confirmed facts only, a global search (Ctrl+K) and a sponsorship price calculator.
+- **Where:** branch `ui-upgrade` (made from `claude/wonderful-meitner-sjwb8y` at `c7f15d1`). It is not merged anywhere. To undo everything, do not deploy it and delete the branch.
+- **Read these, in this order:** `docs/ui-upgrade/09-go-live.md` (the owner's steps), `04-ui-spec.md` (the screens), `05-build-plan.md` (decisions and the database contract), `06-security-review.md`, `07-qa-report.md`, `08-retest.md`, and `build/*.md` (one note per agent). The approved clickable prototype is `docs/ui-upgrade/prototype/smallfold-ui-prototype.html` (fake data).
+- **Tested:** on a production build against a database rebuilt from scratch, `admin/tests/run-all.sh` ends "ALL SUITES PASSED" (database, 490 unit tests, twelve browser suites). The security review gave 8/10 with no critical or high finding; its four medium findings are fixed and were re-tested.
+- **To go live:** the owner takes a backup, then the **eleven** migration files `20261125*` are applied to the live database in name order, then the app is deployed from `ui-upgrade` the same day. Neither has been done. The fake seed (`admin/supabase/seed/seed-upgrade.sql`) is for the local stack only: never load it in production.
+- **Open decisions for the owner:** (1) the price calculator uses its own margin field (20% in the example) while the database still takes 10%, 8% or 5% by deal size; (2) any staff member, a worker too, can approve and send an email, although the rule says "the owner's click"; (3) the creators list now opens sorted by subscribers, high to low; (4) the niche list is the 12 from the prototype.
+- **Known limits:** no YouTube scanner, so Detected records only come from imports marked unverified, and there is no list of videos on a profile; no screen to delete a list or a tag; the pitch draft checker catches common mistakes only (its limits are listed in `docs/ui-upgrade/build/retest-fixes.md`), so a person must read every draft before sending; real Claude drafts were tested only against the local stand-in.
+- **Local stack after this work:** `admin/dev/reset.sh` loads both seeds (60 creators, 26 sponsors, 34 contact people, 115 sponsorship records, 19 deals). After a reset, rebuild the app before testing a production build, because the local keys change.
 
 ## What this is
 
@@ -40,7 +51,7 @@ Read this first in a new chat. It replaces the history of the previous one.
 - Region Tokyo, free plan. The project reference is in the Supabase dashboard (Project Settings, General). It is not written here.
 - **Database:**
   - All 15 migrations in `admin/supabase/migrations/` are applied in production. The last four (`20261123000100` to `000400`) were applied on 23 November at the owner's request, after a backup; their 7 new CHECK constraints were then validated (no existing row broke them).
-  - **Not applied yet:** the migrations dated 23 November (`20261123...`), written by the repair job. The owner applies them in order in the SQL Editor, after taking a backup, and only then deploys the new app. Steps: "Maintaining Smallfold" in `admin/README.md`. The first of them has a `VALIDATE` step that needs a check query to come back empty first (see its header).
+  - **Not applied yet (25 November):** the eleven migrations dated 25 November (`20261125...`) of the back office upgrade. See the section at the top and `docs/ui-upgrade/09-go-live.md`.
   - Checked: all 15 public tables have RLS on, and the `anon` role can't select any table or execute any function.
 - **Auth settings:**
   - sign-up off;
