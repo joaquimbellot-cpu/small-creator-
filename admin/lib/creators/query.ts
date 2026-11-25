@@ -3,10 +3,8 @@
 // The filters are validated by parseFilters() first and go to the database as typed arguments, never as SQL text.
 import 'server-only';
 import { PAGE_SIZE, type ListRow } from './constants';
-import { filtersToQuery, toRpcArgs, type Filters } from './filters';
-import { creatorFilterDefs } from './filters';
+import { creatorFilterDefs, filtersToQuery, parseFilters, toRpcArgs, type Filters } from './filters';
 import { chipsFromParams, removeChip } from '../lists/query';
-import { parseFilters } from './filters';
 
 // The query builder is typed loosely on purpose: its generic types are too deep for the compiler when chained here.
 type Client = { rpc: (fn: string, args?: Record<string, unknown>) => PromiseLike<{ data: any; error: any }>; from: (t: string) => any };
