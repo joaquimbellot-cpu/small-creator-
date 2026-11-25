@@ -9,7 +9,6 @@
   --cream:#F1EFEB; --ink:#0E0E0E; --paper:#FAF8F4; --muted:#5C5A55; --faint:#B9B5AC;
   --line:rgba(14,14,14,.14); --accent:#2B44D6; --red:#9B2C1F; --green:#2F6B3C; --amber:#8A5A00;
   --d-bg:#0E0E0E; --d-surface:#1A1A19; --d-fg:#F1EFEB; --d-muted:#A9A59C; --d-line:rgba(241,239,235,.18); --d-accent:#A8B4FF;
-  --s-long:#338ced; --s-shorts:#e76624;
   --veil:rgba(14,14,14,.45); --banner:#0E0E0E; --banner-fg:#F1EFEB; --banner-muted:#A9A59C;
   --serif:"Newsreader",Georgia,"Times New Roman",serif;
   --sans:"Instrument Sans","Helvetica Neue",Arial,sans-serif;
@@ -239,58 +238,54 @@ details.why summary{cursor:pointer;white-space:nowrap}
 .deal.flash{border-color:var(--accent)}
 .deal select{min-height:36px;font-size:.8125rem;padding-left:8px}
 
-/* earnings calculator, on the brand's dark ground */
+/* sponsorship price calculator, on the brand's dark ground */
 .subnav{display:flex;gap:20px;border-bottom:1px solid var(--line);margin-bottom:24px;overflow-x:auto}
 .subnav a{display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:8px 0;color:var(--muted);font-size:.9375rem;text-decoration:none;border-bottom:2px solid transparent;margin-bottom:-1px;white-space:nowrap}
 .subnav a[aria-current=page]{color:var(--ink);border-bottom-color:var(--accent)}
 .subnav a small{font:500 .625rem/1.4 var(--sans);letter-spacing:.07em;text-transform:uppercase;color:var(--accent);border:1px solid var(--accent);border-radius:4px;padding:0 4px}
 .calc{background:var(--d-bg);color:var(--d-fg);border-radius:14px;padding:clamp(20px,3.2vw,44px);color-scheme:dark;display:grid;gap:32px 48px}
-@media (min-width:920px){.calc{grid-template-columns:minmax(0,5fr) minmax(0,6fr)}}
+@media (min-width:980px){.calc{grid-template-columns:minmax(0,5fr) minmax(0,6fr)}}
 .calc>div{min-width:0}
 .calc h2{font-size:clamp(1.5rem,2.4vw,2rem);line-height:1.15;margin-bottom:8px}
 .calc .label,.calc .dm{color:var(--d-muted)}
 .calc :focus-visible{outline-color:var(--d-accent)}
 .calc .control{background-color:var(--d-surface);color:var(--d-fg);border-color:var(--d-muted)}
-.calc .control:disabled{opacity:.45}
+.calc .control::placeholder{color:var(--d-muted)}
 .calc select.control{background-image:linear-gradient(45deg,transparent 50%,var(--d-fg) 50%),linear-gradient(135deg,var(--d-fg) 50%,transparent 50%)}
-.calc input[type=range]{display:block;width:100%;height:32px;margin:6px 0 0;accent-color:var(--d-accent)}
 .calc input[type=checkbox]{accent-color:var(--d-accent)}
-.calc .seg{border-color:var(--d-muted);max-width:220px;margin-top:6px}
+.calc .seg{border-color:var(--d-muted);max-width:220px}
 .calc .seg span{border-left-color:var(--d-line)}
 .calc .seg input:checked+span{background:var(--d-fg);color:var(--d-bg)}
 .calc .seg input:focus-visible+span{outline-color:var(--d-accent)}
-.cgroup{border-top:1px solid var(--d-line);padding:16px 0 6px}
-.chead{display:flex;justify-content:space-between;align-items:center;gap:12px}
-.cnum{width:9.5rem!important;text-align:right;font-variant-numeric:tabular-nums}
-.cscale{display:flex;justify-content:space-between;font-size:.75rem;color:var(--d-muted);font-variant-numeric:tabular-nums}
+.calc .link{color:var(--d-fg)}
+.cgroup{border-top:1px solid var(--d-line);padding:18px 0 6px}
+.cgroup>h3{font:500 .75rem/1.4 var(--sans);letter-spacing:.07em;text-transform:uppercase;color:var(--d-fg);margin-bottom:14px}
+.cfield{display:grid;gap:4px;margin-bottom:14px}
+.ctwo{display:grid;grid-template-columns:1fr 1fr;gap:0 12px;align-items:start}
+@media (max-width:440px){.ctwo{grid-template-columns:1fr}}
 .check{display:flex;gap:10px;align-items:center;min-height:40px;cursor:pointer;font-size:.9375rem}
-.inline{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:4px 0 8px}
+.inline{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:4px 0 12px}
 .inline .control{width:6.5rem}
 .out{background:var(--d-surface);border:1px solid var(--d-line);border-radius:var(--r);padding:clamp(16px,2.4vw,28px);align-self:start}
-.big{font:300 clamp(2.25rem,5.2vw,3.75rem)/1.05 var(--serif);letter-spacing:-.01em;font-variant-numeric:tabular-nums;margin:6px 0 4px}
-.mid{font:300 clamp(1.375rem,2.6vw,1.875rem)/1.15 var(--serif);font-variant-numeric:tabular-nums;margin-top:4px}
-.big span,.mid span{white-space:nowrap}
-.split2{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:22px 0}
-@media (max-width:440px){.split2{grid-template-columns:1fr}}
-.split2>div{border-top:1px solid var(--d-line);padding-top:10px;min-width:0}
-.key{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px}
-.chart{border-top:1px solid var(--d-line);padding-top:16px}
-.brow{display:grid;grid-template-columns:5.5rem minmax(0,1fr);gap:4px 12px;align-items:center;padding:6px 0;position:relative;border-radius:4px}
-.btrack{display:flex;gap:2px;height:20px;border-left:1px solid var(--d-muted)}
-.btrack i{display:block;height:100%;min-width:0;flex:none}
-.btrack i.hi{opacity:.42;border-radius:0 4px 4px 0}
-.btrack i.lo.end{border-radius:0 4px 4px 0}
-.bv{grid-column:2;font-size:.875rem;font-variant-numeric:tabular-nums}
-.tip{display:none;position:absolute;left:calc(5.5rem + 12px);bottom:calc(100% - 2px);z-index:2;max-width:min(280px,64vw);background:var(--d-fg);color:var(--d-bg);padding:6px 10px;border-radius:6px;font-size:.8125rem;line-height:1.35}
-.brow:hover .tip,.brow:focus-visible .tip{display:block}
-.baxis{display:flex;justify-content:space-between;margin-left:calc(5.5rem + 12px);font-size:.75rem;color:var(--d-muted);font-variant-numeric:tabular-nums;border-top:1px solid var(--d-line);padding-top:4px}
-.blegend{display:flex;gap:6px 18px;flex-wrap:wrap;font-size:.8125rem;color:var(--d-muted);margin-top:12px}
-.blegend i{display:inline-block;width:18px;height:10px;border-radius:2px;margin-right:6px;background:var(--d-fg)}
-.blegend i.hi{opacity:.42}
+.out h3{font:500 .75rem/1.4 var(--sans);letter-spacing:.07em;text-transform:uppercase;color:var(--d-muted);margin:22px 0 4px}
+.big{font:300 clamp(2.5rem,5.4vw,3.75rem)/1.05 var(--serif);letter-spacing:-.01em;font-variant-numeric:tabular-nums;margin:6px 0 8px}
+.pwrap{overflow-x:auto;position:relative;margin:4px 0 0}
+.ptable{width:100%;border-collapse:collapse;font-size:.9375rem}
+.ptable th{color:var(--d-muted);border-bottom:1px solid var(--d-line);padding:8px 12px 8px 0}
+.ptable td{border-bottom:1px solid var(--d-line);padding:9px 12px 9px 0;vertical-align:top}
+.ptable th:last-child,.ptable td:last-child{padding-right:0}
+.ptable td:first-child{min-width:11rem}
+.ptable .sub{display:block;color:var(--d-muted);font-size:.8125rem}
+.ptable tr.total td{border-bottom:0;font-weight:600}
+.calc tbody tr:hover{background:none}
+.plist{margin:6px 0 0;padding-left:18px;font-size:.9375rem}
+.plist li{margin-bottom:6px}
+.flag{display:inline-block;font:600 .6875rem/1.5 var(--sans);letter-spacing:.07em;text-transform:uppercase;border:1px solid var(--d-fg);border-radius:4px;padding:0 5px;margin-right:6px}
+.flag.ok{border-color:var(--d-muted);color:var(--d-muted)}
 .calcbar{position:sticky;bottom:calc(8px + env(safe-area-inset-bottom,0px));margin-top:8px;background:var(--d-fg);color:var(--d-bg);border-radius:var(--r);padding:10px 14px;display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap;font-size:.875rem}
 .calcbar b{font:400 1.25rem/1.2 var(--serif);font-variant-numeric:tabular-nums}
-@media (min-width:920px){.calcbar{display:none}}
-.cnote{border-top:1px solid var(--d-line);margin-top:20px;padding-top:14px;font-size:.875rem;color:var(--d-muted)}
+@media (min-width:980px){.calcbar{display:none}}
+.cnote{border-top:1px solid var(--d-line);margin-top:22px;padding-top:14px;font-size:.875rem;color:var(--d-muted)}
 
 /* modal, palette, toast */
 .movl{position:fixed;inset:0;z-index:50;display:grid;place-items:center;padding:16px;background:var(--veil)}
@@ -420,6 +415,12 @@ Object.keys(NICHES).forEach(nk => CH[nk][0].forEach(channel => {
     tags: TAGS.filter(() => chance(.16)), notes: chance(.4) ? pick(['Prefers email in the morning. Friendly and quick.', 'Asked us to come back after the summer.', 'Only wants sponsors that fit the channel closely.', 'Has a manager for larger deals.']) : '', added: ago(ri(2, 60))
   });
 }));
+const hsh = n => { let x = Math.imul(n ^ 0x9e3779b9, 0x85ebca6b); x ^= x >>> 13; x = Math.imul(x, 0xc2b2ae35); x ^= x >>> 16; return (x >>> 0) / 4294967296; };
+DB.creators.forEach(c => {
+  const home = c.country === 'GB' ? 'UK' : c.country, others = ['US', 'UK', 'IN', 'DE', 'CA', 'AU', 'BR'].filter(x => x !== home), o1 = others[Math.floor(hsh(c.id + 600) * others.length)], o2 = others.filter(x => x !== o1)[Math.floor(hsh(c.id + 700) * (others.length - 1))];
+  c.eng = hsh(c.id) < .25 ? null : Math.round((1.2 + hsh(c.id + 100) * 7.5) * 10) / 10;
+  c.aud = hsh(c.id + 200) < .4 ? '' : `${home} ${35 + Math.round(hsh(c.id + 300) * 25)}%, ${o1} ${10 + Math.round(hsh(c.id + 400) * 10)}%, ${o2} ${5 + Math.round(hsh(c.id + 500) * 6)}%`;
+});
 DB.creators[5].subs = 412000; DB.creators[5].avgViews = 96000; DB.creators[30].subs = 268000; DB.creators[30].avgViews = 41000;
 SP_ROWS.forEach((r, i) => {
   const [name, industry, niches, size, country, b0, b1, t0, t1] = r;
@@ -801,8 +802,8 @@ function creatorBody(c, full) {
     <dl class="dl"><dt>Subscribers</dt><dd class="num">${num(c.subs)} <span class="muted small">checked ${rel(c.checked).toLowerCase()}</span></dd><dt>Average views</dt><dd class="num">${num(c.avgViews)} <span class="muted small">over the last 20 videos</span></dd><dt>Niche</dt><dd>${esc(NICHES[c.niche])}</dd><dt>Country, language</dt><dd>${esc(COUNTRIES[c.country])}, ${esc(c.lang)}</dd><dt>Email</dt><dd>${c.email ? esc(c.email) : '<span class="muted">None on file</span>'}</dd><dt>Phone</dt><dd>${c.phone ? esc(c.phone) : '<span class="muted">None on file</span>'}</dd><dt>Last contacted</dt><dd>${rel(c.lastContacted)}</dd><dt>Uploads</dt><dd>About ${c.uploads} a month, last one ${rel(c.lastVideo).toLowerCase()}</dd></dl>
     <div class="row">${btn('link', 'Link to a sponsor', 'sm', `data-c="${c.id}"`)}${btn('draft', 'Draft pitch with Claude', 'ghost sm', `data-c="${c.id}"`)}${btn('edit-rec', 'Edit', 'ghost sm')}${owner ? btn('delete', 'Delete', 'danger sm') : ''}</div></div>`;
   const videos = `<section class="sec"><h3>Recent videos</h3><div class="tw"><table><thead><tr><th>Video</th><th>Date</th><th class="r">Views</th><th>Paid sign</th></tr></thead><tbody>${vids.map(v => `<tr><td>${esc(v.t)}</td><td>${fmtDate(v.d)}</td><td class="r">${num(v.v)}</td><td>${v.paid ? srcBadge(v.paid) : '<span class="muted">None found</span>'}</td></tr>`).join('')}</tbody></table></div></section>`;
-  const main = head + historySec('creator', c) + videos, side = suggestSec('creator', c) + earnSec(c) + dealsSec('creator', c) + outreachSec('creator', c) + notesSec('creator', c);
-  return full ? `<div class="pgrid"><div>${main}</div><aside>${side}</aside></div>` : head + historySec('creator', c) + suggestSec('creator', c) + videos + earnSec(c) + dealsSec('creator', c) + outreachSec('creator', c) + notesSec('creator', c);
+  const main = head + historySec('creator', c) + videos, side = suggestSec('creator', c) + priceSec(c) + dealsSec('creator', c) + outreachSec('creator', c) + notesSec('creator', c);
+  return full ? `<div class="pgrid"><div>${main}</div><aside>${side}</aside></div>` : head + historySec('creator', c) + suggestSec('creator', c) + videos + priceSec(c) + dealsSec('creator', c) + outreachSec('creator', c) + notesSec('creator', c);
 }
 function sponsorBody(s, full) {
   const owner = S.role === 'owner';
@@ -841,7 +842,7 @@ function draftFor(c, s, to) {
   conf.slice(0, 2).forEach(x => used.push(`Confirmed sponsorship: ${SPN(x.s).name}, ${monYear(x.date)} (confirmed by ${x.by})`));
   if (sim) used.push(`${s.name} sponsored ${sim} other ${nn} ${sim === 1 ? 'channel' : 'channels'} (confirmed)`);
   det.slice(0, 3).forEach(x => out.push(`Detected sponsorship: ${x.s ? SPN(x.s).name : 'brand not named'}, ${monYear(x.date)} (not confirmed)`));
-  out.push('Prices and budgets (never in a first email)', 'Ad earnings estimates (an estimate is not a fact)', "The creator's email, phone and notes (Claude never receives them)");
+  out.push('Prices and budgets (never in a first email)', "The creator's email, phone and notes (Claude never receives them)");
   const hist = names.length ? (names.length === 2 ? `${names[0]} and ${names[1]}` : names[0]) : null;
   const foot = `\n\n${STAFF[S.role]}\nSmallfold · [sender postal address from Settings]\nIf you would rather not hear from us, use this link and we will not write again: [opt-out link]`;
   let subject, body;
@@ -872,6 +873,7 @@ function modalHtml() {
     const c = m.c && CR(m.c), s = m.s && SPN(m.s), both = c && s, sc = both && score(c, s), blk = both && blocked(c, s), dup = both && openDeal(c.id, s.id);
     return wrap('Link a creator and a sponsor', `${pickers()}${both ? `<div class="sug"><div class="sug__head"><strong>${esc(c.name)} with ${esc(s.name)}</strong>${scoreHtml(sc)}</div>${reasonsHtml(sc)}</div>` : '<p class="muted" style="margin-bottom:16px">Pick both sides. The lists are ordered by match score once one side is chosen.</p>'}
       ${blk ? `<div class="notice error" role="alert">${blk} This pair cannot be linked.</div>` : ''}${dup ? `<div class="notice warn">These two already have an open deal at "${STAGE_LABEL[dup.stage]}".</div>` : ''}
+      ${both && !blk ? (pr => `<div class="notice">Fair price for a 60-second integration: <strong>${usd(Math.round(pr.price[0]))} to ${usd(Math.round(pr.price[2]))}</strong>. Suggested asking price: <strong>${usd(pr.ask)}</strong>. <button type="button" class="link" data-act="price-use" data-v="${pr.ask}">Use ${usd(pr.ask)}</button> · <a href="#calculator" data-act="price-from" data-id="${c.id}" data-s="${s.id}">Open the calculator</a></div>`)(priceCalc(priceDefaults(c, s))) : ''}
       <div class="two"><div class="field"><label class="label" for="m-amount">Expected amount (USD)</label><input class="control sm" id="m-amount" inputmode="decimal" placeholder="Optional"><span class="hint">You can set it later.</span></div>
       <div class="field"><label class="label" for="m-stage">Starting stage</label><select class="control sm" id="m-stage"><option value="matched">Matched (not contacted yet)</option><option value="contacted">Contacted</option></select></div></div>`,
       btn('close-modal', 'Cancel', 'ghost sm') + btn('link-save', 'Create link', 'sm', both && !blk && !dup ? '' : 'disabled'));
@@ -907,7 +909,7 @@ const info = (title, text) => openModal({ type: 'info', title, text });
 /* ---------- palette ---------- */
 function palItems(q) {
   q = q.trim().toLowerCase();
-  if (!q) return [{ g: 'Recently opened', items: S.recent.map(r => { const [k, id] = r.split('-'), it = k === 'creator' ? CR(+id) : SPN(+id); return { to: r, t: it.name, m: k === 'creator' ? `Creator · ${it.channel}` : `Sponsor · ${it.industry}` }; }) }, { g: 'Go to', items: [['creators', 'Creators'], ['sponsors', 'Sponsors'], ['deals', 'Deals'], ['calculator', 'Earnings calculator']].map(p => ({ to: p[0], t: p[1], m: 'Page' })) }];
+  if (!q) return [{ g: 'Recently opened', items: S.recent.map(r => { const [k, id] = r.split('-'), it = k === 'creator' ? CR(+id) : SPN(+id); return { to: r, t: it.name, m: k === 'creator' ? `Creator · ${it.channel}` : `Sponsor · ${it.industry}` }; }) }, { g: 'Go to', items: [['creators', 'Creators'], ['sponsors', 'Sponsors'], ['deals', 'Deals'], ['calculator', 'Sponsorship price calculator']].map(p => ({ to: p[0], t: p[1], m: 'Page' })) }];
   const cs = DB.creators.filter(c => `${c.name} ${c.channel} ${NICHES[c.niche]}`.toLowerCase().includes(q)).slice(0, 6).map(c => ({ to: 'creator-' + c.id, t: c.name, m: `${c.channel} · ${short(c.subs)} subscribers` }));
   const ss = DB.sponsors.filter(s => `${s.name} ${s.industry}`.toLowerCase().includes(q)).slice(0, 6).map(s => ({ to: 'sponsor-' + s.id, t: s.name, m: s.industry }));
   const ds = DB.deals.filter(d => `${CR(d.c).name} ${SPN(d.s).name}`.toLowerCase().includes(q)).slice(0, 5).map(d => ({ to: 'deals', deal: d.id, t: `${CR(d.c).name} with ${SPN(d.s).name}`, m: STAGE_LABEL[d.stage] }));
@@ -924,93 +926,148 @@ function renderPalette() {
 }
 function palGo(n) { const it = S.pal.flat[n]; if (!it) return; S.pal = null; renderPalette(); if (it.deal) { S.flash = it.deal; S.dealView = 'board'; } S.panel = null; if (location.hash === '#' + it.to) render(); else location.hash = it.to; }
 
-/* ---------- earnings calculator ---------- */
-const RPM = [['music', 'Music / Entertainment', 1, 2], ['gaming', 'Gaming / Lifestyle / Vlogs', 2, 4], ['edu', 'Education / Science / Tech', 4, 8], ['finance', 'Finance / Business / Software', 10, 25]];
-const NICHE_RPM = { music: 'music', education: 'edu', tech: 'edu', finance: 'finance' };
-S.calc = { long: 150000, shorts: 500000, niche: 'edu', custom: false, rpm: 6, sedit: false, slo: 0.02, shi: 1.48, cur: 'USD', rate: 1.5, from: null };
-function calcNumbers(C = S.calc) {
-  const r = RPM.find(x => x[0] === C.niche), lr = C.custom ? [C.rpm, C.rpm] : [r[2], r[3]], sr = [Math.min(C.slo, C.shi), Math.max(C.slo, C.shi)];
-  const L = lr.map(x => C.long / 1000 * x), Sh = sr.map(x => C.shorts / 1000 * x);
-  return { lr, sr, L, Sh, T: [L[0] + Sh[0], L[1] + Sh[1]] };
+/* ---------- sponsorship price calculator ---------- */
+const CPMS = [['gaming', 'Gaming / entertainment', 6, 15], ['life', 'Lifestyle / general', 15, 30], ['tech', 'Tech', 20, 40], ['finance', 'Finance / business', 30, 50, '+'], ['b2b', 'B2B software', 40, 80]];
+const NICHE_CPM = { gaming: 'gaming', music: 'gaming', tech: 'tech', finance: 'finance' };
+const FORMATS = [['int', '60-second integration', 1, 1, 1], ['ded', 'Dedicated video', 2, 2.5, 3], ['short', 'Short', 0.3, 0.4, 0.5], ['pre', 'Pre-roll or brief mention', 0.3, 0.4, 0.5]];
+const EXTRAS = [['link', 'Link in the description'], ['pin', 'Pinned comment'], ['post', 'Community post']];
+const TIER1 = ['us', 'usa', 'united states', 'uk', 'gb', 'united kingdom', 'ca', 'canada', 'au', 'aus', 'australia'];
+S.calc = { cur: 'USD', rate: 1.5 };
+const money = (v, dec) => { const C = S.calc, x = v * (C.cur === 'AUD' ? C.rate : 1); return (C.cur === 'AUD' ? 'A$' : '$') + (!dec && (x >= 10 || x === 0) ? Math.round(x).toLocaleString('en-US') : x.toLocaleString('en-US', { minimumFractionDigits: !dec && Number.isInteger(x) ? 0 : 2, maximumFractionDigits: 2 })); };
+const pct = p => p === 0 ? 'no change' : `${p > 0 ? '+' : '−'}${Math.abs(p)}%`;
+const tidy = v => { const st = v < 100 ? 5 : v < 500 ? 10 : v < 2000 ? 50 : v < 10000 ? 100 : 500; return Math.round(v / st) * st; };
+const subnav = cur => `<nav class="subnav" aria-label="Creators"><a href="#creators" ${cur === 'creators' ? 'aria-current="page"' : ''}>All creators</a><a href="#calculator" ${cur === 'calculator' ? 'aria-current="page"' : ''}>Sponsorship price calculator <small>New</small></a></nav>`;
+function parseAud(text) {
+  const re = /([A-Za-z][A-Za-z .]*?)\s*:?\s*(\d+(?:\.\d+)?)\s*%/g; let m, total = 0, t1 = 0, n = 0;
+  while ((m = re.exec(text || ''))) { const v = parseFloat(m[2]); total += v; n++; if (TIER1.includes(m[1].trim().toLowerCase())) t1 += v; }
+  return n ? { total: Math.round(total), t1: Math.round(t1) } : null;
 }
-const money = v => { const C = S.calc, x = v * (C.cur === 'AUD' ? C.rate : 1); return (C.cur === 'AUD' ? 'A$' : '$') + (x >= 10 || x === 0 ? Math.round(x).toLocaleString('en-US') : x.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })); };
-const same = (a, b) => Math.abs(a - b) < 0.005;
-const mtext = (a, b) => same(a, b) ? money(a) : `${money(a)} to ${money(b)}`;
-const mhtml = (a, b) => same(a, b) ? `<span>${money(a)}</span>` : `<span>${money(a)}</span> <span>– ${money(b)}</span>`;
-const rpmText = r => { const f = x => '$' + (Number.isInteger(x) ? x : x.toFixed(2)); return same(r[0], r[1]) ? f(r[0]) : `${f(r[0])} to ${f(r[1])}`; };
-const subnav = cur => `<nav class="subnav" aria-label="Creators"><a href="#creators" ${cur === 'creators' ? 'aria-current="page"' : ''}>All creators</a><a href="#calculator" ${cur === 'calculator' ? 'aria-current="page"' : ''}>Earnings calculator <small>New</small></a></nav>`;
-function calculatorPage() {
-  const C = S.calc;
-  const slider = (k, label, max, step, marks) => `<div class="cgroup"><div class="chead"><label class="label" for="c-${k}">${label}</label><input class="control sm cnum" id="c-${k}" data-calc="${k}" inputmode="numeric" value="${num(C[k])}"></div>
-    <label class="sr" for="c-${k}-s">${label}, slider</label><input type="range" id="c-${k}-s" data-calc="${k}" min="0" max="${max}" step="${step}" value="${C[k]}"><div class="cscale" aria-hidden="true">${marks.map(m => `<span>${m}</span>`).join('')}</div></div>`;
-  return `<div class="page-head"><div><h1 class="page-title">Creators</h1><p class="page-lead">Find channels by size, niche and what they have done with sponsors before.</p></div></div>${subnav('calculator')}
-  <section class="calc" aria-label="YouTube earnings calculator"><div>
-    <h2>YouTube earnings calculator</h2>
-    <p class="dm" style="margin-bottom:16px">${C.from ? `Filled in from ${esc(C.from)}'s channel. Change any number.` : 'A rough guide to what a channel earns from YouTube ads each month.'}</p>
-    ${slider('long', 'Monthly long-form views', 1000000, 1000, ['0', '500k', '1M'])}
-    ${slider('shorts', 'Monthly Shorts views', 10000000, 10000, ['0', '5M', '10M'])}
-    <div class="cgroup"><div class="field" style="margin-bottom:4px"><label class="label" for="c-niche">Niche (sets the pay per 1,000 long-form views)</label><select class="control sm" id="c-niche" data-calc="niche" ${C.custom ? 'disabled' : ''}>${RPM.map(r => `<option value="${r[0]}" ${C.niche === r[0] ? 'selected' : ''}>${r[1]}: $${r[2]} to $${r[3]}</option>`).join('')}</select></div>
-      <label class="check"><input type="checkbox" id="c-custom" data-calc="custom" ${C.custom ? 'checked' : ''}> Use my own RPM instead</label>
-      <div class="inline" id="c-rpmbox" ${C.custom ? '' : 'hidden'}><label class="dm small" for="c-rpm">My RPM: $</label><input class="control sm" id="c-rpm" data-calc="rpm" inputmode="decimal" value="${C.rpm}"><span class="dm small">USD per 1,000 views</span></div></div>
-    <div class="cgroup"><div class="label">Shorts pay per 1,000 views</div><p style="margin:4px 0"><span id="c-stext">${rpmText([C.slo, C.shi])}</span> <span class="dm small">USD. The usual range is $0.02 to $1.48.</span></p>
-      <label class="check"><input type="checkbox" id="c-sedit" data-calc="sedit" ${C.sedit ? 'checked' : ''}> Change the Shorts range</label>
-      <div class="inline" id="c-sbox" ${C.sedit ? '' : 'hidden'}><label class="dm small" for="c-slo">From $</label><input class="control sm" id="c-slo" data-calc="slo" inputmode="decimal" value="${C.slo}"><label class="dm small" for="c-shi">to $</label><input class="control sm" id="c-shi" data-calc="shi" inputmode="decimal" value="${C.shi}"></div></div>
-    <div class="cgroup"><div class="label" id="c-curl">Show earnings in</div><div class="seg" role="radiogroup" aria-labelledby="c-curl">${['USD', 'AUD'].map(c => `<label><input type="radio" name="c-cur" id="c-cur-${c}" data-calc="cur" value="${c}" ${C.cur === c ? 'checked' : ''}><span>${c}</span></label>`).join('')}</div>
-      <div class="inline" id="c-ratebox" ${C.cur === 'AUD' ? '' : 'hidden'}><label class="dm small" for="c-rate">1 USD =</label><input class="control sm" id="c-rate" data-calc="rate" inputmode="decimal" value="${C.rate}"><span class="dm small">AUD. Type today's rate. 1.50 is only a starting value.</span></div></div>
-    <div class="calcbar" aria-hidden="true"><span>Estimated a month</span><b id="o-bar"></b></div>
-  </div><div class="out">
-    <div class="label">Estimated monthly earnings</div><div class="big" id="o-month" role="status"></div>
-    <div class="label" style="margin-top:16px">Per year (monthly × 12)</div><div class="mid" id="o-year"></div>
-    <div class="split2"><div><div class="label"><i class="key" style="background:var(--s-long)"></i>Long-form, a month</div><div class="mid" id="o-long"></div><div class="small dm" id="o-long-n"></div></div>
-      <div><div class="label"><i class="key" style="background:var(--s-shorts)"></i>Shorts, a month</div><div class="mid" id="o-shorts"></div><div class="small dm" id="o-shorts-n"></div></div></div>
-    <div class="chart"><div class="label" style="margin-bottom:8px">Long-form compared with Shorts, a month</div><div id="o-chart" role="img">
-      ${[['l', 'Long-form', 'long'], ['s', 'Shorts', 'shorts']].map(b => `<div class="brow" tabindex="0"><span class="small">${b[1]}</span><div class="btrack"><i class="lo" id="b-${b[0]}-lo" style="background:var(--s-${b[2]})"></i><i class="hi" id="b-${b[0]}-hi" style="background:var(--s-${b[2]})"></i></div><span class="bv" id="b-${b[0]}-v"></span><span class="tip" id="b-${b[0]}-t"></span></div>`).join('')}</div>
-      <div class="baxis" aria-hidden="true"><span>0</span><span id="b-max"></span></div>
-      <div class="blegend"><span><i></i>Low estimate</span><span><i class="hi"></i>Up to the high estimate</span></div></div>
-    <p class="cnote">These are estimates. Real pay depends on where the audience lives, the season and how much advertisers are spending. An estimate is not a fact, so it is never used in a pitch email.</p>
-  </div></section>`;
-}
-function calcOut() {
-  if (!$('#o-month')) return;
-  const C = S.calc, n = calcNumbers(), max = Math.max(n.L[1], n.Sh[1]);
-  $('#o-month').innerHTML = mhtml(n.T[0], n.T[1]); $('#o-bar').textContent = same(n.T[0], n.T[1]) ? money(n.T[0]) : `${money(n.T[0])} – ${money(n.T[1])}`; $('#o-year').innerHTML = mhtml(n.T[0] * 12, n.T[1] * 12);
-  $('#o-long').innerHTML = mhtml(n.L[0], n.L[1]); $('#o-shorts').innerHTML = mhtml(n.Sh[0], n.Sh[1]);
-  $('#o-long-n').textContent = `${num(C.long)} views at ${rpmText(n.lr)} USD per 1,000`;
-  $('#o-shorts-n').textContent = `${num(C.shorts)} views at ${rpmText(n.sr)} USD per 1,000`;
-  $('#c-stext').textContent = rpmText(n.sr);
-  [['l', n.L, 'Long-form', C.long, n.lr], ['s', n.Sh, 'Shorts', C.shorts, n.sr]].forEach(([p, v, name, views, r]) => {
-    const lo = $(`#b-${p}-lo`), hi = $(`#b-${p}-hi`), flat = same(v[0], v[1]);
-    lo.style.width = (max ? v[0] / max * 100 : 0) + '%'; hi.style.width = (max ? (v[1] - v[0]) / max * 100 : 0) + '%'; hi.hidden = flat; lo.classList.toggle('end', flat);
-    $(`#b-${p}-v`).textContent = mtext(v[0], v[1]); $(`#b-${p}-t`).textContent = `${name}: ${num(views)} views × ${rpmText(r)} USD per 1,000 = ${mtext(v[0], v[1])} a month`;
-  });
-  $('#b-max').textContent = money(max);
-  $('#o-chart').setAttribute('aria-label', `Bar chart. Long-form: ${mtext(n.L[0], n.L[1])} a month. Shorts: ${mtext(n.Sh[0], n.Sh[1])} a month.`);
-}
-function calcInput(t, commit) {
-  const C = S.calc, k = t.dataset.calc, dec = () => { const v = parseFloat(String(t.value).replace(/[$,\s]/g, '')); return isNaN(v) || v < 0 ? null : v; };
-  if (k === 'long' || k === 'shorts') {
-    const max = k === 'long' ? 1e6 : 1e7, box = $('#c-' + k), sl = $('#c-' + k + '-s');
-    let v = t === sl ? +t.value : parseNum(t.value);
-    if (v == null) { if (commit) box.value = num(C[k]); return; }
-    v = Math.max(0, Math.min(max, v)); C[k] = v; if (t !== sl) sl.value = v; if (t !== box || commit) box.value = num(v);
+const priceDefaults = (c, s) => ({ name: c.channel, niche: NICHE_CPM[c.niche] || 'life', own: false, cpmLo: null, cpmHi: null, subs: c.subs, views: c.avgViews, eng: c.eng, aud: c.aud, format: 'int', usage: 0, excl: 0, wide: false, x: { link: true, pin: false, post: false }, margin: 20, creator: c.id, sponsor: s ? s.id : null });
+function priceCalc(P) {
+  if (!P.views || P.views <= 0) return null;
+  const flags = [], assume = [], better = [], checks = [], g = CPMS.find(x => x[0] === P.niche);
+  let cl = g[2], ch = g[3];
+  if (P.own && P.cpmLo > 0 && P.cpmHi >= P.cpmLo) { cl = P.cpmLo; ch = P.cpmHi; }
+  else {
+    if (P.own) flags.push('Your own CPM is not complete: the low figure must be above 0 and not above the high figure. The default range was used instead.');
+    assume.push(`Used the default CPM range for ${g[1]}: $${g[2]} to $${g[3]}${g[4] || ''}.${g[4] ? ' The top of this range is open-ended, so the high figure may be too low.' : ''}`);
+    better.push('A CPM this channel has really been paid before.');
   }
-  else if (k === 'niche') C.niche = t.value;
-  else if (k === 'custom') { C.custom = t.checked; $('#c-rpmbox').hidden = !C.custom; $('#c-niche').disabled = C.custom; if (C.custom) $('#c-rpm').focus(); }
-  else if (k === 'sedit') { C.sedit = t.checked; $('#c-sbox').hidden = !C.sedit; if (!C.sedit) { C.slo = 0.02; C.shi = 1.48; $('#c-slo').value = '0.02'; $('#c-shi').value = '1.48'; } }
-  else if (k === 'cur') { C.cur = t.value; $('#c-ratebox').hidden = C.cur !== 'AUD'; }
-  else if (k === 'rpm' || k === 'slo' || k === 'shi' || k === 'rate') { const v = dec(); if (v == null || (k === 'rate' && v === 0)) return; C[k] = v; }
-  calcOut();
+  const cpm = [cl, (cl + ch) / 2, ch], base = cpm.map(c => P.views * c / 1000), steps = [];
+  let run = base.slice();
+  const push = (label, detail, mult) => { run = run.map((v, i) => v * mult[i]); steps.push({ label, detail, v: run.slice() }); };
+  const m3 = p => [1 + p / 100, 1 + p / 100, 1 + p / 100];
+  const f = FORMATS.find(x => x[0] === P.format);
+  push(`Format: ${f[1]}`, f[2] === f[4] ? 'The base fee is the price of one integration, so it stays as it is (×1).' : `×${f[2]} for low, ×${f[3]} for mid, ×${f[4]} for high.`, [f[2], f[3], f[4]]);
+  const a = parseAud(P.aud); let gp = 0, gd;
+  if (!a) { gd = 'Not given, so nothing was changed.'; flags.push('The audience countries are missing. No geography adjustment was applied.'); better.push("The audience by country, from the creator's own YouTube analytics."); }
+  else if (a.total > 100) { gd = `The shares add up to ${a.total}%, which cannot be right. Nothing was changed.`; flags.push(`The audience shares add up to ${a.total}%. Check the figures. No geography adjustment was applied.`); }
+  else if (a.total < 50) { gd = `Only ${a.total}% of the audience is listed. Nothing was changed.`; flags.push(`The countries listed cover only ${a.total}% of the audience, which is too little to judge. No geography adjustment was applied.`); better.push('More of the audience by country (at least half of it).'); }
+  else { gp = a.t1 >= 70 ? 20 : a.t1 >= 50 ? 10 : a.t1 >= 30 ? 0 : a.t1 >= 15 ? -15 : -30; gd = `${a.t1}% of the audience is in the US, UK, Canada or Australia.`; }
+  push(`Audience geography: ${pct(gp)}`, gd, m3(gp));
+  let ep = 0, ed;
+  if (P.eng == null) { ed = 'Not given, so nothing was changed.'; flags.push('The engagement rate is missing. No engagement adjustment was applied.'); better.push('The engagement rate: likes plus comments, as a share of views, over the last 10 videos.'); }
+  else { ep = P.eng >= 10 ? 20 : P.eng >= 7 ? 10 : P.eng >= 2 ? 0 : P.eng >= 1 ? -10 : -20; ed = `${P.eng}% is ${P.eng >= 7 ? 'well above 5%' : P.eng >= 2 ? 'inside the normal band (2% to 7%)' : 'below 2%'}.`; if (P.eng > 15) flags.push(`An engagement rate of ${P.eng}% is unusually high. Check that it is likes plus comments divided by views.`); }
+  push(`Engagement: ${pct(ep)}`, ed, m3(ep));
+  const core = run.slice();
+  const up = P.usage > 0 ? Math.round(Math.min(50, 20 + (P.usage - 1) * 30 / 11)) : 0;
+  push(`Usage rights: ${pct(up)}`, P.usage > 0 ? `The brand may reuse the video in paid ads for ${plural(P.usage, 'month')}.` : 'None.', m3(up));
+  const xp = P.excl > 0 ? Math.round(Math.min(30, Math.max(10, 10 + (P.excl - 30) * 20 / 150) + (P.wide ? 5 : 0))) : 0;
+  push(`Exclusivity: ${pct(xp)}`, P.excl > 0 ? `No competing brands for ${plural(P.excl, 'day')}, ${P.wide ? 'across a wide category' : 'in a narrow category'}.` : 'None.', m3(xp));
+  const price = run.slice();
+  let mg = P.margin; if (mg == null || mg < 0 || mg > 100) { flags.push("Smallfold's margin is missing or not between 0 and 100. 20% was used."); mg = 20; } else if (mg > 50) flags.push(`A margin of ${mg}% leaves the creator less than half of the price.`);
+  const payout = price.map(v => v * (1 - mg / 100)), cut = price.map(v => v * mg / 100), eff = price.map(v => v / P.views * 1000);
+  // step 3: checks
+  if (P.subs > 0) {
+    const ratio = P.views / P.subs, band = [P.subs / 1000 * 10 * f[2], P.subs / 1000 * 25 * f[4]];
+    if (ratio > 1.5) flags.push(`Average views are ${ratio.toFixed(1)} times the subscriber count. Check that viral outliers were left out.`);
+    if (ratio < 0.03) flags.push('Average views are under 3% of subscribers. The audience may be inactive, so a price based on subscribers would be too high.');
+    const far = core[1] < band[0] / 2 ? 'well below' : core[1] > band[1] * 2 ? 'well above' : null, side = core[1] < band[0] ? 'a little below that range, but not far off' : core[1] > band[1] ? 'a little above that range, but not far off' : 'inside that range';
+    checks.push({ ok: !far, t: `Typical flat rate for ${short(P.subs)} subscribers (${f[1].toLowerCase()}): about ${money(band[0])} to ${money(band[1])}, a rule of thumb of $10 to $25 per 1,000 subscribers. The mid figure before rights add-ons is ${money(core[1])}, which is ${far ? far + ' that range. Look again at the average views and the CPM' : side}.` });
+    const near = DB.deals.filter(d => d.amount && CR(d.c).subs >= P.subs / 2 && CR(d.c).subs <= P.subs * 2).map(d => d.amount).sort((x, y) => x - y);
+    if (near.length >= 3) checks.push({ ok: true, t: `Smallfold's own deals with channels of this size: ${money(near[0])} to ${money(near[near.length - 1])}, middle value ${money(near[Math.floor(near.length / 2)])} (${near.length} deals, fake data here).` });
+    else better.push("More of Smallfold's own closed deals with channels of this size, to compare against.");
+  } else { flags.push('The subscriber count is missing, so the check against typical flat rates was skipped.'); }
+  if (eff[1] > ch * 1.5) checks.push({ ok: false, t: `The brand would pay an effective CPM of ${money(eff[1], 1)}, above the top of the usual range for this niche ($${ch}). The add-ons explain it, but expect the brand to push back.` });
+  const sp = P.sponsor && SPN(P.sponsor);
+  if (sp) checks.push({ ok: price[1] >= sp.budget[0] && price[1] <= sp.budget[1], t: `${sp.name} usually pays ${money(sp.budget[0])} to ${money(sp.budget[1])} per creator. The mid price of ${money(price[1])} is ${price[1] < sp.budget[0] ? 'below' : price[1] > sp.budget[1] ? 'above' : 'inside'} that.` });
+  const cm = commission(price[1]);
+  checks.push({ ok: false, tag: 'Decide', t: `The back office today takes 10%, 8% or 5% depending on the deal size. On ${money(price[1])} that is ${Math.round(cm / price[1] * 100)}% (${money(cm)}), not the ${mg}% used here (${money(cut[1])}). One rule has to be chosen before this is built for real.` });
+  const xs = EXTRAS.filter(e => P.x[e[0]]).map(e => e[1].toLowerCase());
+  if (xs.length) assume.push(`Extras (${xs.join(', ')}) are included in the price. The method gives no figure for them.`);
+  assume.push('The method says only "raise" or "lower" for geography and engagement. The sizes used here are working values: geography +20% at 70% or more in the four countries, +10% from 50%, −15% under 30%, −30% under 15%; engagement +10% from 7%, +20% from 10%, −10% under 2%, −20% under 1%.');
+  assume.push('Usage rights rise evenly from +20% for 1 month to +50% for 12 months or more. Exclusivity rises from +10% for 30 days to +30% for 180 days, with 5 points more for a wide category.');
+  assume.push('The adjustments are multiplied one after another, in the order shown.');
+  if (P.format !== 'int') better.push(`Past prices for a ${f[1].toLowerCase()} on this channel. The format multiplier is a wide range.`);
+  const ask = tidy(price[1]), why = [`mid CPM of $${cpm[1]} for ${g[1].toLowerCase()}`, f[1].toLowerCase()];
+  if (gp) why.push(`${pct(gp)} for audience geography`); if (ep) why.push(`${pct(ep)} for engagement`); if (up) why.push(`${pct(up)} for usage rights`); if (xp) why.push(`${pct(xp)} for exclusivity`);
+  const missing = (a && a.total >= 50 && a.total <= 100 ? 0 : 1) + (P.eng == null ? 1 : 0);
+  return { cpm, base, steps, price, payout, cut, eff, mg, ask, flags, assume, better, checks, reason: `The mid figure, rounded: ${why.join(', ')}. Go no lower than ${money(tidy(price[0]))}.${missing ? ` ${missing === 2 ? 'Two inputs are' : 'One input is'} missing, so treat it as a rough figure.` : ''}` };
 }
-function earnSec(c) {
-  const long = Math.min(1e6, c.avgViews * c.uploads), g = NICHE_RPM[c.niche] || 'gaming', n = calcNumbers({ ...S.calc, long, shorts: 0, niche: g, custom: false });
-  return `<section class="sec"><h3>Ad earnings estimate</h3><p style="font:300 1.5rem/1.2 var(--serif)" class="num">${mtext(n.L[0], n.L[1])} <span class="muted small" style="font-family:var(--sans)">a month from long-form ads</span></p><p class="small muted" style="margin:6px 0 10px">From about ${num(long)} long-form views a month (average views × uploads) at the usual pay for "${RPM.find(r => r[0] === g)[1]}". An estimate, not a fact: it is never used in a pitch.</p><a class="btn ghost xs" href="#calculator" data-act="calc-from" data-id="${c.id}">Open in the calculator</a></section>`;
+function priceOutHtml(r) {
+  const P = S.price;
+  if (!r) return `<div class="label">Recommended asking price</div><div class="big">–</div><p class="dm">Enter the average views per video to get a price. Without views there is nothing to multiply.</p>`;
+  const row3 = (label, sub, v, dec, cls = '') => `<tr class="${cls}"><td>${label}${sub ? `<span class="sub">${sub}</span>` : ''}</td>${v.map(x => `<td class="r">${money(x, dec)}</td>`).join('')}</tr>`;
+  const head = first => `<thead><tr><th>${first}</th><th class="r">Low</th><th class="r">Mid</th><th class="r">High</th></tr></thead>`;
+  return `<div class="label">Recommended asking price${P.name ? ' for ' + esc(P.name) : ''}</div><div class="big">${money(r.ask)}</div><p>${esc(r.reason)}</p>
+    <h3>The split</h3><div class="pwrap"><table class="ptable">${head('')}<tbody>${row3('Price to brand', '', r.price)}${row3('Creator payout', `Price × ${100 - r.mg}%`, r.payout)}${row3("Smallfold's cut", `Price × ${r.mg}%`, r.cut)}${row3('Effective CPM the brand pays', 'Price ÷ views × 1,000', r.eff, 1, 'total')}</tbody></table></div>
+    <h3>Working, step by step</h3><div class="pwrap"><table class="ptable">${head('Step')}<tbody>${row3('1. Base fee', `${num(P.views)} views × CPM ÷ 1,000, with a CPM of $${r.cpm[0]}, $${r.cpm[1]} and $${r.cpm[2]}`, r.base)}${r.steps.map((s, i) => row3((i === 0 ? '2. ' : '') + esc(s.label), esc(s.detail), s.v)).join('')}${row3('Price to brand', 'After every adjustment', r.price, 0, 'total')}</tbody></table></div>
+    <h3>3. Checks</h3><ul class="plist">${r.checks.map(c => `<li><span class="flag ${c.ok ? 'ok' : ''}">${c.tag || (c.ok ? 'Fine' : 'Look')}</span>${esc(c.t)}</li>`).join('')}</ul>
+    ${r.flags.length ? `<h3>Missing or unreliable inputs</h3><ul class="plist">${r.flags.map(t => `<li><span class="flag">Flag</span>${esc(t)}</li>`).join('')}</ul>` : ''}
+    <h3>Assumptions made</h3><ul class="plist">${r.assume.map(t => `<li>${esc(t)}</li>`).join('')}</ul>
+    ${r.better.length ? `<h3>What would make this more accurate</h3><ul class="plist">${r.better.map(t => `<li>${esc(t)}</li>`).join('')}</ul>` : ''}
+    <p class="cnote">This is a starting point for a negotiation, not a quote. A price is never put in a first email, and nothing here is sent to anyone.</p>`;
 }
+function calculatorPage() {
+  const P = S.price, C = S.calc, c = P.creator && CR(P.creator), sp = P.sponsor && SPN(P.sponsor);
+  const fld = (id, label, val, hint, extra = '') => `<div class="cfield"><label class="label" for="p-${id}">${label}</label><input class="control sm" id="p-${id}" data-calc value="${esc(val ?? '')}" ${extra}>${hint ? `<span class="small dm">${hint}</span>` : ''}</div>`;
+  return `<div class="page-head"><div><h1 class="page-title">Creators</h1><p class="page-lead">Find channels by size, niche and what they have done with sponsors before.</p></div></div>${subnav('calculator')}
+  <section class="calc" aria-label="Sponsorship price calculator"><div>
+    <h2>Sponsorship price calculator</h2>
+    <p class="dm" style="margin-bottom:16px">${c ? `Filled in from ${esc(c.name)}'s profile${sp ? `, for a deal with ${esc(sp.name)}` : ''}. Change anything.` : 'Works out a fair price for a paid sponsorship, and shows every step.'}</p>
+    <div class="cgroup"><h3>Channel data</h3>
+      ${fld('name', 'Channel name', P.name)}
+      <div class="cfield"><label class="label" for="p-niche">Niche (sets the default CPM)</label><select class="control sm" id="p-niche" data-calc>${CPMS.map(g => `<option value="${g[0]}" ${P.niche === g[0] ? 'selected' : ''}>${g[1]}: $${g[2]} to $${g[3]}${g[4] || ''}</option>`).join('')}</select></div>
+      <label class="check"><input type="checkbox" id="p-own" data-calc ${P.own ? 'checked' : ''}> I have a better CPM figure</label>
+      <div class="inline" id="p-ownbox" ${P.own ? '' : 'hidden'}><label class="dm small" for="p-cpmlo">CPM from $</label><input class="control sm" id="p-cpmlo" data-calc inputmode="decimal" value="${P.cpmLo ?? ''}"><label class="dm small" for="p-cpmhi">to $</label><input class="control sm" id="p-cpmhi" data-calc inputmode="decimal" value="${P.cpmHi ?? ''}"></div>
+      <div class="ctwo">${fld('subs', 'Subscribers', P.subs ? num(P.subs) : '', '', 'inputmode="numeric"')}${fld('views', 'Average views per video', P.views ? num(P.views) : '', 'Last 10 long-form videos, without viral outliers.', 'inputmode="numeric"')}</div>
+      ${fld('eng', 'Engagement rate, %', P.eng ?? '', 'Likes plus comments, as a share of views. Leave empty if you do not know it.', 'inputmode="decimal" placeholder="Not known"')}
+      ${fld('aud', 'Main audience countries', P.aud, 'Write it like this: US 40%, UK 15%, AU 10%. Leave empty if you do not know it.', 'placeholder="Not known"')}
+    </div>
+    <div class="cgroup"><h3>Deal details</h3>
+      <div class="cfield"><label class="label" for="p-format">Format</label><select class="control sm" id="p-format" data-calc>${FORMATS.map(f => `<option value="${f[0]}" ${P.format === f[0] ? 'selected' : ''}>${f[1]}</option>`).join('')}</select></div>
+      <div class="ctwo">${fld('usage', 'Usage rights, months', P.usage || '', 'The brand may reuse it in paid ads. Empty means none.', 'inputmode="numeric" placeholder="None"')}${fld('excl', 'Exclusivity, days', P.excl || '', 'No competing brands. Empty means none.', 'inputmode="numeric" placeholder="None"')}</div>
+      <label class="check"><input type="checkbox" id="p-wide" data-calc ${P.wide ? 'checked' : ''}> The exclusivity covers a wide category</label>
+      <div class="label" style="margin-top:10px">Extras</div>${EXTRAS.map(e => `<label class="check"><input type="checkbox" id="p-x-${e[0]}" data-calc ${P.x[e[0]] ? 'checked' : ''}> ${e[1]}</label>`).join('')}
+      <div class="ctwo" style="margin-top:12px">${fld('margin', "Smallfold's margin, %", P.margin ?? '', '', 'inputmode="decimal"')}<div class="cfield"><span class="label" id="p-curl">Show prices in</span><div class="seg" role="radiogroup" aria-labelledby="p-curl">${['USD', 'AUD'].map(x => `<label><input type="radio" name="p-cur" id="p-cur-${x}" data-calc value="${x}" ${C.cur === x ? 'checked' : ''}><span>${x}</span></label>`).join('')}</div></div></div>
+      <div class="inline" id="p-ratebox" ${C.cur === 'AUD' ? '' : 'hidden'}><label class="dm small" for="p-rate">1 USD =</label><input class="control sm" id="p-rate" data-calc inputmode="decimal" value="${C.rate}"><span class="dm small">AUD. Type today's rate. 1.50 is only a starting value. CPMs stay in USD.</span></div>
+    </div>
+    <div class="calcbar" aria-hidden="true"><span>Recommended asking price</span><b id="o-bar"></b></div>
+  </div><div class="out" id="p-out"></div></section>`;
+}
+function priceOut() { const o = $('#p-out'); if (!o) return; const r = priceCalc(S.price); o.innerHTML = priceOutHtml(r); $('#o-bar').textContent = r ? money(r.ask) : '–'; }
+function priceInput(t, commit) {
+  const P = S.price, C = S.calc, v = id => $('#p-' + id).value, nv = id => { const x = parseFloat(String(v(id)).replace(/[$,%\s]/g, '')); return isNaN(x) ? null : x; };
+  Object.assign(P, { name: v('name').trim(), niche: v('niche'), own: $('#p-own').checked, cpmLo: nv('cpmlo'), cpmHi: nv('cpmhi'), subs: parseNum(v('subs')), views: parseNum(v('views')), eng: nv('eng'), aud: v('aud'), format: v('format'), usage: Math.max(0, nv('usage') || 0), excl: Math.max(0, nv('excl') || 0), wide: $('#p-wide').checked, margin: nv('margin') });
+  EXTRAS.forEach(e => { P.x[e[0]] = $('#p-x-' + e[0]).checked; });
+  C.cur = $('#p-cur-AUD').checked ? 'AUD' : 'USD'; const rate = nv('rate'); if (rate > 0) C.rate = rate;
+  $('#p-ownbox').hidden = !P.own; $('#p-ratebox').hidden = C.cur !== 'AUD';
+  if (t.id === 'p-own' && P.own) $('#p-cpmlo').focus();
+  if (commit && (t.id === 'p-subs' || t.id === 'p-views')) { const k = t.id.slice(2); if (P[k] != null) t.value = num(P[k]); }
+  priceOut();
+}
+function priceSec(c) {
+  const r = priceCalc(priceDefaults(c)), miss = (c.eng == null ? 1 : 0) + (c.aud ? 0 : 1);
+  return `<section class="sec"><h3>Fair sponsorship price</h3><p style="font:300 1.5rem/1.2 var(--serif)" class="num">${usd(Math.round(r.price[0]))} to ${usd(Math.round(r.price[2]))} <span class="muted small" style="font-family:var(--sans)">for a 60-second integration</span></p><p class="small muted" style="margin:6px 0 10px">Suggested asking price: ${usd(r.ask)}. From ${num(c.avgViews)} average views and the usual CPM for the niche.${miss ? ` ${miss === 2 ? 'The engagement rate and the audience countries are' : c.eng == null ? 'The engagement rate is' : 'The audience countries are'} not on file, so nothing was adjusted for ${miss === 2 ? 'them' : 'it'}.` : ''} A starting point, never used in a first email.</p><a class="btn ghost xs" href="#calculator" data-act="price-from" data-id="${c.id}">Open in the calculator</a></section>`;
+}
+
+S.price = priceDefaults(DB.creators.find(c => c.subs > 20000 && c.subs < 90000 && c.eng != null && c.aud && c.status !== 'do_not_contact') || CR(1));
 
 /* ---------- shell and routing ---------- */
 const NAV = [['overview', 'Overview'], ['creators', 'Creators'], ['sponsors', 'Sponsors', 1], ['deals', 'Deals'], ['emails', 'Emails'], ['inbox', 'Inbox'], ['claude', 'Claude'], ['app-settings', 'Settings']];
 function shell() {
   $('#app').innerHTML = `<div class="banner"><div class="banner__in"><strong>Prototype, fake data</strong><span class="m">Every person, company, email and number here is invented. Today is set to 25 Nov 2026.</span>
-    <details id="try"><summary>What to try</summary><ol><li>Creators: drag the subscriber slider, tick a niche, then remove a chip.</li><li>Click a creator. Confirm or reject a Detected record. Read the suggested sponsors.</li><li>Press Link on a suggestion, then find the new card on the Deals board.</li><li>Press "Draft pitch with Claude" and compare "Facts used" with "Left out".</li><li>Press Ctrl+K or ⌘K and search for a brand.</li><li>Creators, then "Earnings calculator": move the sliders. Or open a creator and press "Open in the calculator".</li></ol></details>
+    <details id="try"><summary>What to try</summary><ol><li>Creators: drag the subscriber slider, tick a niche, then remove a chip.</li><li>Click a creator. Confirm or reject a Detected record. Read the suggested sponsors.</li><li>Press Link on a suggestion, then find the new card on the Deals board.</li><li>Press "Draft pitch with Claude" and compare "Facts used" with "Left out".</li><li>Press Ctrl+K or ⌘K and search for a brand.</li><li>Creators, then "Sponsorship price calculator": change the format or add usage rights and read the working. Or open a creator and press "Open in the calculator".</li></ol></details>
     <span class="grow"></span><label for="role" class="m">Viewing as</label><select id="role" data-role><option value="owner">Owner</option><option value="worker">Worker</option></select>
     <button type="button" data-act="demo" data-d="loading">Show loading state</button><button type="button" data-act="demo" data-d="error">Show error state</button></div></div>
     <header class="bar"><div class="bar__in"><a class="brand" href="#creators"><i aria-hidden="true">S</i> Smallfold</a><nav class="nav" aria-label="Main" id="nav"></nav>
@@ -1024,7 +1081,7 @@ function render() {
   $('#who').innerHTML = `${STAFF[S.role]}<small>${S.role}</small>`;
   const main = $('#main');
   if (r.page === 'creators' || r.page === 'sponsors') renderList(r.page);
-  else if (r.page === 'calculator') { main.innerHTML = calculatorPage(); calcOut(); }
+  else if (r.page === 'calculator') { main.innerHTML = calculatorPage(); priceOut(); }
   else if (r.page === 'deals') { main.innerHTML = dealsPage(); const f = $('.deal.flash'); if (f) f.scrollIntoView({ block: 'center', inline: 'center' }); }
   else if (r.page === 'creator' || r.page === 'sponsor') {
     const it = r.page === 'creator' ? CR(r.id) : SPN(r.id);
@@ -1039,7 +1096,8 @@ const curKind = () => { const p = route().page; return p === 'sponsors' ? 'spons
 function setF(kind, id, v) { const st = S.L[kind]; if (isOn(v)) st.f[id] = v; else delete st.f[id]; st.page = 1; }
 const ACT = {
   fake: () => toast('Links to other sites are switched off in the prototype.'),
-  'calc-from': el => { const c = CR(+el.dataset.id); Object.assign(S.calc, { long: Math.min(1e6, c.avgViews * c.uploads), shorts: 0, niche: NICHE_RPM[c.niche] || 'gaming', custom: false, from: c.name }); },
+  'price-from': el => { S.price = priceDefaults(CR(+el.dataset.id), el.dataset.s ? SPN(+el.dataset.s) : null); S.modal = null; renderModal(); },
+  'price-use': el => { $('#m-amount').value = el.dataset.v; $('#m-amount').focus(); },
   open: (el) => { S.panel = { kind: el.dataset.kind, id: +el.dataset.id }; S.edit = S.confirming = null; const k = el.dataset.kind + '-' + el.dataset.id; S.recent = [k, ...S.recent.filter(x => x !== k)].slice(0, 5); renderPanel(); $('#panel-x').focus(); },
   'close-panel': () => { S.panel = null; renderPanel(); },
   fullpage: () => { S.panel = null; },
@@ -1100,7 +1158,7 @@ document.addEventListener('click', e => {
 });
 document.addEventListener('input', e => {
   const t = e.target, kind = curKind(), st = S.L[kind];
-  if (t.matches('[data-calc]')) return calcInput(t, false);
+  if (t.matches('[data-calc]')) return priceInput(t, false);
   if (t.matches('[data-q]')) { st.q = t.value; st.page = 1; renderResults(kind); }
   else if (t.matches('[data-slider]')) {
     const d = t.closest('.dual'), A = $('[data-slider=a]', d), B = $('[data-slider=b]', d);
@@ -1116,7 +1174,7 @@ document.addEventListener('input', e => {
 });
 document.addEventListener('change', e => {
   const t = e.target, kind = curKind(), st = S.L[kind];
-  if (t.matches('[data-calc]')) return calcInput(t, true);
+  if (t.matches('[data-calc]')) return priceInput(t, true);
   if (t.matches('[data-f]')) {
     const id = t.dataset.f, fc = CFG[kind].facets.find(f => f.id === id);
     if (fc.type === 'multi') { const cur = new Set(st.f[id] || []); t.checked ? cur.add(t.value) : cur.delete(t.value); setF(kind, id, [...cur]); }

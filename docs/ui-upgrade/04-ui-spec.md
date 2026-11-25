@@ -93,16 +93,27 @@ Add, edit, import from CSV and export follow the creators rules: staff add, edit
 - **Tablet:** the rail is a drawer, the side panel takes the full width, the board scrolls sideways inside its own frame.
 - **Keyboard and contrast:** every control reachable by Tab, visible focus ring, slider handles are native range inputs, labels on every field, status never shown by colour alone.
 
-### G. YouTube earnings calculator (added 25 November at the owner's request)
+### G. Sponsorship price calculator (added 25 November at the owner's request)
 
-Where: a second tab under Creators ("All creators", "Earnings calculator"). It is also in the command palette, and each creator profile has an "Ad earnings estimate" box with "Open in the calculator", which fills the calculator from that channel (average views times uploads a month, and the pay band for its niche).
+It replaces the YouTube ad-earnings calculator that was tried first (that version is in the git history of this branch).
 
-- **Inputs:** monthly long-form views (number box and slider, 0 to 1,000,000); monthly Shorts views (0 to 10,000,000); a niche menu that sets the pay per 1,000 long-form views (Music / Entertainment $1 to $2, Gaming / Lifestyle / Vlogs $2 to $4, Education / Science / Tech $4 to $8, Finance / Business / Software $10 to $25); "Use my own RPM instead"; Shorts pay fixed at $0.02 to $1.48 with an option to change it; USD or AUD with a typed exchange rate.
-- **Outputs, updated at once:** monthly earnings as a low to high range, yearly (monthly times 12), separate long-form and Shorts totals, a bar chart comparing the two, and a note that these are estimates.
-- **Look:** the brand's own dark ground (ink background, cream text), so it is dark and still belongs to the back office. Chart colours were checked for colour-blind safety on the dark background.
-- **Rule:** an estimate is not a fact. It is never passed to Claude and never appears in a pitch. The pitch draft lists it under "Left out".
-- **No database or server work:** the calculator runs in the browser. The pay bands live in one constant.
-- **Optional:** the same calculator on the public website, as a free tool for creators.
+Where: a second tab under Creators ("All creators", "Sponsorship price calculator"). It is also in the command palette. Each creator profile has a "Fair sponsorship price" box with "Open in the calculator". The Link dialog shows the fair price for the chosen pair, with "Use" to fill in the expected amount.
+
+- **Channel data:** channel name, niche (sets the default CPM), subscribers, average views per video (last 10 long-form videos, without viral outliers), engagement rate, main audience countries (typed as "US 40%, UK 15%, AU 10%").
+- **Deal details:** format, usage rights in months, exclusivity in days and whether the category is wide, extras, Smallfold's margin. Prices can be shown in USD or AUD with a typed rate.
+- **Default CPM ranges (used only when no better figure is typed):** gaming / entertainment $6 to $15; lifestyle / general $15 to $30; tech $20 to $40; finance / business $30 to $50+; B2B software $40 to $80.
+- **Method, shown step by step for low, mid and high:**
+  1. Base fee = average views × CPM ÷ 1,000.
+  2. Adjustments, multiplied one after another: format (dedicated video ×2 to ×3, Short or brief mention ×0.3 to ×0.5), audience geography, engagement, usage rights (+20% to +50%), exclusivity (+10% to +30%).
+  3. Checks: the result against a typical flat rate for the channel's size, against Smallfold's own past deals with channels of that size, and against the sponsor's usual budget when a sponsor is chosen.
+  4. Split: price to brand; creator payout = price × (1 − margin); Smallfold's cut = price × margin.
+- **Output:** a recommended asking price with a one-line reason, the split table, the effective CPM the brand pays, the missing or unreliable inputs, the assumptions made, and what data would make it more accurate.
+- **Honest about gaps:** a missing engagement rate or audience list changes nothing and is flagged. Audience shares that cover under half the audience, or add up to more than 100%, are flagged and ignored.
+- **Working values that the owner should confirm** (the method says only "raise" or "lower"): geography +20% at 70% or more of the audience in the US, UK, Canada or Australia, +10% from 50%, −15% under 30%, −30% under 15%; engagement +10% from 7%, +20% from 10%, −10% under 2%, −20% under 1%; flat-rate rule of thumb $10 to $25 per 1,000 subscribers. Extras are not priced, because the method gives no figure for them.
+- **A plain calculation, not a Claude call.** The same inputs always give the same price, it costs nothing to run, and every step can be checked. Optional later: a button that asks Claude to comment on the result.
+- **Data needed in the real back office:** engagement rate (can be worked out from public YouTube figures once the scanner exists) and audience countries (not public: the creator has to send them, and the team types them in). Two new optional creator columns.
+- **Open decision:** the calculator uses a margin (20% in the example). The back office today takes 10%, 8% or 5% depending on deal size. One rule has to be chosen.
+- **Rule:** a price from the calculator is a starting point. It is never put in a first email and never passed to a pitch draft.
 
 ## 4. What must be built (real back office, after approval)
 
