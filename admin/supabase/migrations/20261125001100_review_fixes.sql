@@ -82,6 +82,15 @@ end $$;
 -- ---------------------------------------------------------------- SR-02: exports
 -- Owner only, and the audit line is part of the call. Nobody can read export rows without the line being written in the same
 -- transaction (a failed audit write fails the whole call). creators_export keeps its signature and return type.
+-- A person at the database console (superuser, no login) may still run an export, and it is audited the same way (actor empty).
+-- The API roles (authenticated, anon, service_role) are never superusers, so a worker or a stolen key cannot use this.
+create or replace function public.export_operator() returns boolean
+language sql stable set search_path = pg_catalog, pg_temp as $$
+  select auth.uid() is null and exists (select 1 from pg_roles r where r.rolname = current_user and r.rolsuper)
+$$;
+revoke all on function public.export_operator() from public, anon, authenticated, service_role;
+grant execute on function public.export_operator() to authenticated;
+
 create or replace function public.creators_export(
   p_q text default null, p_subs_min bigint default null, p_subs_max bigint default null,
   p_sponsored text default null, p_detected boolean default false, p_recent integer default null,
@@ -98,7 +107,7 @@ language plpgsql volatile security invoker set search_path = public, extensions,
 declare
   v_n bigint;
 begin
-  if not public.is_owner() then
+  if not (public.is_owner() or public.export_operator()) then
     raise exception 'Only the owner can export creators.' using errcode = 'insufficient_privilege';
   end if;
   if coalesce(p_offset, 0) <= 0 then
@@ -108,7 +117,7 @@ begin
         'sponsored', p_sponsored, 'detected', p_detected, 'recent', p_recent, 'by', p_by, 'niche', p_niche, 'status', p_status,
         'contacted', p_contacted, 'views', p_views, 'lang', p_lang, 'country', p_country, 'email', p_email,
         'tag', p_tag, 'list', p_list))::text, 500)));
-  elsif not exists (select 1 from public.audit_log a where a.actor_id = auth.uid() and a.action = 'creators.exported'
+  elsif not exists (select 1 from public.audit_log a where a.actor_id is not distinct from auth.uid() and a.action = 'creators.exported'
                      and a.created_at > now() - interval '30 minutes') then
     raise exception 'Start the export from the first page.' using errcode = 'check_violation';
   end if;
@@ -130,13 +139,13 @@ returns table (name text, website text, industry text, country text, company_siz
 language plpgsql volatile security invoker set search_path = public, extensions, pg_temp as $$
 #variable_conflict use_column
 begin
-  if not public.is_owner() then
+  if not (public.is_owner() or public.export_operator()) then
     raise exception 'Only the owner can export sponsors.' using errcode = 'insufficient_privilege';
   end if;
   if coalesce(p_offset, 0) <= 0 then
     perform public.log_audit('brands.exported', 'brand', null,
       jsonb_build_object('count', public.sponsors_count(p), 'filters', left(coalesce(p, '{}'::jsonb)::text, 500)));
-  elsif not exists (select 1 from public.audit_log a where a.actor_id = auth.uid() and a.action = 'brands.exported'
+  elsif not exists (select 1 from public.audit_log a where a.actor_id is not distinct from auth.uid() and a.action = 'brands.exported'
                      and a.created_at > now() - interval '30 minutes') then
     raise exception 'Start the export from the first page.' using errcode = 'check_violation';
   end if;

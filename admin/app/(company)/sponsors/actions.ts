@@ -55,6 +55,7 @@ export async function saveSponsor(_prev: FormState, formData: FormData): Promise
 }
 
 function sponsorDbError(error: DbError, values: Record<string, string | string[]>): FormState {
+  if (/take a sponsor off do not contact/i.test(String((error as { message?: string } | null)?.message ?? ''))) return { error: 'Only the owner can take a sponsor off Do not contact.', values };
   if (error?.code === '23505') return { errors: { name: 'A sponsor with this name already exists.' }, values };
   if (error?.code === '23514') return { error: 'One of the values is outside what is allowed. Check the sizes and budgets.', values };
   return { error: 'Could not save. Please try again.', values };

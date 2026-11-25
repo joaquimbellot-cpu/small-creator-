@@ -53,8 +53,12 @@ async function login(browser, email, password) {
     await page.getByLabel('Sponsor', { exact: true }).fill('ZZ E2E Brand');
     await page.getByLabel('Date of the video').fill('2026-11-01');
     await page.getByLabel('Video title').fill('ZZ E2E video');
-    await page.getByRole('button', { name: 'Save record' }).click();
-    await page.getByText('was not in the list, so it was added as a new sponsor').first().waitFor();
+    // B-4: an unknown sponsor is only created by its own explicit button, never by Save record.
+    await page.getByText('No sponsor called “ZZ E2E Brand” yet.').waitFor();
+    ok(await page.getByRole('button', { name: 'Save record' }).isDisabled(), 'Save record is off while the sponsor is unknown');
+    ok(sql(`select count(*) from brands where name='ZZ E2E Brand'`) === '0', 'no sponsor was created by typing');
+    await page.getByRole('button', { name: 'Add ZZ E2E Brand as a new sponsor' }).click();
+    await page.getByText('was added as a new sponsor').first().waitFor();
     const item = page.locator('li', { hasText: 'ZZ E2E video' });
     await item.waitFor();
     ok((await item.textContent()).includes('Confirmed'), 'new record shows as Confirmed');

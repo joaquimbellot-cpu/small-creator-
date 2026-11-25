@@ -244,7 +244,7 @@ const noSideScroll = (page) => page.evaluate(() => document.documentElement.scro
     await settle(page);
     await page.getByRole('button', { name: 'Saved views' }).click();
     await page.getByLabel('Name for this view').fill(TAG + ' view');
-    await page.getByRole('button', { name: 'Save view' }).click();
+    await page.getByRole('button', { name: 'Save current view' }).click();
     await page.waitForTimeout(1500);
     ok(sql(`select query from saved_views where name = '${TAG} view' and scope = 'sponsors'`) === 'niches=tech', 'saved view stores the filters');
 

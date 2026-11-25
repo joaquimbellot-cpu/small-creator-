@@ -163,17 +163,20 @@ update public.creators set status = 'new' where id = '00000000-0000-0000-0000-00
 
 -- the contact's CURRENT address is on the suppression list (the address was changed after the draft, or opted out)
 update public.brand_contacts set email = 'zz-out-k3-new@example.test' where id = '00000000-0000-0000-0000-0000000000c3';
+update public.emails set status = 'approved' where id = '00000000-0000-0000-0000-0000000000e4';  -- the contact change dropped it back to draft (review fix SR-03)
 insert into public.suppression_list (email, reason) values ('zz-out-k3-new@example.test', 'test');
 select tests.json_as('service_role', null, format('select public.reserve_send(%L, %L)', '00000000-0000-0000-0000-0000000000e4', (select w from ids))) as r \gset
 select tests.check('reserve_send checks the suppression list against the contact''s current address too', :'r'::jsonb ->> 'reason' = 'suppressed');
 delete from public.suppression_list where email = 'zz-out-k3-new@example.test';
-insert into public.suppression_list (email, reason) values ('zz-out-k3@example.test', 'test');
+-- since SR-03 the stored address follows the contact, so the address the mail is written to is the new one
+insert into public.suppression_list (email, reason) values ('zz-out-k3-new@example.test', 'test');
 select tests.json_as('service_role', null, format('select public.reserve_send(%L, %L)', '00000000-0000-0000-0000-0000000000e4', (select w from ids))) as r \gset
 select tests.check('reserve_send checks the suppression list against the address the mail is written to (to_email)', :'r'::jsonb ->> 'reason' = 'suppressed');
-delete from public.suppression_list where email = 'zz-out-k3@example.test';
+delete from public.suppression_list where email = 'zz-out-k3-new@example.test';
 
 -- the contact person was deleted after the draft
 delete from public.brand_contacts where id = '00000000-0000-0000-0000-0000000000c3';
+update public.emails set status = 'approved' where id = '00000000-0000-0000-0000-0000000000e4';  -- deleting the contact dropped it back to draft (review fix SR-03)
 select tests.json_as('service_role', null, format('select public.reserve_send(%L, %L)', '00000000-0000-0000-0000-0000000000e4', (select w from ids))) as r \gset
 select tests.check('reserve_send refuses a contact email whose contact person was deleted', :'r'::jsonb ->> 'reason' = 'no_contact'
   and (select brand_contact_id is null and status = 'approved' from public.emails where id = '00000000-0000-0000-0000-0000000000e4'));

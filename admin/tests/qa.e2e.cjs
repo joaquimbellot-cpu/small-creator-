@@ -482,6 +482,138 @@ const cleanup = { emailIds: [], creatorRestore: [], zzCreatorId: null, runStart:
       check('a worker can search', wr.status() === 200);
       check('the reply has no email, phone or note', !/@|phone|notes?"/.test(await wr.text()));
     });
+
+    // ---------------------------------------------------------------- 10. review fixes (screens): B-2, B-3, B-4, B-6, C-1, C-7, SR-11
+    startSection('10. review fixes (screens)');
+    const fxPage = owner.page;
+    const focusedId = () => fxPage.evaluate(() => document.activeElement?.getAttribute('data-open-id') ?? '');
+    await step('B-2 closing the side panel gives focus back to the row link (both lists)', async () => {
+      for (const list of ['/creators', '/sponsors']) {
+        await fxPage.goto(`${BASE}${list}`);
+        const links = fxPage.locator('a[data-open-id]');
+        await links.first().waitFor({ timeout: 15000 });
+        await fxPage.waitForTimeout(500);
+        const firstId = await links.first().getAttribute('data-open-id');
+        await links.first().click();
+        const dlg = fxPage.getByRole('dialog');
+        await dlg.waitFor({ timeout: 15000 });
+        await fxPage.keyboard.press('Escape');
+        await fxPage.waitForFunction((id) => document.activeElement?.getAttribute('data-open-id') === id, firstId, { timeout: 8000 }).catch(() => {});
+        check(`${list}: Esc returns focus to the row link that opened the panel`, (await focusedId()) === firstId, await focusedId());
+        await links.first().click();
+        await dlg.waitFor({ timeout: 15000 });
+        await fxPage.waitForTimeout(600);
+        await dlg.getByRole('button', { name: 'Next', exact: true }).click();
+        await fxPage.waitForTimeout(700);
+        await dlg.getByRole('button', { name: 'Next', exact: true }).click();
+        await fxPage.waitForTimeout(700);
+        const shownName = await dlg.getAttribute('aria-label');
+        const wantId = await fxPage.locator('a[data-open-id]', { hasText: shownName }).first().getAttribute('data-open-id');
+        await dlg.getByRole('button', { name: 'Close' }).click();
+        await fxPage.waitForFunction((id) => document.activeElement?.getAttribute('data-open-id') === id, wantId, { timeout: 8000 }).catch(() => {});
+        check(`${list}: the x after Previous/Next returns focus to the record last shown`, (await focusedId()) === wantId, await focusedId());
+        await links.first().click();
+        await dlg.waitFor({ timeout: 15000 });
+        await fxPage.mouse.click(40, 450);
+        await fxPage.waitForFunction((id) => document.activeElement?.getAttribute('data-open-id') === id, firstId, { timeout: 8000 }).catch(() => {});
+        check(`${list}: clicking the veil returns focus to the row link`, (await focusedId()) === firstId, await focusedId());
+      }
+    });
+    await step('B-3 the Add deal form refuses do-not-contact creators and sponsors', async () => {
+      const dealsBefore = sql('select count(*) from deals');
+      const dncBrand = sql("select name from brands where relationship = 'do_not_contact' order by name limit 1");
+      const okCreator = sql("select full_name from creators where status <> 'do_not_contact' and full_name not like 'ZZ%' order by full_name limit 1");
+      const [, oskarName] = [OSKAR_ID, sql(`select full_name from creators where id = '${OSKAR_ID}'`)];
+      await fxPage.goto(`${BASE}/deals`);
+      await fxPage.locator('summary', { hasText: 'Add a deal' }).click();
+      const form = fxPage.locator('form', { hasText: 'Add a deal' }).last();
+      await form.getByLabel('Creator').selectOption({ label: oskarName });
+      await form.getByLabel('Sponsor').fill('ZZ FIX Sponsor');
+      await form.getByRole('button', { name: 'Add deal' }).click();
+      await fxPage.getByText('The creator is marked Do not contact.').first().waitFor({ timeout: 10000 }).catch(() => {});
+      check('a do-not-contact creator gives the plain message', await fxPage.getByText('The creator is marked Do not contact.').first().isVisible());
+      check('no deal and no sponsor were created for it', sql('select count(*) from deals') === dealsBefore && sql("select count(*) from brands where name = 'ZZ FIX Sponsor'") === '0');
+      await form.getByLabel('Creator').selectOption({ label: okCreator });
+      await form.getByLabel('Sponsor').fill(dncBrand);
+      await form.getByRole('button', { name: 'Add deal' }).click();
+      await fxPage.getByText('The sponsor is marked Do not contact.').first().waitFor({ timeout: 10000 }).catch(() => {});
+      check('a do-not-contact sponsor gives the plain message', await fxPage.getByText('The sponsor is marked Do not contact.').first().isVisible());
+      check('no deal was created for it', sql('select count(*) from deals') === dealsBefore);
+      check('the deals page says Sponsor, not Brand, in the form and the table', (await fxPage.getByLabel('Sponsor').count()) > 0 && !(await fxPage.locator('form', { hasText: 'Add a deal' }).last().innerText()).includes('Brand'));
+    });
+    await step('B-4 a new sponsor is created only by its own button', async () => {
+      const [cid] = sql("select id from creators where status <> 'do_not_contact' and full_name not like 'ZZ%' order by full_name limit 1").split('|');
+      await fxPage.goto(`${BASE}/creators/${cid}`);
+      await fxPage.getByRole('button', { name: 'Add a record' }).first().click();
+      const g = fxPage.getByRole('group', { name: 'Add a sponsorship record' });
+      await g.getByLabel('Sponsor').fill('ZZ FIX Newco');
+      await g.getByLabel('Date of the video').fill('2026-11-01');
+      await g.getByText('No sponsor called “ZZ FIX Newco” yet.').waitFor({ timeout: 10000 });
+      check('typing an unknown sponsor shows "No sponsor called X yet"', true);
+      check('Save record is off while the sponsor is unknown', await g.getByRole('button', { name: 'Save record' }).isDisabled());
+      check('nothing was created yet', sql("select count(*) from brands where name = 'ZZ FIX Newco'") === '0');
+      await g.getByRole('button', { name: 'Add ZZ FIX Newco as a new sponsor' }).click();
+      await fxPage.waitForTimeout(2500);
+      check('the explicit button creates the sponsor and the record', sql("select count(*) from brands where name = 'ZZ FIX Newco'") === '1' && sql("select count(*) from sponsorships where brand_id = (select id from brands where name = 'ZZ FIX Newco')") === '1');
+      // The server refuses a typed name without the explicit flag too (not only the form).
+      const bid = sql("select id from brands where name = 'ZZ FIX Newco'");
+      await fxPage.goto(`${BASE}/sponsors/${bid}`);
+      await fxPage.getByRole('button', { name: 'Add a record' }).first().click();
+      const g2 = fxPage.getByRole('group', { name: 'Add a sponsorship record' });
+      await g2.getByLabel('Creator').fill('ZZ FIX Nobody');
+      await g2.getByText('No creator called “ZZ FIX Nobody” yet.').waitFor({ timeout: 10000 });
+      check('the sponsor side never creates a creator and points to adding one', (await g2.getByRole('link', { name: 'Add the creator first' }).getAttribute('href')) === '/creators?new=1' && sql("select count(*) from creators where full_name like 'ZZ FIX%'") === '0');
+      sql("delete from sponsorships where brand_id in (select id from brands where name like 'ZZ FIX%')");
+      sql("delete from brands where name like 'ZZ FIX%'");
+    });
+    await step('B-6 the range fields, handles and address always agree', async () => {
+      await fxPage.goto(`${BASE}/creators`);
+      const from = fxPage.getByLabel('From', { exact: true }).first();
+      const to = fxPage.getByLabel('To', { exact: true }).first();
+      await from.waitFor({ timeout: 15000 });
+      const snap = async () => {
+        await fxPage.waitForTimeout(900);
+        return { url: new URL(fxPage.url()).searchParams.get('subs'), from: await from.inputValue(), to: await to.inputValue(), hands: await fxPage.evaluate(() => [...document.querySelectorAll('input[type=range]')].slice(0, 2).map((e) => Number(e.value))) };
+      };
+      await from.fill('1.5M'); await from.press('Tab');
+      let s1 = await snap();
+      check('From alone reaches the address', s1.url === '1500000-', JSON.stringify(s1));
+      await to.fill('2k'); await to.press('Tab');
+      s1 = await snap();
+      check('an invalid pair (From above To) does not change the address', s1.url === '1500000-', JSON.stringify(s1));
+      check('the To box goes back to the last good value (empty), the handles stay', s1.to === '' && s1.hands[1] === 100, JSON.stringify(s1));
+      check('the message explains it', await fxPage.getByText('"From" cannot be above "To"').first().isVisible());
+      await fxPage.getByRole('button', { name: '10k to 50k' }).click();
+      s1 = await snap();
+      check('a preset sets fields, handles and address together', s1.url === '10000-50000' && s1.from === '10,000' && s1.to === '50,000' && s1.hands[0] > 0 && s1.hands[1] < 100, JSON.stringify(s1));
+      await from.fill('60k'); await from.press('Tab');
+      s1 = await snap();
+      check('From above To after a preset is refused and everything stays', s1.url === '10000-50000' && s1.from === '10,000', JSON.stringify(s1));
+      await fxPage.getByRole('slider').first().focus();
+      for (let i = 0; i < 4; i++) await fxPage.keyboard.press('ArrowRight');
+      s1 = await snap();
+      check('moving a handle updates the From box and the address', s1.url === `${s1.from.replace(/,/g, '')}-50000` && s1.from !== '10,000', JSON.stringify(s1));
+      await fxPage.getByRole('button', { name: /^Remove .*ubscribers/ }).first().click().catch(() => {});
+      s1 = await snap();
+      check('removing the chip clears fields, handles and address', s1.url === null && s1.from === '' && s1.to === '' && s1.hands[0] === 0 && s1.hands[1] === 100, JSON.stringify(s1));
+    });
+    await step('C-1, C-7 and C-9 small screen fixes', async () => {
+      await fxPage.goto(`${BASE}/creators?subs=100000-&status=new&q=zzzz-nothing`);
+      await fxPage.locator('nav[aria-label=Pagination]').waitFor({ timeout: 15000 });
+      check('an empty list says "0 results", not "0–0 of 0"', (await fxPage.locator('nav[aria-label=Pagination]').innerText()).includes('0 results'));
+      const r = await fxPage.goto(`${BASE}/sponsors/00000000-0000-4000-8000-000000000000`);
+      check('a missing sponsor gives a 404 with its own message', r.status() === 404 && await fxPage.getByRole('heading', { name: 'This sponsor does not exist' }).isVisible());
+      check('and a link back to Sponsors', (await fxPage.getByRole('link', { name: 'Back to sponsors' }).getAttribute('href')) === '/sponsors');
+      await fxPage.goto(`${BASE}/deals?view=table`);
+      check('no date on the deals page says "Sept"', !/\bSept\b/.test(await fxPage.locator('main').innerText()));
+    });
+    await step('SR-11 an over-size import is refused before it is read', async () => {
+      const big = Buffer.alloc(1_300_000, 97);
+      for (const route of ['sponsors', 'creators']) {
+        const res = await fxPage.request.post(`${BASE}/api/${route}/import?mode=preview`, { multipart: { file: { name: 'big.csv', mimeType: 'text/csv', buffer: big } } });
+        check(`/api/${route}/import refuses a 1.3 MB file with the size message`, res.status() === 400 && (await res.text()).includes('larger than 1 MB'), `${res.status()}`);
+      }
+    });
   } finally {
     // ---------------------------------------------------------------- cleanup (everything this run created)
     startSection('cleanup');
@@ -491,6 +623,8 @@ const cleanup = { emailIds: [], creatorRestore: [], zzCreatorId: null, runStart:
         const last = c.last ? sqlStr(c.last) : 'null';
         sql(`update creators set status = '${c.status}', last_contacted_at = ${last} where id = '${c.id}'`);
       }
+      sql("delete from sponsorships where brand_id in (select id from brands where name like 'ZZ FIX%')");
+      sql("delete from brands where name like 'ZZ FIX%'");
       if (cleanup.zzCreatorId) sql(`delete from creators where id = '${cleanup.zzCreatorId}'`);
       sql(`delete from login_attempts where created_at >= '${cleanup.runStart}'`);
       const modeOn = sql('select test_mode from settings where id = 1');

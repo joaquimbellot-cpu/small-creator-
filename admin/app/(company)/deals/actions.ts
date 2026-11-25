@@ -68,21 +68,27 @@ type Db = Awaited<ReturnType<typeof createClient>>;
 const COMPLETE: Stage[] = ['completed', 'paid'];
 
 /** Changes the stage. Says whether the database added a Confirmed sponsorship record for it (only the first time a deal completes). */
-async function changeStage(supabase: Db, id: string, stage: Stage): Promise<{ ok: true; from: Stage; recordAdded: boolean } | { ok: false; error: string }> {
+async function changeStage(supabase: Db, id: string, stage: Stage): Promise<{ ok: true; from: Stage; recordAdded: boolean; recordRemoved: boolean } | { ok: false; error: string }> {
   const { data: before } = await supabase.from('deals').select('stage').eq('id', id).maybeSingle();
   if (!before) return { ok: false, error: GONE };
   const had = COMPLETE.includes(stage)
     ? ((await supabase.from('sponsorships').select('id', { count: 'exact', head: true }).eq('deal_id', id)).count ?? 0) > 0
     : true;
+  const records = async () => (await supabase.from('sponsorships').select('id', { count: 'exact', head: true }).eq('deal_id', id)).count ?? 0;
+  const recordsBefore = await records();
   const { data, error } = await supabase.from('deals').update({ stage }).eq('id', id).select('id');
   if (error) return { ok: false, error: 'Could not change the stage. Try again.' };
   if (!data || data.length === 0) return { ok: false, error: GONE };
   refresh();
   if (COMPLETE.includes(stage)) { revalidatePath('/creators'); revalidatePath('/sponsors'); }
-  return { ok: true, from: before.stage as Stage, recordAdded: COMPLETE.includes(stage) && !had };
+  // Leaving Completed and Paid: the database takes back the record the deal made (unless a person added a video to it).
+  const recordRemoved = COMPLETE.includes(before.stage as Stage) && !COMPLETE.includes(stage) && recordsBefore > 0 && (await records()) < recordsBefore;
+  if (recordRemoved) { revalidatePath('/creators'); revalidatePath('/sponsors'); }
+  return { ok: true, from: before.stage as Stage, recordAdded: COMPLETE.includes(stage) && !had, recordRemoved };
 }
 
 const RECORD_NOTE = ' A Confirmed sponsorship was added to both histories.';
+const REMOVED_NOTE = ' The Confirmed sponsorship this deal had added was removed from both histories.';
 
 export async function updateStageAction(_prev: DealFormState, formData: FormData): Promise<DealFormState> {
   await requireStaff();
@@ -91,7 +97,7 @@ export async function updateStageAction(_prev: DealFormState, formData: FormData
 
   const r = await changeStage(await createClient(), parsed.data.id, parsed.data.stage);
   if (!r.ok) return { error: r.error };
-  return { ok: `Saved.${r.recordAdded ? RECORD_NOTE : ''}` };
+  return { ok: `Saved.${r.recordAdded ? RECORD_NOTE : ''}${r.recordRemoved ? REMOVED_NOTE : ''}` };
 }
 
 export type MoveResult = { ok: true; message: string } | { ok: false; error: string };
@@ -104,7 +110,7 @@ export async function moveDealAction(input: unknown): Promise<MoveResult> {
   const r = await changeStage(await createClient(), parsed.data.id, parsed.data.stage);
   if (!r.ok) return r;
   if (r.from === parsed.data.stage) return { ok: true, message: `Already at "${STAGE_LABEL[r.from]}".` };
-  return { ok: true, message: `Moved from "${STAGE_LABEL[r.from]}" to "${STAGE_LABEL[parsed.data.stage]}".${r.recordAdded ? RECORD_NOTE : ''}` };
+  return { ok: true, message: `Moved from "${STAGE_LABEL[r.from]}" to "${STAGE_LABEL[parsed.data.stage]}".${r.recordAdded ? RECORD_NOTE : ''}${r.recordRemoved ? REMOVED_NOTE : ''}` };
 }
 
 export type AmountResult = { ok: true; message: string; cents: number | null } | { ok: false; error: string };

@@ -27,7 +27,9 @@ export function sourceSentence(r: HistoryRecord): string {
   if (r.label === 'confirmed') {
     const by = r.confirmedByName ? ` by ${r.confirmedByName}` : '';
     const note = r.evidenceNote ? ` ${r.evidenceNote.trim().replace(/[.!?]?$/, '.')}` : '';
-    return `Confirmed${by} on ${fmtDate(r.confirmedAt)}. Source: ${ORIGINS[r.origin] ?? r.origin}.${note}`;
+    // A record made by a deal outlives the deal: it says where it came from and never links to the (maybe deleted) deal.
+    const src = r.origin === 'deal' ? `a Smallfold deal, ${fmtDate(r.sponsoredOn)}` : (ORIGINS[r.origin] ?? r.origin);
+    return `Confirmed${by} on ${fmtDate(r.confirmedAt)}. Source: ${src}.${note}`;
   }
   const signal = r.detectionSignal ? (SIGNALS[r.detectionSignal] ?? r.detectionSignal.replace(/_/g, ' ')) : 'a sign of a paid promotion';
   return `Found automatically on ${fmtDate(r.createdAt)}: ${signal}. Confidence: ${r.detectionConfidence ?? 'not known'}. Nobody has checked it.`;
