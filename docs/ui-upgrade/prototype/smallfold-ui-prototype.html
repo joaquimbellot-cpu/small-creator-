@@ -8,6 +8,8 @@
 :root{
   --cream:#F1EFEB; --ink:#0E0E0E; --paper:#FAF8F4; --muted:#5C5A55; --faint:#B9B5AC;
   --line:rgba(14,14,14,.14); --accent:#2B44D6; --red:#9B2C1F; --green:#2F6B3C; --amber:#8A5A00;
+  --d-bg:#0E0E0E; --d-surface:#1A1A19; --d-fg:#F1EFEB; --d-muted:#A9A59C; --d-line:rgba(241,239,235,.18); --d-accent:#A8B4FF;
+  --s-long:#338ced; --s-shorts:#e76624;
   --veil:rgba(14,14,14,.45); --banner:#0E0E0E; --banner-fg:#F1EFEB; --banner-muted:#A9A59C;
   --serif:"Newsreader",Georgia,"Times New Roman",serif;
   --sans:"Instrument Sans","Helvetica Neue",Arial,sans-serif;
@@ -236,6 +238,59 @@ details.why summary{cursor:pointer;white-space:nowrap}
 .deal{position:relative;background:var(--cream);border:1px solid var(--line);border-radius:var(--r);padding:10px;font-size:.875rem;display:grid;gap:6px;cursor:grab}
 .deal.flash{border-color:var(--accent)}
 .deal select{min-height:36px;font-size:.8125rem;padding-left:8px}
+
+/* earnings calculator, on the brand's dark ground */
+.subnav{display:flex;gap:20px;border-bottom:1px solid var(--line);margin-bottom:24px;overflow-x:auto}
+.subnav a{display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:8px 0;color:var(--muted);font-size:.9375rem;text-decoration:none;border-bottom:2px solid transparent;margin-bottom:-1px;white-space:nowrap}
+.subnav a[aria-current=page]{color:var(--ink);border-bottom-color:var(--accent)}
+.subnav a small{font:500 .625rem/1.4 var(--sans);letter-spacing:.07em;text-transform:uppercase;color:var(--accent);border:1px solid var(--accent);border-radius:4px;padding:0 4px}
+.calc{background:var(--d-bg);color:var(--d-fg);border-radius:14px;padding:clamp(20px,3.2vw,44px);color-scheme:dark;display:grid;gap:32px 48px}
+@media (min-width:920px){.calc{grid-template-columns:minmax(0,5fr) minmax(0,6fr)}}
+.calc>div{min-width:0}
+.calc h2{font-size:clamp(1.5rem,2.4vw,2rem);line-height:1.15;margin-bottom:8px}
+.calc .label,.calc .dm{color:var(--d-muted)}
+.calc :focus-visible{outline-color:var(--d-accent)}
+.calc .control{background-color:var(--d-surface);color:var(--d-fg);border-color:var(--d-muted)}
+.calc .control:disabled{opacity:.45}
+.calc select.control{background-image:linear-gradient(45deg,transparent 50%,var(--d-fg) 50%),linear-gradient(135deg,var(--d-fg) 50%,transparent 50%)}
+.calc input[type=range]{display:block;width:100%;height:32px;margin:6px 0 0;accent-color:var(--d-accent)}
+.calc input[type=checkbox]{accent-color:var(--d-accent)}
+.calc .seg{border-color:var(--d-muted);max-width:220px;margin-top:6px}
+.calc .seg span{border-left-color:var(--d-line)}
+.calc .seg input:checked+span{background:var(--d-fg);color:var(--d-bg)}
+.calc .seg input:focus-visible+span{outline-color:var(--d-accent)}
+.cgroup{border-top:1px solid var(--d-line);padding:16px 0 6px}
+.chead{display:flex;justify-content:space-between;align-items:center;gap:12px}
+.cnum{width:9.5rem!important;text-align:right;font-variant-numeric:tabular-nums}
+.cscale{display:flex;justify-content:space-between;font-size:.75rem;color:var(--d-muted);font-variant-numeric:tabular-nums}
+.check{display:flex;gap:10px;align-items:center;min-height:40px;cursor:pointer;font-size:.9375rem}
+.inline{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:4px 0 8px}
+.inline .control{width:6.5rem}
+.out{background:var(--d-surface);border:1px solid var(--d-line);border-radius:var(--r);padding:clamp(16px,2.4vw,28px);align-self:start}
+.big{font:300 clamp(2.25rem,5.2vw,3.75rem)/1.05 var(--serif);letter-spacing:-.01em;font-variant-numeric:tabular-nums;margin:6px 0 4px}
+.mid{font:300 clamp(1.375rem,2.6vw,1.875rem)/1.15 var(--serif);font-variant-numeric:tabular-nums;margin-top:4px}
+.big span,.mid span{white-space:nowrap}
+.split2{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:22px 0}
+@media (max-width:440px){.split2{grid-template-columns:1fr}}
+.split2>div{border-top:1px solid var(--d-line);padding-top:10px;min-width:0}
+.key{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px}
+.chart{border-top:1px solid var(--d-line);padding-top:16px}
+.brow{display:grid;grid-template-columns:5.5rem minmax(0,1fr);gap:4px 12px;align-items:center;padding:6px 0;position:relative;border-radius:4px}
+.btrack{display:flex;gap:2px;height:20px;border-left:1px solid var(--d-muted)}
+.btrack i{display:block;height:100%;min-width:0;flex:none}
+.btrack i.hi{opacity:.42;border-radius:0 4px 4px 0}
+.btrack i.lo.end{border-radius:0 4px 4px 0}
+.bv{grid-column:2;font-size:.875rem;font-variant-numeric:tabular-nums}
+.tip{display:none;position:absolute;left:calc(5.5rem + 12px);bottom:calc(100% - 2px);z-index:2;max-width:min(280px,64vw);background:var(--d-fg);color:var(--d-bg);padding:6px 10px;border-radius:6px;font-size:.8125rem;line-height:1.35}
+.brow:hover .tip,.brow:focus-visible .tip{display:block}
+.baxis{display:flex;justify-content:space-between;margin-left:calc(5.5rem + 12px);font-size:.75rem;color:var(--d-muted);font-variant-numeric:tabular-nums;border-top:1px solid var(--d-line);padding-top:4px}
+.blegend{display:flex;gap:6px 18px;flex-wrap:wrap;font-size:.8125rem;color:var(--d-muted);margin-top:12px}
+.blegend i{display:inline-block;width:18px;height:10px;border-radius:2px;margin-right:6px;background:var(--d-fg)}
+.blegend i.hi{opacity:.42}
+.calcbar{position:sticky;bottom:calc(8px + env(safe-area-inset-bottom,0px));margin-top:8px;background:var(--d-fg);color:var(--d-bg);border-radius:var(--r);padding:10px 14px;display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap;font-size:.875rem}
+.calcbar b{font:400 1.25rem/1.2 var(--serif);font-variant-numeric:tabular-nums}
+@media (min-width:920px){.calcbar{display:none}}
+.cnote{border-top:1px solid var(--d-line);margin-top:20px;padding-top:14px;font-size:.875rem;color:var(--d-muted)}
 
 /* modal, palette, toast */
 .movl{position:fixed;inset:0;z-index:50;display:grid;place-items:center;padding:16px;background:var(--veil)}
@@ -690,7 +745,7 @@ function results(kind) {
 function listPage(kind) {
   const cfg = CFG[kind], owner = S.role === 'owner';
   return `<div class="page-head"><div><h1 class="page-title">${cfg.title}</h1><p class="page-lead">${kind === 'creators' ? 'Find channels by size, niche and what they have done with sponsors before.' : 'Brands that sponsor creators, who they like to work with, and who to talk to.'}</p></div>
-    <div class="row">${btn(kind === 'creators' ? 'add-creator' : 'add-sponsor', 'Add ' + cfg.one)}${btn('import', 'Import CSV', 'ghost')}${owner ? btn('export', 'Export CSV', 'ghost') : ''}</div></div>
+    <div class="row">${btn(kind === 'creators' ? 'add-creator' : 'add-sponsor', 'Add ' + cfg.one)}${btn('import', 'Import CSV', 'ghost')}${owner ? btn('export', 'Export CSV', 'ghost') : ''}</div></div>${kind === 'creators' ? subnav('creators') : ''}
     <div class="addr"><span class="label">Page address</span><code id="addr"></code><button type="button" class="link small" data-act="copy">Copy link</button></div>
     <div class="layout">${S.railOpen ? '<div class="railveil" data-act="rail"></div>' : ''}<aside class="rail ${S.railOpen ? 'open' : ''}" id="rail" aria-label="Filters">${rail(kind)}</aside><section class="results" id="results" aria-label="Results">${results(kind)}</section></div>`;
 }
@@ -746,8 +801,8 @@ function creatorBody(c, full) {
     <dl class="dl"><dt>Subscribers</dt><dd class="num">${num(c.subs)} <span class="muted small">checked ${rel(c.checked).toLowerCase()}</span></dd><dt>Average views</dt><dd class="num">${num(c.avgViews)} <span class="muted small">over the last 20 videos</span></dd><dt>Niche</dt><dd>${esc(NICHES[c.niche])}</dd><dt>Country, language</dt><dd>${esc(COUNTRIES[c.country])}, ${esc(c.lang)}</dd><dt>Email</dt><dd>${c.email ? esc(c.email) : '<span class="muted">None on file</span>'}</dd><dt>Phone</dt><dd>${c.phone ? esc(c.phone) : '<span class="muted">None on file</span>'}</dd><dt>Last contacted</dt><dd>${rel(c.lastContacted)}</dd><dt>Uploads</dt><dd>About ${c.uploads} a month, last one ${rel(c.lastVideo).toLowerCase()}</dd></dl>
     <div class="row">${btn('link', 'Link to a sponsor', 'sm', `data-c="${c.id}"`)}${btn('draft', 'Draft pitch with Claude', 'ghost sm', `data-c="${c.id}"`)}${btn('edit-rec', 'Edit', 'ghost sm')}${owner ? btn('delete', 'Delete', 'danger sm') : ''}</div></div>`;
   const videos = `<section class="sec"><h3>Recent videos</h3><div class="tw"><table><thead><tr><th>Video</th><th>Date</th><th class="r">Views</th><th>Paid sign</th></tr></thead><tbody>${vids.map(v => `<tr><td>${esc(v.t)}</td><td>${fmtDate(v.d)}</td><td class="r">${num(v.v)}</td><td>${v.paid ? srcBadge(v.paid) : '<span class="muted">None found</span>'}</td></tr>`).join('')}</tbody></table></div></section>`;
-  const main = head + historySec('creator', c) + videos, side = suggestSec('creator', c) + dealsSec('creator', c) + outreachSec('creator', c) + notesSec('creator', c);
-  return full ? `<div class="pgrid"><div>${main}</div><aside>${side}</aside></div>` : head + historySec('creator', c) + suggestSec('creator', c) + videos + dealsSec('creator', c) + outreachSec('creator', c) + notesSec('creator', c);
+  const main = head + historySec('creator', c) + videos, side = suggestSec('creator', c) + earnSec(c) + dealsSec('creator', c) + outreachSec('creator', c) + notesSec('creator', c);
+  return full ? `<div class="pgrid"><div>${main}</div><aside>${side}</aside></div>` : head + historySec('creator', c) + suggestSec('creator', c) + videos + earnSec(c) + dealsSec('creator', c) + outreachSec('creator', c) + notesSec('creator', c);
 }
 function sponsorBody(s, full) {
   const owner = S.role === 'owner';
@@ -786,7 +841,7 @@ function draftFor(c, s, to) {
   conf.slice(0, 2).forEach(x => used.push(`Confirmed sponsorship: ${SPN(x.s).name}, ${monYear(x.date)} (confirmed by ${x.by})`));
   if (sim) used.push(`${s.name} sponsored ${sim} other ${nn} ${sim === 1 ? 'channel' : 'channels'} (confirmed)`);
   det.slice(0, 3).forEach(x => out.push(`Detected sponsorship: ${x.s ? SPN(x.s).name : 'brand not named'}, ${monYear(x.date)} (not confirmed)`));
-  out.push('Prices and budgets (never in a first email)', "The creator's email, phone and notes (Claude never receives them)");
+  out.push('Prices and budgets (never in a first email)', 'Ad earnings estimates (an estimate is not a fact)', "The creator's email, phone and notes (Claude never receives them)");
   const hist = names.length ? (names.length === 2 ? `${names[0]} and ${names[1]}` : names[0]) : null;
   const foot = `\n\n${STAFF[S.role]}\nSmallfold · [sender postal address from Settings]\nIf you would rather not hear from us, use this link and we will not write again: [opt-out link]`;
   let subject, body;
@@ -852,7 +907,7 @@ const info = (title, text) => openModal({ type: 'info', title, text });
 /* ---------- palette ---------- */
 function palItems(q) {
   q = q.trim().toLowerCase();
-  if (!q) return [{ g: 'Recently opened', items: S.recent.map(r => { const [k, id] = r.split('-'), it = k === 'creator' ? CR(+id) : SPN(+id); return { to: r, t: it.name, m: k === 'creator' ? `Creator · ${it.channel}` : `Sponsor · ${it.industry}` }; }) }, { g: 'Go to', items: [['creators', 'Creators'], ['sponsors', 'Sponsors'], ['deals', 'Deals']].map(p => ({ to: p[0], t: p[1], m: 'Page' })) }];
+  if (!q) return [{ g: 'Recently opened', items: S.recent.map(r => { const [k, id] = r.split('-'), it = k === 'creator' ? CR(+id) : SPN(+id); return { to: r, t: it.name, m: k === 'creator' ? `Creator · ${it.channel}` : `Sponsor · ${it.industry}` }; }) }, { g: 'Go to', items: [['creators', 'Creators'], ['sponsors', 'Sponsors'], ['deals', 'Deals'], ['calculator', 'Earnings calculator']].map(p => ({ to: p[0], t: p[1], m: 'Page' })) }];
   const cs = DB.creators.filter(c => `${c.name} ${c.channel} ${NICHES[c.niche]}`.toLowerCase().includes(q)).slice(0, 6).map(c => ({ to: 'creator-' + c.id, t: c.name, m: `${c.channel} · ${short(c.subs)} subscribers` }));
   const ss = DB.sponsors.filter(s => `${s.name} ${s.industry}`.toLowerCase().includes(q)).slice(0, 6).map(s => ({ to: 'sponsor-' + s.id, t: s.name, m: s.industry }));
   const ds = DB.deals.filter(d => `${CR(d.c).name} ${SPN(d.s).name}`.toLowerCase().includes(q)).slice(0, 5).map(d => ({ to: 'deals', deal: d.id, t: `${CR(d.c).name} with ${SPN(d.s).name}`, m: STAGE_LABEL[d.stage] }));
@@ -869,24 +924,107 @@ function renderPalette() {
 }
 function palGo(n) { const it = S.pal.flat[n]; if (!it) return; S.pal = null; renderPalette(); if (it.deal) { S.flash = it.deal; S.dealView = 'board'; } S.panel = null; if (location.hash === '#' + it.to) render(); else location.hash = it.to; }
 
+/* ---------- earnings calculator ---------- */
+const RPM = [['music', 'Music / Entertainment', 1, 2], ['gaming', 'Gaming / Lifestyle / Vlogs', 2, 4], ['edu', 'Education / Science / Tech', 4, 8], ['finance', 'Finance / Business / Software', 10, 25]];
+const NICHE_RPM = { music: 'music', education: 'edu', tech: 'edu', finance: 'finance' };
+S.calc = { long: 150000, shorts: 500000, niche: 'edu', custom: false, rpm: 6, sedit: false, slo: 0.02, shi: 1.48, cur: 'USD', rate: 1.5, from: null };
+function calcNumbers(C = S.calc) {
+  const r = RPM.find(x => x[0] === C.niche), lr = C.custom ? [C.rpm, C.rpm] : [r[2], r[3]], sr = [Math.min(C.slo, C.shi), Math.max(C.slo, C.shi)];
+  const L = lr.map(x => C.long / 1000 * x), Sh = sr.map(x => C.shorts / 1000 * x);
+  return { lr, sr, L, Sh, T: [L[0] + Sh[0], L[1] + Sh[1]] };
+}
+const money = v => { const C = S.calc, x = v * (C.cur === 'AUD' ? C.rate : 1); return (C.cur === 'AUD' ? 'A$' : '$') + (x >= 10 || x === 0 ? Math.round(x).toLocaleString('en-US') : x.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })); };
+const same = (a, b) => Math.abs(a - b) < 0.005;
+const mtext = (a, b) => same(a, b) ? money(a) : `${money(a)} to ${money(b)}`;
+const mhtml = (a, b) => same(a, b) ? `<span>${money(a)}</span>` : `<span>${money(a)}</span> <span>– ${money(b)}</span>`;
+const rpmText = r => { const f = x => '$' + (Number.isInteger(x) ? x : x.toFixed(2)); return same(r[0], r[1]) ? f(r[0]) : `${f(r[0])} to ${f(r[1])}`; };
+const subnav = cur => `<nav class="subnav" aria-label="Creators"><a href="#creators" ${cur === 'creators' ? 'aria-current="page"' : ''}>All creators</a><a href="#calculator" ${cur === 'calculator' ? 'aria-current="page"' : ''}>Earnings calculator <small>New</small></a></nav>`;
+function calculatorPage() {
+  const C = S.calc;
+  const slider = (k, label, max, step, marks) => `<div class="cgroup"><div class="chead"><label class="label" for="c-${k}">${label}</label><input class="control sm cnum" id="c-${k}" data-calc="${k}" inputmode="numeric" value="${num(C[k])}"></div>
+    <label class="sr" for="c-${k}-s">${label}, slider</label><input type="range" id="c-${k}-s" data-calc="${k}" min="0" max="${max}" step="${step}" value="${C[k]}"><div class="cscale" aria-hidden="true">${marks.map(m => `<span>${m}</span>`).join('')}</div></div>`;
+  return `<div class="page-head"><div><h1 class="page-title">Creators</h1><p class="page-lead">Find channels by size, niche and what they have done with sponsors before.</p></div></div>${subnav('calculator')}
+  <section class="calc" aria-label="YouTube earnings calculator"><div>
+    <h2>YouTube earnings calculator</h2>
+    <p class="dm" style="margin-bottom:16px">${C.from ? `Filled in from ${esc(C.from)}'s channel. Change any number.` : 'A rough guide to what a channel earns from YouTube ads each month.'}</p>
+    ${slider('long', 'Monthly long-form views', 1000000, 1000, ['0', '500k', '1M'])}
+    ${slider('shorts', 'Monthly Shorts views', 10000000, 10000, ['0', '5M', '10M'])}
+    <div class="cgroup"><div class="field" style="margin-bottom:4px"><label class="label" for="c-niche">Niche (sets the pay per 1,000 long-form views)</label><select class="control sm" id="c-niche" data-calc="niche" ${C.custom ? 'disabled' : ''}>${RPM.map(r => `<option value="${r[0]}" ${C.niche === r[0] ? 'selected' : ''}>${r[1]}: $${r[2]} to $${r[3]}</option>`).join('')}</select></div>
+      <label class="check"><input type="checkbox" id="c-custom" data-calc="custom" ${C.custom ? 'checked' : ''}> Use my own RPM instead</label>
+      <div class="inline" id="c-rpmbox" ${C.custom ? '' : 'hidden'}><label class="dm small" for="c-rpm">My RPM: $</label><input class="control sm" id="c-rpm" data-calc="rpm" inputmode="decimal" value="${C.rpm}"><span class="dm small">USD per 1,000 views</span></div></div>
+    <div class="cgroup"><div class="label">Shorts pay per 1,000 views</div><p style="margin:4px 0"><span id="c-stext">${rpmText([C.slo, C.shi])}</span> <span class="dm small">USD. The usual range is $0.02 to $1.48.</span></p>
+      <label class="check"><input type="checkbox" id="c-sedit" data-calc="sedit" ${C.sedit ? 'checked' : ''}> Change the Shorts range</label>
+      <div class="inline" id="c-sbox" ${C.sedit ? '' : 'hidden'}><label class="dm small" for="c-slo">From $</label><input class="control sm" id="c-slo" data-calc="slo" inputmode="decimal" value="${C.slo}"><label class="dm small" for="c-shi">to $</label><input class="control sm" id="c-shi" data-calc="shi" inputmode="decimal" value="${C.shi}"></div></div>
+    <div class="cgroup"><div class="label" id="c-curl">Show earnings in</div><div class="seg" role="radiogroup" aria-labelledby="c-curl">${['USD', 'AUD'].map(c => `<label><input type="radio" name="c-cur" id="c-cur-${c}" data-calc="cur" value="${c}" ${C.cur === c ? 'checked' : ''}><span>${c}</span></label>`).join('')}</div>
+      <div class="inline" id="c-ratebox" ${C.cur === 'AUD' ? '' : 'hidden'}><label class="dm small" for="c-rate">1 USD =</label><input class="control sm" id="c-rate" data-calc="rate" inputmode="decimal" value="${C.rate}"><span class="dm small">AUD. Type today's rate. 1.50 is only a starting value.</span></div></div>
+    <div class="calcbar" aria-hidden="true"><span>Estimated a month</span><b id="o-bar"></b></div>
+  </div><div class="out">
+    <div class="label">Estimated monthly earnings</div><div class="big" id="o-month" role="status"></div>
+    <div class="label" style="margin-top:16px">Per year (monthly × 12)</div><div class="mid" id="o-year"></div>
+    <div class="split2"><div><div class="label"><i class="key" style="background:var(--s-long)"></i>Long-form, a month</div><div class="mid" id="o-long"></div><div class="small dm" id="o-long-n"></div></div>
+      <div><div class="label"><i class="key" style="background:var(--s-shorts)"></i>Shorts, a month</div><div class="mid" id="o-shorts"></div><div class="small dm" id="o-shorts-n"></div></div></div>
+    <div class="chart"><div class="label" style="margin-bottom:8px">Long-form compared with Shorts, a month</div><div id="o-chart" role="img">
+      ${[['l', 'Long-form', 'long'], ['s', 'Shorts', 'shorts']].map(b => `<div class="brow" tabindex="0"><span class="small">${b[1]}</span><div class="btrack"><i class="lo" id="b-${b[0]}-lo" style="background:var(--s-${b[2]})"></i><i class="hi" id="b-${b[0]}-hi" style="background:var(--s-${b[2]})"></i></div><span class="bv" id="b-${b[0]}-v"></span><span class="tip" id="b-${b[0]}-t"></span></div>`).join('')}</div>
+      <div class="baxis" aria-hidden="true"><span>0</span><span id="b-max"></span></div>
+      <div class="blegend"><span><i></i>Low estimate</span><span><i class="hi"></i>Up to the high estimate</span></div></div>
+    <p class="cnote">These are estimates. Real pay depends on where the audience lives, the season and how much advertisers are spending. An estimate is not a fact, so it is never used in a pitch email.</p>
+  </div></section>`;
+}
+function calcOut() {
+  if (!$('#o-month')) return;
+  const C = S.calc, n = calcNumbers(), max = Math.max(n.L[1], n.Sh[1]);
+  $('#o-month').innerHTML = mhtml(n.T[0], n.T[1]); $('#o-bar').textContent = same(n.T[0], n.T[1]) ? money(n.T[0]) : `${money(n.T[0])} – ${money(n.T[1])}`; $('#o-year').innerHTML = mhtml(n.T[0] * 12, n.T[1] * 12);
+  $('#o-long').innerHTML = mhtml(n.L[0], n.L[1]); $('#o-shorts').innerHTML = mhtml(n.Sh[0], n.Sh[1]);
+  $('#o-long-n').textContent = `${num(C.long)} views at ${rpmText(n.lr)} USD per 1,000`;
+  $('#o-shorts-n').textContent = `${num(C.shorts)} views at ${rpmText(n.sr)} USD per 1,000`;
+  $('#c-stext').textContent = rpmText(n.sr);
+  [['l', n.L, 'Long-form', C.long, n.lr], ['s', n.Sh, 'Shorts', C.shorts, n.sr]].forEach(([p, v, name, views, r]) => {
+    const lo = $(`#b-${p}-lo`), hi = $(`#b-${p}-hi`), flat = same(v[0], v[1]);
+    lo.style.width = (max ? v[0] / max * 100 : 0) + '%'; hi.style.width = (max ? (v[1] - v[0]) / max * 100 : 0) + '%'; hi.hidden = flat; lo.classList.toggle('end', flat);
+    $(`#b-${p}-v`).textContent = mtext(v[0], v[1]); $(`#b-${p}-t`).textContent = `${name}: ${num(views)} views × ${rpmText(r)} USD per 1,000 = ${mtext(v[0], v[1])} a month`;
+  });
+  $('#b-max').textContent = money(max);
+  $('#o-chart').setAttribute('aria-label', `Bar chart. Long-form: ${mtext(n.L[0], n.L[1])} a month. Shorts: ${mtext(n.Sh[0], n.Sh[1])} a month.`);
+}
+function calcInput(t, commit) {
+  const C = S.calc, k = t.dataset.calc, dec = () => { const v = parseFloat(String(t.value).replace(/[$,\s]/g, '')); return isNaN(v) || v < 0 ? null : v; };
+  if (k === 'long' || k === 'shorts') {
+    const max = k === 'long' ? 1e6 : 1e7, box = $('#c-' + k), sl = $('#c-' + k + '-s');
+    let v = t === sl ? +t.value : parseNum(t.value);
+    if (v == null) { if (commit) box.value = num(C[k]); return; }
+    v = Math.max(0, Math.min(max, v)); C[k] = v; if (t !== sl) sl.value = v; if (t !== box || commit) box.value = num(v);
+  }
+  else if (k === 'niche') C.niche = t.value;
+  else if (k === 'custom') { C.custom = t.checked; $('#c-rpmbox').hidden = !C.custom; $('#c-niche').disabled = C.custom; if (C.custom) $('#c-rpm').focus(); }
+  else if (k === 'sedit') { C.sedit = t.checked; $('#c-sbox').hidden = !C.sedit; if (!C.sedit) { C.slo = 0.02; C.shi = 1.48; $('#c-slo').value = '0.02'; $('#c-shi').value = '1.48'; } }
+  else if (k === 'cur') { C.cur = t.value; $('#c-ratebox').hidden = C.cur !== 'AUD'; }
+  else if (k === 'rpm' || k === 'slo' || k === 'shi' || k === 'rate') { const v = dec(); if (v == null || (k === 'rate' && v === 0)) return; C[k] = v; }
+  calcOut();
+}
+function earnSec(c) {
+  const long = Math.min(1e6, c.avgViews * c.uploads), g = NICHE_RPM[c.niche] || 'gaming', n = calcNumbers({ ...S.calc, long, shorts: 0, niche: g, custom: false });
+  return `<section class="sec"><h3>Ad earnings estimate</h3><p style="font:300 1.5rem/1.2 var(--serif)" class="num">${mtext(n.L[0], n.L[1])} <span class="muted small" style="font-family:var(--sans)">a month from long-form ads</span></p><p class="small muted" style="margin:6px 0 10px">From about ${num(long)} long-form views a month (average views × uploads) at the usual pay for "${RPM.find(r => r[0] === g)[1]}". An estimate, not a fact: it is never used in a pitch.</p><a class="btn ghost xs" href="#calculator" data-act="calc-from" data-id="${c.id}">Open in the calculator</a></section>`;
+}
+
 /* ---------- shell and routing ---------- */
 const NAV = [['overview', 'Overview'], ['creators', 'Creators'], ['sponsors', 'Sponsors', 1], ['deals', 'Deals'], ['emails', 'Emails'], ['inbox', 'Inbox'], ['claude', 'Claude'], ['app-settings', 'Settings']];
 function shell() {
   $('#app').innerHTML = `<div class="banner"><div class="banner__in"><strong>Prototype, fake data</strong><span class="m">Every person, company, email and number here is invented. Today is set to 25 Nov 2026.</span>
-    <details id="try"><summary>What to try</summary><ol><li>Creators: drag the subscriber slider, tick a niche, then remove a chip.</li><li>Click a creator. Confirm or reject a Detected record. Read the suggested sponsors.</li><li>Press Link on a suggestion, then find the new card on the Deals board.</li><li>Press "Draft pitch with Claude" and compare "Facts used" with "Left out".</li><li>Press Ctrl+K or ⌘K and search for a brand.</li></ol></details>
+    <details id="try"><summary>What to try</summary><ol><li>Creators: drag the subscriber slider, tick a niche, then remove a chip.</li><li>Click a creator. Confirm or reject a Detected record. Read the suggested sponsors.</li><li>Press Link on a suggestion, then find the new card on the Deals board.</li><li>Press "Draft pitch with Claude" and compare "Facts used" with "Left out".</li><li>Press Ctrl+K or ⌘K and search for a brand.</li><li>Creators, then "Earnings calculator": move the sliders. Or open a creator and press "Open in the calculator".</li></ol></details>
     <span class="grow"></span><label for="role" class="m">Viewing as</label><select id="role" data-role><option value="owner">Owner</option><option value="worker">Worker</option></select>
     <button type="button" data-act="demo" data-d="loading">Show loading state</button><button type="button" data-act="demo" data-d="error">Show error state</button></div></div>
     <header class="bar"><div class="bar__in"><a class="brand" href="#creators"><i aria-hidden="true">S</i> Smallfold</a><nav class="nav" aria-label="Main" id="nav"></nav>
     <button type="button" class="searchbtn" data-act="pal" aria-label="Search, shortcut Control K">Search <kbd>Ctrl K</kbd></button><div class="who" id="who"></div></div></header>
     <main id="main"></main><div id="panel"></div><div id="modal"></div><div id="palette"></div><div class="toasts" id="toasts"></div>`;
 }
-function route() { const h = location.hash.slice(1) || 'creators'; const m = /^(creator|sponsor)-(\d+)$/.exec(h); return m ? { page: m[1], id: +m[2] } : { page: NAV.some(n => n[0] === h) ? h : 'creators' }; }
+function route() { const h = location.hash.slice(1) || 'creators'; const m = /^(creator|sponsor)-(\d+)$/.exec(h); return m ? { page: m[1], id: +m[2] } : { page: NAV.some(n => n[0] === h) || h === 'calculator' ? h : 'creators' }; }
 function render() {
-  const r = route(), cur = r.page === 'creator' ? 'creators' : r.page === 'sponsor' ? 'sponsors' : r.page;
+  const r = route(), cur = r.page === 'creator' || r.page === 'calculator' ? 'creators' : r.page === 'sponsor' ? 'sponsors' : r.page;
   $('#nav').innerHTML = NAV.filter(n => n[0] !== 'claude' || S.role === 'owner').map(n => `<a href="#${n[0]}" class="${n[2] ? 'new' : ''}" ${n[0] === cur ? 'aria-current="page"' : ''}>${n[1]}</a>`).join('');
   $('#who').innerHTML = `${STAFF[S.role]}<small>${S.role}</small>`;
   const main = $('#main');
   if (r.page === 'creators' || r.page === 'sponsors') renderList(r.page);
+  else if (r.page === 'calculator') { main.innerHTML = calculatorPage(); calcOut(); }
   else if (r.page === 'deals') { main.innerHTML = dealsPage(); const f = $('.deal.flash'); if (f) f.scrollIntoView({ block: 'center', inline: 'center' }); }
   else if (r.page === 'creator' || r.page === 'sponsor') {
     const it = r.page === 'creator' ? CR(r.id) : SPN(r.id);
@@ -901,6 +1039,7 @@ const curKind = () => { const p = route().page; return p === 'sponsors' ? 'spons
 function setF(kind, id, v) { const st = S.L[kind]; if (isOn(v)) st.f[id] = v; else delete st.f[id]; st.page = 1; }
 const ACT = {
   fake: () => toast('Links to other sites are switched off in the prototype.'),
+  'calc-from': el => { const c = CR(+el.dataset.id); Object.assign(S.calc, { long: Math.min(1e6, c.avgViews * c.uploads), shorts: 0, niche: NICHE_RPM[c.niche] || 'gaming', custom: false, from: c.name }); },
   open: (el) => { S.panel = { kind: el.dataset.kind, id: +el.dataset.id }; S.edit = S.confirming = null; const k = el.dataset.kind + '-' + el.dataset.id; S.recent = [k, ...S.recent.filter(x => x !== k)].slice(0, 5); renderPanel(); $('#panel-x').focus(); },
   'close-panel': () => { S.panel = null; renderPanel(); },
   fullpage: () => { S.panel = null; },
@@ -961,6 +1100,7 @@ document.addEventListener('click', e => {
 });
 document.addEventListener('input', e => {
   const t = e.target, kind = curKind(), st = S.L[kind];
+  if (t.matches('[data-calc]')) return calcInput(t, false);
   if (t.matches('[data-q]')) { st.q = t.value; st.page = 1; renderResults(kind); }
   else if (t.matches('[data-slider]')) {
     const d = t.closest('.dual'), A = $('[data-slider=a]', d), B = $('[data-slider=b]', d);
@@ -976,6 +1116,7 @@ document.addEventListener('input', e => {
 });
 document.addEventListener('change', e => {
   const t = e.target, kind = curKind(), st = S.L[kind];
+  if (t.matches('[data-calc]')) return calcInput(t, true);
   if (t.matches('[data-f]')) {
     const id = t.dataset.f, fc = CFG[kind].facets.find(f => f.id === id);
     if (fc.type === 'multi') { const cur = new Set(st.f[id] || []); t.checked ? cur.add(t.value) : cur.delete(t.value); setF(kind, id, [...cur]); }

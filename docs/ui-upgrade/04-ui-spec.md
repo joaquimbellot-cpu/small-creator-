@@ -93,6 +93,17 @@ Add, edit, import from CSV and export follow the creators rules: staff add, edit
 - **Tablet:** the rail is a drawer, the side panel takes the full width, the board scrolls sideways inside its own frame.
 - **Keyboard and contrast:** every control reachable by Tab, visible focus ring, slider handles are native range inputs, labels on every field, status never shown by colour alone.
 
+### G. YouTube earnings calculator (added 25 November at the owner's request)
+
+Where: a second tab under Creators ("All creators", "Earnings calculator"). It is also in the command palette, and each creator profile has an "Ad earnings estimate" box with "Open in the calculator", which fills the calculator from that channel (average views times uploads a month, and the pay band for its niche).
+
+- **Inputs:** monthly long-form views (number box and slider, 0 to 1,000,000); monthly Shorts views (0 to 10,000,000); a niche menu that sets the pay per 1,000 long-form views (Music / Entertainment $1 to $2, Gaming / Lifestyle / Vlogs $2 to $4, Education / Science / Tech $4 to $8, Finance / Business / Software $10 to $25); "Use my own RPM instead"; Shorts pay fixed at $0.02 to $1.48 with an option to change it; USD or AUD with a typed exchange rate.
+- **Outputs, updated at once:** monthly earnings as a low to high range, yearly (monthly times 12), separate long-form and Shorts totals, a bar chart comparing the two, and a note that these are estimates.
+- **Look:** the brand's own dark ground (ink background, cream text), so it is dark and still belongs to the back office. Chart colours were checked for colour-blind safety on the dark background.
+- **Rule:** an estimate is not a fact. It is never passed to Claude and never appears in a pitch. The pitch draft lists it under "Left out".
+- **No database or server work:** the calculator runs in the browser. The pay bands live in one constant.
+- **Optional:** the same calculator on the public website, as a free tool for creators.
+
 ## 4. What must be built (real back office, after approval)
 
 **New components** (none exist today): filter rail and facet list, range slider, chips, segmented control, tick box, side panel, tabs, tag, toast, skeleton, command palette, timeline, board.
