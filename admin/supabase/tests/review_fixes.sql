@@ -111,6 +111,11 @@ select tests.check('SR-02: a worker calling creators_export or sponsors_export d
   and not exists (select 1 from public.audit_log where id > (select m from mark) and action in ('creators.exported', 'brands.exported')));
 select tests.check('SR-02: the service role and anon cannot call them either',
   not tests.ok('x_c_svc') and not tests.ok('x_s_svc') and not tests.ok('x_c_anon') and not tests.ok('x_s_anon'));
+-- The browser tests export as the owner and leave real audit lines from the last half hour; the "later page needs a recent first page"
+-- rule would then find one. Push them back a day inside this rolled-back transaction (the audit log is append-only otherwise).
+set local session_replication_role = replica;
+update public.audit_log set created_at = created_at - interval '1 day' where action in ('creators.exported', 'brands.exported') and created_at > now() - interval '31 minutes';
+set local session_replication_role = origin;
 select tests.act('x_c_page2_first', 'authenticated', (select o from ids), $q$select * from public.creators_export(p_offset => 1000)$q$);
 select tests.check('SR-02: a later page without a first page (no audit line yet) is refused', not tests.ok('x_c_page2_first'));
 select tests.act('x_c_o', 'authenticated', (select o from ids), $q$select * from public.creators_export()$q$);

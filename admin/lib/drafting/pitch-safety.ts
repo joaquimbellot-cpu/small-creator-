@@ -11,9 +11,11 @@ export function scrub(v: string | null | undefined, max = 80): string {
   return cleanText((v ?? '').replace(HIDDEN, ' '), max);
 }
 
-export const LINK_RE = /(?:https?:\/\/|www\.|mailto:|ftp:\/\/)/i;
-// A bare domain such as "example.com" or "shop.example.io" (the last part is a known ending or any two letters).
-export const DOMAIN_RE = /(?<![A-Za-z0-9-])[a-z0-9](?:[a-z0-9-]*[a-z0-9])?(?:\.[a-z0-9](?:[a-z0-9-]*[a-z0-9])?)*\.(?:com|net|org|io|co|app|dev|ai|me|xyz|info|biz|shop|store|online|site|tv|[a-z]{2})(?![A-Za-z0-9-])/i;
+export const LINK_RE = /(?:h[tx]{2}ps?\s*:\s*\/\/|\bwww\b|mailto:|ftp:\/\/)/i;
+// A bare domain: labels joined by dots, ending in ANY letters-first label of 2 or more characters ("example.com", "samplays.club",
+// "shop.attacker.test", "x.museum"). No list of endings, so a new ending cannot slip through. Single letters ("e.g.", "i.e.", "U.S.")
+// and numbers ("4.2k", "v2.0") are not domains, because the last label must start with a letter and be 2 characters or more.
+export const DOMAIN_RE = /(?<![A-Za-z0-9@-])(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z][a-z0-9-]*[a-z0-9](?![A-Za-z0-9-])/i;
 const PHONE_RE = /(?<![\w.])\+?\(?\d[\d\s().-]{5,}\d(?!\w)/g;
 
 /** A phone-like number: a "+" or separators with at least 7 digits, or 10 or more digits in a row. */
@@ -26,9 +28,35 @@ export function hasPhone(text: string): boolean {
   return false;
 }
 
-export const hasEmail = (t: string) => t.includes('@');
-export const hasLink = (t: string) => LINK_RE.test(t);
-export const hasDomain = (t: string) => DOMAIN_RE.test(t);
+const HIDDEN_ALL = new RegExp(HIDDEN.source, 'g');
+
+/**
+ * The text as a reader would see it: look-alike characters folded (full-width "＠" and "．"), hidden characters removed,
+ * "(at)" "[dot]" "{.}" written back as "@" and ".", a space in front of a dot closed up ("samplays . club").
+ */
+export function readable(text: string): string {
+  return text
+    .normalize('NFKC')
+    .replace(HIDDEN_ALL, (c) => (c === '\n' || c === '\r' || c === '\t' ? c : ''))
+    .replace(/\s*[([{<]\s*(?:\.|dot)\s*[)\]}>]\s*/gi, '.')
+    .replace(/\s*[([{<]\s*(?:@|at)\s*[)\]}>]\s*/gi, '@')
+    .replace(/[\u2024\u2027\u3002\uff61\ufe52\u00b7\u2219]/g, '.')
+    .replace(/([A-Za-z0-9])\s+\.\s*(?=[a-z]{2})/g, '$1.');
+}
+
+/** True when the text spells an address out in words ("sam at samplays dot com", "samplays DOT club", "write to sam at gmail"). */
+export function hasSpelledAddress(text: string): boolean {
+  const t = readable(text);
+  if (/\bDOT\b/.test(t)) return true;
+  if (/\bat\b[^.\n]{1,60}\bdot\b|\b(?:gmail|googlemail|hotmail|yahoo|icloud|protonmail|aol)\b|\bat\s+outlook\b/i.test(t)) return true;
+  // lower-case "samplays dot club": a pitch never needs the word "dot" (only "polka dot" is left alone)
+  for (const m of t.matchAll(/\b([a-z0-9-]+) dot ([a-z]{2,10})\b/g)) if (m[1] !== 'polka') return true;
+  return false;
+}
+
+export const hasEmail = (t: string) => readable(t).includes('@') || hasSpelledAddress(t);
+export const hasLink = (t: string) => LINK_RE.test(readable(t));
+export const hasDomain = (t: string) => DOMAIN_RE.test(readable(t));
 
 // Words that read as an order to the writer. Stored names and niches never need them.
 const INSTRUCTION_RE = new RegExp(

@@ -1,7 +1,6 @@
 'use client';
 // Editable notes of a sponsor.
 import { useState, useTransition } from 'react';
-import { useRouter } from 'next/navigation';
 import { Button, Notice, useToast } from '@/components/ui';
 import { saveNotes } from '../actions';
 
@@ -10,7 +9,6 @@ export function NotesEditor({ id, initial }: { id: string; initial: string }) {
   const [saved, setSaved] = useState(initial);
   const [error, setError] = useState('');
   const [pending, start] = useTransition();
-  const router = useRouter();
   const toast = useToast();
   return (
     <section className="panel-sec" aria-labelledby={`notes-${id}`}>
@@ -27,7 +25,7 @@ export function NotesEditor({ id, initial }: { id: string; initial: string }) {
           onClick={() => start(async () => {
             setError('');
             const r = await saveNotes(id, text);
-            if (r.ok) { setSaved(text); toast('Notes saved.'); router.refresh(); } else setError(r.error);
+            if (r.ok) { setSaved(text); toast('Notes saved.'); } else setError(r.error);
           })}
         >Save notes</Button>
       </div>

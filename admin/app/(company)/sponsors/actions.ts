@@ -2,6 +2,7 @@
 // Server actions of Sponsors: add / edit a sponsor, contact people, notes, bulk tag, saved views, delete.
 // Every action checks the login and the role first, checks the input with zod-style validators, and uses the user's own
 // Supabase client so row-level security is the second line. Messages are plain English.
+import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { z } from 'zod';
 import { requireStaff } from '@/lib/auth/staff';
@@ -23,6 +24,9 @@ const str = (v: FormDataEntryValue | null) => (typeof v === 'string' ? v : '');
 const SPONSOR_FIELDS = ['name', 'website', 'industry', 'country', 'company_size', 'target_min_subs', 'target_max_subs', 'budget_min', 'budget_max', 'relationship', 'notes'];
 const CONTACT_FIELDS = ['full_name', 'role_title', 'email', 'phone', 'linkedin_url'];
 const OWNER_ONLY = 'Only the owner can do this.';
+// The profile edits below refresh the page through the action itself (the request then carries "next-action"), not through
+// router.refresh() in the browser: the profile skips the "viewed" audit line for an action's own refresh, so an edit writes none.
+const showChange = () => revalidatePath('/sponsors', 'layout');
 
 type DbError = { code?: string; message?: string } | null;
 
@@ -51,6 +55,7 @@ export async function saveSponsor(_prev: FormState, formData: FormData): Promise
     savedId = data.id;
   }
   if (!id) redirect(`/sponsors?open=${savedId}`);
+  showChange();
   return { ok: true };
 }
 
@@ -93,6 +98,7 @@ export async function saveNotes(id: string, notes: string): Promise<ActionResult
   const { data, error } = await supabase.from('brands').update({ notes: notes.trim() === '' ? null : notes.trim() }).eq('id', id).select('id');
   if (error) return { ok: false, error: 'Could not save the notes. Please try again.' };
   if (!data?.length) return { ok: false, error: 'This sponsor no longer exists.' };
+  showChange();
   return { ok: true, message: 'Notes saved.' };
 }
 
@@ -127,6 +133,7 @@ export async function saveContact(_prev: FormState, formData: FormData): Promise
     const { error } = await supabase.from('brand_contacts').insert({ ...v.data, brand_id: brandId, is_primary: primary });
     if (error) return contactDbError(error, values);
   }
+  showChange();
   return { ok: true };
 }
 
@@ -143,6 +150,7 @@ export async function setMainContact(id: string): Promise<ActionResult> {
   // The database un-marks the previous main contact (one per sponsor).
   const { data, error } = await supabase.from('brand_contacts').update({ is_primary: true }).eq('id', id).select('id');
   if (error || !data?.length) return { ok: false, error: 'Could not change the main contact.' };
+  showChange();
   return { ok: true, message: 'Main contact changed.' };
 }
 
@@ -153,6 +161,7 @@ export async function deleteContact(id: string): Promise<ActionResult> {
   const supabase = await createClient();
   const { data, error } = await supabase.from('brand_contacts').delete().eq('id', id).select('id');
   if (error || !data?.length) return { ok: false, error: 'Could not delete this person.' };
+  showChange();
   return { ok: true, message: 'Person removed.' };
 }
 

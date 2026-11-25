@@ -24,6 +24,18 @@ export async function editAction(_prev: EditState, form: FormData): Promise<Edit
   const channel = (owner as unknown as { creators: { channel_url: string | null } | null } | null)?.creators?.channel_url;
   const problem = draftProblem({ subject, body }, { allowedUrls: [channel] });
   if (problem) return { error: problem };
+  // A draft to a sponsor's contact person cannot be approved when the person or the address is gone (the send refuses it too,
+  // with the same words; see MESSAGES in app/api/emails/[id]/send/route.ts).
+  if (approve) {
+    const { data: row } = await supabase.from('emails').select('recipient_kind, brand_contact_id, to_email').eq('id', id.data).maybeSingle();
+    if (row?.recipient_kind === 'brand_contact') {
+      if (!row.brand_contact_id) return { error: 'The contact person for this email no longer exists. Discard the draft and write a new one.' };
+      const { data: person } = await supabase.from('brand_contacts').select('email').eq('id', row.brand_contact_id).maybeSingle();
+      if (!person) return { error: 'The contact person for this email no longer exists. Discard the draft and write a new one.' };
+      if (!person.email || !String(person.email).trim()) return { error: 'The contact person has no email address any more.' };
+      if (String(person.email).toLowerCase() !== String(row.to_email).toLowerCase()) return { error: "The contact person's address was changed. Discard the draft and write a new one." };
+    }
+  }
   // Editing an approved email puts it back to draft (a database rule), so approval always matches what was read.
   const { error } = await supabase
     .from('emails')

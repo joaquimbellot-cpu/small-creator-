@@ -127,6 +127,7 @@ function ConfirmForm({ id, onDone }: { id: string; onDone: () => void }) {
   const [pending, start] = useTransition();
   function save() {
     if (!note.trim()) { setError('Say how you checked it.'); return; }
+    if (note.replace(/\s/g, '').length < 5) { setError('Say how you checked it, in at least 5 characters.'); return; }
     setError('');
     start(async () => {
       const r = await confirmSponsorship({ id, note });

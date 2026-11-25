@@ -59,7 +59,8 @@ export type RecordInput = z.infer<ReturnType<typeof recordSchema>>;
 
 export const confirmSchema = z.object({
   id: uuid,
-  note: z.string().trim().min(1, 'Say how you checked it.').max(2000, 'The note must be 2000 characters or fewer.'),
+  note: z.string().trim().min(1, 'Say how you checked it.').max(2000, 'The note must be 2000 characters or fewer.')
+    .refine((v) => v.replace(/\s/g, '').length >= 5, 'Say how you checked it, in at least 5 characters.'),
 });
 export const idSchema = z.object({ id: uuid });
 export const sideSchema = z.enum(['creator', 'brand']);

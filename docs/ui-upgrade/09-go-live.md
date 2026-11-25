@@ -16,7 +16,7 @@ Going live has two parts that belong together: the database changes first, then 
 
 In Supabase: Database, then Backups. On the free plan, download a backup as described in "Maintaining Smallfold" in `admin/README.md`. Write down three numbers from the Table Editor: the number of rows in `creators`, `brands` and `deals`.
 
-## Step 2: apply the ten database files, in this order
+## Step 2: apply the eleven database files, in this order
 
 Each file is in `admin/supabase/migrations/`. In Supabase, open the SQL Editor, paste one whole file, press Run, wait for "Success", then do the next one. If a file fails, stop and send Claude the error text: a failed file changes nothing.
 
@@ -30,6 +30,7 @@ Each file is in `admin/supabase/migrations/`. In Supabase, open the SQL Editor, 
 8. `20261125000900_outreach.sql`
 9. `20261125001000_search.sql`
 10. `20261125001100_review_fixes.sql`
+11. `20261125001200_retest_fixes.sql`
 
 There is no file numbered `000600`: that is not a mistake.
 
@@ -37,7 +38,7 @@ A check query for each file is in `docs/ui-upgrade/build/database.md`, section "
 
 These files only add things: new tables, new optional columns, new rules. They delete no row and change no existing value, except that `brands` rows get an "updated" time.
 
-If you prefer, Claude can apply the ten files for you through Supabase's management connection, as on 23 November. Say so after the backup is done.
+If you prefer, Claude can apply the eleven files for you through Supabase's management connection, as on 23 November. Say so after the backup is done.
 
 ## Step 3: deploy the app (Claude, or you)
 

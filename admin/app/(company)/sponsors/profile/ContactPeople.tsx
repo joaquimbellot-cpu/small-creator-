@@ -2,7 +2,6 @@
 // Contact people of one sponsor: list, add, edit, set the main contact, delete (owner only).
 // Email, phone and LinkedIn are personal data; the page that renders this wrote the "brand.viewed" audit line.
 import { useActionState, useEffect, useState, useTransition } from 'react';
-import { useRouter } from 'next/navigation';
 import { Badge, Button, ConfirmButton, Input, Modal, Notice, Checkbox, useToast } from '@/components/ui';
 import { safeLinkedIn, safeMailto } from '@/lib/sponsors/schema';
 import { deleteContact, saveContact, setMainContact, type FormState } from '../actions';
@@ -11,7 +10,6 @@ import s from '../sponsors.module.css';
 export type Contact = { id: string; full_name: string; role_title: string | null; email: string | null; phone: string | null; linkedin_url: string | null; is_primary: boolean };
 
 export function ContactPeople({ brandId, contacts, isOwner }: { brandId: string; contacts: Contact[]; isOwner: boolean }) {
-  const router = useRouter();
   const toast = useToast();
   const [editing, setEditing] = useState<Contact | 'new' | null>(null);
   const [error, setError] = useState('');
@@ -21,7 +19,7 @@ export function ContactPeople({ brandId, contacts, isOwner }: { brandId: string;
     setError('');
     start(async () => {
       const r = await fn();
-      if (r.ok) { if (r.message) toast(r.message); router.refresh(); } else setError(r.error ?? 'Something went wrong.');
+      if (r.ok) { if (r.message) toast(r.message); } else setError(r.error ?? 'Something went wrong.');
     });
   }
 
@@ -62,13 +60,12 @@ export function ContactPeople({ brandId, contacts, isOwner }: { brandId: string;
 
 function ContactForm({ brandId, initial, first, onClose }: { brandId: string; initial: Contact | null; first: boolean; onClose: () => void }) {
   const [state, action, pending] = useActionState<FormState, FormData>(saveContact, null);
-  const router = useRouter();
   const toast = useToast();
   const v = (state?.values ?? {}) as Record<string, string>;
   const e = state?.errors ?? {};
   const val = (k: keyof Contact) => (state?.values ? v[k] ?? '' : String(initial?.[k] ?? ''));
   useEffect(() => {
-    if (state?.ok) { toast('Person saved.'); onClose(); router.refresh(); }
+    if (state?.ok) { toast('Person saved.'); onClose(); }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state]);
   return (

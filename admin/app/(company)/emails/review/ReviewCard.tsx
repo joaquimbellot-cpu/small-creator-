@@ -72,6 +72,8 @@ export function ReviewCard({ email, footer }: { email: ReviewEmail; footer: stri
 /** "Facts used" and "Left out", as saved with the draft: plain sentences, no addresses. */
 export function PitchFacts({ used, leftOut }: { used: string[]; leftOut: string[] }) {
   return (
+    <>
+    <p className="muted" style={{ margin: '8px 0 0' }}>This check catches common mistakes, not all of them. Read every name and number before you send.</p>
     <details style={{ marginTop: 8 }}>
       <summary style={{ cursor: 'pointer', minHeight: 44, display: 'flex', alignItems: 'center' }}>Facts used and left out</summary>
       <div style={{ display: 'grid', gap: 16, gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))' }}>
@@ -79,5 +81,6 @@ export function PitchFacts({ used, leftOut }: { used: string[]; leftOut: string[
         <div><div className="label">Left out</div><ul style={{ margin: '4px 0 0', paddingLeft: 20 }}>{leftOut.map((u) => <li key={u}>{u}</li>)}</ul></div>
       </div>
     </details>
+    </>
   );
 }

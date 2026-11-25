@@ -381,13 +381,14 @@ select tests.check('audit: a real sponsor edit is logged',
 
 -- new log_audit actions
 select tests.act('w_brand_viewed', 'authenticated', (select w from ids), $q$select public.log_audit('brand.viewed', 'brand', '00000000-0000-0000-0000-00000000b001', '{}')$q$);
+-- changed on purpose in 20261125001200 (SR-15): the import lines are no longer open to staff through log_audit; see retest_fixes.sql
 select tests.act('w_brands_imported', 'authenticated', (select w from ids), $q$select public.log_audit('brands.imported', null, null, '{"count": 3}')$q$);
 select tests.act('w_spons_imported', 'authenticated', (select w from ids), $q$select public.log_audit('sponsorships.imported', null, null, '{"count": 3}')$q$);
 select tests.act('w_brands_exported', 'authenticated', (select w from ids), $q$select public.log_audit('brands.exported', null, null, '{"count": 3}')$q$);
 select tests.act('o_brands_exported', 'authenticated', (select o from ids), $q$select public.log_audit('brands.exported', null, null, '{"count": 3}')$q$);
 select tests.act('o_bogus', 'authenticated', (select o from ids), $q$select public.log_audit('brands.exploded')$q$);
-select tests.check('log_audit: staff may log brand.viewed and the two imports; brands.exported is owner only; unknown actions are refused',
-  tests.ok('w_brand_viewed') and tests.ok('w_brands_imported') and tests.ok('w_spons_imported')
+select tests.check('log_audit: staff may log brand.viewed but not the two imports (brands.imported goes through record_brand_import); brands.exported is owner only; unknown actions are refused',
+  tests.ok('w_brand_viewed') and not tests.ok('w_brands_imported') and not tests.ok('w_spons_imported')
   and not tests.ok('w_brands_exported') and tests.ok('o_brands_exported') and not tests.ok('o_bogus'));
 select tests.check('log_audit: the old actions still work',
   (tests.run_as('authenticated', (select w from ids), $q$select public.log_audit('creator.viewed', 'creator', 'x')$q$)).ok

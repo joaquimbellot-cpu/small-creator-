@@ -68,7 +68,9 @@ Logins: `owner@example.test` / `Owner-Test-Pass-2026!` and `worker@example.test`
 `20261125000700` sponsors list functions;
 `20261125000800` matching and linking;
 `20261125000900` outreach;
-`20261125001000` search (one function, `global_search`).
+`20261125001000` search (one function, `global_search`);
+`20261125001100` security review and QA fixes;
+`20261125001200` re-test fixes (note rule, contact address characters, export and import audit lines).
 (There is no `...000600`: the creator profile needed none.) Apply them to the live database in name order, with a backup first:
 see "Applying to production" in `docs/ui-upgrade/build/database.md` (written for the first four files; the same one-file-at-a-time rule holds for the rest).
 

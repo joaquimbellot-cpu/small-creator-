@@ -1,7 +1,6 @@
 'use client';
 // Add or edit a sponsor in a dialog. The server action checks everything again; this form only shows what comes back.
 import { useActionState, useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
 import { Button, Checkbox, Input, Modal, Notice, Select, Textarea, useToast } from '@/components/ui';
 import { COMPANY_SIZES, COMPANY_SIZE_LABEL, COUNTRY_CODES, NICHES, RELATIONSHIPS, RELATIONSHIP_LABEL, countryName } from '@/lib/sponsors/constants';
 import type { SponsorFormValues } from '@/lib/sponsors/format';
@@ -33,7 +32,6 @@ export function SponsorDialog({ mode, initial, label, variant, size = 'md' }: {
 
 function SponsorForm({ mode, initial, onClose }: { mode: 'add' | 'edit'; initial: SponsorFormValues; onClose: () => void }) {
   const [state, action, pending] = useActionState<FormState, FormData>(saveSponsor, null);
-  const router = useRouter();
   const toast = useToast();
   const v = (state?.values as Partial<SponsorFormValues> | undefined) ?? initial;
   const e = state?.errors ?? {};
@@ -41,7 +39,7 @@ function SponsorForm({ mode, initial, onClose }: { mode: 'add' | 'edit'; initial
   const niches = Array.isArray(v.niches) ? v.niches : [];
 
   useEffect(() => {
-    if (state?.ok) { toast('Sponsor saved.'); onClose(); router.refresh(); }
+    if (state?.ok) { toast('Sponsor saved.'); onClose(); }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state]);
 

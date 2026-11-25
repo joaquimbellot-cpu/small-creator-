@@ -118,6 +118,7 @@ export function DraftPitchButton({ creatorId, brandId, size = 'sm', label = 'Dra
                 <div><div className={`label ${s.factsUsed}`}>Facts used</div><ul>{result.used.map((u) => <li key={u}>{u}</li>)}</ul></div>
                 <div><div className={`label ${s.factsLeft}`}>Left out</div><ul>{result.leftOut.map((u) => <li key={u}>{u}</li>)}</ul></div>
               </div>
+              <p className={s.note}>This check catches common mistakes, not all of them. Read every name and number before you send.</p>
               <p className={s.note}>Nothing is sent from here. The draft waits in Emails, Review, and only the owner&apos;s click on Send sends it.</p>
               <div className={s.row}>
                 <Link href="/emails/review">Open the draft in Review</Link>

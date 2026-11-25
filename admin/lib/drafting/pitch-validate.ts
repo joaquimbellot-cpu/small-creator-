@@ -1,7 +1,9 @@
 // Checks a pitch draft before it is saved: Claude's answer and the mock. Returns a short message, or null when it is fine.
 // A draft that names a sponsor, date or number that is not in the facts it was given must never be saved.
 // The general checks (length, placeholders, links, unsubscribe line) are the ones every draft gets (draftProblem).
-import { hasDomain, hasEmail, hasLink, hasPhone } from './pitch-safety';
+import { COMMON_WORDS } from './common-words';
+import { invitedNameAfterCue, moneyProblem, promiseProblem, wordNumberProblem } from './pitch-claims';
+import { hasDomain, hasEmail, hasLink, hasPhone, readable } from './pitch-safety';
 import { draftProblem } from './validate';
 import type { PitchFacts } from './pitch-types';
 
@@ -14,16 +16,6 @@ const COMMON = new Set([
   'jan', 'feb', 'mar', 'apr', 'jun', 'jul', 'aug', 'sep', 'sept', 'oct', 'nov', 'dec',
   'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday',
 ]);
-// Ordinary words that may begin a sentence. Any other capitalised word at the start of a sentence must be a name from the facts
-// (or a word the draft also uses in lower case): an invented one-word brand is caught there.
-const STARTERS = new Set((
-  'a about above after again all also although always an and another any are as at because been before being both but by can could did do does each either even every few for from had has have he her here his how however if in instead into is it its just let like looking made many may might more most much must my no not now of on once one only or other our out over please quick quite rather really see she should since so some such than that the their them then there these they this those though three through thus to too two under until up us very want was we well were what when where whether which while who whom whose why will with without would yes yet you your ' +
-  'happy hope hoping glad great good excited note thank thanks hi hello dear best warmly regards cheers kind sincerely ' +
-  'reply replying write send share tell ask give get take make join joining match matching matched matches pick picked choose chosen know knowing think think thinking suggest suggested sponsors sponsor sponsored sponsorship sponsorships channels channel creators creator videos video viewers audience audiences brands brand partners partner partnership deals deal team people person ' +
-  'if smallfold youtube free final today tomorrow soon next first second third last recent recently currently already often usually sometimes still ' +
-  'based given having works working worked looks looked found finding feel feels fits fit suits suit might maybe perhaps possibly together ' +
-  'it\'s that\'s we\'re we\'ll we\'ve you\'re you\'ll you\'ve they\'re there\'s here\'s i\'m i\'d i\'ll i\'ve don\'t doesn\'t didn\'t won\'t can\'t'
-).split(/\s+/));
 const MONTH = /\b(?:jan(?:uary)?|feb(?:ruary)?|mar(?:ch)?|apr(?:il)?|may|jun(?:e)?|jul(?:y)?|aug(?:ust)?|sep(?:t(?:ember)?)?|oct(?:ober)?|nov(?:ember)?|dec(?:ember)?)\b/gi;
 
 const esc = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
@@ -61,15 +53,24 @@ const CAP = 'A-ZÀ-ÖØ-Þ';
 const WORD = `[${CAP}][A-Za-z0-9À-ɏ'’-]*`;
 const norm = (w: string) => w.replace(/['’]s$/i, '').replace(/['’-]+$/, '').replace(/’/g, "'").toLowerCase();
 
+/** An ordinary English word (see common-words.ts). A contraction is judged by the part before the apostrophe: "we're" -> "we". */
+const ordinary = (w0: string): boolean => {
+  const w = w0.replace(/’/g, "'");
+  if (COMMON_WORDS.has(w) || COMMON_WORDS.has(w.split("'")[0]) || COMMON_WORDS.has(w.replace(/'/g, ''))) return true;
+  // plural and simple endings: "details" -> "detail", "stories" -> "story", "noted" -> "note", "starting" -> "start", "clearly" -> "clear"
+  const stems = [w.replace(/s$/, ''), w.replace(/es$/, ''), w.replace(/ies$/, 'y'), w.replace(/ed$/, ''), w.replace(/ed$/, 'e'), w.replace(/ing$/, ''), w.replace(/ing$/, 'e'), w.replace(/ly$/, ''), w.replace(/er$/, ''), w.replace(/ers$/, '')];
+  return stems.some((x) => x.length >= 3 && x !== w && COMMON_WORDS.has(x));
+};
+
 /**
  * Capitalised words that are not in the facts: a likely invented company or person.
- * Mid-sentence, any capitalised word that is not allowed is suspect. At the start of a sentence a capital is normal, so the word
- * must be an ordinary sentence starter, a word from the facts, or a word the draft also writes in lower case; anything else
- * (an invented one-word brand such as "Zentora has ...") is suspect too. A capital that follows a letter or digit ("1M") is a suffix, not a name.
+ * Mid-sentence, any capitalised word that is not allowed is suspect. At the start of a sentence or a subject a capital is normal,
+ * so the word is fine when it is an ordinary English word (a list of about 1,900, common-words.ts), a word from the facts, or a
+ * word the draft also writes in lower case; anything else (an invented one-word brand such as "Zentora has ...") is suspect.
+ * In the subject a capitalised ordinary word is fine anywhere (Title Case). A capital that follows a letter or digit ("1M") is a suffix.
  */
-function unknownProperNouns(text: string, tokens: Set<string>): string[] {
+function unknownProperNouns(text: string, tokens: Set<string>, lowerSeen: Set<string>, isSubject: boolean): string[] {
   const out: string[] = [];
-  const lowerSeen = new Set((text.match(/(?<![A-Za-z0-9À-ɏ])[a-zà-ÿ][a-zà-ÿ'’-]*/g) ?? []).map(norm));
   const re = new RegExp(`(?<![A-Za-z0-9À-ɏ'’])${WORD}`, 'g');
   for (let m = re.exec(text); m; m = re.exec(text)) {
     const before = text.slice(0, m.index).trimEnd();
@@ -78,11 +79,15 @@ function unknownProperNouns(text: string, tokens: Set<string>): string[] {
     const w = norm(m[0]);
     if (tokens.has(w) || /^i'(m|d|ll|ve)$/.test(w)) continue;
     const starts = before === '' || /[.!?:\n—–"“(*]/.test(last) || gap.includes('\n') || (last === '-' && /(^|\s)$/.test(before.slice(0, -1)));
-    if (!starts) { out.push(m[0]); continue; }
-    if (STARTERS.has(w) || lowerSeen.has(w)) continue;
+    if (!starts) {
+      if (isSubject && ordinary(w)) continue;
+      out.push(m[0]);
+      continue;
+    }
+    if (ordinary(w) || lowerSeen.has(w)) continue;
     const next = new RegExp(`^[ \\t]+(${WORD})`).exec(text.slice(m.index + m[0].length));
     const nw = next ? norm(next[1]) : '';
-    out.push(next && !tokens.has(nw) && !STARTERS.has(nw) ? `${m[0]} ${next[1]}` : m[0]);
+    out.push(next && !tokens.has(nw) && !ordinary(nw) ? `${m[0]} ${next[1]}` : m[0]);
   }
   return out;
 }
@@ -107,6 +112,7 @@ export function pitchProblem(
 
   // Whole-draft checks, before any name is taken out: a hostile value that Claude copies word for word is examined here.
   // The one allowed link is the channel link given in the facts.
+  // The text is also read the way a person reads it: "(at)", "[dot]", full-width characters and hidden characters are folded first.
   const scan = withoutChannelLink(both, f.creator.channelUrl);
   if (hasEmail(scan)) return 'The draft contains an email address. A pitch never includes one.';
   if (hasLink(scan) || hasDomain(scan)) return 'The draft contains a web address. Only the creator\u2019s own channel link is allowed.';
@@ -127,15 +133,26 @@ export function pitchProblem(
   // Names: every company or person in the draft is one we gave. Remove the allowed names first (a known name may sit
   // inside an allowed one), then look for any other known sponsor name, then for unexplained capitalised names.
   const { names, tokens } = allowed(f);
-  let rest = both;
-  for (const n of [...names].sort((a, b) => b.length - a.length)) rest = rest.replace(new RegExp(`(?<![A-Za-z0-9À-ɏ])${esc(n.trim())}(?![A-Za-z0-9À-ɏ])`, 'gi'), ' ');
+  const sortedNames = [...names].sort((a, b) => b.length - a.length);
+  const strip = (t: string) => sortedNames.reduce((r, n) => r.replace(new RegExp(`(?<![A-Za-z0-9À-ɏ])${esc(n.trim())}(?![A-Za-z0-9À-ɏ])`, 'gi'), ' '), t);
+  const restSubject = strip(subject);
+  const restBody = strip(body);
+  const rest = `${restSubject}\n${restBody}`;
   for (const k of opts.knownNames ?? []) {
     const name = k.trim();
     if (name.length < 3) continue;
     if (new RegExp(`(?<![A-Za-z0-9])${esc(name)}(?![A-Za-z0-9])`, 'i').test(rest)) return 'The draft names a sponsor that is not in the confirmed facts.';
   }
-  const odd = unknownProperNouns(rest, tokens);
+  const lowerSeen = new Set((rest.match(/(?<![A-Za-z0-9À-ɏ])[a-zà-ÿ][a-zà-ÿ'’-]*/g) ?? []).map(norm));
+  const odd = [...unknownProperNouns(restSubject, tokens, lowerSeen, true), ...unknownProperNouns(restBody, tokens, lowerSeen, false)];
   if (odd.length) return `The draft names "${odd[0]}", which is not in the facts it was given.`;
+  const lowerName = invitedNameAfterCue(rest, tokens);
+  if (lowerName) return `The draft names "${lowerName}", which is not in the facts it was given.`;
+
+  // Amounts and shares written in words or symbols, percentages of earnings.
+  const readableRest = readable(rest);
+  const money = moneyProblem(readableRest);
+  if (money) return money;
 
   // Talk of fees, pay or earnings is a money promise too (checked after the names so an invented sponsor is named first).
   if (/\b(?:fees?|rates?|pay|pays|paid|paying|payments?|payouts?|earn(?:s|ed|ing|ings)?|revenue)\b/i.test(rest)) {
@@ -155,5 +172,9 @@ export function pitchProblem(
     const raw = m[0].replace(/,+$/, '');
     if (!numberOk(raw, ok)) return `The draft states a number (${raw.trim()}) that is not in the facts it was given.`;
   }
-  return null;
+  const inWords = wordNumberProblem(rest, ok);
+  if (inWords) return inWords;
+
+  // Promises last, so that an invented number or name is reported first.
+  return promiseProblem(rest);
 }

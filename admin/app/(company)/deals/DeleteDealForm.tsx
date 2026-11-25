@@ -1,11 +1,17 @@
 'use client';
 // Owner's delete button for one deal. Shows the reason when the delete fails instead of doing nothing.
 import { useActionState } from 'react';
-import { ConfirmButton } from '@/components/ui';
+import { ConfirmButton, useToast } from '@/components/ui';
 import { deleteDealAction, type DealFormState } from './actions';
 
 export function DeleteDealForm({ id, brand }: { id: string; brand: string }) {
-  const [state, action] = useActionState<DealFormState, FormData>(deleteDealAction, {});
+  const toast = useToast();
+  // The toast is shown when the answer arrives: the row is gone a moment later, and so is this form.
+  const [state, action] = useActionState<DealFormState, FormData>(async (prev, formData) => {
+    const r = await deleteDealAction(prev, formData);
+    if (r.ok) toast(r.ok);
+    return r;
+  }, {});
   return (
     <form action={action} className="inline-form">
       <input type="hidden" name="id" value={id} />

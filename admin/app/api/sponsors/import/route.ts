@@ -2,7 +2,6 @@
 // Both modes read and check the file again on the server, so the browser cannot smuggle in unchecked rows.
 // Staff may import. Each row is marked new, duplicate (same name, any letter case) or error; commit saves only the new rows.
 import { ApiError, apiHandler } from '@/lib/api/handler';
-import { logAudit } from '@/lib/audit';
 import { readFormLimited, UploadTooLarge } from '@/lib/lists/readUpload';
 import { MAX_IMPORT_BYTES } from '@/lib/sponsors/constants';
 import { classifyRows, parseCsvText } from '@/lib/sponsors/csv';
@@ -64,7 +63,12 @@ export const POST = apiHandler({}, async ({ req, supabase }) => {
     }
   } finally {
     // Always leave a record, with the count saved so far (also when something threw). No names or emails in it.
-    await logAudit('brands.imported', 'brand', null, { count: imported, contacts, duplicates: counts.duplicate, errors: counts.error, ...(stopped || imported < todo.length ? { partial: true } : {}) });
+    // The only way to write this line is record_brand_import(): the database checks the caller is staff and that the count is
+    // backed by sponsors created a moment ago. A failed write is logged, never thrown (it must not hide the import's own result).
+    const { error: auditErr } = await supabase.rpc('record_brand_import', {
+      p_count: imported, p_contacts: contacts, p_duplicates: counts.duplicate, p_errors: counts.error, p_partial: !!(stopped || imported < todo.length),
+    });
+    if (auditErr) console.error('audit write failed brands.imported', auditErr.code);
   }
   if (stopped) throw new ApiError(409, `${stopped} ${imported} of ${todo.length} sponsors were saved. Upload the same file again to add the rest; sponsors already saved are skipped as duplicates.`);
   return { imported, contacts, skipped: counts.duplicate + counts.error };
