@@ -14,6 +14,8 @@ Going live has two parts that belong together: the database changes first, then 
 
 ## Step 1: back up the live database (you)
 
+**Done in part on 25 November:** Claude made a safety copy of all 16 live tables inside the database itself, in a schema called `backup_20261125` (117 creators, 285 audit lines). The app and the public cannot read it. It protects against a mistake in the steps below. It does not protect against losing the whole Supabase project, so your own backup is still worth having. When the upgrade has run well for a few weeks, it can be removed with `drop schema backup_20261125 cascade;`.
+
 In Supabase: Database, then Backups. On the free plan, download a backup as described in "Maintaining Smallfold" in `admin/README.md`. Write down three numbers from the Table Editor: the number of rows in `creators`, `brands` and `deals`.
 
 ## Step 2: apply the eleven database files, in this order
@@ -38,7 +40,9 @@ A check query for each file is in `docs/ui-upgrade/build/database.md`, section "
 
 These files only add things: new tables, new optional columns, new rules. They delete no row and change no existing value, except that `brands` rows get an "updated" time.
 
-If you prefer, Claude can apply the eleven files for you through Supabase's management connection, as on 23 November. Say so after the backup is done.
+**The quick way:** the file `docs/ui-upgrade/apply-to-live-database.sql` holds all eleven files in order. Paste the whole of it into the SQL Editor and press Run once. Each part commits on its own; if one fails, send Claude the error.
+
+Claude tried to apply the files itself on 25 November and the session's safety system refused the step, because it changes a live database. It needs either your approval in the session (switch the permission mode from Auto, then approve the prompt) or you running the file above.
 
 ## Step 3: deploy the app (Claude, or you)
 
