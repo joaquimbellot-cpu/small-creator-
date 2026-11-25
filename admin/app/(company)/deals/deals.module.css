@@ -1,0 +1,43 @@
+/* Deals board and the amount editor. Hairlines, 8px corners, no shadows; the board scrolls inside its own frame. */
+.boardWrap { min-width: 0; max-width: 100%; }
+.board {
+  display: grid; grid-auto-flow: column; grid-auto-columns: minmax(232px, 1fr); gap: var(--s-3);
+  overflow-x: auto; padding-bottom: var(--s-3); align-items: start; max-width: 100%;
+}
+.board:focus-visible { outline: var(--stroke) solid var(--accent-fg); outline-offset: 2px; }
+.col { border: var(--hairline) solid var(--rule); border-radius: var(--r); background: var(--surface); min-height: 160px; min-width: 0; }
+.col.over { border-color: var(--accent-fg); border-style: dashed; }
+.colHead { padding: var(--s-3); border-bottom: var(--hairline) solid var(--rule); }
+.colTitle { display: flex; gap: var(--s-2); align-items: baseline; font-family: var(--font-sans); font-size: var(--t-label); font-weight: var(--w-label); letter-spacing: var(--track-label); text-transform: uppercase; color: var(--fg); margin: 0; }
+.count { color: var(--fg-muted); font-variant-numeric: tabular-nums; }
+.total { font-size: .875rem; color: var(--fg-muted); font-variant-numeric: tabular-nums; margin-top: 2px; }
+.colBody { padding: var(--s-2); display: grid; gap: var(--s-2); }
+.card {
+  position: relative; background: var(--bg); border: var(--hairline) solid var(--rule); border-radius: var(--r);
+  padding: var(--s-3); font-size: .875rem; display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--s-2); min-width: 0;
+}
+.card[draggable='true'] { cursor: grab; }
+.card.dragging { opacity: .5; }
+.card.busy { opacity: .7; }
+.who { min-width: 0; overflow-wrap: anywhere; }
+.who a { color: inherit; }
+.who strong a { font-weight: 600; }
+.kv { display: flex; justify-content: space-between; align-items: baseline; gap: var(--s-2); flex-wrap: wrap; }
+.num { font-variant-numeric: tabular-nums; }
+.move { width: 100%; min-height: 40px; font-size: .875rem; padding: 0 var(--s-2); border: var(--hairline) solid var(--rule); border-radius: var(--r); background: var(--surface); color: var(--fg); }
+.empty { padding: var(--s-2); color: var(--fg-muted); font-size: .875rem; }
+.more { margin: var(--s-1) 0 0; }
+.hint { color: var(--fg-muted); font-size: .875rem; margin: var(--s-3) 0 0; }
+.cardActions { display: flex; gap: var(--s-2); flex-wrap: wrap; align-items: center; }
+
+.amount { display: inline-flex; gap: var(--s-2); align-items: baseline; flex-wrap: wrap; }
+.textBtn { background: none; border: 0; padding: 0; min-height: 28px; color: var(--accent-fg); text-decoration: underline; cursor: pointer; font-size: .8125rem; }
+.amountForm { display: flex; gap: var(--s-2); align-items: center; flex-wrap: wrap; }
+.amountInput { width: 9rem; min-height: 40px; padding: 0 var(--s-2); border: var(--hairline) solid var(--rule); border-radius: var(--r); background: var(--surface); color: var(--fg); }
+.err { color: #9B2C1F; flex-basis: 100%; }
+.nameLink { color: inherit; }
+.headRow { display: flex; align-items: center; gap: var(--s-3); flex-wrap: wrap; }
+.addBox { margin-bottom: var(--s-4); }
+.addBox > summary { cursor: pointer; min-height: var(--tap); display: inline-flex; align-items: center; padding: 0 var(--s-4); border: var(--hairline) solid var(--rule); border-radius: var(--r); background: var(--surface); margin-bottom: var(--s-3); }
+.addBox[open] > summary { margin-bottom: var(--s-3); }
+.cardActions > * { max-width: 100%; }

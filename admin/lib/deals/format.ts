@@ -1,10 +1,11 @@
 // Shared display helpers for the Overview and Deals pages. Plain functions only (used in server and client code).
 // Money is stored in cents (USD). Dates are shown in UTC so the server and the browser agree.
 
-export const STAGES = ['contacted', 'replied', 'negotiating', 'signed', 'completed', 'paid'] as const;
+export const STAGES = ['matched', 'contacted', 'replied', 'negotiating', 'signed', 'completed', 'paid'] as const;
 export type Stage = (typeof STAGES)[number];
 
 export const STAGE_LABEL: Record<Stage, string> = {
+  matched: 'Matched',
   contacted: 'Contacted',
   replied: 'Replied',
   negotiating: 'Negotiating',
@@ -22,6 +23,22 @@ const month = new Intl.DateTimeFormat('en-GB', { month: 'short', timeZone: 'UTC'
 /** 219000 -> "$2,190.00". Null or undefined counts as zero. */
 export function formatUsd(cents: number | string | null | undefined): string {
   return usd.format(Number(cents ?? 0) / 100);
+}
+
+/** An amount that may be empty: 219000 -> "$2,190.00", null -> the words for "not set" ("Amount not set" by default). */
+export function formatAmount(cents: number | string | null | undefined, empty = 'Amount not set'): string {
+  return cents == null || cents === '' ? empty : usd.format(Number(cents) / 100);
+}
+
+/** "Today", "1 day", "5 days", "3 weeks", "2 months" since an ISO time (UTC days, so server and browser agree). */
+export function timeInStage(iso: string | null | undefined, now: Date = new Date()): string {
+  if (!iso) return '–';
+  const days = Math.max(0, Math.floor((Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()) - Date.UTC(new Date(iso).getUTCFullYear(), new Date(iso).getUTCMonth(), new Date(iso).getUTCDate())) / 86_400_000));
+  if (days === 0) return 'Today';
+  if (days === 1) return '1 day';
+  if (days < 14) return `${days} days`;
+  if (days < 60) return `${Math.floor(days / 7)} weeks`;
+  return `${Math.floor(days / 30)} months`;
 }
 
 export function formatCount(n: number | string | null | undefined): string {

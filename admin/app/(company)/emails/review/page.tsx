@@ -15,7 +15,7 @@ const FAILURE_TEXT: Record<string, string> = {
   down: 'Claude could not be reached or took too long. Try again in a minute.',
   refused: 'Claude did not return a draft.',
   checks: 'the draft broke a rule (a link, a price, a placeholder or too many words)',
-  blocked: 'the creator is marked do not contact or has opted out',
+  blocked: 'the creator or the sponsor is marked do not contact, or the address has opted out',
   save: 'the draft could not be saved',
   late: 'the run ran out of time. Run it again for these',
 };
@@ -31,6 +31,9 @@ function failureNotes(raw: string | undefined): string[] {
 type Row = {
   id: string; subject: string; body: string; status: 'draft' | 'approved'; to_email: string; source: string; approved_at: string | null;
   creators: { full_name: string } | null; drafter: { full_name: string } | null;
+  // set on pitch drafts only
+  brand_id: string | null; recipient_kind: 'creator' | 'brand_contact'; pitch_facts: { used?: string[]; left_out?: string[] } | null;
+  brands: { name: string } | null; brand_contacts: { full_name: string } | null;
 };
 
 export default async function ReviewPage({ searchParams }: { searchParams: Promise<Record<string, string | undefined>> }) {
@@ -41,7 +44,7 @@ export default async function ReviewPage({ searchParams }: { searchParams: Promi
 
   let query = supabase
     .from('emails')
-    .select('id, subject, body, status, to_email, source, approved_at, creators(full_name), drafter:profiles!emails_drafted_by_fkey(full_name)')
+    .select('id, subject, body, status, to_email, source, approved_at, brand_id, recipient_kind, pitch_facts, creators(full_name), brands(name), brand_contacts(full_name), drafter:profiles!emails_drafted_by_fkey(full_name)')
     .in('status', ['draft', 'approved'])
     .order('created_at', { ascending: false })
     .limit(100);
@@ -80,6 +83,10 @@ export default async function ReviewPage({ searchParams }: { searchParams: Promi
           const email: ReviewEmail = {
             id: r.id, subject: r.subject, body: r.body, status: r.status, to_email: r.to_email, byClaude: r.source === 'claude',
             creator: r.creators?.full_name ?? 'Unknown creator', drafter: r.drafter?.full_name || 'someone',
+            sponsor: r.brands?.name ?? null,
+            toContact: r.recipient_kind === 'brand_contact' ? (r.brand_contacts?.full_name ?? 'the contact person') : null,
+            factsUsed: Array.isArray(r.pitch_facts?.used) ? r.pitch_facts.used.slice(0, 20).map(String) : [],
+            leftOut: Array.isArray(r.pitch_facts?.left_out) ? r.pitch_facts.left_out.slice(0, 20).map(String) : [],
           };
           return <ReviewCard key={r.id} email={email} footer={footer} />;
         })

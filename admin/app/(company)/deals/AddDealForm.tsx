@@ -26,7 +26,7 @@ export function AddDealForm({ creators, brands }: { creators: { id: string; full
       <datalist id="brand-names">
         {brands.map((b) => <option key={b} value={b} />)}
       </datalist>
-      <Input label="Amount (USD)" name="amount" inputMode="decimal" placeholder="250.00" required error={fe.amount} />
+      <Input label="Amount (USD)" name="amount" inputMode="decimal" placeholder="250.00" hint="Optional. Leave it empty if the amount is not agreed yet." error={fe.amount} />
       <Select label="Stage" name="stage" defaultValue="contacted" error={fe.stage}>
         {STAGES.map((s) => <option key={s} value={s}>{STAGE_LABEL[s]}</option>)}
       </Select>

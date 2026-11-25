@@ -43,6 +43,8 @@ export type ListRow = {
   subscribers: number | null; subscribers_hidden: boolean; avg_views: number | null; status: CreatorStatus;
   last_contacted_at: string | null; created_at: string; sponsorship_count: number; last_sponsorship_at: string | null;
   detected_sponsorship_count: number; last_detected_sponsorship_at: string | null; has_email: boolean;
+  /** Only with sort=match&for=<sponsor id>: the score of this creator for that sponsor, with its reasons. */
+  match?: { total: number; reasons: { points: number; text: string; unconfirmed: boolean }[]; blocked: string | null };
 };
 
 export function formatUsd(cents: number): string {

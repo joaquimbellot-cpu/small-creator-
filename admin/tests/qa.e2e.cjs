@@ -170,9 +170,9 @@ const cleanup = { emailIds: [], creatorRestore: [], zzCreatorId: null, runStart:
       check(`db weekly replies sum to ${EXPECTED.weekly_replies_total}`, weekly.reduce((a, w) => a + w.replies, 0) === EXPECTED.weekly_replies_total);
     });
 
-    // ---------------------------------------------------------------- 3. search and pop-up
-    startSection('3. search and pop-up (owner)');
-    await step('search and pop-up match the database', async () => {
+    // ---------------------------------------------------------------- 3. search and side panel
+    startSection('3. search and side panel (owner)');
+    await step('search and side panel match the database', async () => {
       const [id, name, email, phone, channel, subs] = sql(
         "select id, full_name, email, coalesce(phone,''), channel_url, subscribers from creators " +
         "where phone is not null and channel_url is not null and subscribers is not null and subscribers_hidden = false " +
@@ -183,7 +183,7 @@ const cleanup = { emailIds: [], creatorRestore: [], zzCreatorId: null, runStart:
       await row.waitFor({ timeout: 15000 });
       check(`search for "${name}" shows that creator's row`, (await row.count()) === 1);
       await row.locator('td').nth(2).click();
-      await owner.page.waitForURL(/creator=/, { timeout: 15000 });
+      await owner.page.waitForURL(/open=/, { timeout: 15000 });
       const dlg = owner.page.getByRole('dialog');
       await dlg.locator('dl').first().waitFor({ timeout: 15000 });
       const fields = await dlg.locator('dl').first().evaluate((dl) => {
@@ -194,11 +194,15 @@ const cleanup = { emailIds: [], creatorRestore: [], zzCreatorId: null, runStart:
         }
         return out;
       });
-      check('pop-up email matches the database', fields.Email?.text === email, `${fields.Email?.text} vs ${email}`);
-      check('pop-up phone matches the database', fields.Phone?.text === phone, `${fields.Phone?.text} vs ${phone}`);
-      check('pop-up channel link matches the database', fields.YouTube?.href === channel, `${fields.YouTube?.href} vs ${channel}`);
-      check('pop-up subscribers match the database', (fields.Subscribers?.text || '').includes(fmtInt(subs)), fields.Subscribers?.text);
+      check('panel email matches the database', fields.Email?.text === email, `${fields.Email?.text} vs ${email}`);
+      check('panel phone matches the database', fields.Phone?.text === phone, `${fields.Phone?.text} vs ${phone}`);
+      // The channel link is no longer a "YouTube" row of the list: it is the channel name under the heading.
+      check('panel channel link matches the database', (await dlg.locator(`a[href="${channel}"]`).count()) >= 1, channel);
+      check('panel subscribers match the database', (fields.Subscribers?.text || '').includes(fmtInt(subs)), fields.Subscribers?.text);
+      // New: the list itself shows no email address (only the panel and the full page do, and they write an audit line).
       await owner.page.keyboard.press('Escape');
+      await owner.page.waitForURL((u) => !u.search.includes('open='), { timeout: 15000 });
+      check('the creators list shows no email address', !/@example\.test/.test(await owner.page.locator('table').first().textContent()));
     });
 
     // ---------------------------------------------------------------- 6a. opted-out creators: compose and insert
@@ -345,15 +349,15 @@ const cleanup = { emailIds: [], creatorRestore: [], zzCreatorId: null, runStart:
       check('DELETE /api/creators/<id> is 403 for worker', del.status() === 403, String(del.status()));
       check('creator still exists after the refused delete', sql(`select count(*) from creators where id = '${zzId}'`) === '1');
     });
-    await step('no Delete button in the pop-up or on /deals for the worker', async () => {
+    await step('no Delete button in the side panel or on /deals for the worker', async () => {
       await wp.goto(`${BASE}/creators?q=${encodeURIComponent('ZZ QA Delete Target')}`);
       const row = wp.locator('table tbody tr', { hasText: 'ZZ QA Delete Target' }).first();
       await row.waitFor({ timeout: 15000 });
       await row.locator('td').nth(2).click();
-      await wp.waitForURL(/creator=/, { timeout: 15000 });
+      await wp.waitForURL(/open=/, { timeout: 15000 });
       const dlg = wp.getByRole('dialog');
       await dlg.locator('dl').first().waitFor({ timeout: 15000 });
-      check('worker pop-up has no Delete button', (await dlg.getByRole('button', { name: /delete/i }).count()) === 0);
+      check('worker side panel has no Delete button', (await dlg.getByRole('button', { name: /delete/i }).count()) === 0);
       await wp.keyboard.press('Escape');
       await wp.goto(`${BASE}/deals`);
       await wp.waitForLoadState('networkidle');
@@ -364,10 +368,10 @@ const cleanup = { emailIds: [], creatorRestore: [], zzCreatorId: null, runStart:
       const row = owner.page.locator('table tbody tr', { hasText: 'ZZ QA Delete Target' }).first();
       await row.waitFor({ timeout: 15000 });
       await row.locator('td').nth(2).click();
-      await owner.page.waitForURL(/creator=/, { timeout: 15000 });
+      await owner.page.waitForURL(/open=/, { timeout: 15000 });
       const dlg = owner.page.getByRole('dialog');
       await dlg.locator('dl').first().waitFor({ timeout: 15000 });
-      check('owner pop-up has a Delete button', (await dlg.getByRole('button', { name: /^Delete$/ }).count()) >= 1);
+      check('owner side panel has a Delete button', (await dlg.getByRole('button', { name: /^Delete$/ }).count()) >= 1);
       await owner.page.keyboard.press('Escape');
       await owner.page.goto(`${BASE}/deals`);
       await owner.page.waitForLoadState('networkidle');
@@ -385,6 +389,98 @@ const cleanup = { emailIds: [], creatorRestore: [], zzCreatorId: null, runStart:
         const noRows = r.status !== 200 || (Array.isArray(rows) && rows.length === 0);
         check(`anon GET /rest/v1/${t} returns no rows`, noRows && !text.includes('@example.test'), `status ${r.status}`);
       }
+    });
+
+    // ---------------------------------------------------------------- 8. new screens (added with the upgrade)
+    startSection('8. creators, sponsors and calculator screens');
+    await step('creators list counts match the database', async () => {
+      const total = sql('select count(*) from creators');
+      await owner.page.goto(`${BASE}/creators`);
+      await owner.page.locator('.list-count').waitFor({ timeout: 15000 });
+      check('creators list says how many creators there are', (await owner.page.locator('.list-count').textContent()).includes(`${total} creators`), await owner.page.locator('.list-count').textContent());
+      check('the page title says Creators', /Creators/.test(await owner.page.title()), await owner.page.title());
+      check('the top bar has a Sponsors tab', (await owner.page.getByRole('navigation', { name: 'Main' }).getByRole('link', { name: 'Sponsors' }).count()) === 1);
+    });
+    await step('creator profile page', async () => {
+      const [id, name] = sql("select id, full_name from creators where status <> 'do_not_contact' order by full_name limit 1").split('|');
+      await owner.page.goto(`${BASE}/creators/${id}`);
+      check('full profile page has the creator name as its heading', await owner.page.getByRole('heading', { level: 1, name }).isVisible());
+      for (const h of ['Sponsorship history', 'Deals', 'Notes']) check(`profile has the section ${h}`, await owner.page.getByRole('heading', { name: h }).isVisible());
+      const r = await owner.page.goto(`${BASE}/creators/not-a-real-id`);
+      check('an unknown creator id gives a 404 page', r.status() === 404, String(r.status()));
+    });
+    await step('sponsors list and profile', async () => {
+      const total = sql('select count(*) from brands');
+      await owner.page.goto(`${BASE}/sponsors`);
+      await owner.page.locator('.list-count').waitFor({ timeout: 15000 });
+      check('sponsors list says how many sponsors there are', (await owner.page.locator('.list-count').textContent()).includes(`${total} sponsors`), await owner.page.locator('.list-count').textContent());
+      const [bid, bname] = sql('select id, name from brands order by name limit 1').split('|');
+      await owner.page.goto(`${BASE}/sponsors?open=${bid}`);
+      const dlg = owner.page.getByRole('dialog');
+      await dlg.getByRole('heading', { name: bname }).waitFor({ timeout: 15000 });
+      check('the sponsors panel opens from ?open=', true);
+      await owner.page.keyboard.press('Escape');
+      const full = await owner.page.goto(`${BASE}/sponsors/${bid}`);
+      check('full sponsor page opens', full.status() === 200 && await owner.page.getByRole('heading', { level: 1, name: bname }).isVisible());
+      check('worker can open a sponsor page too', (await wp.goto(`${BASE}/sponsors/${bid}`)).status() === 200);
+      check('worker sponsor page has no Delete button', (await wp.getByRole('button', { name: /^Delete/ }).count()) === 0);
+    });
+    await step('price calculator', async () => {
+      await owner.page.goto(`${BASE}/creators/calculator`);
+      check('calculator page opens with its heading', await owner.page.getByRole('heading', { level: 1 }).first().isVisible());
+    });
+
+    // ---------------------------------------------------------------- 9. search box (Ctrl+K)
+    startSection('9. search box');
+    await step('search box finds and opens a creator, a sponsor and a deal', async () => {
+      const pg = owner.page;
+      const [cid, cname] = sql("select id, full_name from creators where full_name !~ '[%_]' order by full_name limit 1").split('|');
+      const [bid, bname] = sql("select id, name from brands order by name limit 1").split('|');
+      const [dc, db] = sql("select c.full_name, b.name from deals d join creators c on c.id = d.creator_id join brands b on b.id = d.brand_id order by d.created_at limit 1").split('|');
+      await pg.goto(`${BASE}/overview`);
+      await pg.waitForLoadState('networkidle');
+      await pg.keyboard.press('Control+k');
+      const input = pg.getByRole('dialog', { name: 'Search' }).getByLabel('Search creators, sponsors and deals');
+      await input.waitFor({ timeout: 10000 });
+      check('Ctrl+K opens the search box with focus in the input', await input.evaluate((el) => el === document.activeElement));
+      await input.fill(cname);
+      const opt = pg.getByRole('option').filter({ hasText: cname }).first();
+      await opt.waitFor({ timeout: 10000 });
+      const shown = await pg.getByRole('dialog', { name: 'Search' }).textContent();
+      check('results show no email address', !/@example\.test/.test(shown));
+      await pg.keyboard.press('Enter');
+      await pg.waitForURL(new RegExp(`/creators/${cid}$`), { timeout: 15000 });
+      check('Enter opens the creator page', true);
+      await pg.keyboard.press('Control+k');
+      await input.waitFor();
+      check('Recently opened lists the creator just opened', (await pg.getByRole('option').filter({ hasText: cname }).count()) >= 1);
+      await pg.keyboard.press('Escape');
+      check('Esc closes the search box', (await pg.getByRole('dialog', { name: 'Search' }).count()) === 0);
+      await pg.keyboard.press('Control+k');
+      await input.fill(bname);
+      await pg.getByRole('option').filter({ hasText: bname }).first().click();
+      await pg.waitForURL(new RegExp(`/sponsors/${bid}$`), { timeout: 15000 });
+      check('clicking a sponsor result opens the sponsor page', true);
+      await pg.keyboard.press('Control+k');
+      await input.fill(dc);
+      const deal = pg.getByRole('option').filter({ hasText: `${dc} with ${db}` }).first();
+      await deal.waitFor({ timeout: 10000 });
+      await deal.click();
+      await pg.waitForURL(/\/deals$/, { timeout: 15000 });
+      check('a deal result opens /deals', true);
+      await pg.keyboard.press('Control+k');
+      await input.fill('zzzz-nothing-like-this');
+      check('"Nothing matches" is shown for a search with no result', await pg.getByText('Nothing matches').first().waitFor({ timeout: 10000 }).then(() => true, () => false));
+      await pg.keyboard.press('Escape');
+    });
+    await step('search route is closed to strangers and bad input', async () => {
+      const anon = await fetch(`${BASE}/api/search?q=a`);
+      check('GET /api/search is 401 when not logged in', anon.status === 401, String(anon.status));
+      check('GET /api/search?q= is 400 for an empty search', (await owner.page.request.get(`${BASE}/api/search?q=`)).status() === 400);
+      check('GET /api/search is 400 for 101 characters', (await owner.page.request.get(`${BASE}/api/search?q=${'a'.repeat(101)}`)).status() === 400);
+      const wr = await wp.request.get(`${BASE}/api/search?q=a`);
+      check('a worker can search', wr.status() === 200);
+      check('the reply has no email, phone or note', !/@|phone|notes?"/.test(await wr.text()));
     });
   } finally {
     // ---------------------------------------------------------------- cleanup (everything this run created)

@@ -15,12 +15,13 @@ part to try it on your computer with fake data. Use the third part to put it onl
 
 ## What it is
 
-The app has seven pages in the back office:
+The app has eight pages in the back office (plus a search box that opens with Ctrl+K on every one):
 
 | Page | What it does |
 |---|---|
 | Overview | Shows the main numbers: how many creators, emails sent, replies, deals, commission earned, and failed sends in the last 7 days. Also a chart and a list of recent activity. |
 | Creators | The list of YouTube channels, with search, filters, sorting, and CSV import and export. Tick several creators to change their status in one go ("Change status to", then confirm); only the owner can take creators off Do not contact. Can refresh subscriber counts from YouTube. New applications from the website also land here, with status New. |
+| Sponsors | The companies that pay creators: filters, contact people, tags, sponsorship history, CSV import and export. See "Creators, Sponsors, the price calculator and search" below. |
 | Deals | Each deal with a creator, a brand, a stage, and an amount. Commission is worked out for you. |
 | Emails | Writes drafts with Claude, lets you review and approve them, sends them when you click Send, keeps a log of every email, and stores templates. |
 | Inbox | Messages sent through the website's brand inquiry form (the "For brands" page). |
@@ -35,6 +36,41 @@ There are two roles. A role decides what a person may do.
 | Worker | View and edit creators, deals, and templates. Draft and send emails (only after a click). Import creators from CSV. Open the Inbox. Set up their own two-step login. Mark a creator "do not contact". | Delete creators, deals, or templates. Export. Change Settings (other than their own two-step login). Manage staff. Read the audit log. Use the Claude page. Take a creator off "do not contact". |
 
 The rules are checked by the app and again by the database, so a worker cannot get around them.
+
+### Creators, Sponsors, the price calculator and search (upgrade of 25 November 2026)
+
+| Screen | Address | What it does |
+|---|---|---|
+| Creators | `/creators` | Filter rail (subscribers, niche, status, country, language, sponsored by, recently sponsored, tags, lists and more), table or cards, saved views, bulk actions, a side panel at `?open=<id>`. The list shows no email address. |
+| Creator profile | `/creators/<id>` | The full page of one creator: sponsorship history, suggestions, performance, price, deals, outreach, notes, tags. Opening it writes the audit line "Viewed a creator". |
+| Sponsors | `/sponsors`, `/sponsors/<id>`, `/sponsors/import` | The same layout for sponsors (companies that pay creators): filters, panel, full page, contact people, tags, CSV import and (owner only) export. |
+| Price calculator | `/creators/calculator` | A fair price for a sponsored video from a creator's numbers. A plain calculation: nothing is saved or sent. |
+| Search | Ctrl+K or Cmd+K, or the Search button in the top bar | Finds creators (name, channel), sponsors (name, industry) and deals (creator or sponsor name), up to 6 of each. With an empty box it shows "Recently opened" (this browser tab only) and "Go to". Results hold names and one line of public context, never an email or phone, so it writes no audit line. Route: `GET /api/search?q=` (1 to 100 characters, staff only). |
+
+**Confirmed and Detected.** Every sponsorship record has one of two labels.
+*Confirmed* means a person checked it (or a deal reached Completed or Paid, which makes one by itself).
+*Detected* means it was found by a program or imported without checking; it is drawn with a dashed line and a "Detected" badge.
+Counts, filters, the "Active sponsor" label, match scores and every email use Confirmed records only.
+Tick "Count detected records too" to include Detected ones in a count or filter. A Detected record becomes Confirmed only when
+someone writes a short note saying how they checked (the database records who and when). Reject hides a record and keeps it (an import will not bring it back);
+Restore undoes a reject. In this build Detected records come only from the local seed and from imports marked unverified (there is no YouTube scanner yet).
+
+**Test data and logins (local stack only).** `bash dev/reset.sh` loads `supabase/seed/seed.sql` and then `seed-upgrade.sql`:
+60 creators, 26 sponsors, 34 contact people, 115 sponsorship records (64 Confirmed, 51 Detected), 19 deals (4 at the new first stage Matched), tags, two lists and three saved views.
+Logins: `owner@example.test` / `Owner-Test-Pass-2026!` and `worker@example.test` / `Worker-Test-Pass-2026!`. Details in `supabase/seed/EXPECTED.md`. Never load `seed-upgrade.sql` in production.
+
+**New migrations, in this order** (each file runs in its own transaction, can be run twice, and starts with a header that says how to roll it back):
+`20261125000100` niches, creator and sponsor columns, contact people;
+`20261125000200` sponsorship records;
+`20261125000300` deal amount, tags, lists, saved views;
+`20261125000400` views and audit;
+`20261125000500` creators list functions;
+`20261125000700` sponsors list functions;
+`20261125000800` matching and linking;
+`20261125000900` outreach;
+`20261125001000` search (one function, `global_search`).
+(There is no `...000600`: the creator profile needed none.) Apply them to the live database in name order, with a backup first:
+see "Applying to production" in `docs/ui-upgrade/build/database.md` (written for the first four files; the same one-file-at-a-time rule holds for the rest).
 
 ### The public website
 
@@ -424,8 +460,8 @@ an error if any suite fails:
    two-step login enforcement, the rules for the website forms and the Claude page, and the repair job's
    rules (`fixes.sql`). Each SQL file runs in its own rolled-back transaction. Then HTTP checks through the gateway.
 2. **Unit tests** (vitest).
-3. **QA browser checks:** failed login; a worker blocked from owner actions; search and the
-   creator pop-up; Overview numbers equal to the fake data; test-mode sending; opted-out and
+3. **QA browser checks:** failed login; a worker blocked from owner actions; search box and the
+   creator and sponsor side panels and pages; Overview numbers equal to the fake data; test-mode sending; opted-out and
    "do not contact" creators blocked; the public key reads nothing.
 4. **Browser tests** for creators, deals and emails.
 5. **Browser tests** for the website, the website forms and the Claude page. The Claude test adds one

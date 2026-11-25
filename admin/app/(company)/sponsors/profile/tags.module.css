@@ -1,0 +1,6 @@
+.tags { display: inline-flex; gap: var(--s-2); flex-wrap: wrap; align-items: center; }
+.tagChip { display: inline-flex; align-items: center; gap: 2px; }
+.tagX { background: none; border: 0; cursor: pointer; padding: 0 6px; margin: -2px -6px -2px 0; min-height: 28px; min-width: 28px; color: var(--fg-muted); font-size: 1rem; border-radius: var(--r); }
+.tagX:hover { color: var(--fg); }
+.tagForm { display: inline-flex; gap: var(--s-2); align-items: center; flex-wrap: wrap; }
+.tagForm input { min-height: 36px; padding: 0 var(--s-2); border: var(--hairline) solid var(--fg-muted); border-radius: var(--r); background: var(--surface); color: var(--fg); font: inherit; max-width: 12rem; }

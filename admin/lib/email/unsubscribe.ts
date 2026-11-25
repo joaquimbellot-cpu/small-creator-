@@ -10,7 +10,7 @@ export async function unsubscribe(token: string): Promise<UnsubscribeResult> {
   const emailId = verifyToken(token);
   if (!emailId) return 'invalid';
   const admin = createAdminClient();
-  const { data: email } = await admin.from('emails').select('to_email, is_test, creator_id').eq('id', emailId).maybeSingle();
+  const { data: email } = await admin.from('emails').select('to_email, is_test, creator_id, recipient_kind').eq('id', emailId).maybeSingle();
   if (!email) return 'invalid';
   // A test email went to our own test address: nothing to opt out.
   if (email.is_test) return 'test';
@@ -22,7 +22,8 @@ export async function unsubscribe(token: string): Promise<UnsubscribeResult> {
   if (!(res as { newly_suppressed?: boolean } | null)?.newly_suppressed) return 'done';
   // opt_out matches creators by their CURRENT address. If the address was edited after this mail went out, the
   // creator would stay contactable under the new one, so also mark the creator this email was written to.
-  if (email.creator_id) {
+  // (An email to a sponsor's contact is about the creator but was not written to them: the creator stays as they are.)
+  if (email.creator_id && email.recipient_kind !== 'brand_contact') {
     const { error: creatorErr } = await admin.from('creators').update({ status: 'do_not_contact' }).eq('id', email.creator_id);
     if (creatorErr) console.error('unsubscribe: could not mark creator', creatorErr.code);
   }

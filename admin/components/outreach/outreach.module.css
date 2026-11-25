@@ -1,0 +1,25 @@
+/* Draft pitch dialog and outreach history. Tokens only. */
+.stack { display: grid; gap: var(--s-4); }
+.two { display: grid; gap: var(--s-3); grid-template-columns: minmax(0, 1fr); }
+@media (min-width: 640px) { .two { grid-template-columns: 1fr 1fr; } }
+.picked { display: flex; justify-content: space-between; align-items: center; gap: var(--s-2); min-height: 44px; padding: 0 var(--s-3); border: var(--hairline) solid var(--rule); border-radius: var(--r); }
+.picked strong { overflow-wrap: anywhere; }
+.pickList { list-style: none; margin: var(--s-1) 0 0; padding: 0; max-height: 11rem; overflow: auto; border: var(--hairline) solid var(--rule); border-radius: var(--r); }
+.pickList li + li { border-top: var(--hairline) solid var(--rule); }
+.pickBtn { display: flex; justify-content: space-between; gap: var(--s-2); width: 100%; min-height: 44px; align-items: center; padding: 0 var(--s-3); background: none; border: 0; color: var(--ink); font: inherit; text-align: left; cursor: pointer; }
+.pickBtn:hover, .pickBtn:focus-visible { background: var(--cream-deep); }
+.pickBtn span:last-child { color: var(--muted); font-size: .8125rem; text-align: right; }
+.radios { display: grid; gap: var(--s-2); border: 0; margin: 0; padding: 0; }
+.radios legend { padding: 0; margin-bottom: var(--s-2); font-size: var(--t-label); text-transform: uppercase; letter-spacing: var(--track-label); color: var(--muted); }
+.radio { display: flex; align-items: center; gap: var(--s-2); min-height: 44px; }
+.radio input { width: 20px; height: 20px; accent-color: var(--accent); }
+.draft { white-space: pre-wrap; font-family: inherit; margin: 0; padding: var(--s-3); border: var(--hairline) solid var(--rule); border-radius: var(--r); overflow-wrap: anywhere; }
+.facts { display: grid; gap: var(--s-3); grid-template-columns: minmax(0, 1fr); }
+@media (min-width: 640px) { .facts { grid-template-columns: 1fr 1fr; } }
+.facts > div { border: var(--hairline) solid var(--rule); border-radius: var(--r); padding: var(--s-3); }
+.facts ul { margin: var(--s-2) 0 0; padding-left: var(--s-4); display: grid; gap: var(--s-1); font-size: .9375rem; }
+.factsUsed { color: var(--ink); font-weight: 600; }
+.factsLeft { color: var(--ink); font-weight: 600; }
+.note { color: var(--muted); font-size: .875rem; margin: 0; }
+.row { display: flex; gap: var(--s-2); flex-wrap: wrap; align-items: center; }
+.reviewFacts summary { cursor: pointer; min-height: 44px; display: flex; align-items: center; }

@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { logoutAction } from '@/lib/auth/actions';
 import type { Staff } from '@/lib/auth/staff';
 import { ToastProvider } from '@/components/ui/Toast';
+import { SearchLauncher } from '@/components/search/SearchLauncher';
 import { LogoMark } from './LogoMark';
 import { NavLinks } from './NavLinks';
 
@@ -27,6 +28,7 @@ export function AppShell({ staff, children }: { staff: Staff; children: React.Re
           <Link href="/overview" prefetch={false} className="shell__brand"><LogoMark /> Smallfold</Link>
           <NavLinks items={items} className="shell__nav" />
           <div className="shell__user">
+            <SearchLauncher />
             <div className="shell__who">
               {staff.fullName}
               <small>{staff.role}</small>

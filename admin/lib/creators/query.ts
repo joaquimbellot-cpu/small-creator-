@@ -5,6 +5,7 @@ import 'server-only';
 import { PAGE_SIZE, type ListRow } from './constants';
 import { creatorFilterDefs, filtersToQuery, parseFilters, toRpcArgs, type Filters } from './filters';
 import { chipsFromParams, removeChip } from '../lists/query';
+import { matchSortArg, parseMatchRows } from '../matching';
 
 // The query builder is typed loosely on purpose: its generic types are too deep for the compiler when chained here.
 type Client = { rpc: (fn: string, args?: Record<string, unknown>) => PromiseLike<{ data: any; error: any }>; from: (t: string) => any };
@@ -14,12 +15,24 @@ export type ListPage = { rows: ListRow[]; total: number };
 
 /** One page of rows. `total` is the number of matching creators (0 when the page is past the end: use the facets total then). */
 export async function loadPage(supabase: Client, f: Filters): Promise<ListPage> {
+  // "Best match for a sponsor": the sponsor rides in p_sort ("match:<id>") because the function's signature is fixed.
+  const byMatch = f.sort === 'match' && !!f.for;
   const { data, error } = await supabase.rpc('creators_list', {
-    ...toRpcArgs(f), p_sort: f.sort, p_dir: f.dir, p_limit: PAGE_SIZE, p_offset: (f.page - 1) * PAGE_SIZE,
+    ...toRpcArgs(f), p_sort: byMatch ? matchSortArg(f.for) : f.sort, p_dir: f.dir, p_limit: PAGE_SIZE, p_offset: (f.page - 1) * PAGE_SIZE,
   });
   if (error) throw error;
-  const rows = (data ?? []) as (ListRow & { total: number })[];
-  return { rows: rows.map(({ total: _t, ...r }) => r), total: rows.length ? Number(rows[0].total) : 0 };
+  const rows = ((data ?? []) as (ListRow & { total: number })[]).map(({ total: _t, ...r }) => r as ListRow);
+  const total = data?.length ? Number((data as { total: number }[])[0].total) : 0;
+  if (byMatch && rows.length) {
+    // The score and reasons of the visible page only (the ranking itself was done in the database).
+    const { data: sc } = await supabase.rpc('match_for_brand', { p_brand: f.for, p_ids: rows.map((r) => r.id) });
+    const byId = new Map(parseMatchRows(sc).map((m) => [m.otherId, m]));
+    for (const r of rows) {
+      const m = byId.get(r.id);
+      if (m) r.match = { total: m.total, reasons: m.reasons, blocked: m.blocked };
+    }
+  }
+  return { rows, total };
 }
 
 /** The number beside every option, and the totals. */

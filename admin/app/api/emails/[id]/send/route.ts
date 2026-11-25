@@ -12,6 +12,8 @@ const MESSAGES: Record<string, string> = {
   not_found: 'That email does not exist.',
   not_approved: 'The email is not approved.',
   do_not_contact: 'This creator is marked do not contact.',
+  sponsor_do_not_contact: 'This sponsor is marked do not contact.',
+  no_contact: 'The contact person for this email no longer exists. Discard the draft and write a new one.',
   suppressed: 'This address is on the suppression list.',
   test_email_missing: 'Test mode is on but no test address is set in Settings.',
   postal_address_missing: 'Real sending needs a postal address in Settings.',

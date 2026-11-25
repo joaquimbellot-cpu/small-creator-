@@ -10,6 +10,10 @@
 //   draft ....................... search_creators ("to X"), then create_email_draft, then a text
 //   find / search ............... search_creators ("named X"), then a text listing the names
 //   anything else ............... a short text
+// PITCH DRAFTS (lib/drafting/pitch*.ts): a request whose system prompt starts "You write pitch emails for Smallfold" is answered
+// with a JSON subject and body (structured output) written ONLY from the tags in the prompt (creator, sponsor, past sponsors,
+// greeting name). It is not held to the Opus-only request checks below, because drafting uses ANTHROPIC_MODEL. If the sponsor
+// name in the prompt contains "ZZ INVENT", the reply names a company that is not in the facts, so a test can see the draft refused.
 //
 // It REJECTS (400) shapes the real API rejects for claude-opus-5-5: wrong model, temperature / top_p / top_k,
 // tool_choice other than auto, thinking disabled or with budget_tokens, tools without strict: true or without
@@ -178,6 +182,43 @@ function respond(body) {
   return turn([{ type: 'text', text: plan.text, citations: null }], 'end_turn');
 }
 
+// ---------------------------------------------------------------- pitch drafts
+const isPitch = (body) => typeof body.system === 'string' ? body.system.startsWith('You write pitch emails for Smallfold') : Array.isArray(body.system) && String(body.system[0]?.text ?? '').startsWith('You write pitch emails for Smallfold');
+function pitchReply(body) {
+  const msg = body.messages?.at(-1);
+  const prompt = typeof msg?.content === 'string' ? msg.content : (msg?.content ?? []).map((b) => b.text ?? '').join('\n');
+  if (!body.output_config?.format) bad('pitch drafts need output_config.format (structured output)');
+  const tag = (name) => (prompt.match(new RegExp(`<${name}>([\\s\\S]*?)</${name}>`)) || [])[1]?.trim() ?? '';
+  const direction = tag('direction'), greet = tag('greeting_first_name');
+  const channel = tag('channel_name') || 'your channel', niche = tag('niche').toLowerCase();
+  const sponsor = tag('name').split('</name>')[0];
+  const sponsorName = (prompt.match(/<sponsor>\s*<name>([\s\S]*?)<\/name>/) || [])[1]?.trim() || 'the sponsor';
+  const subs = tag('subscribers'), views = tag('average_views'), similar = tag('other_channels_in_this_niche_it_has_sponsored');
+  const past = [...prompt.matchAll(/<sponsorship><name>([\s\S]*?)<\/name><month>([\s\S]*?)<\/month><\/sponsorship>/g)].map((m) => m[1]);
+  void sponsor;
+  const hello = greet ? `Hi ${greet},` : 'Hello,';
+  const lines = [hello, ''];
+  const invent = /ZZ INVENT/.test(sponsorName) ? 'We also work with Zentora Labs and Globex Corp.' : null;
+  if (direction === 'to_sponsor') {
+    lines.push('We connect brands with small YouTube channels, and a person at Smallfold chooses each match by hand.', '',
+      `${channel} is a ${niche || 'YouTube'} channel${subs && subs !== 'hidden' ? ` with ${Number(subs).toLocaleString('en-US')} subscribers` : ''}${views && views !== 'unknown' ? ` and about ${Number(views).toLocaleString('en-US')} views per video` : ''}.`);
+    if (past.length) lines.push('', `The channel has completed sponsorships with ${past.join(' and ')}.`);
+    if (Number(similar) > 0) lines.push('', `You have sponsored ${similar} similar ${Number(similar) === 1 ? 'channel' : 'channels'} before.`);
+    if (invent) lines.push('', invent);
+    lines.push('', 'If this sounds useful, reply and we will send more detail.');
+  } else {
+    lines.push('We connect small YouTube channels with sponsors, and a person at Smallfold chooses each match by hand.', '',
+      `${sponsorName} may suit ${channel}.${subs && subs !== 'hidden' ? ` The channel has ${Number(subs).toLocaleString('en-US')} subscribers.` : ''}`);
+    if (past.length) lines.push('', `You have already worked with ${past.join(' and ')}.`);
+    if (Number(similar) > 0) lines.push('', `${sponsorName} has sponsored ${similar} other ${niche || 'similar'} ${Number(similar) === 1 ? 'channel' : 'channels'} before.`);
+    if (invent) lines.push('', invent);
+    lines.push('', 'Would you like to hear more? A short reply is enough.');
+  }
+  const subject = direction === 'to_sponsor' ? `A ${niche || 'YouTube'} channel for ${sponsorName}: ${channel}` : `A sponsor that fits ${channel}: ${sponsorName}`;
+  const text = JSON.stringify({ subject, body: lines.join('\n') });
+  return { id: `msg_fake_${++counter}`, type: 'message', role: 'assistant', model: body.model, stop_sequence: null, content: [{ type: 'text', text, citations: null }], stop_reason: 'end_turn', usage: { input_tokens: 100, output_tokens: 80, cache_creation_input_tokens: 0, cache_read_input_tokens: 0 } };
+}
+
 // ---------------------------------------------------------------- server
 const send = (res, status, obj) => { res.writeHead(status, { 'content-type': 'application/json' }); res.end(JSON.stringify(obj)); };
 
@@ -192,6 +233,7 @@ http.createServer((req, res) => {
     try { body = JSON.parse(Buffer.concat(chunks).toString('utf8')); } catch { return send(res, 400, { type: 'error', error: { type: 'invalid_request_error', message: 'invalid JSON' } }); }
     fs.appendFileSync(LOG, JSON.stringify({ at: new Date().toISOString(), headers: { 'anthropic-beta': req.headers['anthropic-beta'] }, body }) + '\n');
     try {
+      if (isPitch(body)) return send(res, 200, pitchReply(body));
       validate(body, req.headers);
       send(res, 200, respond(body));
     } catch (e) {

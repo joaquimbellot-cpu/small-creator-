@@ -6,6 +6,7 @@ import Link from 'next/link';
 import type { MouseEvent } from 'react';
 import { Badge, Card, CardGrid, KeyValue, Table, cardLinkClass, cardRaiseClass, cardTitleClass, tableCell } from '@/components/ui';
 import { STATUS_LABEL, STATUS_TONE, type ListRow } from '@/lib/creators/constants';
+import { MatchCell } from '@/components/matching/MatchCell';
 import { formatFull } from '@/lib/lists/numbers';
 import { fmtDay, languageName, nicheName, regionName, sponsorshipText } from './list-format';
 import s from './creators.module.css';
@@ -30,6 +31,7 @@ function plainClick(e: MouseEvent) {
 
 export function CreatorsRows({ rows, selected, onToggle, onToggleAll, hrefFor, onOpen, detected }: RowsProps) {
   const allOn = rows.length > 0 && rows.every((r) => selected.has(r.id));
+  const showMatch = rows.some((r) => r.match); // only with sort=match&for=<sponsor>
   const nameLink = (r: ListRow) => (
     <Link href={hrefFor(r.id)} prefetch={false} scroll={false} className={s.rowLink} onClick={(e) => { if (plainClick(e)) { e.preventDefault(); onOpen(r.id); } }}>{r.full_name}</Link>
   );
@@ -45,6 +47,7 @@ export function CreatorsRows({ rows, selected, onToggle, onToggleAll, hrefFor, o
           <th className={s.midCol}>Sponsorships</th>
           <th>Status</th>
           <th>Last contacted</th>
+          {showMatch ? <th>Match</th> : null}
         </tr>
       </thead>
       <tbody>
@@ -63,6 +66,7 @@ export function CreatorsRows({ rows, selected, onToggle, onToggleAll, hrefFor, o
               </td>
               <td className={s.nowrap}><Badge tone={STATUS_TONE[r.status]}>{STATUS_LABEL[r.status]}</Badge></td>
               <td className={s.nowrap}>{fmtDay(r.last_contacted_at) ?? <span className={s.none}>Never</span>}</td>
+              {showMatch ? <td>{r.match ? <MatchCell match={r.match} /> : null}</td> : null}
             </tr>
           );
         })}
@@ -92,6 +96,7 @@ export function CreatorsCards({ rows, selected, onToggle, hrefFor, onOpen, detec
             <KeyValue label="Average views">{r.avg_views == null ? '—' : formatFull(r.avg_views)}</KeyValue>
             <KeyValue label="Sponsorships">{sp.none ? sp.main : `${sp.main}${sp.last ? ` · ${sp.last.replace('Last: ', '')}` : ''}`}</KeyValue>
             <KeyValue label="Last contacted">{fmtDay(r.last_contacted_at) ?? 'Never'}</KeyValue>
+            {r.match ? <div><MatchCell match={r.match} /></div> : null}
           </Card>
         );
       })}

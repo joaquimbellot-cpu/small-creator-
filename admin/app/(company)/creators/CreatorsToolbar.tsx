@@ -5,12 +5,13 @@ import { useState } from 'react';
 import { Button, Checkbox, CompactSelect, Input, Menu, MenuItem, MenuRule, Segmented, TABLE_CARDS, useToast } from '@/components/ui';
 import { cleanQuery, DEFAULT_SORT, type SortKey } from '@/lib/creators/filters';
 import type { ListNav } from '@/lib/lists/useListNav';
+import { ForPicker } from '@/components/matching/ForPicker';
 import { deleteView, saveView } from './list-actions';
 import s from './creators.module.css';
 
 export type SavedView = { id: string; owner_id: string; name: string; query: string; is_shared: boolean };
 
-/** Sort choices as "sort:direction". "Best match for a sponsor" is added here by the Matching agent (`sort=match&for=<brand id>`). */
+/** Sort choices as "sort:direction". "Best match for a sponsor" is `sort=match&for=<brand id>`. */
 export const SORT_CHOICES: { value: string; label: string; sort: SortKey; dir: 'asc' | 'desc' }[] = [
   { value: 'subscribers:desc', label: 'Sort: Subscribers, high to low', sort: 'subscribers', dir: 'desc' },
   { value: 'subscribers:asc', label: 'Sort: Subscribers, low to high', sort: 'subscribers', dir: 'asc' },
@@ -18,6 +19,7 @@ export const SORT_CHOICES: { value: string; label: string; sort: SortKey; dir: '
   { value: 'last_contacted:desc', label: 'Sort: Last contacted', sort: 'last_contacted', dir: 'desc' },
   { value: 'name:asc', label: 'Sort: Name, A to Z', sort: 'name', dir: 'asc' },
   { value: 'added:desc', label: 'Sort: Recently added', sort: 'added', dir: 'desc' },
+  { value: 'match:desc', label: 'Sort: Best match for a sponsor', sort: 'match', dir: 'desc' },
 ];
 
 export function CreatorsToolbar({ nav, sort, dir, view, savedViews, staffId }: {
@@ -35,7 +37,7 @@ export function CreatorsToolbar({ nav, sort, dir, view, savedViews, staffId }: {
     const c = SORT_CHOICES.find((x) => x.value === value);
     if (!c) return;
     // Defaults are left out of the address (see filtersToQuery).
-    nav.setMany({ sort: c.sort === DEFAULT_SORT ? null : c.sort, dir: c.dir === (c.sort === 'name' ? 'asc' : 'desc') ? null : c.dir, for: null });
+    nav.setMany({ sort: c.sort === DEFAULT_SORT ? null : c.sort, dir: c.dir === (c.sort === 'name' ? 'asc' : 'desc') ? null : c.dir, for: c.sort === 'match' ? nav.get('for') : null });
   }
 
   async function copyLink() {
@@ -65,6 +67,7 @@ export function CreatorsToolbar({ nav, sort, dir, view, savedViews, staffId }: {
   return (
     <>
       <CompactSelect label="Sort by" value={current} onChange={onSort} options={SORT_CHOICES.map((c) => ({ value: c.value, label: c.label }))} />
+      {sort === 'match' ? <ForPicker kind="brand" valueId={nav.get('for')} onChange={(id) => nav.set('for', id)} /> : null}
       <Segmented inline label="View" options={TABLE_CARDS} value={view} onChange={(v) => nav.set('view', v === 'table' ? null : v)} />
       <Menu label="Saved views">
         {({ close }) => (

@@ -20,19 +20,26 @@ export function dollarsToCents(raw: string): number | null {
   return Number(m[1]) * 100 + Number((m[2] ?? '').padEnd(2, '0'));
 }
 
+/** An amount typed by a person: empty means "not set" (null), otherwise dollars above 0 as whole cents. */
+export const optionalAmountSchema = z.string().trim().transform((raw, ctx): number | null => {
+  if (raw === '') return null;
+  const cents = dollarsToCents(raw);
+  if (cents === null || cents <= 0 || cents > MAX_CENTS) {
+    ctx.addIssue({ code: 'custom', message: 'Enter an amount above 0 and up to 10,000,000, with at most 2 decimals, or leave it empty.' });
+    return null;
+  }
+  return cents;
+});
+
 export const addDealSchema = z.object({
   creator_id: idSchema,
   brand_name: z.string().trim().min(1, 'Enter a brand name.').max(200, 'Brand names can be at most 200 characters.'),
   stage: stageSchema,
-  amount: z.string().trim().transform((raw, ctx) => {
-    const cents = dollarsToCents(raw);
-    if (cents === null || cents <= 0 || cents > MAX_CENTS) {
-      ctx.addIssue({ code: 'custom', message: 'Enter an amount above 0 and up to 10,000,000, with at most 2 decimals.' });
-      return 0;
-    }
-    return cents;
-  }),
+  amount: optionalAmountSchema,
 });
 
 export const updateStageSchema = z.object({ id: idSchema, stage: stageSchema });
 export const deleteDealSchema = z.object({ id: idSchema });
+
+export const updateAmountSchema = z.object({ id: idSchema, amount: optionalAmountSchema });
+export const moveDealSchema = z.object({ id: idSchema, stage: stageSchema });

@@ -82,8 +82,14 @@ const rowsCount = (page) => page.locator('table tbody tr').count();
     await dlg.getByText(wemail).waitFor();
     const dtext = await dlg.textContent();
     ok(dtext.includes(wname), 'panel shows name');
-    ok(dtext.includes('$' + (Number(wearn) / 100).toLocaleString('en-US', { minimumFractionDigits: 2 })), `earned $${Number(wearn) / 100}`);
-    ok(new RegExp('Deals' + wdeals).test(dtext.replace(/\s/g, '')), `deals ${wdeals}`);
+    // The profile has no "earned" total or "Deals n" counter any more: it lists each deal with its stage and amount.
+    // Same facts, read from that list: one row per deal, and the paid deal's amount less the commission is what was earned.
+    const dsec = dlg.locator('section.panel-sec', { has: page.getByRole('heading', { name: 'Deals', exact: true }) });
+    const paid = sql(`select amount_cents, commission_cents from deals where creator_id='${wid}' and stage='paid'`).split('\n').filter(Boolean).map((r) => r.split('|').map(Number));
+    const usd = (c) => '$' + (c / 100).toLocaleString('en-US', { minimumFractionDigits: 2 });
+    const dealsText = await dsec.textContent();
+    ok(paid.length > 0 && paid.reduce((t, [a, c]) => t + a - c, 0) === Number(wearn) && paid.every(([a]) => dealsText.includes(usd(a))), `earned ${usd(Number(wearn))}: the paid deal${paid.length === 1 ? '' : 's'} in the Deals section add up to it`);
+    ok((await dsec.locator('div[class*=dealRow]').count()) === Number(wdeals), `deals ${wdeals}: one row each in the Deals section`);
     const link = dlg.locator('a[target=_blank]').first();
     ok((await link.getAttribute('rel')) === 'noopener noreferrer', 'channel link rel');
     await page.waitForTimeout(500);

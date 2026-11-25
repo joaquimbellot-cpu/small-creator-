@@ -1,0 +1,44 @@
+/* Matching: suggestions, the Link dialog, the pickers and the "Why" disclosure. Tokens only, hairlines, no shadows. */
+.sug {
+  border: var(--hairline) solid var(--rule);
+  border-radius: var(--r);
+  background: var(--surface);
+  padding: var(--s-4);
+  margin-bottom: var(--s-3);
+}
+.sugHead { display: flex; justify-content: space-between; align-items: baseline; gap: var(--s-1) var(--s-3); flex-wrap: wrap; }
+.sugName { font-weight: 600; }
+.sugLine { margin: var(--s-1) 0 var(--s-2); color: var(--fg-muted); font-size: .9375rem; }
+.sugActions { display: flex; gap: var(--s-2); flex-wrap: wrap; margin-top: var(--s-2); }
+.note { color: var(--fg-muted); font-size: .9375rem; margin: var(--s-3) 0 0; }
+
+.two { display: grid; gap: var(--s-3); grid-template-columns: minmax(0, 1fr); }
+@media (min-width: 640px) { .two { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); } }
+.stack > * + * { margin-top: var(--s-3); }
+.priceLine { display: flex; gap: var(--s-2) var(--s-3); flex-wrap: wrap; align-items: baseline; }
+.linkBtn { background: none; border: 0; padding: 0; min-height: var(--tap); color: var(--accent-fg); text-decoration: underline; cursor: pointer; font: inherit; }
+
+/* Searchable picker (combobox + list) */
+.picker { position: relative; }
+.pickerLabel { display: block; font-size: var(--t-label); letter-spacing: var(--track-label); text-transform: uppercase; color: var(--fg-muted); margin-bottom: var(--s-1); }
+.pickerInput { width: 100%; min-height: var(--tap); padding: 0 var(--s-3); border: var(--hairline) solid var(--rule-strong, var(--rule)); border-radius: var(--r); background: var(--surface); color: var(--fg); }
+.pickerInputSm { min-height: 40px; }
+.list {
+  position: absolute; z-index: 5; left: 0; right: 0; top: 100%; margin: 2px 0 0; padding: 0; list-style: none;
+  max-height: 280px; overflow: auto; background: var(--surface); border: var(--hairline) solid var(--rule); border-radius: var(--r);
+}
+.option { display: flex; justify-content: space-between; gap: var(--s-2); align-items: baseline; padding: var(--s-2) var(--s-3); cursor: pointer; min-height: 44px; }
+.option[aria-selected='true'], .option:hover { background: var(--bg); }
+.optionName { display: block; font-weight: 600; }
+.optionHint { display: block; font-size: .8125rem; color: var(--fg-muted); }
+.optionScore { font-size: .8125rem; white-space: nowrap; color: var(--fg-muted); font-variant-numeric: tabular-nums; }
+.empty { padding: var(--s-3); color: var(--fg-muted); }
+.hint { font-size: .8125rem; color: var(--fg-muted); margin-top: var(--s-1); }
+
+/* "Why" disclosure in the list tables and cards */
+.why > summary { cursor: pointer; display: inline-flex; align-items: center; gap: var(--s-2); min-height: 32px; list-style: revert; }
+.why[open] > summary { margin-bottom: var(--s-1); }
+.whyBody { min-width: 220px; max-width: 420px; font-size: .875rem; white-space: normal; }
+.forBox { display: inline-flex; align-items: flex-end; gap: var(--s-2); flex-wrap: wrap; min-width: 0; }
+.forBox > .picker { min-width: 220px; flex: 1 1 220px; }
+.em { font-weight: 600; }

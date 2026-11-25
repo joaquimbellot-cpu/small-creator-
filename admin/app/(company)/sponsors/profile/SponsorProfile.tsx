@@ -4,8 +4,9 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { after } from 'next/server';
-import { Badge, Notice, Tag } from '@/components/ui';
+import { Badge, Notice } from '@/components/ui';
 import { DraftPitchButton } from '@/components/outreach/DraftPitchButton';
+import { OutreachHistory } from '@/components/outreach/OutreachHistory';
 import { LinkButton as LinkToCreator } from '@/components/matching/LinkButton';
 import { Suggestions } from '@/components/matching/Suggestions';
 import { SponsorshipHistory } from '@/components/sponsorships/SponsorshipHistory';
@@ -19,6 +20,7 @@ import { SponsorDialog } from '../SponsorDialog';
 import s from '../sponsors.module.css';
 import { ContactPeople, type Contact } from './ContactPeople';
 import { NotesEditor } from './NotesEditor';
+import { TagEditor } from './TagEditor';
 import { DeleteSponsor } from './ProfileActions';
 
 type DealRow = { id: string; stage: string; amount_cents: number | null; stage_changed_at: string; creators: { id: string; full_name: string } | { id: string; full_name: string }[] | null };
@@ -27,12 +29,13 @@ export async function SponsorProfile({ id, mode }: { id: string; mode: 'panel' |
   const staff = await requireStaff();
   if (!UUID_RE.test(id)) return mode === 'page' ? notFound() : <Notice tone="error">This sponsor could not be found.</Notice>;
   const supabase = await createClient();
-  const [brand, people, tagRows, dealRows] = await Promise.all([
+  const [brand, people, tagRows, dealRows, knownTags] = await Promise.all([
     supabase.from('brand_summaries').select('*').eq('id', id).maybeSingle(),
     supabase.from('brand_contacts').select('id, full_name, role_title, email, phone, linkedin_url, is_primary').eq('brand_id', id)
       .order('is_primary', { ascending: false }).order('full_name'),
     supabase.from('brand_tags').select('tags(id, name)').eq('brand_id', id),
     supabase.from('deals').select('id, stage, amount_cents, stage_changed_at, creators(id, full_name)').eq('brand_id', id).order('stage_changed_at', { ascending: false }),
+    supabase.from('tags').select('name').eq('scope', 'brand').order('name').limit(200),
   ]);
   if (brand.error || people.error || tagRows.error || dealRows.error) {
     return <Notice tone="error">The sponsor could not be loaded. Close this and try again.</Notice>;
@@ -65,7 +68,7 @@ export async function SponsorProfile({ id, mode }: { id: string; mode: 'panel' |
     <div>
       <div className={s.tags}>
         <Badge tone={RELATIONSHIP_TONE[rel]}>{RELATIONSHIP_LABEL[rel]}</Badge>
-        {tags.map((t) => <Tag key={t.id}>{t.name}</Tag>)}
+        <TagEditor brandId={id} tags={tags} known={(knownTags.data ?? []).map((t) => String(t.name))} />
       </div>
       <Title className="panel-head">{b.name}</Title>
       <p className={s.lead}>
@@ -116,6 +119,7 @@ export async function SponsorProfile({ id, mode }: { id: string; mode: 'panel' |
     <>
       <Suggestions side="brand" id={id} />
       {dealsSection}
+      <OutreachHistory side="brand" id={id} />
       <NotesEditor key={id} id={id} initial={b.notes ?? ''} />
     </>
   );

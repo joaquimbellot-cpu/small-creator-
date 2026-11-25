@@ -13,7 +13,7 @@ const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const STATUSES = ['draft', 'approved', 'sending', 'sent', 'failed', 'replied'];
 const DATE = /^\d{4}-\d{2}-\d{2}$/;
 
-type Row = { id: string; subject: string; status: string; is_test: boolean; to_email: string; created_at: string; sent_at: string | null; creators: { full_name: string } | null };
+type Row = { id: string; subject: string; status: string; is_test: boolean; to_email: string; created_at: string; sent_at: string | null; recipient_kind: string; creators: { full_name: string } | null; brands: { id: string; name: string } | null; brand_contacts: { full_name: string } | null };
 
 export default async function EmailLogPage({ searchParams }: { searchParams: Promise<Record<string, string | undefined>> }) {
   await requireStaff();
@@ -24,7 +24,7 @@ export default async function EmailLogPage({ searchParams }: { searchParams: Pro
   // creators!inner makes the creator-name filter work; the "creator" box takes a name, or an id from a link.
   let query = supabase
     .from('emails')
-    .select('id, subject, status, is_test, to_email, created_at, sent_at, creators!inner(full_name)', { count: 'exact' })
+    .select('id, subject, status, is_test, to_email, created_at, sent_at, recipient_kind, creators!inner(full_name), brands(id, name), brand_contacts(full_name)', { count: 'exact' })
     .order('created_at', { ascending: false })
     .range((page - 1) * PAGE_SIZE, page * PAGE_SIZE - 1);
   if (sp.status && STATUSES.includes(sp.status)) query = query.eq('status', sp.status);
@@ -68,11 +68,15 @@ export default async function EmailLogPage({ searchParams }: { searchParams: Pro
         <EmptyState title="No emails found">Try other filters.</EmptyState>
       ) : (
         <Table label="Emails">
-          <thead><tr><th>Creator</th><th>Subject</th><th>Status</th><th>Date (UTC)</th></tr></thead>
+          <thead><tr><th>Creator</th><th>Sponsor</th><th>Subject</th><th>Status</th><th>Date (UTC)</th></tr></thead>
           <tbody>
             {rows.map((r) => (
               <tr key={r.id}>
-                <td><Link href={`/emails/${r.id}`}>{r.creators?.full_name ?? r.to_email}</Link></td>
+                <td>
+                  <Link href={`/emails/${r.id}`}>{r.creators?.full_name ?? r.to_email}</Link>
+                  {r.recipient_kind === 'brand_contact' ? <span className="muted"> · goes to {r.brand_contacts?.full_name ?? 'the contact person'}</span> : null}
+                </td>
+                <td>{r.brands ? <Link href={`/sponsors/${r.brands.id}`}>{r.brands.name}</Link> : <span className="muted">–</span>}</td>
                 <td>{r.subject || <span className="muted">(no subject)</span>}</td>
                 <td>
                   <Badge tone={STATUS_TONE[r.status] ?? 'neutral'}>{STATUS_LABEL[r.status] ?? r.status}</Badge>{' '}
