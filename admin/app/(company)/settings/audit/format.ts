@@ -44,7 +44,8 @@ const VERBS: Record<string, string> = {
   'settings.updated': 'Changed a setting',
   'creators.exported': 'Exported creators',
   'creators.imported': 'Imported creators',
-  'contact.viewed': 'Viewed an Inbox message',
+  // Written for an Inbox message and, since the upgrade, for an email to a sponsor's contact person.
+  'contact.viewed': 'Viewed contact details (Inbox message or email)',
   'contact.received': 'Inbox message from the website',
   'application.received': 'Application from the website',
   'email.status_changed': "Changed an email's status",
