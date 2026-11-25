@@ -6,6 +6,8 @@
 --   * creators_facets(filters): how many creators each option would give "with the other filters as they are".
 --   * creators_export(filters): the rows of the CSV export (owner only, checked by the API route; RLS still applies).
 --   * creators_add_to_list(list, ids), creators_add_tag(tag, ids): bulk actions on up to 200 creators.
+-- The four big functions set jit = off: the planner overestimates their cost (many OR-ed conditions) and would spend
+-- 200 ms compiling code for a 5 ms query.
 -- All functions are SECURITY INVOKER with a fixed search_path, so row level security applies to every table they read.
 -- They take typed arguments, never text that is run as SQL. Granted to authenticated only; anon has no access.
 --
@@ -16,7 +18,8 @@ set search_path = public, extensions;
 
 -- ---------------------------------------------------------------- helpers
 create or replace function public.like_pattern(p_text text) returns text
-language sql immutable set search_path = public, pg_temp as $$
+-- Pure text function that touches no table, so it needs no search_path (and can then be inlined by the planner).
+language sql immutable as $$
   select case when nullif(btrim(p_text), '') is null then null
               else '%' || replace(replace(replace(left(btrim(p_text), 100), '\', '\\'), '%', '\%'), '_', '\_') || '%' end
 $$;
@@ -55,17 +58,19 @@ create or replace function public.creators_match_ids(
   p_contacted text default null, p_views integer default null, p_lang text[] default null,
   p_country text[] default null, p_email boolean default false, p_tag uuid[] default null, p_list uuid[] default null
 ) returns setof uuid
-language sql stable security invoker set search_path = public, extensions, pg_temp as $$
+language sql stable security invoker set search_path = public, extensions, pg_temp set jit = off as $$
+  -- a: values derived from the arguments, worked out once (not once per row)
+  with a as (select public.like_pattern(p_q) as pat, p_status::public.creator_status[] as st)
   select c.id
-    from public.creators c
+    from public.creators c cross join a
    where
-     (public.like_pattern(p_q) is null or c.full_name ilike public.like_pattern(p_q) or c.email::text ilike public.like_pattern(p_q) or c.channel_name ilike public.like_pattern(p_q))
+     (a.pat is null or c.full_name ilike a.pat or c.email::text ilike a.pat or c.channel_name ilike a.pat)
      and ((p_subs_min is null or c.subscribers >= p_subs_min) and (p_subs_max is null or c.subscribers <= p_subs_max))
      and (p_sponsored is null or p_sponsored not in ('yes', 'no') or ((c.sponsorship_count > 0 or (coalesce(p_detected, false) and c.detected_sponsorship_count > 0)) = (p_sponsored = 'yes')))
      and (p_recent is null or c.last_sponsorship_at >= current_date - p_recent or (coalesce(p_detected, false) and c.last_detected_sponsorship_at >= current_date - p_recent))
      and (coalesce(cardinality(p_by), 0) = 0 or exists (select 1 from public.sponsorships s where s.creator_id = c.id and s.brand_id = any (p_by) and not s.rejected and (s.source_label = 'confirmed' or coalesce(p_detected, false))))
      and (coalesce(cardinality(p_niche), 0) = 0 or c.niche_slug = any (p_niche))
-     and (coalesce(cardinality(p_status), 0) = 0 or c.status = any (p_status::public.creator_status[]))
+     and (coalesce(cardinality(p_status), 0) = 0 or c.status = any (a.st))
      and (p_contacted is null or public.contacted_matches(p_contacted, public.creator_contacted_at(c.id, c.last_contacted_at)))
      and (p_views is null or c.avg_views >= p_views)
      and (coalesce(cardinality(p_lang), 0) = 0 or c.language = any (p_lang))
@@ -89,29 +94,29 @@ create or replace function public.creators_list(
   sponsorship_count integer, last_sponsorship_at date, detected_sponsorship_count integer, last_detected_sponsorship_at date,
   has_email boolean, total bigint
 )
-language sql stable security invoker set search_path = public, extensions, pg_temp as $$
+language sql stable security invoker set search_path = public, extensions, pg_temp set jit = off as $$
+  -- The last contact needs a look at the emails: it is worked out for the rows of the page only (for all rows only when sorting by it).
   with m as (select x as id from public.creators_match_ids(p_q, p_subs_min, p_subs_max, p_sponsored, p_detected, p_recent, p_by, p_niche, p_status, p_contacted, p_views, p_lang, p_country, p_email, p_tag, p_list) x),
   r as (
     select c.id, c.full_name, c.channel_name, c.niche_slug, c.country, c.language, c.subscribers, c.subscribers_hidden,
-           c.avg_views, c.status::text as status,
-           public.creator_contacted_at(c.id, c.last_contacted_at) as last_contacted_at, c.created_at,
-           c.sponsorship_count, c.last_sponsorship_at, c.detected_sponsorship_count, c.last_detected_sponsorship_at,
+           c.avg_views, c.status::text as status, c.last_contacted_at as stored_contact,
+           case when p_sort = 'last_contacted' then public.creator_contacted_at(c.id, c.last_contacted_at) end as sort_contact,
+           c.created_at, c.sponsorship_count, c.last_sponsorship_at, c.detected_sponsorship_count, c.last_detected_sponsorship_at,
            (c.email <> '') as has_email,
            case when coalesce(p_detected, false) then greatest(c.last_sponsorship_at, c.last_detected_sponsorship_at)
                 else c.last_sponsorship_at end as sp_at
       from public.creators c join m on m.id = c.id
-  )
-  select r.id, r.full_name, r.channel_name, r.niche_slug, r.country, r.language, r.subscribers, r.subscribers_hidden,
-         r.avg_views, r.status, r.last_contacted_at, r.created_at, r.sponsorship_count, r.last_sponsorship_at,
-         r.detected_sponsorship_count, r.last_detected_sponsorship_at, r.has_email, count(*) over () as total
-    from r
-   order by
+  ),
+  pg as (
+    select r.*, count(*) over () as total
+      from r
+     order by
      case when p_sort = 'subscribers' and p_dir = 'asc'  then r.subscribers end asc  nulls last,
      case when p_sort = 'subscribers' and p_dir <> 'asc' then r.subscribers end desc nulls last,
      case when p_sort = 'sponsored' and p_dir = 'asc'  then r.sp_at end asc  nulls last,
      case when p_sort = 'sponsored' and p_dir <> 'asc' then r.sp_at end desc nulls last,
-     case when p_sort = 'last_contacted' and p_dir = 'asc'  then r.last_contacted_at end asc  nulls last,
-     case when p_sort = 'last_contacted' and p_dir <> 'asc' then r.last_contacted_at end desc nulls last,
+     case when p_sort = 'last_contacted' and p_dir = 'asc'  then r.sort_contact end asc  nulls last,
+     case when p_sort = 'last_contacted' and p_dir <> 'asc' then r.sort_contact end desc nulls last,
      case when p_sort = 'added' and p_dir = 'asc'  then r.created_at end asc  nulls last,
      case when p_sort = 'added' and p_dir <> 'asc' then r.created_at end desc nulls last,
      case when p_sort = 'name' and p_dir <> 'desc' then r.full_name end asc,
@@ -119,7 +124,27 @@ language sql stable security invoker set search_path = public, extensions, pg_te
      -- "match" (best match for a sponsor) is added by the Matching agent; until then it falls back to subscribers
      case when p_sort not in ('sponsored', 'last_contacted', 'added', 'name') and p_sort <> 'subscribers' then r.subscribers end desc nulls last,
      r.full_name asc, r.id asc
-   limit greatest(1, least(coalesce(p_limit, 25), 100)) offset greatest(0, coalesce(p_offset, 0))
+     limit greatest(1, least(coalesce(p_limit, 25), 100)) offset greatest(0, coalesce(p_offset, 0))
+  )
+  select pg.id, pg.full_name, pg.channel_name, pg.niche_slug, pg.country, pg.language, pg.subscribers, pg.subscribers_hidden,
+         pg.avg_views, pg.status, public.creator_contacted_at(pg.id, pg.stored_contact) as last_contacted_at, pg.created_at,
+         pg.sponsorship_count, pg.last_sponsorship_at, pg.detected_sponsorship_count, pg.last_detected_sponsorship_at,
+         pg.has_email, pg.total
+    from pg
+   order by
+     case when p_sort = 'subscribers' and p_dir = 'asc'  then pg.subscribers end asc  nulls last,
+     case when p_sort = 'subscribers' and p_dir <> 'asc' then pg.subscribers end desc nulls last,
+     case when p_sort = 'sponsored' and p_dir = 'asc'  then pg.sp_at end asc  nulls last,
+     case when p_sort = 'sponsored' and p_dir <> 'asc' then pg.sp_at end desc nulls last,
+     case when p_sort = 'last_contacted' and p_dir = 'asc'  then pg.sort_contact end asc  nulls last,
+     case when p_sort = 'last_contacted' and p_dir <> 'asc' then pg.sort_contact end desc nulls last,
+     case when p_sort = 'added' and p_dir = 'asc'  then pg.created_at end asc  nulls last,
+     case when p_sort = 'added' and p_dir <> 'asc' then pg.created_at end desc nulls last,
+     case when p_sort = 'name' and p_dir <> 'desc' then pg.full_name end asc,
+     case when p_sort = 'name' and p_dir = 'desc' then pg.full_name end desc,
+     -- "match" (best match for a sponsor) is added by the Matching agent; until then it falls back to subscribers
+     case when p_sort not in ('sponsored', 'last_contacted', 'added', 'name') and p_sort <> 'subscribers' then pg.subscribers end desc nulls last,
+     pg.full_name asc, pg.id asc
 $$;
 
 -- ---------------------------------------------------------------- facet counts
@@ -135,18 +160,19 @@ create or replace function public.creators_facets(
   p_contacted text default null, p_views integer default null, p_lang text[] default null,
   p_country text[] default null, p_email boolean default false, p_tag uuid[] default null, p_list uuid[] default null
 ) returns table (facet text, value text, n bigint)
-language sql stable security invoker set search_path = public, extensions, pg_temp as $$
-  with b as (
+language sql stable security invoker set search_path = public, extensions, pg_temp set jit = off as $$
+  with a as (select public.like_pattern(p_q) as pat, p_status::public.creator_status[] as st),
+  b as (
     select c.id, c.niche_slug, c.status::text as status, c.language, c.country, c.avg_views, (c.email <> '') as has_email,
            c.sponsorship_count, c.detected_sponsorship_count, c.last_sponsorship_at, c.last_detected_sponsorship_at, x.lc,
            array_remove(array[
-        case when not coalesce((public.like_pattern(p_q) is null or c.full_name ilike public.like_pattern(p_q) or c.email::text ilike public.like_pattern(p_q) or c.channel_name ilike public.like_pattern(p_q)), false) then 'q' end,
+        case when not coalesce((a.pat is null or c.full_name ilike a.pat or c.email::text ilike a.pat or c.channel_name ilike a.pat), false) then 'q' end,
         case when not coalesce(((p_subs_min is null or c.subscribers >= p_subs_min) and (p_subs_max is null or c.subscribers <= p_subs_max)), false) then 'subs' end,
         case when not coalesce((p_sponsored is null or p_sponsored not in ('yes', 'no') or ((c.sponsorship_count > 0 or (coalesce(p_detected, false) and c.detected_sponsorship_count > 0)) = (p_sponsored = 'yes'))), false) then 'sponsored' end,
         case when not coalesce((p_recent is null or c.last_sponsorship_at >= current_date - p_recent or (coalesce(p_detected, false) and c.last_detected_sponsorship_at >= current_date - p_recent)), false) then 'recent' end,
         case when not coalesce((coalesce(cardinality(p_by), 0) = 0 or exists (select 1 from public.sponsorships s where s.creator_id = c.id and s.brand_id = any (p_by) and not s.rejected and (s.source_label = 'confirmed' or coalesce(p_detected, false)))), false) then 'by' end,
         case when not coalesce((coalesce(cardinality(p_niche), 0) = 0 or c.niche_slug = any (p_niche)), false) then 'niche' end,
-        case when not coalesce((coalesce(cardinality(p_status), 0) = 0 or c.status = any (p_status::public.creator_status[])), false) then 'status' end,
+        case when not coalesce((coalesce(cardinality(p_status), 0) = 0 or c.status = any (a.st)), false) then 'status' end,
         case when not coalesce((p_contacted is null or public.contacted_matches(p_contacted, lc)), false) then 'contacted' end,
         case when not coalesce((p_views is null or c.avg_views >= p_views), false) then 'views' end,
         case when not coalesce((coalesce(cardinality(p_lang), 0) = 0 or c.language = any (p_lang)), false) then 'lang' end,
@@ -155,8 +181,10 @@ language sql stable security invoker set search_path = public, extensions, pg_te
         case when not coalesce((coalesce(cardinality(p_tag), 0) = 0 or exists (select 1 from public.creator_tags t where t.creator_id = c.id and t.tag_id = any (p_tag))), false) then 'tag' end,
         case when not coalesce((coalesce(cardinality(p_list), 0) = 0 or exists (select 1 from public.list_items li where li.creator_id = c.id and li.list_id = any (p_list))), false) then 'list' end
            ], null) as failed
-      from public.creators c
-     cross join lateral (select public.creator_contacted_at(c.id, c.last_contacted_at) as lc) x
+      from public.creators c cross join a
+      left join (select m.creator_id, max(m.sent_at) as last_sent from public.emails m
+                  where m.status in ('sent', 'replied') and not m.is_test group by m.creator_id) e on e.creator_id = c.id
+     cross join lateral (select greatest(c.last_contacted_at, e.last_sent) as lc) x
   )
   select '_total', 'all', count(*) filter (where b.failed = '{}') from b
   union all select '_all', 'all', count(*) from b
@@ -228,7 +256,7 @@ create or replace function public.creators_export(
   full_name text, email text, phone text, channel_url text, niche text, niche_slug text, country text, language text,
   subscribers integer, avg_views integer, status text, notes text
 )
-language sql stable security invoker set search_path = public, extensions, pg_temp as $$
+language sql stable security invoker set search_path = public, extensions, pg_temp set jit = off as $$
   select c.full_name, c.email::text, c.phone, c.channel_url, c.niche, c.niche_slug, c.country, c.language,
          c.subscribers, c.avg_views, c.status::text, c.notes
     from public.creators c

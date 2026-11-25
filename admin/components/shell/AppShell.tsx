@@ -10,6 +10,7 @@ export function AppShell({ staff, children }: { staff: Staff; children: React.Re
   const items = [
     { href: '/overview', label: 'Overview' },
     { href: '/creators', label: 'Creators' },
+    { href: '/sponsors', label: 'Sponsors' },
     { href: '/deals', label: 'Deals' },
     { href: '/emails', label: 'Emails' },
     { href: '/inbox', label: 'Inbox' },

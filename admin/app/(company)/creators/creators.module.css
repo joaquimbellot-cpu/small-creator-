@@ -43,3 +43,6 @@
 .small { font-size: .9375rem; }
 .cardMeta { color: var(--fg-muted); font-size: .9375rem; margin: 0 0 var(--s-3); overflow-wrap: anywhere; }
 .statusPickRow { display: inline-flex; gap: var(--s-2); align-items: center; flex-wrap: wrap; }
+.nameCol { min-width: 11rem; }
+.midCol { min-width: 9.5rem; }
+.nowrap { white-space: nowrap; }

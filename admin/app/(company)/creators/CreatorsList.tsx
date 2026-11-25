@@ -10,7 +10,7 @@ import {
 import { MAX_BULK_IDS, PAGE_SIZE, type ListRow } from '@/lib/creators/constants';
 import { creatorFilterDefs, parseFilters } from '@/lib/creators/filters';
 import { chipsFromParams, removeChip, clearFilters } from '@/lib/lists/query';
-import { useListNav } from '@/lib/lists/useListNav';
+import { useListNav, type ListNav } from '@/lib/lists/useListNav';
 import { BulkBar } from './BulkBar';
 import { CreatorsFilters, type Named, type OptionNames } from './CreatorsFilters';
 import { CreatorsCards, CreatorsRows } from './CreatorsTable';
@@ -25,7 +25,17 @@ export function CreatorsList({ rows, total, all, counts, names, savedViews, staf
   names: OptionNames; savedViews: SavedView[]; staffId: string; youtubeEnabled: boolean;
   relax: RelaxOption[]; panel: ReactNode; panelFor: string; openName: string; failed: boolean;
 }) {
-  const nav = useListNav();
+  const rawNav = useListNav();
+  // A filter, sort or page change closes the side panel, so the same open profile is not rendered (and audited) again.
+  // Only opening, closing and Previous / Next (below) use rawNav.
+  const nav = useMemo<ListNav>(() => ({
+    ...rawNav,
+    set: (k, v) => { rawNav.set(k, v); if (k !== 'open') rawNav.clear(['open']); },
+    toggle: (k, v) => { rawNav.toggle(k, v); rawNav.clear(['open']); },
+    setMany: (v) => rawNav.setMany('open' in v ? v : { ...v, open: null }),
+    clear: (keys) => rawNav.clear([...keys, 'open']),
+    replaceAll: (next) => { const p = new URLSearchParams(next); p.delete('open'); rawNav.replaceAll(p); },
+  }), [rawNav]);
   const router = useRouter();
   const toast = useToast();
   // The address as the controls see it (it already holds changes the server has not answered yet).
@@ -76,8 +86,8 @@ export function CreatorsList({ rows, total, all, counts, names, savedViews, staf
 
   // ---- opening a creator in the side panel (the page number stays, so Previous and Next work on this page)
   const hrefFor = (id: string) => { const p = new URLSearchParams(nav.params); p.set('open', id); return `?${p.toString()}`; };
-  const open = (id: string) => nav.setMany({ open: id, page: nav.get('page') });
-  const close = () => nav.setMany({ open: null, page: nav.get('page') });
+  const open = (id: string) => rawNav.setMany({ open: id, page: rawNav.get('page') });
+  const close = () => rawNav.setMany({ open: null, page: rawNav.get('page') });
   const openId = f.open;
   const index = rows.findIndex((r) => r.id === openId);
   const label = rows[index]?.full_name ?? (panelFor === openId ? openName : '') ?? '';
@@ -120,23 +130,20 @@ export function CreatorsList({ rows, total, all, counts, names, savedViews, staf
           ) : rows.length === 0 ? (
             <EmptyState
               title={hasFilters ? 'No creators match all of these filters' : 'No creators yet'}
-              action={hasFilters ? undefined : <LinkButton href="/creators?new=1">Add the first creator</LinkButton>}
+              action={hasFilters ? (
+                <div className={s.relax}>
+                  {relax.map((x) => (
+                    <Button key={x.id} variant="ghost" size="sm" onClick={() => nav.replaceAll(new URLSearchParams(x.query))}>Remove “{x.label}” ({x.n})</Button>
+                  ))}
+                  <Button size="sm" onClick={clearAll}>Clear all filters</Button>
+                </div>
+              ) : <LinkButton href="/creators?new=1">Add the first creator</LinkButton>}
             >
-              {hasFilters ? (
-                <>
-                  {relax.length ? 'Removing one filter brings results back:' : 'Try clearing the filters.'}
-                  <div className={s.relax}>
-                    {relax.map((x) => (
-                      <Button key={x.id} variant="ghost" size="sm" onClick={() => nav.replaceAll(new URLSearchParams(x.query))}>Remove “{x.label}” ({x.n})</Button>
-                    ))}
-                    <Button size="sm" onClick={clearAll}>Clear all filters</Button>
-                  </div>
-                </>
-              ) : 'Add one by hand or import a CSV file.'}
+              {hasFilters ? (relax.length ? 'Removing one filter brings results back:' : 'Try clearing the filters.') : 'Add one by hand or import a CSV file.'}
             </EmptyState>
           ) : f.view === 'cards' ? <CreatorsCards {...rowProps} /> : <CreatorsRows {...rowProps} />}
           {failed ? null : (
-            <Pagination page={f.page} pageSize={PAGE_SIZE} total={total} hrefFor={(p) => { const q = new URLSearchParams(nav.params); if (p > 1) q.set('page', String(p)); else q.delete('page'); const t = q.toString(); return t ? `?${t}` : '?'; }} />
+            <Pagination page={f.page} pageSize={PAGE_SIZE} total={total} hrefFor={(p) => { const q = new URLSearchParams(nav.params); q.delete('open'); if (p > 1) q.set('page', String(p)); else q.delete('page'); const t = q.toString(); return t ? `?${t}` : '?'; }} />
           )}
         </div>
       </div>

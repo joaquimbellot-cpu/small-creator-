@@ -1,4 +1,5 @@
 // Browser test for /creators (fake data only). Run: node lib/creators/e2e.cjs
+// Updated for the filter-rail list (side panel, live filters, address keys); see docs/ui-upgrade/build/creators-list.md for what changed.
 // Needs the local stack + dev server. Creates "ZZ Test ..." records and removes them at the end.
 const { chromium } = require('playwright');
 const { execSync } = require('node:child_process');
@@ -35,13 +36,13 @@ const rowsCount = (page) => page.locator('table tbody tr').count();
     const total = Number(sql('select count(*) from creator_summaries'));
     await page.goto(BASE + '/creators');
     ok((await rowsCount(page)) === 25, 'page 1 has 25 rows');
-    ok((await page.textContent('.page-lead')).includes(`${total} in total`), `shows total ${total}`);
+    ok((await page.locator('.list-count').textContent()).trim() === `${total} creators`, `shows total ${total}`);
     ok(await page.getByText(`1–25 of ${total}`).isVisible(), 'pager text');
     await page.getByRole('link', { name: 'Next' }).click();
     await page.waitForURL(/page=2/);
     ok((await rowsCount(page)) === Math.min(25, total - 25), 'page 2 rows');
     // sort by subscribers desc
-    await page.goto(BASE + '/creators?sort=subscribers&dir=desc');
+    await page.goto(BASE + '/creators');  // default sort is subscribers, high to low
     const topSubs = sql("select subscribers from creator_summaries order by subscribers desc nulls last, full_name, id limit 1");
     const firstName = await page.locator('table tbody tr').first().locator('a').first().textContent();
     const dbFirst = sql("select full_name from creator_summaries order by subscribers desc nulls last, full_name, id limit 1");
@@ -53,34 +54,34 @@ const rowsCount = (page) => page.locator('table tbody tr').count();
     ok((await rowsCount(page)) > 0, 'sort last contacted works');
     // status filter
     await page.goto(BASE + '/creators');
-    await page.selectOption('select[name=status]', 'do_not_contact');
-    await page.click('button:has-text("Apply")');
+    await page.getByRole('group', { name: 'Pipeline status' }).getByLabel(/Do not contact/).check();   // live: no Apply button
     await page.waitForURL(/status=do_not_contact/);
+    await page.waitForFunction(() => !document.querySelector('.list-results[aria-busy=true]'));
     ok((await rowsCount(page)) === Number(sql("select count(*) from creators where status='do_not_contact'")), 'status filter count matches db');
     // search
     const sample = sql("select full_name from creators order by full_name limit 1 offset 7");
     const term = sample.split(' ')[0];
     await page.goto(BASE + '/creators?q=' + encodeURIComponent(term));
     const expected = Number(sql(`select count(*) from creators where full_name ilike '%${term}%' or email ilike '%${term}%' or channel_name ilike '%${term}%'`));
-    ok(expected > 0 && (await page.textContent('.page-lead')).includes(`${expected} matching`), `search "${term}" -> ${expected}`);
+    ok(expected > 0 && (await page.locator('.list-count').textContent()).startsWith(`${expected} of ${total}`), `search "${term}" -> ${expected}`);
     for (const nasty of ['a,b)(', '%', '_', '"', '\\\\', '*', 'x.eq.1,id.neq.0', '))((,,']) {
       const r = await page.goto(BASE + '/creators?q=' + encodeURIComponent(nasty));
       ok(r.status() === 200 && !(await page.content()).includes('Something went wrong'), `search with ${JSON.stringify(nasty)} does not break`);
     }
     await page.goto(BASE + '/creators?q=' + encodeURIComponent('%'));
-    ok((await page.textContent('.page-lead')).includes('0 matching'), '"%" is literal (matches none)');
+    ok((await page.locator('.list-count').textContent()).startsWith(`0 of ${total}`), '"%" is literal (matches none)');
 
-    console.log('pop-up content');
+    console.log('side panel content (the profile itself is built by the Creator profile agent)');
     const wren = sql("select id, full_name, email, deal_count, total_earned_cents from creator_summaries where total_earned_cents > 0 order by total_earned_cents desc limit 1").split('|');
     const [wid, wname, wemail, wdeals, wearn] = wren;
     const auditBefore = Number(sql(`select count(*) from audit_log where action='creator.viewed' and entity_id='${wid}'`));
     await page.goto(BASE + '/creators?q=' + encodeURIComponent(wemail));
     await page.locator('table tbody tr').first().locator('td').nth(2).click();
-    await page.waitForURL(/creator=/);
+    await page.waitForURL(/open=/);
     const dlg = page.getByRole('dialog');
     await dlg.getByText(wemail).waitFor();
     const dtext = await dlg.textContent();
-    ok(dtext.includes(wname), 'pop-up shows name');
+    ok(dtext.includes(wname), 'panel shows name');
     ok(dtext.includes('$' + (Number(wearn) / 100).toLocaleString('en-US', { minimumFractionDigits: 2 })), `earned $${Number(wearn) / 100}`);
     ok(new RegExp('Deals' + wdeals).test(dtext.replace(/\s/g, '')), `deals ${wdeals}`);
     const link = dlg.locator('a[target=_blank]').first();
@@ -89,7 +90,7 @@ const rowsCount = (page) => page.locator('table tbody tr').count();
     ok(Number(sql(`select count(*) from audit_log where action='creator.viewed' and entity_id='${wid}'`)) > auditBefore, 'creator.viewed audited');
     await page.goto(BASE + '/creators?creator=' + wid);
     await page.getByRole('dialog').getByText(wemail).waitFor();
-    ok(true, 'deep link ?creator= opens pop-up');
+    ok(true, 'old deep link ?creator= opens the panel');
     ok(await page.getByRole('dialog').getByRole('button', { name: 'Delete' }).isVisible(), 'owner sees Delete');
     // delete refused because of deals
     await page.getByRole('dialog').getByRole('button', { name: 'Delete' }).click();
@@ -101,11 +102,12 @@ const rowsCount = (page) => page.locator('table tbody tr').count();
     await page.getByRole('dialog').getByRole('button', { name: 'Refresh subscribers' }).click();
     ok(await page.getByText('Add a YouTube API key to turn this on').first().isVisible(), 'refresh explains missing key');
     await page.keyboard.press('Escape');
-    await page.waitForURL((u) => !u.search.includes('creator='));
+    await page.waitForURL((u) => !u.search.includes('open='));
 
     console.log('add / edit / delete');
     await page.goto(BASE + '/creators?new=1');
     const d = page.getByRole('dialog');
+    await d.waitFor(); await page.waitForTimeout(1000); // let the page hydrate before clicking
     await d.getByRole('button', { name: 'Add creator' }).click();
     await d.getByText('Name is required.').waitFor();
     ok(true, 'required name error');
@@ -127,6 +129,7 @@ const rowsCount = (page) => page.locator('table tbody tr').count();
     const aid = sql("select id from creators where email='zz.test.alpha@example.test'");
     // duplicate email
     await page.goto(BASE + '/creators?new=1');
+    await d.waitFor(); await page.waitForTimeout(1000);
     await d.locator('input[name=name]').fill('ZZ Test Beta');
     await d.locator('input[name=email]').fill('ZZ.TEST.ALPHA@example.test');
     await d.getByRole('button', { name: 'Add creator' }).click();
@@ -134,11 +137,14 @@ const rowsCount = (page) => page.locator('table tbody tr').count();
     ok(true, 'duplicate email friendly error (case-insensitive)');
     // edit
     await page.goto(BASE + `/creators?creator=${aid}&edit=1`);
-    await d.locator('input[name=niche]').fill('Testing');
+    // The edit form now picks a niche from the fixed list (changed by the Creator profile agent): select[name=niche_slug].
+    await d.locator('select[name=niche_slug]').waitFor();
+    await d.locator('select[name=niche_slug]').selectOption('tech');
     await d.locator('select[name=status]').selectOption('contacted');
     await d.getByRole('button', { name: 'Save changes' }).click();
-    await page.getByRole('dialog').getByText('Testing').waitFor();
-    ok(sql(`select status||'/'||niche from creators where id='${aid}'`) === 'contacted/Testing', 'edit saved');
+    await page.waitForURL(/open=|creator=/);
+    await page.getByRole('dialog').getByText('Tech and gadgets').waitFor();
+    ok(sql(`select status||'/'||niche_slug from creators where id='${aid}'`) === 'contacted/tech', 'edit saved');
     // worker cannot delete
     const wp = w.page;
     await wp.goto(BASE + `/creators?creator=${aid}`);
@@ -152,9 +158,9 @@ const rowsCount = (page) => page.locator('table tbody tr').count();
     ok(Number(sql(`select count(*) from creators where id='${aid}'`)) === 1, 'still there after worker attempt');
     // worker can edit
     await wp.goto(BASE + `/creators?creator=${aid}&edit=1`);
-    await wp.getByRole('dialog').locator('input[name=niche]').fill('Worker edit');
+    await wp.getByRole('dialog').locator('select[name=niche_slug]').selectOption('gaming');
     await wp.getByRole('dialog').getByRole('button', { name: 'Save changes' }).click();
-    await wp.getByRole('dialog').getByText('Worker edit').waitFor();
+    await wp.getByRole('dialog').getByText('Gaming').waitFor();
     ok(true, 'worker can edit');
     // anonymous
     const anon = await browser.newContext();
@@ -194,7 +200,7 @@ const rowsCount = (page) => page.locator('table tbody tr').count();
     await page.goto(BASE + `/creators?creator=${aid}`);
     await page.getByRole('dialog').getByRole('button', { name: 'Delete' }).click();
     await page.getByRole('button', { name: 'Delete creator' }).click();
-    await page.waitForURL((u) => !u.search.includes('creator='));
+    await page.waitForURL((u) => !u.search.includes('creator=') && !u.search.includes('open='));
     ok(Number(sql(`select count(*) from creators where id='${aid}'`)) === 0, 'owner deleted creator');
 
     console.log('CSV import');
@@ -247,7 +253,7 @@ const rowsCount = (page) => page.locator('table tbody tr').count();
     const [dl] = await Promise.all([page.waitForEvent('download'), page.getByRole('link', { name: 'Export CSV' }).click()]);
     const out = fs.readFileSync(await dl.path(), 'utf8');
     const lines = out.trim().split('\r\n');
-    ok(lines[0] === 'name,email,phone,channel_url,niche,subscribers,status,notes', 'export header');
+    ok(lines[0] === 'name,email,phone,channel_url,niche,subscribers,status,notes,niche_category,country,language,average_views', 'export header (new columns at the end)');
     ok(lines.length === 4, 'export has the 3 filtered rows (+header)');
     ok(out.includes("'=ZZ Test Formula"), 'formula cell prefixed with quote');
     ok(Number(sql("select count(*) from audit_log where action='creators.exported'")) === exBefore + 1, 'creators.exported audited');

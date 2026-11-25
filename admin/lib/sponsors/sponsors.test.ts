@@ -96,7 +96,7 @@ describe('filters', () => {
 
   it('makes one chip per value and the detected chip only matters next to its three filters', () => {
     const p = new URLSearchParams(FULL);
-    const chips = chipsFromParams(p, filterDefs((id) => 'Pays fast'));
+    const chips = chipsFromParams(p, filterDefs(() => 'Pays fast'));
     expect(chips.map((c) => c.label)).toEqual(expect.arrayContaining([
       'Search: "kit"', 'Industry: Software', 'Niche: Tech and gadgets', 'Target size: 10k to 50k', 'Budget: $250 to $1,000',
       'Currently active', 'Contact status: In talks', 'Location: United Kingdom', 'Has a contact person', 'Tag: Pays fast',

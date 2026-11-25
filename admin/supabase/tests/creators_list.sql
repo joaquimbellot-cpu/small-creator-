@@ -247,7 +247,7 @@ select tests.check('anon cannot call any of the list functions',
 select tests.check('the functions are security invoker with a fixed search_path, and anon has no execute right',
   (select bool_and(not p.prosecdef and p.proconfig is not null and not has_function_privilege('anon', p.oid, 'execute') and has_function_privilege('authenticated', p.oid, 'execute'))
      from pg_proc p where p.pronamespace = 'public'::regnamespace
-      and p.proname in ('like_pattern', 'creator_contacted_at', 'contacted_matches', 'creators_match_ids', 'creators_list', 'creators_facets', 'creators_export', 'creators_add_to_list', 'creators_add_tag')));
+      and p.proname in ('creator_contacted_at', 'contacted_matches', 'creators_match_ids', 'creators_list', 'creators_facets', 'creators_export', 'creators_add_to_list', 'creators_add_tag')));
 select tests.check('a signed-out request with no staff profile sees no rows',
   (select tests.count_as('00000000-0000-0000-0000-0000000000ff', 'select count(*) from public.creators_match_ids()')) = 0);
 

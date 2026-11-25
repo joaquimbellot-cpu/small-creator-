@@ -38,11 +38,11 @@ export function CreatorsRows({ rows, selected, onToggle, onToggleAll, hrefFor, o
       <thead>
         <tr>
           <th className={s.checkCell}><input type="checkbox" aria-label="Select all on this page" checked={allOn} onChange={(e) => onToggleAll(e.target.checked)} /></th>
-          <th>Name</th>
-          <th>Niche</th>
+          <th className={s.nameCol}>Name</th>
+          <th className={s.midCol}>Niche</th>
           <th className={tableCell.num}>Subscribers</th>
           <th className={tableCell.num}>Average views</th>
-          <th>Sponsorships</th>
+          <th className={s.midCol}>Sponsorships</th>
           <th>Status</th>
           <th>Last contacted</th>
         </tr>
@@ -53,16 +53,16 @@ export function CreatorsRows({ rows, selected, onToggle, onToggleAll, hrefFor, o
           return (
             <tr key={r.id} onClick={(e) => { if (!(e.target as HTMLElement).closest('a,input,button,label')) onOpen(r.id); }}>
               <td className={s.checkCell}><input type="checkbox" aria-label={`Select ${r.full_name}`} checked={selected.has(r.id)} onChange={(e) => onToggle(r.id, e.target.checked)} /></td>
-              <td>{nameLink(r)}<span className={s.subLine}>{channelLine(r)}</span></td>
-              <td>{nicheName(r.niche_slug) ?? <span className={s.none}>Not set</span>}<span className={s.subLine}>{places(r) || 'No country or language'}</span></td>
-              <td className={tableCell.num}>{subs(r)}</td>
+              <td className={s.nameCol}>{nameLink(r)}<span className={s.subLine}>{channelLine(r)}</span></td>
+              <td className={s.midCol}>{nicheName(r.niche_slug) ?? <span className={s.none}>Not set</span>}<span className={s.subLine}>{places(r) || 'No country or language'}</span></td>
+              <td className={`${tableCell.num} ${s.nowrap}`}>{subs(r)}</td>
               <td className={tableCell.num}>{r.avg_views == null ? '—' : formatFull(r.avg_views)}</td>
-              <td>
+              <td className={s.midCol}>
                 {sp.none ? <span className={s.none}>{sp.main}</span> : <>{r.sponsorship_count} confirmed{r.detected_sponsorship_count ? <span className={s.none}> + {r.detected_sponsorship_count} detected</span> : null}</>}
                 {sp.last ? <span className={s.subLine}>{sp.last}</span> : null}
               </td>
-              <td><Badge tone={STATUS_TONE[r.status]}>{STATUS_LABEL[r.status]}</Badge></td>
-              <td>{fmtDay(r.last_contacted_at) ?? <span className={s.none}>Never</span>}</td>
+              <td className={s.nowrap}><Badge tone={STATUS_TONE[r.status]}>{STATUS_LABEL[r.status]}</Badge></td>
+              <td className={s.nowrap}>{fmtDay(r.last_contacted_at) ?? <span className={s.none}>Never</span>}</td>
             </tr>
           );
         })}
