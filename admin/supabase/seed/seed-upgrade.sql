@@ -154,7 +154,7 @@ from (
          (current_date - ((n * 17) % 800 + 3)) as d,
          (n % 20 < 10) as is_conf,
          case when n % 20 < 10 then 'confirmed' else 'detected' end as lbl,
-         case when n % 20 < 10 then case when n % 3 = 0 then 'import' else 'manual' end
+         case when n % 20 < 10 then 'manual'   -- an imported record always starts as detected (review fix SR-05), so confirmed seed rows are hand-entered
               when n % 7 = 0 then 'import' else 'detected' end as org,
          case when n % 20 < 10 then null
               when n % 7 = 0 then 'imported_unverified'
