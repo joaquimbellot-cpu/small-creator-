@@ -1,15 +1,19 @@
 import { notFound, redirect } from 'next/navigation';
 import { z } from 'zod';
-import { Button, EmptyState, Notice, Input, LinkButton, Pagination, Select, buttonClass } from '@/components/ui';
+import { LinkButton, buttonClass } from '@/components/ui';
 import { logAudit } from '@/lib/audit';
 import { requireStaff } from '@/lib/auth/staff';
 import { createClient } from '@/lib/supabase/server';
-import { PAGE_SIZE, STATUSES, STATUS_LABEL, type ListRow } from '@/lib/creators/constants';
-import { filtersToQuery, parseFilters, type Filters, type SortKey } from '@/lib/creators/filters';
-import { applyFilters } from '@/lib/creators/query';
+import { PAGE_SIZE, type ListRow } from '@/lib/creators/constants';
+import { filtersToQuery, parseFilters, type Filters } from '@/lib/creators/filters';
+import { loadFacets, loadOptionNames, loadPage, loadRelax, type Relax } from '@/lib/creators/query';
 import { youtubeEnabled } from '@/lib/youtube';
+import { CreatorProfile } from './profile/CreatorProfile';
 import { CreatorDialog } from './CreatorDialog';
-import { CreatorsTable, type SortCol } from './CreatorsTable';
+import { CreatorsList } from './CreatorsList';
+import { CreatorsSubnav } from './CreatorsSubnav';
+import { languageName, regionName } from './list-format';
+import type { SavedView } from './CreatorsToolbar';
 
 export const metadata = { title: 'Creators' };
 
@@ -22,44 +26,79 @@ export default async function Page({ searchParams }: { searchParams: Promise<SP>
   const f = parseFilters(sp);
   const supabase = await createClient();
 
-  const { data, count, error } = await applyFilters(
-    supabase.from('creator_summaries').select('*', { count: 'exact' }), f,
-  ).range((f.page - 1) * PAGE_SIZE, f.page * PAGE_SIZE - 1);
-  let total = count ?? 0;
-  let loadFailed = !!error;
-  const rows = (data ?? []) as ListRow[];
-
   const link = (over: Partial<Filters> & { creator?: string; edit?: boolean; isNew?: boolean } = {}) => `/creators${filtersToQuery({ ...f, ...over })}`;
 
-  // A page number past the end gives an empty answer (or a range error): count the rows and go to the last page.
-  if (f.page > 1 && (error || rows.length === 0)) {
-    const head = await applyFilters(supabase.from('creator_summaries').select('id', { count: 'exact', head: true }), f);
-    if (head.error) loadFailed = true;
-    else {
-      total = head.count ?? 0;
-      const last = Math.max(1, Math.ceil(total / PAGE_SIZE));
-      if (f.page > last) redirect(link({ page: last }));
-    }
+  // Rows, the counts beside every option, and the names of sponsors, tags and lists: three independent questions.
+  let rows: ListRow[] = [];
+  let total = 0;
+  let all = 0;
+  let counts: Record<string, Record<string, number>> = {};
+  let options = { brands: [], tags: [], lists: [] } as Awaited<ReturnType<typeof loadOptionNames>>;
+  let savedViews: SavedView[] = [];
+  let failed = false;
+  try {
+    const [pageRes, facets, names, views] = await Promise.all([
+      loadPage(supabase, f), loadFacets(supabase, f), loadOptionNames(supabase),
+      supabase.from('saved_views').select('id, owner_id, name, query, is_shared').eq('scope', 'creators').order('name').limit(200),
+    ]);
+    if (views.error) throw views.error;
+    rows = pageRes.rows;
+    total = facets.total;
+    all = facets.all;
+    counts = facets.counts;
+    options = names;
+    savedViews = (views.data ?? []) as SavedView[];
+  } catch (e) {
+    console.error('creators: list failed', (e as { code?: string })?.code ?? e);
+    failed = true;
   }
 
-  const ytOn = youtubeEnabled();
-  const sortCol = (key: SortKey): SortCol => {
-    const active = f.sort === key ? f.dir : false;
-    const dir = f.sort === key ? (f.dir === 'asc' ? 'desc' : 'asc') : key === 'name' ? 'asc' : 'desc';
-    return { href: link({ sort: key, dir, page: 1 }), active };
-  };
-  const sorts = { name: sortCol('name'), subscribers: sortCol('subscribers'), last_contacted: sortCol('last_contacted'), added: sortCol('added') };
+  // A page number past the end gives no rows: go to the last page.
+  if (!failed && f.page > 1 && rows.length === 0 && total > 0) {
+    redirect(link({ page: Math.max(1, Math.ceil(total / PAGE_SIZE)) }));
+  }
 
+  const names = {
+    ...options,
+    langs: Object.fromEntries(Object.keys(counts.lang ?? {}).map((c) => [c, languageName(c)])),
+    countries: Object.fromEntries(Object.keys(counts.country ?? {}).map((c) => [c, regionName(c)])),
+  };
+
+  // Empty result with filters on: which single filter, once removed, brings results back.
+  let relax: Relax[] = [];
+  if (!failed && rows.length === 0 && total === 0) {
+    relax = await loadRelax(supabase, f, {
+      brands: Object.fromEntries(options.brands.map((b) => [b.id, b.name])),
+      tags: Object.fromEntries(options.tags.map((t) => [t.id, t.name])),
+      lists: Object.fromEntries(options.lists.map((l) => [l.id, l.name])),
+      langs: (c) => names.langs[c] ?? c,
+      countries: (c) => names.countries[c] ?? c,
+    }).catch(() => []);
+  }
+
+  // The side panel: the profile is a shared slot (built by the Creator profile agent) and renders its own audit line.
+  let panel: React.ReactNode = null;
+  let openName = '';
+  if (f.open) {
+    const known = rows.find((r) => r.id === f.open);
+    if (known) openName = known.full_name;
+    else {
+      const { data } = await supabase.from('creators').select('full_name').eq('id', f.open).maybeSingle();
+      openName = data?.full_name ?? '';
+    }
+    panel = openName ? <CreatorProfile id={f.open} mode="panel" /> : <p className="muted">This creator no longer exists.</p>;
+  }
+
+  // Add (?new=1) and edit (?creator=<id>&edit=1) keep the dialog; ?creator=<id> alone is an old link and opens the panel.
   const creatorParam = z.guid().safeParse(first(sp.creator));
   const isNew = first(sp.new) === '1';
   const wantsEdit = first(sp.edit) === '1';
   let dialog: React.ReactNode = null;
-  if (isNew || creatorParam.success) {
+  if (isNew || (creatorParam.success && wantsEdit)) {
     let editInitial: Record<string, string> | null = null;
     if (creatorParam.success && wantsEdit && !isNew) {
       const { data: c } = await supabase.from('creators').select('*').eq('id', creatorParam.data).maybeSingle();
       if (!c) notFound();
-      // The pop-up in view mode loads through the API, which logs the view; the edit form reads the record here.
       await logAudit('creator.viewed', 'creator', c.id, { label: c.full_name });
       editInitial = {
         name: c.full_name, email: c.email, phone: c.phone ?? '', channel_url: c.channel_url ?? '', niche: c.niche ?? '',
@@ -69,60 +108,40 @@ export default async function Page({ searchParams }: { searchParams: Promise<SP>
     const id = creatorParam.success ? creatorParam.data : undefined;
     dialog = (
       <CreatorDialog
-        key={`${id ?? 'new'}-${isNew ? 'new' : wantsEdit ? 'edit' : 'view'}`}
-        mode={isNew ? 'new' : wantsEdit ? 'edit' : 'view'}
+        key={`${id ?? 'new'}-${isNew ? 'new' : 'edit'}`}
+        mode={isNew ? 'new' : 'edit'}
         creatorId={isNew ? undefined : id}
         editInitial={editInitial}
         listHref={link()}
-        viewHref={link({ creator: id })}
+        viewHref={link({ open: id })}
         editHref={link({ creator: id, edit: true })}
         back={filtersToQuery(f)}
         isOwner={staff.role === 'owner'}
-        youtubeEnabled={ytOn}
+        youtubeEnabled={youtubeEnabled()}
       />
     );
   }
 
-  const withHref = rows.map((r) => ({ ...r, href: link({ creator: r.id }) }));
-  const exportQs = filtersToQuery({ ...f, page: 1 });
-  const filtered = !!(f.q || f.status);
+  const exportQs = filtersToQuery({ ...f, page: 1, open: '' });
 
   return (
     <>
       <div className="page-head">
         <div>
           <h1 className="page-title">Creators</h1>
-          <p className="page-lead">{total} {filtered ? 'matching' : 'in total'}. Smallfold works with channels of 1,000 to 50,000 subscribers.</p>
+          <p className="page-lead">Find channels by size, niche and what they have done with sponsors before.</p>
         </div>
         <div className="toolbar" style={{ marginBottom: 0 }}>
-          <LinkButton href={link({ isNew: true })}>Add creator</LinkButton>
+          <LinkButton href={link({ isNew: true, open: '' })}>Add creator</LinkButton>
           <LinkButton href="/creators/import" variant="ghost">Import CSV</LinkButton>
           {staff.role === 'owner' ? <a href={`/api/creators/export${exportQs}`} className={buttonClass({ variant: 'ghost' })}>Export CSV</a> : null}
         </div>
       </div>
-
-      <form method="get" action="/creators" className="toolbar" role="search">
-        <Input name="q" label="Search" type="search" placeholder="Name, email or channel" defaultValue={f.q} maxLength={100} />
-        <Select name="status" label="Status" defaultValue={f.status}>
-          <option value="">All statuses</option>
-          {STATUSES.map((s) => <option key={s} value={s}>{STATUS_LABEL[s]}</option>)}
-        </Select>
-        <input type="hidden" name="sort" value={f.sort} />
-        <input type="hidden" name="dir" value={f.dir} />
-        <Button type="submit">Apply</Button>
-        {filtered ? <LinkButton href="/creators" variant="ghost">Clear</LinkButton> : null}
-      </form>
-
-      {loadFailed ? (
-        <Notice tone="error">Could not load the creators. Refresh to try again.</Notice>
-      ) : rows.length === 0 ? (
-        <EmptyState title={filtered ? 'No creators match' : 'No creators yet'} action={filtered ? <LinkButton href="/creators" variant="ghost">Clear filters</LinkButton> : <LinkButton href={link({ isNew: true })}>Add the first creator</LinkButton>}>
-          {filtered ? 'Try a different search or status.' : 'Add one by hand or import a CSV file.'}
-        </EmptyState>
-      ) : (
-        <CreatorsTable rows={withHref} sorts={sorts} youtubeEnabled={ytOn} />
-      )}
-      {loadFailed ? null : <Pagination page={f.page} pageSize={PAGE_SIZE} total={total} hrefFor={(p) => link({ page: p })} />}
+      <CreatorsSubnav />
+      <CreatorsList
+        rows={rows} total={total} all={all} counts={counts} names={names} savedViews={savedViews} staffId={staff.id}
+        youtubeEnabled={youtubeEnabled()} relax={relax} panel={panel} panelFor={f.open} openName={openName} failed={failed}
+      />
       {dialog}
     </>
   );

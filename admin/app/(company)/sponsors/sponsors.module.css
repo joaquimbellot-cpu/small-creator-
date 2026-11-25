@@ -1,0 +1,42 @@
+/* Sponsors: table, cards, profile and dialogs. Tokens come from app/tokens.css; the list layout classes are global (list-*). */
+.checkCell { width: 44px; }
+.checkCell input { width: 20px; height: 20px; accent-color: var(--accent-fg); cursor: pointer; }
+.nameLink { color: inherit; font-weight: 600; text-decoration: none; overflow-wrap: anywhere; }
+.nameLink:hover { text-decoration: underline; }
+.sub { display: block; color: var(--fg-muted); font-size: .8125rem; }
+.nowrap { white-space: nowrap; }
+.nameCell { min-width: 10.5rem; }
+.spCell { min-width: 9.5rem; }
+.muted { color: var(--fg-muted); }
+.small { font-size: .875rem; }
+.rowClick tbody tr { cursor: pointer; }
+.cardTop { display: flex; justify-content: space-between; align-items: center; gap: var(--s-2); }
+.linkBtn { background: none; border: 0; padding: 0; color: var(--fg); text-decoration: underline; cursor: pointer; font: inherit; text-align: left; }
+.linkBtn:hover { color: var(--accent-fg); }
+.bulkTag { display: flex; gap: var(--s-2); align-items: center; flex-wrap: wrap; }
+.bulkTag input { min-height: 36px; width: 12rem; max-width: 100%; padding: 0 var(--s-3); background: var(--surface); color: var(--fg); border: var(--hairline) solid var(--fg-muted); border-radius: var(--r); font: inherit; }
+.popBody { display: grid; gap: var(--s-2); min-width: min(86vw, 300px); }
+.viewRow { display: flex; align-items: center; gap: var(--s-2); }
+.viewRow > :first-child { flex: 1; min-width: 0; }
+.nameInput { width: 100%; min-height: 40px; padding: 0 var(--s-3); background: var(--surface); color: var(--fg); border: var(--hairline) solid var(--fg-muted); border-radius: var(--r); font: inherit; }
+.actions { display: flex; gap: var(--s-2); flex-wrap: wrap; align-items: center; }
+.formGrid { display: grid; gap: var(--s-3); }
+.two { display: grid; gap: var(--s-3); grid-template-columns: minmax(0, 1fr); }
+@media (min-width: 640px) { .two { grid-template-columns: 1fr 1fr; } }
+.nicheBox { border: var(--hairline) solid var(--rule); border-radius: var(--r); padding: var(--s-2) var(--s-3); margin: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(12rem, 1fr)); gap: 0 var(--s-3); }
+.nicheBox legend { padding: 0 var(--s-1); font-size: var(--t-label); text-transform: uppercase; letter-spacing: var(--track-label); color: var(--fg-muted); }
+.stack { display: grid; gap: var(--s-3); margin-bottom: var(--s-4); }
+.tags { display: flex; gap: var(--s-2); flex-wrap: wrap; align-items: center; margin-bottom: var(--s-2); }
+.lead { color: var(--fg-muted); margin: var(--s-1) 0 0; overflow-wrap: anywhere; }
+.pgrid { display: grid; gap: 0 var(--s-8); }
+@media (min-width: 1000px) { .pgrid { grid-template-columns: minmax(0, 3fr) minmax(0, 2fr); } }
+.pgrid > * { min-width: 0; }
+.personRow { display: grid; gap: var(--s-1); padding: var(--s-3) 0; border-bottom: var(--hairline) solid var(--rule); font-size: .9375rem; }
+.personTop { display: flex; justify-content: space-between; gap: var(--s-3); flex-wrap: wrap; align-items: baseline; }
+.personMeta { color: var(--fg-muted); overflow-wrap: anywhere; }
+.personActions { display: flex; gap: var(--s-2); flex-wrap: wrap; margin-top: var(--s-1); }
+.dealRow { display: flex; justify-content: space-between; gap: var(--s-3); flex-wrap: wrap; padding: 10px 0; border-bottom: var(--hairline) solid var(--rule); font-size: .9375rem; }
+.cols { width: 100%; border-collapse: collapse; margin: var(--s-2) 0 var(--s-4); font-size: .9375rem; }
+.cols td, .cols th { text-align: left; padding: var(--s-2) var(--s-3) var(--s-2) 0; border-bottom: var(--hairline) solid var(--rule); vertical-align: top; }
+.fileRow { display: flex; gap: var(--s-3); align-items: center; flex-wrap: wrap; }
+.back { display: inline-block; margin-bottom: var(--s-4); }

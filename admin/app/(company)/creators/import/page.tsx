@@ -14,6 +14,12 @@ const DOCS: [string, string][] = [
   ['subscribers', 'Optional. A whole number from 0 to 100,000,000.'],
   ['status', 'Optional. new, contacted, replied, active, inactive or do_not_contact (shown as "Do not contact" on screen). Empty means new.'],
   ['notes', 'Optional. Up to 2000 characters.'],
+  ['niche_slug', 'Optional. One of: tech, gaming, diy, cooking, fitness, finance, travel, education, beauty, music, photo, outdoors. Any other value marks the row as an error.'],
+  ['country', 'Optional. A 2-letter code such as US or GB.'],
+  ['language', 'Optional. A code such as en, es or pt-BR.'],
+  ['avg_views', 'Optional. Average views per video, a whole number.'],
+  ['engagement_rate', 'Optional. A percentage from 0 to 100, for example 4.5.'],
+  ['audience_countries', 'Optional. Free text such as "US 40%, UK 15%, AU 10%", up to 500 characters.'],
 ];
 
 export default async function Page() {
@@ -31,7 +37,7 @@ export default async function Page() {
         <ImportClient />
         <section className="tile" aria-labelledby="cols">
           <h2 id="cols" style={{ fontSize: '1.25rem', marginTop: 0 }}>Columns</h2>
-          <p className="muted" style={{ marginTop: 0 }}>The first row must be a header with these names, in any order, in capitals or small letters. Only name and email are required. Rows with the same email or channel as an existing creator (or an earlier row) are skipped as duplicates.</p>
+          <p className="muted" style={{ marginTop: 0 }}>The first row must be a header with these names, in any order, in capitals or small letters. Only name and email are required; files without the optional columns import as before. Rows with the same email or channel as an existing creator (or an earlier row) are skipped as duplicates.</p>
           <table className={s.cols}>
             <tbody>{DOCS.map(([c, d]) => <tr key={c}><th scope="row"><code>{c}</code></th><td>{d}</td></tr>)}</tbody>
           </table>

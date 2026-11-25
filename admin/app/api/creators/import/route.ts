@@ -71,7 +71,9 @@ export const POST = apiHandler({}, async ({ req, supabase }) => {
   };
   if (mode === 'preview') return { counts, rows: rows.map(({ data: _d, ...r }) => r) };
 
-  const toInsert = rows.filter((r) => r.data).map((r) => r.data!);
+  // avg_views from a file counts as checked now; files without the new columns insert exactly the same columns as before plus empty ones.
+  const checkedAt = new Date().toISOString();
+  const toInsert = rows.filter((r) => r.data).map((r) => ({ ...r.data!, ...(r.data!.avg_views != null ? { avg_views_checked_at: checkedAt } : {}) }));
   let imported = 0;
   let skipped = 0;
   let stopped: string | null = null;

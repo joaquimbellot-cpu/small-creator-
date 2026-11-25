@@ -5,10 +5,12 @@ import { validateCreator, type CreatorInput, type CreatorField } from './schema'
 import { channelKey } from '../youtube/channel';
 
 export const CSV_COLUMNS = ['name', 'email', 'phone', 'channel_url', 'niche', 'subscribers', 'status', 'notes'] as const;
+// The export keeps the 8 columns above (so old files round-trip). The import also reads these six, all optional.
+export const NEW_IMPORT_COLUMNS = ['niche_slug', 'country', 'language', 'avg_views', 'engagement_rate', 'audience_countries'] as const;
 export const SAMPLE_CSV = [
-  CSV_COLUMNS.join(','),
-  'ZZ Sample Maya,maya.sample@example.test,+1 555 0100,https://www.youtube.com/@mayasample,Cooking,12500,new,Met at a meetup',
-  'ZZ Sample Leo,leo.sample@example.test,,https://www.youtube.com/channel/UCabcdefghijklmnopqrstuv,Woodworking,,contacted,',
+  [...CSV_COLUMNS, ...NEW_IMPORT_COLUMNS].join(','),
+  'ZZ Sample Maya,maya.sample@example.test,+1 555 0100,https://www.youtube.com/@mayasample,Cooking,12500,new,Met at a meetup,cooking,US,en,8200,4.5,"US 40%, UK 15%, AU 10%"',
+  'ZZ Sample Leo,leo.sample@example.test,,https://www.youtube.com/channel/UCabcdefghijklmnopqrstuv,Woodworking,,contacted,,diy,GB,en,,,',
   '',
 ].join('\r\n');
 
