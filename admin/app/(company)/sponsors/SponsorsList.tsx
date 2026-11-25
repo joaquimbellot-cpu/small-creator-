@@ -17,6 +17,8 @@ import {
 import { detectedMatters, filterDefs, filtersToParams, parseFilters } from '@/lib/sponsors/filters';
 import { formatBudget, formatDate, formatTarget, nicheNames, placeText, relativeDays, sponsoredText } from '@/lib/sponsors/format';
 import type { SavedView, Tag } from '@/lib/sponsors/queries';
+import { ForPicker } from '@/components/matching/ForPicker';
+import { MatchCell } from '@/components/matching/MatchCell';
 import { addTagToSponsors } from './actions';
 import { SavedViews } from './SavedViews';
 import { SponsorDialog } from './SponsorDialog';
@@ -63,15 +65,14 @@ export function SponsorsList({ rows, total, all, page, counts, industries, count
   );
   const clearAll = () => nav.replaceAll(clearFilters(nav.params, defs));
   const view = f.view;
-  const sortValue = f.sort;
+  // Best match is chosen first and the creator second, so the address may say sort=match with no `for` yet (the server then sorts by name).
+  const sortValue = nav.get('sort') === 'match' ? 'match' : f.sort;
+  const showMatch = rows.some((r) => r.match);
 
   const opt = (facet: string, value: string, label: string) => ({ value, label, count: counts[facet]?.[value] ?? 0 });
   const countOf = (facet: string, value: string) => counts[facet]?.[value] ?? 0;
 
-  const sorts = [
-    ...SORT_OPTIONS.map((o) => ({ value: o.value as string, label: `Sort: ${o.label}` })),
-    ...(sortValue === 'match' ? [{ value: 'match', label: 'Sort: Best match for a creator' }] : []),
-  ];
+  const sorts = SORT_OPTIONS.map((o) => ({ value: o.value as string, label: `Sort: ${o.label}` }));
 
   const idx = openId ? rows.findIndex((r) => r.id === openId) : -1;
   const openRow = idx >= 0 ? rows[idx] : null;
@@ -176,7 +177,8 @@ export function SponsorsList({ rows, total, all, page, counts, industries, count
         <div className="list-tools">
           <FilterRailButton count={chips.length} />
           <div className="list-count" role="status" aria-live="polite">{loadFailed ? 'Sponsors' : countText}</div>
-          <CompactSelect label="Sort by" value={sortValue} onChange={(v) => nav.set('sort', v === 'name' ? null : v)} options={sorts} />
+          <CompactSelect label="Sort by" value={sortValue} onChange={(v) => nav.setMany({ sort: v === 'name' ? null : v, for: v === 'match' ? nav.get('for') : null })} options={sorts} />
+          {sortValue === 'match' ? <ForPicker kind="creator" valueId={nav.get('for')} onChange={(id) => nav.set('for', id)} /> : null}
           <Segmented inline label="View" options={TABLE_CARDS} value={view} name="view" onChange={(v) => nav.set('view', v === 'table' ? null : v)} />
           <SavedViews views={views} params={nav.params} onApply={applyView} />
         </div>
@@ -235,6 +237,7 @@ export function SponsorsList({ rows, total, all, page, counts, industries, count
                   <KeyValue label="Target size">{formatTarget(r.target_min_subs, r.target_max_subs)}</KeyValue>
                   <KeyValue label="Budget">{formatBudget(r.budget_min_cents, r.budget_max_cents)}</KeyValue>
                   <KeyValue label="Creators sponsored">{sponsoredText(r).none ? 'None found' : `${r.sponsorship_count} confirmed`}</KeyValue>
+                  {r.match ? <div className={cardRaiseClass}><MatchCell match={r.match} /></div> : null}
                 </Card>
               ))}
             </CardGrid>
@@ -243,7 +246,7 @@ export function SponsorsList({ rows, total, all, page, counts, industries, count
               <thead>
                 <tr>
                   <th className={s.checkCell}><input type="checkbox" checked={allOnPage} onChange={() => setSel(allOnPage ? new Set() : new Set(rows.map((r) => r.id)))} aria-label="Select all on this page" /></th>
-                  <th>Sponsor</th><th>Niches</th><th className={tableCell.num}>Target size</th><th className={tableCell.num}>Budget per creator</th>
+                  <th>Sponsor</th>{showMatch ? <th>Match</th> : null}<th>Niches</th><th className={tableCell.num}>Target size</th><th className={tableCell.num}>Budget per creator</th>
                   <th>Creators sponsored</th><th>Contact status</th><th>Last contacted</th>
                 </tr>
               </thead>
@@ -252,6 +255,7 @@ export function SponsorsList({ rows, total, all, page, counts, industries, count
                   <tr key={r.id} onClick={(e) => { if ((e.target as HTMLElement).closest('a,button,input,label')) return; open(r.id); }}>
                     <td className={s.checkCell}><input type="checkbox" checked={sel.has(r.id)} onChange={() => toggle(r.id)} aria-label={`Select ${r.name}`} /></td>
                     <td className={s.nameCell}>{nameLink(r)}<span className={s.sub}>{placeText(r.industry, r.country)}</span></td>
+                    {showMatch ? <td>{r.match ? <MatchCell match={r.match} /> : null}</td> : null}
                     <td>{niches(r)}</td>
                     <td className={`${tableCell.num} ${s.nowrap}`}>{formatTarget(r.target_min_subs, r.target_max_subs)}</td>
                     <td className={`${tableCell.num} ${s.nowrap}`}>{formatBudget(r.budget_min_cents, r.budget_max_cents)}</td>

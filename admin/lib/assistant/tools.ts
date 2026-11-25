@@ -76,7 +76,7 @@ export const TOOLS: BetaTool[] = [
     limit: int('How many to return, 1 to 25. Default 10.'),
   })),
   tool('get_creator', 'One creator by id.', obj({ creator_id: str('The creator id (a UUID from search_creators).') }, ['creator_id'])),
-  tool('list_deals', 'Deals with creator name, brand, stage and amount in cents. Newest first.', obj({
+  tool('list_deals', 'Deals with creator name, brand, stage and amount in cents (null when the amount is not set yet). Newest first.', obj({
     creator_id: str('Only deals of this creator.'),
     stage: { type: 'string', enum: [...STAGES], description: 'Only deals in this stage.' },
     limit: int('How many to return, 1 to 50. Default 20.'),
@@ -162,7 +162,7 @@ const getCreator: Handler = async (input, { supabase, seen }) => {
   return data ? ok(creatorForClaude(data as CreatorRow)) : fail('No creator with that id.');
 };
 
-type DealRow = { id: string; stage: string; amount_cents: number; created_at: string; stage_changed_at: string; creators: { id: string; full_name: string } | null; brands: { name: string } | null };
+type DealRow = { id: string; stage: string; amount_cents: number | null; created_at: string; stage_changed_at: string; creators: { id: string; full_name: string } | null; brands: { name: string } | null };
 const listDeals: Handler = async (input, { supabase, seen }) => {
   const p = z.object({ creator_id: id.optional(), stage: z.enum(STAGES).optional(), limit: z.number().optional() }).safeParse(input);
   if (!p.success) return fail('Invalid input.');

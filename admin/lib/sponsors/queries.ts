@@ -3,6 +3,7 @@
 import 'server-only';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { filtersToRpc, type Filters } from './filters';
+import { parseMatchRows } from '../matching';
 import { PAGE_SIZE, type FacetCounts, type SponsorRow } from './constants';
 
 type Db = SupabaseClient;
@@ -14,8 +15,19 @@ export async function loadList(db: Db, f: Filters, page = f.page): Promise<ListR
     p: filtersToRpc(f), p_sort: f.sort, p_dir: f.dir, p_for: f.for, p_limit: PAGE_SIZE, p_offset: (page - 1) * PAGE_SIZE,
   });
   if (error) throw error;
-  const rows = (data ?? []) as (SponsorRow & { total: number })[];
-  return { rows: rows.map(({ total: _t, ...r }) => r), total: rows.length ? Number(rows[0].total) : 0 };
+  const all = (data ?? []) as (SponsorRow & { total: number })[];
+  const rows = all.map(({ total: _t, ...r }) => r as SponsorRow);
+  if (f.sort === 'match' && f.for && rows.length) {
+    // The score and reasons of the visible page only (the ranking itself was done in the database).
+    const { data: sc, error: scError } = await db.rpc('match_for_creator', { p_creator: f.for, p_ids: rows.map((r) => r.id) });
+    if (scError) throw scError;
+    const byId = new Map(parseMatchRows(sc).map((m) => [m.otherId, m]));
+    for (const r of rows) {
+      const m = byId.get(r.id);
+      if (m) r.match = { total: m.total, reasons: m.reasons, blocked: m.blocked };
+    }
+  }
+  return { rows, total: all.length ? Number(all[0].total) : 0 };
 }
 
 export async function countSponsors(db: Db, f: Filters): Promise<number> {

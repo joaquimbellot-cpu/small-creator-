@@ -43,11 +43,11 @@ export const LAST_OPTIONS = [{ value: '30', label: 'Last 30 days' }, { value: '9
 
 export const SORT_KEYS = ['name', 'count', 'last', 'budget', 'match'] as const;
 export type SortKey = (typeof SORT_KEYS)[number];
-// "Best match for a creator" (sort=match&for=<creator id>) is parsed and passed to the database already; the
-// Matching agent adds the option to this list (and the "For" creator picker) in wave 3.
-export const SORT_OPTIONS: { value: Exclude<SortKey, 'match'>; label: string }[] = [
+// "Best match for a creator" is sort=match&for=<creator id>; the list shows a "For" creator picker beside it.
+export const SORT_OPTIONS: { value: SortKey; label: string }[] = [
   { value: 'name', label: 'Name, A to Z' }, { value: 'count', label: 'Most creators sponsored' },
   { value: 'last', label: 'Most recent sponsorship' }, { value: 'budget', label: 'Budget, high to low' },
+  { value: 'match', label: 'Best match for a creator' },
 ];
 
 // Two-letter codes offered in the forms. Names come from Intl.DisplayNames (same on server and browser).
@@ -74,6 +74,8 @@ export type SponsorRow = {
   budget_min_cents: number | null; budget_max_cents: number | null; last_contacted_at: string | null;
   sponsorship_count: number; detected_sponsorship_count: number; last_sponsorship_at: string | null; last_detected_sponsorship_at: string | null;
   contact_count: number; deal_count: number; tag_ids: string[]; tag_names: string[]; eff_count: number; eff_last: string | null;
+  /** Only with sort=match&for=<creator id>: the score of this sponsor for that creator, with its reasons. */
+  match?: { total: number; reasons: { points: number; text: string; unconfirmed: boolean }[]; blocked: string | null };
 };
 
 /** Counts beside the options: facet -> option value -> number of sponsors. */

@@ -221,6 +221,140 @@ async function setSettings(page, { limit, delay, testMode, postal }) {
     await tp.waitForURL('**/emails/templates', { timeout: 8000 }).catch(async () => console.log('template page text:', (await tp.textContent('main')).slice(0, 300)));
     check('template saved, unknown placeholder refused', (await tp.textContent('body')).includes('ZZ Test template'));
 
+
+    // ================= pitch drafts (sponsor + creator), added for the Outreach feature =================
+    // Fake sponsors, contacts and sponsorship records; the app drafts in mock mode here (DRAFT_MODE=mock), so no Claude call is made.
+    const [ownerProfile] = await db('GET', 'profiles', '?email=eq.owner@example.test&select=id');
+    const sp = (name, relationship, extra = {}) => ({ name, relationship, industry: null, target_min_subs: null, target_max_subs: null, ...extra });
+    const [spA, spDnc, spNone, spPast, spDet] = await db('POST', 'brands', '', [
+      sp('ZZ Test Sponsor A', 'prospect', { industry: 'Testing gear', target_min_subs: 1000, target_max_subs: 10000 }),
+      sp('ZZ Test Sponsor Dnc', 'do_not_contact'),
+      sp('ZZ Test Sponsor NoContact', 'prospect'),
+      sp('ZZ Test Past', 'past'),
+      sp('ZZ Test Detected Brand', 'prospect'),
+    ]);
+    await db('POST', 'brand_contacts', '', [
+      { brand_id: spA.id, full_name: 'ZZ Contact One', email: 'zz.contact.one@example.test', is_primary: true },
+      { brand_id: spA.id, full_name: 'ZZ Contact Two', email: 'zz.contact.two@example.test', is_primary: false },
+      { brand_id: spA.id, full_name: 'ZZ Contact Opted', email: 'zz.contact.opted@example.test', is_primary: false },
+      { brand_id: spDnc.id, full_name: 'ZZ Contact Dnc', email: 'zz.contact.dnc@example.test', is_primary: true },
+    ]);
+    await db('POST', 'suppression_list', '', [{ email: 'zz.contact.opted@example.test', reason: 'ZZ Test' }]);
+    const confirmedAt = new Date().toISOString();
+    await db('POST', 'sponsorships', '', [
+      { creator_id: C.Alpha.id, brand_id: spPast.id, sponsored_on: '2026-03-10', source_label: 'confirmed', origin: 'manual', confirmed_by: ownerProfile.id, confirmed_at: confirmedAt, detection_signal: null, detection_confidence: null },
+      { creator_id: C.Alpha.id, brand_id: spDet.id, sponsored_on: '2026-02-01', source_label: 'detected', origin: 'detected', confirmed_by: null, confirmed_at: null, detection_signal: 'zz test', detection_confidence: 'low' },
+      { creator_id: C.Delta.id, brand_id: spA.id, sponsored_on: '2026-04-02', source_label: 'confirmed', origin: 'manual', confirmed_by: ownerProfile.id, confirmed_at: confirmedAt, detection_signal: null, detection_confidence: null },
+    ]);
+    const pitchBase = await mailCount('ZZ Test Sponsor A');
+    const lateBase = await mailCount('ZZ Test late sponsor block');
+    await setSettings(op, { limit: 20, delay: 2, testMode: true, postal: '' });
+    await op.getByText('Saved.').waitFor();
+
+    const openDraftDialog = async (page, sponsor) => {
+      await page.goto(`${SITE}/sponsors/${sponsor.id}`);
+      await page.getByRole('button', { name: 'Draft pitch with Claude' }).first().click();
+      return page.getByRole('dialog');
+    };
+    const pickCreator = async (dlg, name) => {
+      await dlg.getByLabel('Creator', { exact: true }).fill(name);
+      await dlg.getByRole('button', { name: new RegExp(name) }).first().click();
+    };
+    const pitchRows = async (query) => db('GET', 'emails', `${query}&select=id,status,to_email,subject,body,brand_id,recipient_kind,brand_contact_id,pitch_facts,drafted_by,creator_id&order=created_at.desc`);
+
+    // -- to the creator
+    let dlg = await openDraftDialog(op, spA);
+    await pickCreator(dlg, 'ZZ Test Alpha');
+    await dlg.getByRole('button', { name: 'Write the draft' }).click();
+    await dlg.getByText('Facts used').waitFor();
+    let dtxt = await dlg.textContent();
+    check('pitch dialog shows Facts used with the confirmed sponsorship', dtxt.includes('Confirmed sponsorship: ZZ Test Past, Mar 2026'));
+    check('pitch dialog lists the detected record as Left out, not confirmed', dtxt.includes('Detected sponsorship: ZZ Test Detected Brand, Feb 2026 (not confirmed)'));
+    check('pitch dialog says nothing is sent from here', dtxt.includes('Nothing is sent from here. The draft waits in Emails, Review, and only the owner\'s click on Send sends it.'));
+    check('the draft text never names the detected sponsor, nor shows an address', !dtxt.split('Facts used')[0].includes('ZZ Test Detected Brand') && !/@example\.test/.test(dtxt));
+    const toCreator = (await pitchRows(`?creator_id=eq.${C.Alpha.id}&brand_id=eq.${spA.id}&recipient_kind=eq.creator`))[0];
+    check('pitch draft to the creator is saved as a draft with the sponsor attached', !!toCreator && toCreator.status === 'draft' && toCreator.to_email === C.Alpha.email && toCreator.pitch_facts.used.length > 0 && toCreator.pitch_facts.left_out.some((l) => l.includes('not confirmed')));
+    check('the saved draft names the sponsor but not the detected brand', !!toCreator && toCreator.body.includes('ZZ Test Sponsor A') && !toCreator.body.includes('ZZ Test Detected Brand') && !/@/.test(toCreator.body));
+    const aud = (await db('GET', 'audit_log', '?action=eq.email.drafted&order=id.desc&limit=1'))[0];
+    check('the audit line email.drafted has ids only', !!aud && aud.details.pitch === true && aud.details.brand_id === spA.id && !JSON.stringify(aud.details).includes('@'));
+    await dlg.getByRole('button', { name: 'Close' }).last().click();
+
+    // -- it appears in Review with the sponsor, and in the log
+    await op.goto(SITE + '/emails/review');
+    const pcard = op.getByRole('article', { name: 'Email to ZZ Test Alpha' });
+    const ptxt = await pcard.textContent();
+    check('Review shows the sponsor on the pitch draft', ptxt.includes('Pitch: ZZ Test Sponsor A'));
+    check('Review warns that facts added by hand are not checked', ptxt.includes('Facts you add by hand are not checked'));
+    check('Review shows Facts used and Left out', ptxt.includes('Facts used') && ptxt.includes('Left out') && ptxt.includes('Detected sponsorship: ZZ Test Detected Brand'));
+    await op.goto(SITE + '/emails?creator=ZZ%20Test%20Alpha');
+    check('the log shows the sponsor of a pitch draft', (await op.textContent('body')).includes('ZZ Test Sponsor A'));
+    await op.goto(`${SITE}/sponsors/${spA.id}`);
+    check('Outreach history on the sponsor page lists the pitch', (await op.textContent('body')).includes('Outreach history') && (await op.textContent('body')).includes('Draft, not sent'));
+
+    // -- to the sponsor's contact (two contacts: one must be chosen)
+    dlg = await openDraftDialog(op, spA);
+    await pickCreator(dlg, 'ZZ Test Alpha');
+    await dlg.getByLabel("The sponsor's contact").check();
+    check('write is disabled until a contact person is chosen', await dlg.getByRole('button', { name: 'Write the draft' }).isDisabled());
+    await dlg.getByLabel('Contact person').selectOption({ label: 'ZZ Contact Two' });
+    await dlg.getByRole('button', { name: 'Write the draft' }).click();
+    await dlg.getByText('Facts used').waitFor();
+    check('the dialog never shows a contact address', !/@example\.test/.test(await dlg.textContent()));
+    const toContact = (await pitchRows(`?creator_id=eq.${C.Alpha.id}&recipient_kind=eq.brand_contact`))[0];
+    check('pitch draft to the contact is saved: right address, sponsor, contact, still about the creator', !!toContact && toContact.status === 'draft' && toContact.to_email === 'zz.contact.two@example.test' && toContact.brand_id === spA.id && !!toContact.brand_contact_id && toContact.body.startsWith('Hi ZZ,'));
+    check('a pitch to the contact does not mention the creator address', !!toContact && !toContact.body.includes(C.Alpha.email));
+    await dlg.getByRole('button', { name: 'Close' }).last().click();
+
+    // -- refusals in the dialog
+    async function refused(label, sponsor, creatorName, to, text, contactName) {
+      const d = await openDraftDialog(op, sponsor);
+      await pickCreator(d, creatorName);
+      if (to === 'sponsor') await d.getByLabel("The sponsor's contact").check();
+      if (contactName) await d.getByLabel('Contact person').selectOption({ label: contactName });
+      await d.getByText(text).waitFor({ timeout: 8000 }).catch(() => {});
+      const t = await d.textContent();
+      check(`${label}: refused with a plain message`, t.includes(text), t.slice(0, 200));
+      check(`${label}: Write the draft is disabled`, await d.getByRole('button', { name: 'Write the draft' }).isDisabled());
+      await d.getByRole('button', { name: 'Close' }).last().click();
+    }
+    const before = (await pitchRows(`?creator_id=in.(${[C.Beta, C.Gamma, C.Theta, C.Eta].map((c) => c.id).join(',')})`)).length;
+    await refused('a do_not_contact sponsor', spDnc, 'ZZ Test Theta', 'creator', 'ZZ Test Sponsor Dnc is marked Do not contact');
+    await refused('a do_not_contact creator', spA, 'ZZ Test Beta', 'creator', 'ZZ Test Beta is marked Do not contact');
+    await refused('an opted-out creator address', spA, 'ZZ Test Gamma', 'creator', 'ZZ Test Gamma is marked Do not contact');
+    await refused('an opted-out contact address', spA, 'ZZ Test Theta', 'sponsor', 'This address is on the opt-out list', 'ZZ Contact Opted (opted out)');
+    await refused('a sponsor with no contact person', spNone, 'ZZ Test Theta', 'sponsor', 'ZZ Test Sponsor NoContact has no contact person yet');
+    check('no draft was saved by any refusal', (await pitchRows(`?creator_id=in.(${[C.Beta, C.Gamma, C.Theta, C.Eta].map((c) => c.id).join(',')})`)).length === before);
+    // the database refuses too, even if a client skips the dialog (it applies to every caller)
+    await db('PATCH', 'brands', `?id=eq.${spDnc.id}`, { relationship: 'do_not_contact' });
+    let directRefused = false;
+    try { await db('POST', 'emails', '', [{ creator_id: C.Theta.id, to_email: C.Theta.email, subject: 'ZZ Test direct', body: 'x', brand_id: spDnc.id }]); } catch { directRefused = true; }
+    check('the database refuses a draft about a do_not_contact sponsor even for the service role', directRefused);
+
+    // -- approving and sending the contact draft: test mode sends to the test address only
+    await op.goto(SITE + '/emails/review');
+    const kcard = op.getByRole('article', { name: 'Email to ZZ Contact Two about ZZ Test Alpha' });
+    check('Review shows who a contact draft goes to', (await kcard.textContent()).includes('ZZ Contact Two') && (await kcard.textContent()).includes('ZZ Test Sponsor A'));
+    await kcard.getByRole('button', { name: 'Approve' }).click();
+    await kcard.getByText('Approved.').waitFor();
+    check('approving the pitch sends nothing', (await mailCount('ZZ Test Sponsor A')) === pitchBase);
+    await op.waitForTimeout(2500);
+    const sentPitch = await op.request.post(`${SITE}/api/emails/${toContact.id}/send`);
+    check('sending the contact draft works (200)', sentPitch.status() === 200, String(sentPitch.status()));
+    const pm = await mail('ZZ Test Sponsor A');
+    check('the pitch went to the TEST address, never to the contact', !!pm && pm.to === 'owner@example.test' && pm.subject.startsWith('[TEST] ') && !/zz\.contact/.test(JSON.stringify(await (await fetch(`${MAIL}/messages`)).json())), JSON.stringify(pm && pm.to));
+    check('the pitch mail has the sender line and the opt-out line', !!pm && pm.raw.includes('Smallfold, sponsors for small YouTube channels') && /open this link or reply 'unsubscribe'/.test(pm.raw));
+    check('a test send of a contact draft leaves the creator and the sponsor alone',
+      (await db('GET', 'creators', `?id=eq.${C.Alpha.id}&select=status,last_contacted_at`))[0].last_contacted_at === null
+      && (await db('GET', 'brands', `?id=eq.${spA.id}&select=last_contacted_at`))[0].last_contacted_at === null);
+    // a sponsor that became do_not_contact after approval is refused at the send API
+    const [lateEmail] = await db('POST', 'emails', '', [{ creator_id: C.Theta.id, to_email: C.Theta.email, subject: 'ZZ Test late sponsor block', body: 'x', brand_id: spA.id, status: 'approved' }]);
+    await db('PATCH', 'brands', `?id=eq.${spA.id}`, { relationship: 'do_not_contact' });
+    await op.waitForTimeout(2500);
+    const lateSend = await op.request.post(`${SITE}/api/emails/${lateEmail.id}/send`);
+    check('send API refuses an approved pitch when the sponsor has become do_not_contact (409)', lateSend.status() === 409 && (await mailCount('ZZ Test late sponsor block')) === lateBase, String(lateSend.status()));
+    await db('PATCH', 'brands', `?id=eq.${spA.id}`, { relationship: 'prospect' });
+    await db('DELETE', 'emails', `?id=eq.${lateEmail.id}`);
+
     // ================= worker =================
     // real mode: owner sets a postal address and turns test mode off (through the form)
     await setSettings(op, { limit: 10, delay: 2, testMode: false, postal: 'ZZ Test PO Box 1, Testville' });
@@ -251,6 +385,15 @@ async function setSettings(page, { limit, delay, testMode, postal }) {
     check('real mail from the configured sender', !!real && /From: "?Smallfold"? <smallfold-test@example\.test>/.test(real.raw));
     const [zetaNow] = await db('GET', 'creators', `?id=eq.${C.Zeta.id}&select=status,last_contacted_at`);
     check('real send marks the creator contacted', zetaNow.status === 'contacted' && !!zetaNow.last_contacted_at);
+
+    // a worker may draft a pitch exactly as a worker may use Compose today (any staff member); the draft is theirs and unapproved
+    const wdlg = await openDraftDialog(wp, spA);
+    await pickCreator(wdlg, 'ZZ Test Theta');
+    await wdlg.getByRole('button', { name: 'Write the draft' }).click();
+    await wdlg.getByText('Facts used').waitFor();
+    const wDraft = (await pitchRows(`?creator_id=eq.${C.Theta.id}&brand_id=eq.${spA.id}`))[0];
+    check('a worker can draft a pitch; it is a draft in their name, never approved', !!wDraft && wDraft.status === 'draft' && wDraft.drafted_by === workerProfile.id);
+    await wdlg.getByRole('button', { name: 'Close' }).last().click();
 
     // ================= unsubscribe =================
     const link = (real.raw.match(/http:\/\/localhost:3000\/unsubscribe\/[^\s>]+/) || [])[0];
@@ -295,6 +438,7 @@ async function setSettings(page, { limit, delay, testMode, postal }) {
     const zz = await db('GET', 'creators', '?full_name=like.ZZ Test*&select=id');
     if (zz.length) await db('DELETE', 'emails', `?creator_id=in.(${zz.map((c) => c.id).join(',')})`);
     await db('DELETE', 'creators', '?full_name=like.ZZ Test*');
+    await db('DELETE', 'brands', '?name=like.ZZ Test*');
     // Last: deleting a do-not-contact creator keeps their address on the suppression list (M02).
     await db('DELETE', 'suppression_list', '?email=like.zz.*');
     await db('DELETE', 'email_templates', '?name=like.ZZ Test*');

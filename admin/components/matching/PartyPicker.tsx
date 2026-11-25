@@ -26,6 +26,7 @@ export function PartyPicker({ kind, label, value, otherId, onChange, small, plac
   const [options, setOptions] = useState<PickerOption[]>([]);
   const [state, setState] = useState<'idle' | 'loading' | 'error'>('idle');
   const [active, setActive] = useState(-1);
+  const [attempt, setAttempt] = useState(0);
   const seq = useRef(0);
   const box = useRef<HTMLDivElement>(null);
 
@@ -45,7 +46,7 @@ export function PartyPicker({ kind, label, value, otherId, onChange, small, plac
       setOptions(r.options); setState('idle'); setActive(r.options.length ? 0 : -1);
     }, query ? 250 : 0);
     return () => clearTimeout(t);
-  }, [open, query, kind, otherId]);
+  }, [open, query, kind, otherId, attempt]);
 
   useEffect(() => {
     if (!open) return;
@@ -82,7 +83,11 @@ export function PartyPicker({ kind, label, value, otherId, onChange, small, plac
       {open ? (
         <ul id={listId} role="listbox" aria-label={label} className={m.list}>
           {state === 'loading' && options.length === 0 ? <li className={m.empty} role="presentation">Searching…</li> : null}
-          {state === 'error' ? <li className={m.empty} role="presentation">The list could not be loaded. Keep typing to try again.</li> : null}
+          {state === 'error' ? (
+            <li className={m.empty} role="presentation">
+              The list could not be loaded. <button type="button" className={m.linkBtn} onMouseDown={(e) => { e.preventDefault(); setAttempt((n) => n + 1); }}>Try again</button>
+            </li>
+          ) : null}
           {state === 'idle' && options.length === 0 ? <li className={m.empty} role="presentation">No match for that name.</li> : null}
           {options.map((o, i) => (
             <li key={o.id} id={`${uid}-o${i}`} role="option" aria-selected={i === active} className={m.option}

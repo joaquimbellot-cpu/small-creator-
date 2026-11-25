@@ -38,7 +38,7 @@
 /* "Why" disclosure in the list tables and cards */
 .why > summary { cursor: pointer; display: inline-flex; align-items: center; gap: var(--s-2); min-height: 32px; list-style: revert; }
 .why[open] > summary { margin-bottom: var(--s-1); }
-.whyBody { min-width: 220px; max-width: 420px; font-size: .875rem; white-space: normal; }
+.whyBody { width: 300px; max-width: 60vw; font-size: .875rem; white-space: normal; }
 .forBox { display: inline-flex; align-items: flex-end; gap: var(--s-2); flex-wrap: wrap; min-width: 0; }
 .forBox > .picker { min-width: 220px; flex: 1 1 220px; }
 .em { font-weight: 600; }

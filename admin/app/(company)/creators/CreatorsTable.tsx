@@ -41,13 +41,13 @@ export function CreatorsRows({ rows, selected, onToggle, onToggleAll, hrefFor, o
         <tr>
           <th className={s.checkCell}><input type="checkbox" aria-label="Select all on this page" checked={allOn} onChange={(e) => onToggleAll(e.target.checked)} /></th>
           <th className={s.nameCol}>Name</th>
+          {showMatch ? <th>Match</th> : null}
           <th className={s.midCol}>Niche</th>
           <th className={tableCell.num}>Subscribers</th>
           <th className={tableCell.num}>Average views</th>
           <th className={s.midCol}>Sponsorships</th>
           <th>Status</th>
           <th>Last contacted</th>
-          {showMatch ? <th>Match</th> : null}
         </tr>
       </thead>
       <tbody>
@@ -57,6 +57,7 @@ export function CreatorsRows({ rows, selected, onToggle, onToggleAll, hrefFor, o
             <tr key={r.id} onClick={(e) => { if (!(e.target as HTMLElement).closest('a,input,button,label')) onOpen(r.id); }}>
               <td className={s.checkCell}><input type="checkbox" aria-label={`Select ${r.full_name}`} checked={selected.has(r.id)} onChange={(e) => onToggle(r.id, e.target.checked)} /></td>
               <td className={s.nameCol}>{nameLink(r)}<span className={s.subLine}>{channelLine(r)}</span></td>
+              {showMatch ? <td>{r.match ? <MatchCell match={r.match} /> : null}</td> : null}
               <td className={s.midCol}>{nicheName(r.niche_slug) ?? <span className={s.none}>Not set</span>}<span className={s.subLine}>{places(r) || 'No country or language'}</span></td>
               <td className={`${tableCell.num} ${s.nowrap}`}>{subs(r)}</td>
               <td className={tableCell.num}>{r.avg_views == null ? '—' : formatFull(r.avg_views)}</td>
@@ -66,7 +67,6 @@ export function CreatorsRows({ rows, selected, onToggle, onToggleAll, hrefFor, o
               </td>
               <td className={s.nowrap}><Badge tone={STATUS_TONE[r.status]}>{STATUS_LABEL[r.status]}</Badge></td>
               <td className={s.nowrap}>{fmtDay(r.last_contacted_at) ?? <span className={s.none}>Never</span>}</td>
-              {showMatch ? <td>{r.match ? <MatchCell match={r.match} /> : null}</td> : null}
             </tr>
           );
         })}
@@ -96,7 +96,7 @@ export function CreatorsCards({ rows, selected, onToggle, hrefFor, onOpen, detec
             <KeyValue label="Average views">{r.avg_views == null ? '—' : formatFull(r.avg_views)}</KeyValue>
             <KeyValue label="Sponsorships">{sp.none ? sp.main : `${sp.main}${sp.last ? ` · ${sp.last.replace('Last: ', '')}` : ''}`}</KeyValue>
             <KeyValue label="Last contacted">{fmtDay(r.last_contacted_at) ?? 'Never'}</KeyValue>
-            {r.match ? <div><MatchCell match={r.match} /></div> : null}
+            {r.match ? <div className={cardRaiseClass}><MatchCell match={r.match} /></div> : null}
           </Card>
         );
       })}

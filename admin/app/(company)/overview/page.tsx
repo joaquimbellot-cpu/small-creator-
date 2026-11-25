@@ -40,7 +40,7 @@ export default async function OverviewPage({ searchParams }: { searchParams: Pro
 
               <section className={s.block} aria-labelledby="stages-title">
                 <h2 id="stages-title" className={`label ${s.blockTitle}`}>Deals by stage</h2>
-                <dl className={s.stages}>
+                <dl className={s.stages} style={{ gridTemplateColumns: `repeat(auto-fit, minmax(96px, 1fr))` }}>
                   {STAGES.map((stage) => (
                     <div key={stage} className={s.stage}>
                       <dt>{STAGE_LABEL[stage]}</dt>
