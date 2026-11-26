@@ -38,7 +38,7 @@ async function login(browser, email, password) {
     const v0 = views();
     await page.goto(url);
     ok(await page.getByRole('heading', { level: 1, name }).isVisible(), 'name is the page heading');
-    for (const h of ['Sponsorship history', 'Performance', 'Fair sponsorship price', 'Deals', 'Outreach history', 'Notes']) {
+    for (const h of ['Sponsorship potential', 'Sponsorship history', 'Performance', 'Deals', 'Outreach history', 'Notes']) {
       ok(await page.getByRole('heading', { name: h }).isVisible(), `section ${h}`);
     }
     ok(await page.getByRole('link', { name: 'Edit' }).getAttribute('href') === `/creators?creator=${id}&edit=1`, 'Edit links to the edit form');

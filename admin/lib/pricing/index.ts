@@ -3,6 +3,7 @@ export { parseAudience } from './audience';
 export { commissionUsd } from './commission';
 export { CPM_GROUPS, FORMATS, EXTRAS, cpmGroupForNiche } from './constants';
 export { formatMoney, formatCount, shortCount, plural, tidy, parseCount, parseDecimal } from './format';
+export { sponsorshipPotential, PER_1000_SUBSCRIBERS, MIN_SUBSCRIBERS_FOR_GUESS, type Potential, type PotentialInput } from './potential';
 export type * from './types';
 
 import type { PriceInput } from './types';

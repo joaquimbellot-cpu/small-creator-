@@ -1,4 +1,5 @@
-// The creator profile: header, actions, sponsorship history, suggestions, performance, price, deals, outreach and notes.
+// The creator profile: header with the sponsorship potential in its corner, actions, sponsorship history, suggestions,
+// performance, deals, outreach and notes.
 // Server component, one query plan (all reads run together). mode "panel" = inside the side panel on the list page (one column);
 // mode "page" = the full page at /creators/[id] (two columns). Showing email and phone writes one "creator.viewed" audit line.
 import { cache } from 'react';
@@ -15,7 +16,7 @@ import { requireStaff } from '@/lib/auth/staff';
 import { STATUS_LABEL, STATUS_TONE, type CreatorStatus } from '@/lib/creators/constants';
 import { countryName, languageName, nicheName } from '@/lib/creators/profile-fields';
 import { formatUsd } from '@/lib/deals/format';
-import { cpmGroupForNiche, defaultPriceInput, formatMoney, priceSponsorship } from '@/lib/pricing';
+import { formatMoney, PER_1000_SUBSCRIBERS, sponsorshipPotential } from '@/lib/pricing';
 import { fmtDate } from '@/lib/sponsorships/format';
 import { createClient } from '@/lib/supabase/server';
 import { youtubeEnabled } from '@/lib/youtube';
@@ -102,18 +103,23 @@ export async function CreatorProfile({ id, mode }: { id: string; mode: 'panel' |
 
   const head = (
     <div className={s.head}>
-      <div className={s.badges}>
-        <Badge tone={STATUS_TONE[c.status]}>{STATUS_LABEL[c.status]}</Badge>
-        <TagEditor creatorId={c.id} tags={tags} known={known} />
+      <div className={s.headTop}>
+        <div>
+          <div className={s.badges}>
+            <Badge tone={STATUS_TONE[c.status]}>{STATUS_LABEL[c.status]}</Badge>
+            <TagEditor creatorId={c.id} tags={tags} known={known} />
+          </div>
+          <Heading>{c.full_name}</Heading>
+          <p className={s.channel}>
+            {c.channel_name || c.channel_url ? (
+              c.channel_url && secure
+                ? <a href={c.channel_url} target="_blank" rel="noopener noreferrer">{c.channel_name || 'Open the channel'}</a>
+                : c.channel_name
+            ) : 'No channel on file'}
+          </p>
+        </div>
+        <PotentialCard c={c} />
       </div>
-      <Heading>{c.full_name}</Heading>
-      <p className={s.channel}>
-        {c.channel_name || c.channel_url ? (
-          c.channel_url && secure
-            ? <a href={c.channel_url} target="_blank" rel="noopener noreferrer">{c.channel_name || 'Open the channel'}</a>
-            : c.channel_name
-        ) : 'No channel on file'}
-      </p>
       <dl className="dl">
         <dt>Subscribers</dt>
         <dd className={s.num}>
@@ -160,8 +166,6 @@ export async function CreatorProfile({ id, mode }: { id: string; mode: 'panel' |
     </section>
   );
 
-  const price = <PriceBox c={c} />;
-
   const dealsSection = (
     <section className="panel-sec" aria-labelledby={`deals-${c.id}`}>
       <h3 id={`deals-${c.id}`}>Deals</h3>
@@ -203,37 +207,48 @@ export async function CreatorProfile({ id, mode }: { id: string; mode: 'panel' |
     return (
       <div className={s.pgrid}>
         <div>{head}{history}{performance}</div>
-        <aside>{suggestions}{price}{dealsSection}{outreach}{notes}</aside>
+        <aside>{suggestions}{dealsSection}{outreach}{notes}</aside>
       </div>
     );
   }
-  return <>{head}{history}{suggestions}{performance}{price}{dealsSection}{outreach}{notes}</>;
+  return <>{head}{history}{suggestions}{performance}{dealsSection}{outreach}{notes}</>;
 }
 
-function PriceBox({ c }: { c: Creator }) {
-  const calc = `/creators/calculator?creator=${c.id}`;
-  const result = c.avg_views
-    ? priceSponsorship(defaultPriceInput({
-        name: c.full_name, niche: cpmGroupForNiche(c.niche_slug ?? ''), subs: c.subscribers, views: c.avg_views,
-        eng: c.engagement_rate == null ? null : Number(c.engagement_rate), aud: c.audience_countries ?? '', margin: 20,
-      }))
-    : null;
-  const missing = [c.engagement_rate == null ? 'the engagement rate' : null, c.audience_countries ? null : 'the audience countries'].filter(Boolean);
+// The corner card at the top of the profile: what one sponsorship could be worth, with how sure the figure is.
+// It never shows a number it cannot stand behind: with no views and no subscribers on file it says so.
+function PotentialCard({ c }: { c: Creator }) {
+  const p = sponsorshipPotential({
+    subscribers: c.subscribers, avgViews: c.avg_views, nicheSlug: c.niche_slug,
+    engagementRate: c.engagement_rate == null ? null : Number(c.engagement_rate), audienceCountries: c.audience_countries,
+  });
+  const range = (lo: number, hi: number) => `${formatMoney(lo)} – ${formatMoney(hi)}`;
   return (
-    <section className="panel-sec" aria-labelledby={`price-${c.id}`}>
-      <h3 id={`price-${c.id}`}>Fair sponsorship price</h3>
-      {result ? (
+    <section className={s.potential} aria-labelledby={`potential-${c.id}`}>
+      <h3 id={`potential-${c.id}`}>Sponsorship potential</h3>
+      {p.kind === 'none' ? (
         <>
-          <p className={s.price}>{formatMoney(result.price[0])} to {formatMoney(result.price[2])} <span className={`muted ${s.small}`} style={{ fontFamily: 'var(--font-sans)' }}>for a 60-second integration</span></p>
-          <p className={s.priceNote}>
-            Suggested asking price: {formatMoney(result.ask)}. From {num(c.avg_views!)} average views and the usual CPM for the niche.
-            {missing.length ? ` ${cap(missing.join(' and '))} ${missing.length === 1 ? 'is' : 'are'} not on file, so nothing was adjusted for ${missing.length === 1 ? 'it' : 'them'}.` : ''} A starting point, never used in a first email.
-          </p>
+          <p className={s.potentialNone}>Cannot be estimated yet</p>
+          <p className={s.potentialNote}>{cap(p.missing.join(' and '))} {p.missing.length === 1 ? 'is' : 'are'} not on file. Add {p.missing.length === 1 ? 'it' : 'either one'} with Edit to get a figure.</p>
         </>
       ) : (
-        <p className={s.priceNote}>No price yet: the average views are not on file. Add them with Edit, or type them into the calculator.</p>
+        <>
+          <p className={s.potentialBig}>{range(p.low, p.high)}</p>
+          <p className={s.potentialNote}>for one 60-second integration</p>
+          <div><Badge tone={p.basis === 'good' ? 'good' : p.basis === 'rough' ? 'warn' : 'neutral'}>{p.basis === 'good' ? 'Good basis' : p.basis === 'rough' ? 'Rough guess' : 'Fair basis'}</Badge></div>
+          {p.kind === 'views' ? (
+            <p className={s.potentialNote}>
+              Suggested ask: {formatMoney(p.ask)}. From {num(c.avg_views!)} average views and the usual rate for the niche.
+              {p.missing.length ? ` Not on file, so not adjusted for: ${p.missing.join(', ')}.` : ''}
+            </p>
+          ) : (
+            <p className={s.potentialNote}>
+              A rough guess from {num(c.subscribers!)} subscribers alone (${PER_1000_SUBSCRIBERS.low} to ${PER_1000_SUBSCRIBERS.high} per 1,000 subscribers). Add the average views for a proper estimate.
+            </p>
+          )}
+        </>
       )}
-      <LinkButton href={calc} variant="ghost" size="sm">Open in the calculator</LinkButton>
+      <p className={s.potentialNote}>A starting point for a negotiation. Never used in a first email.</p>
+      <LinkButton href={`/creators/calculator?creator=${c.id}`} variant="ghost" size="sm">Open in the calculator</LinkButton>
     </section>
   );
 }
