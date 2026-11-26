@@ -55,6 +55,7 @@ const rowsCount = (page) => page.locator('table tbody tr').count();
     ok((await rowsCount(page)) > 0, 'sort last contacted works');
     // status filter
     await page.goto(BASE + '/creators?view=table');
+    await page.getByRole('group', { name: 'Pipeline status' }).getByLabel(/Do not contact/).waitFor(); await page.waitForTimeout(1000); // let the page hydrate
     await page.getByRole('group', { name: 'Pipeline status' }).getByLabel(/Do not contact/).check();   // live: no Apply button
     await page.waitForURL(/status=do_not_contact/);
     await page.waitForFunction(() => !document.querySelector('.list-results[aria-busy=true]'));
