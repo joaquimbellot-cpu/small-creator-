@@ -224,6 +224,14 @@ details.why summary{cursor:pointer;white-space:nowrap}
 .reasons{list-style:none;margin:0 0 10px;padding:0;font-size:.9375rem}
 .reasons li{display:grid;grid-template-columns:2.6rem 1fr;gap:8px;padding:3px 0}
 .reasons .p{font-variant-numeric:tabular-nums;color:var(--muted);text-align:right}
+.ptop{display:grid;gap:16px;align-items:start;margin-bottom:8px}
+@media (min-width:600px){.ptop{grid-template-columns:minmax(0,1fr) minmax(0,17.5rem)}}
+.ptop>*{min-width:0}
+.pot{background:var(--paper);border:1px solid var(--line);border-radius:var(--r);padding:16px;display:grid;gap:8px;justify-items:start}
+.pot h3{font:500 .75rem/1.4 var(--sans);letter-spacing:.07em;text-transform:uppercase;color:var(--muted)}
+.potbig{font:300 clamp(1.5rem,2.6vw,1.875rem)/1.1 var(--serif);font-variant-numeric:tabular-nums}
+.potnone{font:300 1.375rem/1.2 var(--serif)}
+.pot p.n{font-size:.875rem;line-height:1.45;color:var(--muted)}
 .pgrid{display:grid;gap:0 40px}
 @media (min-width:1000px){.pgrid{grid-template-columns:minmax(0,3fr) minmax(0,2fr)}}
 .person{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:10px 0;border-bottom:1px solid var(--line);font-size:.9375rem}
@@ -421,6 +429,9 @@ DB.creators.forEach(c => {
   c.eng = hsh(c.id) < .25 ? null : Math.round((1.2 + hsh(c.id + 100) * 7.5) * 10) / 10;
   c.aud = hsh(c.id + 200) < .4 ? '' : `${home} ${35 + Math.round(hsh(c.id + 300) * 25)}%, ${o1} ${10 + Math.round(hsh(c.id + 400) * 10)}%, ${o2} ${5 + Math.round(hsh(c.id + 500) * 6)}%`;
 });
+// examples for the Sponsorship potential card: some with no average views on file, one with nothing to estimate from
+[6, 18, 30, 42].forEach(i => { DB.creators[i].noViews = true; });
+DB.creators[11].noViews = true; DB.creators[11].subsHidden = true;
 DB.creators[5].subs = 412000; DB.creators[5].avgViews = 96000; DB.creators[30].subs = 268000; DB.creators[30].avgViews = 41000;
 SP_ROWS.forEach((r, i) => {
   const [name, industry, niches, size, country, b0, b1, t0, t1] = r;
@@ -736,7 +747,7 @@ function results(kind) {
     html += `<div class="tw" tabindex="0" role="region" aria-label="${cfg.title}"><table><thead><tr><th><input type="checkbox" data-act="selall" ${allSel ? 'checked' : ''} aria-label="Select all on this page"></th>${head.map((h, i) => `<th class="${/class="r"/.test(h) ? 'r' : ''}">${h.replace(/<[^>]+>/g, '')}</th>`).join('')}${ag ? '<th>Match</th>' : ''}</tr></thead><tbody>${rows.map(it => {
       const sc = ag ? (kind === 'creators' ? score(it, ag) : score(ag, it)) : null;
       const why = sc ? `<td><details class="why"><summary>${scoreHtml(sc)}</summary>${reasonsHtml(sc)}</details></td>` : '';
-      return kind === 'creators' ? `<tr class="click" data-act="open" data-kind="creator" data-id="${it.id}"><td><input type="checkbox" data-act="sel" data-id="${it.id}" ${st.sel.has(it.id) ? 'checked' : ''} aria-label="Select ${esc(it.name)}"></td><td class="name"><button type="button" class="link" data-act="open" data-kind="creator" data-id="${it.id}">${esc(it.name)}</button><span class="sub">${esc(it.channel)}${it.email ? '' : ' · no email'}</span></td><td>${esc(NICHES[it.niche])}<span class="sub">${esc(COUNTRIES[it.country])} · ${esc(it.lang)}</span></td><td class="r">${num(it.subs)}</td><td class="r">${num(it.avgViews)}</td><td class="sp">${spCell(it, st.f, kind)}</td><td>${badge(STATUS[it.status])}</td><td class="nw">${rel(it.lastContacted)}</td>${why}</tr>`
+      return kind === 'creators' ? `<tr class="click" data-act="open" data-kind="creator" data-id="${it.id}"><td><input type="checkbox" data-act="sel" data-id="${it.id}" ${st.sel.has(it.id) ? 'checked' : ''} aria-label="Select ${esc(it.name)}"></td><td class="name"><button type="button" class="link" data-act="open" data-kind="creator" data-id="${it.id}">${esc(it.name)}</button><span class="sub">${esc(it.channel)}${it.email ? '' : ' · no email'}</span></td><td>${esc(NICHES[it.niche])}<span class="sub">${esc(COUNTRIES[it.country])} · ${esc(it.lang)}</span></td><td class="r">${it.subsHidden ? '<span class="muted">Hidden</span>' : num(it.subs)}</td><td class="r">${it.noViews ? '<span class="muted">–</span>' : num(it.avgViews)}</td><td class="sp">${spCell(it, st.f, kind)}</td><td>${badge(STATUS[it.status])}</td><td class="nw">${rel(it.lastContacted)}</td>${why}</tr>`
         : `<tr class="click" data-act="open" data-kind="sponsor" data-id="${it.id}"><td><input type="checkbox" data-act="sel" data-id="${it.id}" ${st.sel.has(it.id) ? 'checked' : ''} aria-label="Select ${esc(it.name)}"></td><td class="name"><button type="button" class="link" data-act="open" data-kind="sponsor" data-id="${it.id}">${esc(it.name)}</button><span class="sub">${esc(it.industry)} · ${esc(COUNTRIES[it.country])}</span></td><td>${it.niches.slice(0, 2).map(n => esc(NICHES[n])).join(', ')}${it.niches.length > 2 ? ` <span class="muted">+${it.niches.length - 2}</span>` : ''}</td><td class="num">${short(it.target[0])} to ${short(it.target[1])}</td><td class="num">${usd(it.budget[0])} to ${usd(it.budget[1])}</td><td class="sp">${spCell(it, st.f, kind)}</td><td>${badge(RELS[it.rel])}</td><td class="nw">${rel(it.lastContacted)}</td>${why}</tr>`;
     }).join('')}</tbody></table></div>`;
   }
@@ -798,12 +809,12 @@ const notesSec = (kind, it) => `<section class="sec"><h3>Notes</h3><label class=
 function creatorBody(c, full) {
   const owner = S.role === 'owner';
   const vids = [...c._all.filter(x => since(x.date) <= 200).map(x => ({ t: x.title, d: x.date, v: x.views, paid: x.label })), ...CH[c.niche][1].map((t, i) => ({ t, d: c.lastVideo - i * 9 * DAY, v: Math.round(c.avgViews * (0.7 + ((c.id * 7 + i * 13) % 10) / 14)), paid: null }))].sort((a, b) => b.d - a.d).slice(0, 6);
-  const head = `<div class="phead"><div class="row" style="margin-bottom:8px">${badge(STATUS[c.status])}${c.tags.map(t => `<span class="tag">${esc(t)}</span>`).join('')}</div><h2>${esc(c.name)}</h2><p class="muted">${esc(c.channel)} · ${fakeLink('youtube.example/@' + slug(c.channel))}</p>
-    <dl class="dl"><dt>Subscribers</dt><dd class="num">${num(c.subs)} <span class="muted small">checked ${rel(c.checked).toLowerCase()}</span></dd><dt>Average views</dt><dd class="num">${num(c.avgViews)} <span class="muted small">over the last 20 videos</span></dd><dt>Niche</dt><dd>${esc(NICHES[c.niche])}</dd><dt>Country, language</dt><dd>${esc(COUNTRIES[c.country])}, ${esc(c.lang)}</dd><dt>Email</dt><dd>${c.email ? esc(c.email) : '<span class="muted">None on file</span>'}</dd><dt>Phone</dt><dd>${c.phone ? esc(c.phone) : '<span class="muted">None on file</span>'}</dd><dt>Last contacted</dt><dd>${rel(c.lastContacted)}</dd><dt>Uploads</dt><dd>About ${c.uploads} a month, last one ${rel(c.lastVideo).toLowerCase()}</dd></dl>
+  const head = `<div class="phead"><div class="ptop"><div><div class="row" style="margin-bottom:8px">${badge(STATUS[c.status])}${c.tags.map(t => `<span class="tag">${esc(t)}</span>`).join('')}</div><h2>${esc(c.name)}</h2><p class="muted">${esc(c.channel)} · ${fakeLink('youtube.example/@' + slug(c.channel))}</p></div>${potentialCard(c)}</div>
+    <dl class="dl"><dt>Subscribers</dt><dd class="num">${c.subsHidden ? '<span class="muted">Hidden by the channel</span>' : `${num(c.subs)} <span class="muted small">checked ${rel(c.checked).toLowerCase()}</span>`}</dd><dt>Average views</dt><dd class="num">${c.noViews ? '<span class="muted">Not known</span>' : `${num(c.avgViews)} <span class="muted small">over the last 20 videos</span>`}</dd><dt>Niche</dt><dd>${esc(NICHES[c.niche])}</dd><dt>Country, language</dt><dd>${esc(COUNTRIES[c.country])}, ${esc(c.lang)}</dd><dt>Email</dt><dd>${c.email ? esc(c.email) : '<span class="muted">None on file</span>'}</dd><dt>Phone</dt><dd>${c.phone ? esc(c.phone) : '<span class="muted">None on file</span>'}</dd><dt>Last contacted</dt><dd>${rel(c.lastContacted)}</dd><dt>Uploads</dt><dd>About ${c.uploads} a month, last one ${rel(c.lastVideo).toLowerCase()}</dd></dl>
     <div class="row">${btn('link', 'Link to a sponsor', 'sm', `data-c="${c.id}"`)}${btn('draft', 'Draft pitch with Claude', 'ghost sm', `data-c="${c.id}"`)}${btn('edit-rec', 'Edit', 'ghost sm')}${owner ? btn('delete', 'Delete', 'danger sm') : ''}</div></div>`;
   const videos = `<section class="sec"><h3>Recent videos</h3><div class="tw"><table><thead><tr><th>Video</th><th>Date</th><th class="r">Views</th><th>Paid sign</th></tr></thead><tbody>${vids.map(v => `<tr><td>${esc(v.t)}</td><td>${fmtDate(v.d)}</td><td class="r">${num(v.v)}</td><td>${v.paid ? srcBadge(v.paid) : '<span class="muted">None found</span>'}</td></tr>`).join('')}</tbody></table></div></section>`;
-  const main = head + historySec('creator', c) + videos, side = suggestSec('creator', c) + priceSec(c) + dealsSec('creator', c) + outreachSec('creator', c) + notesSec('creator', c);
-  return full ? `<div class="pgrid"><div>${main}</div><aside>${side}</aside></div>` : head + historySec('creator', c) + suggestSec('creator', c) + videos + priceSec(c) + dealsSec('creator', c) + outreachSec('creator', c) + notesSec('creator', c);
+  const main = head + historySec('creator', c) + videos, side = suggestSec('creator', c) + dealsSec('creator', c) + outreachSec('creator', c) + notesSec('creator', c);
+  return full ? `<div class="pgrid"><div>${main}</div><aside>${side}</aside></div>` : head + historySec('creator', c) + suggestSec('creator', c) + videos + dealsSec('creator', c) + outreachSec('creator', c) + notesSec('creator', c);
 }
 function sponsorBody(s, full) {
   const owner = S.role === 'owner';
@@ -1056,9 +1067,20 @@ function priceInput(t, commit) {
   if (commit && (t.id === 'p-subs' || t.id === 'p-views')) { const k = t.id.slice(2); if (P[k] != null) t.value = num(P[k]); }
   priceOut();
 }
-function priceSec(c) {
-  const r = priceCalc(priceDefaults(c)), miss = (c.eng == null ? 1 : 0) + (c.aud ? 0 : 1);
-  return `<section class="sec"><h3>Fair sponsorship price</h3><p style="font:300 1.5rem/1.2 var(--serif)" class="num">${usd(Math.round(r.price[0]))} to ${usd(Math.round(r.price[2]))} <span class="muted small" style="font-family:var(--sans)">for a 60-second integration</span></p><p class="small muted" style="margin:6px 0 10px">Suggested asking price: ${usd(r.ask)}. From ${num(c.avgViews)} average views and the usual CPM for the niche.${miss ? ` ${miss === 2 ? 'The engagement rate and the audience countries are' : c.eng == null ? 'The engagement rate is' : 'The audience countries are'} not on file, so nothing was adjusted for ${miss === 2 ? 'them' : 'it'}.` : ''} A starting point, never used in a first email.</p><a class="btn ghost xs" href="#calculator" data-act="price-from" data-id="${c.id}">Open in the calculator</a></section>`;
+// The corner card on a creator's profile: what one sponsorship could be worth, and how sure the figure is.
+function potential(c) {
+  if (!c.noViews) { const r = priceCalc(priceDefaults(c)), missing = [c.eng == null ? 'the engagement rate' : null, c.aud ? null : 'the audience countries'].filter(Boolean); return { kind: 'views', low: r.price[0], high: r.price[2], ask: r.ask, basis: missing.length ? 'fair' : 'good', missing }; }
+  if (!c.subsHidden && c.subs >= 100) return { kind: 'subs', low: c.subs / 1000 * 10, high: c.subs / 1000 * 25, basis: 'rough' };
+  return { kind: 'none', missing: ['the average views', ...(c.subsHidden ? ['the subscriber count'] : [])] };
+}
+function potentialCard(c) {
+  const p = potential(c), u = v => usd(Math.round(v));
+  const body = p.kind === 'none'
+    ? `<p class="potnone">Cannot be estimated yet</p><p class="n">${esc(p.missing.join(' and ').replace(/^./, m => m.toUpperCase()))} ${p.missing.length === 1 ? 'is' : 'are'} not on file. Add ${p.missing.length === 1 ? 'it' : 'either one'} with Edit to get a figure.</p>`
+    : `<p class="potbig">${u(p.low)} – ${u(p.high)}</p><p class="n">for one 60-second integration</p><div>${badge(p.basis === 'good' ? ['Good basis', 'good'] : p.basis === 'rough' ? ['Rough guess', 'warn'] : ['Fair basis', 'neutral'])}</div>`
+      + (p.kind === 'views' ? `<p class="n">Suggested ask: ${usd(p.ask)}. From ${num(c.avgViews)} average views and the usual rate for the niche.${p.missing.length ? ` Not on file, so not adjusted for: ${p.missing.join(', ')}.` : ''}</p>`
+        : `<p class="n">A rough guess from ${num(c.subs)} subscribers alone ($10 to $25 per 1,000 subscribers). Add the average views for a proper estimate.</p>`);
+  return `<section class="pot" aria-label="Sponsorship potential"><h3>Sponsorship potential</h3>${body}<p class="n">A starting point for a negotiation. Never used in a first email.</p><a class="btn ghost xs" href="#calculator" data-act="price-from" data-id="${c.id}">Open in the calculator</a></section>`;
 }
 
 S.price = priceDefaults(DB.creators.find(c => c.subs > 20000 && c.subs < 90000 && c.eng != null && c.aud && c.status !== 'do_not_contact') || CR(1));
@@ -1067,7 +1089,7 @@ S.price = priceDefaults(DB.creators.find(c => c.subs > 20000 && c.subs < 90000 &
 const NAV = [['overview', 'Overview'], ['creators', 'Creators'], ['sponsors', 'Sponsors', 1], ['deals', 'Deals'], ['emails', 'Emails'], ['inbox', 'Inbox'], ['claude', 'Claude'], ['app-settings', 'Settings']];
 function shell() {
   $('#app').innerHTML = `<div class="banner"><div class="banner__in"><strong>Prototype, fake data</strong><span class="m">Every person, company, email and number here is invented. Today is set to 25 Nov 2026.</span>
-    <details id="try"><summary>What to try</summary><ol><li>Creators: drag the subscriber slider, tick a niche, then remove a chip.</li><li>Click a creator. Confirm or reject a Detected record. Read the suggested sponsors.</li><li>Press Link on a suggestion, then find the new card on the Deals board.</li><li>Press "Draft pitch with Claude" and compare "Facts used" with "Left out".</li><li>Press Ctrl+K or ⌘K and search for a brand.</li><li>Creators, then "Sponsorship price calculator": change the format or add usage rights and read the working. Or open a creator and press "Open in the calculator".</li></ol></details>
+    <details id="try"><summary>What to try</summary><ol><li>Creators: drag the subscriber slider, tick a niche, then remove a chip.</li><li>Click a creator. Confirm or reject a Detected record. Read the suggested sponsors.</li><li>Press Link on a suggestion, then find the new card on the Deals board.</li><li>Press "Draft pitch with Claude" and compare "Facts used" with "Left out".</li><li>Press Ctrl+K or ⌘K and search for a brand.</li><li>New: open a creator and look at the \"Sponsorship potential\" card in the top right corner.</li><li>Creators, then "Sponsorship price calculator": change the format or add usage rights and read the working. Or open a creator and press "Open in the calculator".</li></ol></details>
     <span class="grow"></span><label for="role" class="m">Viewing as</label><select id="role" data-role><option value="owner">Owner</option><option value="worker">Worker</option></select>
     <button type="button" data-act="demo" data-d="loading">Show loading state</button><button type="button" data-act="demo" data-d="error">Show error state</button></div></div>
     <header class="bar"><div class="bar__in"><a class="brand" href="#creators"><i aria-hidden="true">S</i> Smallfold</a><nav class="nav" aria-label="Main" id="nav"></nav>
