@@ -178,7 +178,7 @@ const cleanup = { emailIds: [], creatorRestore: [], zzCreatorId: null, runStart:
         "where phone is not null and channel_url is not null and subscribers is not null and subscribers_hidden = false " +
         "and status <> 'do_not_contact' order by full_name limit 1",
       ).split('|');
-      await owner.page.goto(`${BASE}/creators?q=${encodeURIComponent(name)}`);
+      await owner.page.goto(`${BASE}/creators?view=table&q=${encodeURIComponent(name)}`);
       const row = owner.page.locator('table tbody tr', { hasText: name }).first();
       await row.waitFor({ timeout: 15000 });
       check(`search for "${name}" shows that creator's row`, (await row.count()) === 1);
@@ -350,7 +350,7 @@ const cleanup = { emailIds: [], creatorRestore: [], zzCreatorId: null, runStart:
       check('creator still exists after the refused delete', sql(`select count(*) from creators where id = '${zzId}'`) === '1');
     });
     await step('no Delete button in the side panel or on /deals for the worker', async () => {
-      await wp.goto(`${BASE}/creators?q=${encodeURIComponent('ZZ QA Delete Target')}`);
+      await wp.goto(`${BASE}/creators?view=table&q=${encodeURIComponent('ZZ QA Delete Target')}`);
       const row = wp.locator('table tbody tr', { hasText: 'ZZ QA Delete Target' }).first();
       await row.waitFor({ timeout: 15000 });
       await row.locator('td').nth(2).click();
@@ -364,7 +364,7 @@ const cleanup = { emailIds: [], creatorRestore: [], zzCreatorId: null, runStart:
       check('worker /deals has no Delete button', (await wp.getByRole('button', { name: /^Delete$/ }).count()) === 0);
     });
     await step('owner sees Delete (control for the checks above)', async () => {
-      await owner.page.goto(`${BASE}/creators?q=${encodeURIComponent('ZZ QA Delete Target')}`);
+      await owner.page.goto(`${BASE}/creators?view=table&q=${encodeURIComponent('ZZ QA Delete Target')}`);
       const row = owner.page.locator('table tbody tr', { hasText: 'ZZ QA Delete Target' }).first();
       await row.waitFor({ timeout: 15000 });
       await row.locator('td').nth(2).click();

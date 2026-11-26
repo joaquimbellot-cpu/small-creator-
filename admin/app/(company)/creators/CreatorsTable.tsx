@@ -6,6 +6,7 @@ import Link from 'next/link';
 import type { MouseEvent } from 'react';
 import { Badge, Card, CardGrid, KeyValue, Table, cardLinkClass, cardRaiseClass, cardTitleClass, tableCell } from '@/components/ui';
 import { STATUS_LABEL, STATUS_TONE, type ListRow } from '@/lib/creators/constants';
+import { formatMoney, type Potential } from '@/lib/pricing';
 import { MatchCell } from '@/components/matching/MatchCell';
 import { formatFull } from '@/lib/lists/numbers';
 import { fmtDay, languageName, nicheName, regionName, sponsorshipText } from './list-format';
@@ -13,6 +14,8 @@ import s from './creators.module.css';
 
 export type RowsProps = {
   rows: ListRow[];
+  /** Sponsorship potential by creator id (same figures as the profile card); a creator without an entry shows no line. */
+  potentials: Record<string, Potential>;
   selected: Set<string>;
   onToggle: (id: string, on: boolean) => void;
   onToggleAll: (on: boolean) => void;
@@ -24,6 +27,19 @@ export type RowsProps = {
 const subs = (r: ListRow) => (r.subscribers_hidden ? 'Hidden' : r.subscribers == null ? '—' : formatFull(r.subscribers));
 const places = (r: ListRow) => [r.country ? regionName(r.country) : null, r.language ? languageName(r.language) : null].filter(Boolean).join(' · ');
 const channelLine = (r: ListRow) => (r.channel_name ?? 'No channel name') + (r.has_email ? '' : ' · no email');
+
+/** Cards only: the table keeps its columns (it already scrolls sideways inside its frame at 1360px, a column would add to that).
+ * The profile card's figures and labels: a range and "Good basis" / "Fair basis" / "Rough guess", or nothing to show yet. */
+function PotentialValue({ p }: { p: Potential | undefined }) {
+  if (!p) return <span className={s.none}>—</span>;
+  if (p.kind === 'none') return <span className={s.none}>cannot be estimated yet</span>;
+  return (
+    <>
+      <span className={s.nowrap}>{formatMoney(p.low)} – {formatMoney(p.high)}</span>{' '}
+      <Badge tone={p.basis === 'good' ? 'good' : p.basis === 'rough' ? 'warn' : 'neutral'}>{p.basis === 'good' ? 'Good basis' : p.basis === 'rough' ? 'Rough guess' : 'Fair basis'}</Badge>
+    </>
+  );
+}
 
 function plainClick(e: MouseEvent) {
   return e.button === 0 && !e.metaKey && !e.ctrlKey && !e.shiftKey && !e.altKey;
@@ -75,7 +91,7 @@ export function CreatorsRows({ rows, selected, onToggle, onToggleAll, hrefFor, o
   );
 }
 
-export function CreatorsCards({ rows, selected, onToggle, hrefFor, onOpen, detected }: RowsProps) {
+export function CreatorsCards({ rows, potentials, selected, onToggle, hrefFor, onOpen, detected }: RowsProps) {
   return (
     <CardGrid label="Creators">
       {rows.map((r) => {
@@ -94,6 +110,7 @@ export function CreatorsCards({ rows, selected, onToggle, hrefFor, onOpen, detec
             <p className={s.cardMeta}>{channelLine(r)} · {nicheName(r.niche_slug) ?? 'No niche'}{places(r) ? ` · ${places(r)}` : ''}</p>
             <KeyValue label="Subscribers">{subs(r)}</KeyValue>
             <KeyValue label="Average views">{r.avg_views == null ? '—' : formatFull(r.avg_views)}</KeyValue>
+            {potentials[r.id] ? <KeyValue label="Potential"><PotentialValue p={potentials[r.id]} /></KeyValue> : null}
             <KeyValue label="Sponsorships">{sp.none ? sp.main : `${sp.main}${sp.last ? ` · ${sp.last.replace('Last: ', '')}` : ''}`}</KeyValue>
             <KeyValue label="Last contacted">{fmtDay(r.last_contacted_at) ?? 'Never'}</KeyValue>
             {r.match ? <div className={cardRaiseClass}><MatchCell match={r.match} /></div> : null}

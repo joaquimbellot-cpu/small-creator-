@@ -48,7 +48,7 @@ const B = '1199b0fc-4e20-7705-3f34-f769643a15bd';
 describe('filters', () => {
   const defaults = {
     q: '', subs: null, sponsored: '', detected: false, recent: null, by: [], niche: [], status: [], contacted: '', views: null,
-    lang: [], country: [], email: false, tag: [], list: [], sort: 'subscribers', dir: 'desc', view: 'table', page: 1, open: '', for: '',
+    lang: [], country: [], email: false, tag: [], list: [], sort: 'subscribers', dir: 'desc', view: 'cards', page: 1, open: '', for: '',
   };
   it('parses an empty address to the defaults', () => {
     expect(parseFilters({})).toEqual(defaults);
@@ -66,12 +66,22 @@ describe('filters', () => {
   it('reads every address key', () => {
     const f = parseFilters({
       q: 'maya', subs: '1000-10000', sponsored: 'yes', detected: '1', recent: '90', by: `${A},${B}`, niche: 'tech,gaming', status: 'new,contacted',
-      contacted: 'over30', views: '5000', lang: 'en,pt-br', country: 'gb,US', email: '1', tag: A, list: B, sort: 'sponsored', dir: 'asc', view: 'cards', page: '3', open: A,
+      contacted: 'over30', views: '5000', lang: 'en,pt-br', country: 'gb,US', email: '1', tag: A, list: B, sort: 'sponsored', dir: 'asc', view: 'table', page: '3', open: A,
     });
     expect(f).toEqual({
       q: 'maya', subs: [1000, 10000], sponsored: 'yes', detected: true, recent: 90, by: [A, B], niche: ['tech', 'gaming'], status: ['new', 'contacted'],
-      contacted: 'over30', views: 5000, lang: ['en', 'pt-BR'], country: ['GB', 'US'], email: true, tag: [A], list: [B], sort: 'sponsored', dir: 'asc', view: 'cards', page: 3, open: A, for: '',
+      contacted: 'over30', views: 5000, lang: ['en', 'pt-BR'], country: ['GB', 'US'], email: true, tag: [A], list: [B], sort: 'sponsored', dir: 'asc', view: 'table', page: 3, open: A, for: '',
     });
+  });
+  it('shows cards by default; view=table picks the table and view=cards (old links) is the default', () => {
+    expect(parseFilters({}).view).toBe('cards');
+    expect(parseFilters({ view: 'cards' }).view).toBe('cards');
+    expect(parseFilters({ view: 'table' }).view).toBe('table');
+    expect(parseFilters({ view: 'grid' }).view).toBe('cards');
+    expect(parseFilters(new URLSearchParams('view=table')).view).toBe('table');
+    expect(filtersToQuery({ view: 'cards' })).toBe('');
+    expect(filtersToQuery({ view: 'table' })).toBe('?view=table');
+    expect(filtersToQuery(parseFilters({ view: 'cards', sort: 'name' }))).toBe('?sort=name');
   });
   it('swaps a reversed range, keeps an open range, and ignores an empty one', () => {
     expect(parseFilters({ subs: '50000-1000' }).subs).toEqual([1000, 50000]);
@@ -96,7 +106,7 @@ describe('filters', () => {
   it('round-trips every key', () => {
     const f = parseFilters({
       q: 'maya & co', subs: '1000-', sponsored: 'no', detected: '1', recent: '30', by: A, niche: 'tech', status: 'do_not_contact', contacted: 'never', views: '25000',
-      lang: 'en-GB', country: 'GB', email: '1', tag: B, list: A, sort: 'last_contacted', dir: 'asc', view: 'cards', page: '2', open: B,
+      lang: 'en-GB', country: 'GB', email: '1', tag: B, list: A, sort: 'last_contacted', dir: 'asc', view: 'table', page: '2', open: B,
     });
     const q = filtersToQuery(f);
     expect(parseFilters(new URLSearchParams(q))).toEqual(f);
@@ -134,7 +144,8 @@ describe('filters', () => {
   it('cleans a saved view before it is stored or applied', () => {
     expect(cleanQuery(`?niche=tech,fake&page=4&open=${A}&sort=name&junk=1`)).toBe('niche=tech&sort=name');
     expect(cleanQuery('')).toBe('');
-    expect(cleanQuery('sponsored=yes&detected=1&view=cards')).toBe('sponsored=yes&detected=1&view=cards');
+    expect(cleanQuery('sponsored=yes&detected=1&view=table')).toBe('sponsored=yes&detected=1&view=table');
+    expect(cleanQuery('sponsored=yes&detected=1&view=cards')).toBe('sponsored=yes&detected=1');
   });
   it('writes chip text for the active filters', () => {
     const defs = creatorFilterDefs({ brands: { [A]: 'Acme' }, tags: {}, lists: {} }, true);

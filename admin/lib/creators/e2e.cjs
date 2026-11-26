@@ -34,7 +34,7 @@ const rowsCount = (page) => page.locator('table tbody tr').count();
   try {
     console.log('list, pagination, sort, filter, search');
     const total = Number(sql('select count(*) from creator_summaries'));
-    await page.goto(BASE + '/creators');
+    await page.goto(BASE + '/creators?view=table');
     ok((await rowsCount(page)) === 25, 'page 1 has 25 rows');
     ok((await page.locator('.list-count').textContent()).trim() === `${total} creators`, `shows total ${total}`);
     ok(await page.getByText(`1–25 of ${total}`).isVisible(), 'pager text');
@@ -42,18 +42,18 @@ const rowsCount = (page) => page.locator('table tbody tr').count();
     await page.waitForURL(/page=2/);
     ok((await rowsCount(page)) === Math.min(25, total - 25), 'page 2 rows');
     // sort by subscribers desc
-    await page.goto(BASE + '/creators');  // default sort is subscribers, high to low
+    await page.goto(BASE + '/creators?view=table');  // default sort is subscribers, high to low
     const topSubs = sql("select subscribers from creator_summaries order by subscribers desc nulls last, full_name, id limit 1");
     const firstName = await page.locator('table tbody tr').first().locator('a').first().textContent();
     const dbFirst = sql("select full_name from creator_summaries order by subscribers desc nulls last, full_name, id limit 1");
     ok(firstName === dbFirst, `sort subscribers desc first = ${dbFirst} (${topSubs})`);
-    await page.goto(BASE + '/creators?sort=name&dir=asc');
+    await page.goto(BASE + '/creators?view=table&sort=name&dir=asc');
     const n1 = await page.locator('table tbody tr').first().locator('a').first().textContent();
     ok(n1 === sql("select full_name from creator_summaries order by full_name asc, id limit 1"), 'sort name asc first row (db collation may differ)');
-    await page.goto(BASE + '/creators?sort=last_contacted&dir=asc');
+    await page.goto(BASE + '/creators?view=table&sort=last_contacted&dir=asc');
     ok((await rowsCount(page)) > 0, 'sort last contacted works');
     // status filter
-    await page.goto(BASE + '/creators');
+    await page.goto(BASE + '/creators?view=table');
     await page.getByRole('group', { name: 'Pipeline status' }).getByLabel(/Do not contact/).check();   // live: no Apply button
     await page.waitForURL(/status=do_not_contact/);
     await page.waitForFunction(() => !document.querySelector('.list-results[aria-busy=true]'));
@@ -75,7 +75,7 @@ const rowsCount = (page) => page.locator('table tbody tr').count();
     const wren = sql("select id, full_name, email, deal_count, total_earned_cents from creator_summaries where total_earned_cents > 0 order by total_earned_cents desc limit 1").split('|');
     const [wid, wname, wemail, wdeals, wearn] = wren;
     const auditBefore = Number(sql(`select count(*) from audit_log where action='creator.viewed' and entity_id='${wid}'`));
-    await page.goto(BASE + '/creators?q=' + encodeURIComponent(wemail));
+    await page.goto(BASE + '/creators?view=table&q=' + encodeURIComponent(wemail));
     await page.locator('table tbody tr').first().locator('td').nth(2).click();
     await page.waitForURL(/open=/);
     const dlg = page.getByRole('dialog');
@@ -266,7 +266,7 @@ const rowsCount = (page) => page.locator('table tbody tr').count();
     ok(JSON.parse(sql("select details::text from audit_log where action='creators.exported' order by created_at desc limit 1")).count === 3, 'audit has count');
 
     console.log('layout');
-    await page.goto(BASE + '/creators?q=zz.imp');
+    await page.goto(BASE + '/creators?view=table&q=zz.imp');
     await page.locator('table tbody tr').first().locator('td').nth(2).click();
     await page.getByRole('dialog').waitFor();
     await page.screenshot({ path: shot });
@@ -274,6 +274,110 @@ const rowsCount = (page) => page.locator('table tbody tr').count();
     await mob.setViewportSize({ width: 390, height: 800 });
     await mob.goto(BASE + '/creators');
     ok(await mob.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1), 'no horizontal page scroll at 390px');
+
+    console.log('cards are the default view, the table is view=table');
+    // Three fake creators made through the app's own add form: with average views, with subscribers only, with neither figure.
+    const addVia = async (name, email, fields) => {
+      await page.goto(BASE + '/creators?new=1');
+      await d.waitFor(); await page.waitForTimeout(1000);
+      await d.locator('input[name=name]').fill(name);
+      await d.locator('input[name=email]').fill(email);
+      for (const [k, v] of Object.entries(fields)) {
+        if (k === 'niche_slug') await d.locator('select[name=niche_slug]').selectOption(v); else await d.locator(`input[name=${k}]`).fill(v);
+      }
+      await d.getByRole('button', { name: 'Add creator' }).click();
+      await page.waitForURL(/creator=/);
+    };
+    await addVia('ZZ Test Card Views', 'zz.card.views@example.test', { subscribers: '12000', avg_views: '8000', engagement_rate: '4.5', niche_slug: 'tech' });
+    await addVia('ZZ Test Card Subs', 'zz.card.subs@example.test', { subscribers: '9000' });
+    await addVia('ZZ Test Card Neither', 'zz.card.neither@example.test', {});
+    const cardsQ = '?q=' + encodeURIComponent('ZZ Test Card');
+    await page.goto(BASE + '/creators' + cardsQ);
+    await page.locator('article').first().waitFor();
+    ok((await page.locator('article').count()) === 3 && (await rowsCount(page)) === 0, '/creators with no view shows cards, not a table');
+    ok(new URL(page.url()).searchParams.get('view') === null, 'the default view is not written to the address');
+    const seg = page.getByRole('radiogroup', { name: 'View' });
+    const segLabels = await seg.locator('label').allTextContents();
+    ok(segLabels.map((x) => x.trim()).join() === 'Cards,Table' && await seg.getByRole('radio', { name: 'Cards' }).isChecked(), 'the switch shows Cards first and selected');
+    await page.goto(BASE + '/creators' + cardsQ + '&view=cards');
+    await page.locator('article').first().waitFor();
+    ok((await page.locator('article').count()) === 3, 'an old ?view=cards link still shows cards');
+
+    const card = (n) => page.locator('article', { hasText: n });
+    const cardPotential = async (n) => {
+      const txt = (await card(n).textContent()).replace(/\s+/g, ' ');
+      const m = txt.match(/Potential\s*(\$[\d,.]+ – \$[\d,.]+)\s*(Good basis|Fair basis|Rough guess)|Potential\s*(cannot be estimated yet)/);
+      return m ? (m[3] ? 'none' : `${m[1]} | ${m[2]}`) : 'MISSING: ' + txt;
+    };
+    const profilePotential = async (n) => {
+      const cid = sql(`select id from creators where full_name='${n}'`);
+      await page.goto(`${BASE}/creators/${cid}`);
+      const sec = page.locator(`section[aria-labelledby="potential-${cid}"]`);
+      await sec.waitFor();
+      const txt = (await sec.textContent()).replace(/\s+/g, ' ');
+      const m = txt.match(/(\$[\d,.]+ – \$[\d,.]+).*?(Good basis|Fair basis|Rough guess)/);
+      return m ? `${m[1]} | ${m[2]}` : /Cannot be estimated yet/.test(txt) ? 'none' : 'MISSING: ' + txt;
+    };
+    for (const n of ['ZZ Test Card Views', 'ZZ Test Card Subs', 'ZZ Test Card Neither']) {
+      await page.goto(BASE + '/creators' + cardsQ);
+      await card(n).waitFor();
+      const onCard = await cardPotential(n);
+      const onProfile = await profilePotential(n);
+      ok(onCard === onProfile && !onCard.startsWith('MISSING'), `${n}: the card line equals the profile card (${onCard})`);
+      if (n.endsWith('Views')) ok(/Good basis|Fair basis/.test(onCard), 'with average views the label is Good or Fair basis');
+      if (n.endsWith('Subs')) ok(/Rough guess/.test(onCard), 'with subscribers only the label is Rough guess');
+      if (n.endsWith('Neither')) ok(onCard === 'none', 'with neither figure: "cannot be estimated yet"');
+    }
+
+    // The name is a real link; a click opens the side panel; the tick box selects without opening.
+    await page.goto(BASE + '/creators' + cardsQ);
+    await card('ZZ Test Card Views').waitFor();
+    await page.evaluate(() => sessionStorage.removeItem('creators.selection'));
+    await page.reload();
+    await card('ZZ Test Card Views').waitFor();
+    await page.waitForTimeout(800);
+    const nameLink = card('ZZ Test Card Views').getByRole('link', { name: 'ZZ Test Card Views' });
+    const cid = sql("select id from creators where full_name='ZZ Test Card Views'");
+    ok((await nameLink.getAttribute('href')).includes(`open=${cid}`), 'the card name is a real link (to ?open=<id>)');
+    await card('ZZ Test Card Views').getByRole('checkbox', { name: 'Select ZZ Test Card Views' }).check();
+    ok(!new URL(page.url()).searchParams.get('open') && await card('ZZ Test Card Views').getByRole('checkbox').isChecked(), 'the tick box selects the card and does not open the panel');
+    await nameLink.click();
+    await page.waitForURL(/open=/);
+    await page.getByRole('dialog').getByText('zz.card.views@example.test').waitFor();
+    ok(true, 'clicking a card opens the side panel');
+    await page.keyboard.press('Escape');
+    await page.waitForURL((u) => !u.search.includes('open='));
+
+    // Switch to the table: view=table in the address, the selection survives.
+    await seg.getByLabel('Table').check();
+    await page.waitForURL(/view=table/);
+    await page.locator('table tbody tr').first().waitFor();
+    ok((await rowsCount(page)) === 3, 'the switch to Table shows the table and writes view=table');
+    ok(await page.getByRole('checkbox', { name: 'Select ZZ Test Card Views' }).isChecked() && !(await page.getByRole('checkbox', { name: 'Select ZZ Test Card Subs' }).isChecked()), 'the ticked creator is still ticked in the table');
+    await page.getByRole('radiogroup', { name: 'View' }).getByLabel('Cards').check();
+    await page.waitForURL((u) => !u.search.includes('view='));
+    await page.locator('article').first().waitFor();
+    ok(await card('ZZ Test Card Views').getByRole('checkbox').isChecked(), 'back to Cards: removes view= from the address and the tick stays');
+    await page.evaluate(() => sessionStorage.removeItem('creators.selection'));
+
+    // No sideways scroll and no overflow in cards and table, at three widths, as owner and as worker.
+    for (const [who, pg] of [['owner', page], ['worker', w.page]]) {
+      for (const width of [400, 820, 1360]) {
+        await pg.setViewportSize({ width, height: 900 });
+        for (const v of ['', '&view=table']) {
+          await pg.goto(BASE + '/creators' + cardsQ + v);
+          await pg.locator(v ? 'table tbody tr' : 'article').first().waitFor();
+          const bad = await pg.evaluate(() => {
+            const de = document.documentElement;
+            const over = [...document.querySelectorAll('article')].filter((a) => [...a.querySelectorAll('*')].some((e) => e.getBoundingClientRect().right > a.getBoundingClientRect().right + 1)).length;
+            return { page: de.scrollWidth > innerWidth + 1, over };
+          });
+          ok(!bad.page && bad.over === 0, `${who} ${width}px ${v ? 'table' : 'cards'}: no sideways page scroll, nothing outside a card ${JSON.stringify(bad)}`);
+        }
+      }
+    }
+    await w.page.setViewportSize({ width: 1280, height: 900 });
+    await page.setViewportSize({ width: 1280, height: 900 });
   } catch (e) {
     fail++;
     console.log('  ERROR ' + e.message.split('\n').slice(0, 4).join(' | '));
