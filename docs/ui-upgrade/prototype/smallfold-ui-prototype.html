@@ -585,7 +585,7 @@ const CFG = {
 const PAGE = 25;
 const S = {
   role: 'owner', panel: null, modal: null, pal: null, railOpen: false, open: {}, demo: null, flash: null, recent: ['creator-3', 'sponsor-6', 'creator-17'],
-  L: { creators: { f: {}, q: '', sort: 'subs-desc', view: 'table', page: 1, sel: new Set(), against: null, ids: [] }, sponsors: { f: {}, q: '', sort: 'name', view: 'table', page: 1, sel: new Set(), against: null, ids: [] } },
+  L: { creators: { f: {}, q: '', sort: 'subs-desc', view: 'cards', page: 1, sel: new Set(), against: null, ids: [] }, sponsors: { f: {}, q: '', sort: 'name', view: 'table', page: 1, sel: new Set(), against: null, ids: [] } },
   edit: null, confirming: null, showRejected: false, dealView: 'board'
 };
 const isOn = v => !(v == null || v === '' || v === false || (Array.isArray(v) && !v.length));
@@ -632,7 +632,7 @@ function address(kind) {
   CFG[kind].facets.forEach(fc => { const v = st.f[fc.id]; if (!isOn(v)) return; p.push(fc.id + '=' + (fc.type === 'multi' ? v.map(encodeURIComponent).join(',') : fc.type === 'range' ? `${v[0] ?? ''}-${v[1] ?? ''}` : fc.type === 'bool' ? '1' : v)); });
   if (st.sort !== CFG[kind].sorts[0][0]) p.push('sort=' + st.sort);
   if (st.sort === 'match') p.push('for=' + against(kind).id);
-  if (st.view !== 'table') p.push('view=' + st.view);
+  if (st.view !== (kind === 'creators' ? 'cards' : 'table')) p.push('view=' + st.view);   // cards are the default on Creators
   if (st.page > 1) p.push('page=' + st.page);
   return `smallfold.example/${kind}${p.length ? '?' + p.join('&') : ''}`;
 }
@@ -720,7 +720,7 @@ function results(kind) {
     <div class="count grow" role="status" aria-live="polite">${all.length === total ? `${total} ${cfg.one}s` : `${all.length} of ${total} ${cfg.one}s`}</div>
     <label class="sr" for="sort-${kind}">Sort by</label><select class="control sm" id="sort-${kind}" data-sort>${cfg.sorts.map(s => `<option value="${s[0]}" ${st.sort === s[0] ? 'selected' : ''}>Sort: ${s[1]}</option>`).join('')}</select>
     ${ag ? `<label class="sr" for="ag-${kind}">Match against</label><select class="control sm" id="ag-${kind}" data-against>${pool.slice().sort((a, b) => a.name.localeCompare(b.name)).map(o => `<option value="${o.id}" ${o.id === ag.id ? 'selected' : ''}>For: ${esc(kind === 'creators' ? o.name : o.channel)}</option>`).join('')}</select>` : ''}
-    <div class="seg" role="radiogroup" aria-label="View">${[['table', 'Table'], ['cards', 'Cards']].map(v => `<label><input type="radio" name="view-${kind}" id="view-${kind}-${v[0]}" data-view value="${v[0]}" ${st.view === v[0] ? 'checked' : ''}><span>${v[1]}</span></label>`).join('')}</div>
+    <div class="seg" role="radiogroup" aria-label="View">${(kind === 'creators' ? [['cards', 'Cards'], ['table', 'Table']] : [['table', 'Table'], ['cards', 'Cards']]).map(v => `<label><input type="radio" name="view-${kind}" id="view-${kind}-${v[0]}" data-view value="${v[0]}" ${st.view === v[0] ? 'checked' : ''}><span>${v[1]}</span></label>`).join('')}</div>
     <details class="menu" id="views-${kind}"><summary class="btn ghost sm">Saved views</summary><div class="pop">
       ${views.map((v, i) => `<button type="button" class="item" data-act="view" data-i="${i}">${esc(v.name)} <span class="muted small">${v.mine ? 'Mine' : 'Shared'}</span></button>`).join('')}
       <hr><div class="row"><label class="sr" for="vn-${kind}">Name for this view</label><input class="control sm grow" id="vn-${kind}" placeholder="Name this view"><button type="button" class="btn sm" data-act="saveview">Save</button></div></div></details>
@@ -738,7 +738,7 @@ function results(kind) {
   } else if (st.view === 'cards') {
     html += `<div class="cards">${rows.map(it => {
       const sc = ag ? (kind === 'creators' ? score(it, ag) : score(ag, it)) : null;
-      return kind === 'creators' ? `<article class="tile card" data-act="open" data-kind="creator" data-id="${it.id}"><div class="row" style="justify-content:space-between">${badge(STATUS[it.status])}<label class="row small muted"><input type="checkbox" data-act="sel" data-id="${it.id}" ${st.sel.has(it.id) ? 'checked' : ''} aria-label="Select ${esc(it.name)}"></label></div><h3><button type="button" class="link" data-act="open" data-kind="creator" data-id="${it.id}">${esc(it.name)}</button></h3><p class="muted small">${esc(it.channel)} · ${esc(NICHES[it.niche])}</p><div class="kv"><span class="muted">Subscribers</span><span class="num">${num(it.subs)}</span></div><div class="kv"><span class="muted">Average views</span><span class="num">${num(it.avgViews)}</span></div><div class="kv"><span class="muted">Sponsorships</span><span>${it._conf.length} confirmed${it._all.length - it._conf.length ? `, ${it._all.length - it._conf.length} detected` : ''}</span></div>${sc ? `<div>${scoreHtml(sc)}${reasonsHtml(sc)}</div>` : ''}</article>`
+      return kind === 'creators' ? `<article class="tile card" data-act="open" data-kind="creator" data-id="${it.id}"><div class="row" style="justify-content:space-between">${badge(STATUS[it.status])}<label class="row small muted"><input type="checkbox" data-act="sel" data-id="${it.id}" ${st.sel.has(it.id) ? 'checked' : ''} aria-label="Select ${esc(it.name)}"></label></div><h3><button type="button" class="link" data-act="open" data-kind="creator" data-id="${it.id}">${esc(it.name)}</button></h3><p class="muted small">${esc(it.channel)} · ${esc(NICHES[it.niche])}</p><div class="kv"><span class="muted">Subscribers</span><span class="num">${it.subsHidden ? '<span class="muted">Hidden</span>' : num(it.subs)}</span></div><div class="kv"><span class="muted">Average views</span><span class="num">${it.noViews ? '<span class="muted">Not known</span>' : num(it.avgViews)}</span></div><div class="kv"><span class="muted">Sponsorships</span><span>${it._conf.length} confirmed${it._all.length - it._conf.length ? `, ${it._all.length - it._conf.length} detected` : ''}</span></div><div class="kv"><span class="muted">Potential</span>${potLine(it)}</div>${sc ? `<div>${scoreHtml(sc)}${reasonsHtml(sc)}</div>` : ''}</article>`
         : `<article class="tile card" data-act="open" data-kind="sponsor" data-id="${it.id}"><div class="row" style="justify-content:space-between">${badge(RELS[it.rel])}<label class="row small muted"><input type="checkbox" data-act="sel" data-id="${it.id}" ${st.sel.has(it.id) ? 'checked' : ''} aria-label="Select ${esc(it.name)}"></label></div><h3><button type="button" class="link" data-act="open" data-kind="sponsor" data-id="${it.id}">${esc(it.name)}</button></h3><p class="muted small">${esc(it.industry)} · ${esc(COUNTRIES[it.country])}</p><div class="kv"><span class="muted">Target size</span><span class="num">${short(it.target[0])} to ${short(it.target[1])}</span></div><div class="kv"><span class="muted">Budget</span><span class="num">${usd(it.budget[0])} to ${usd(it.budget[1])}</span></div><div class="kv"><span class="muted">Creators sponsored</span><span>${distinct(it._conf, 'c')} confirmed</span></div>${sc ? `<div>${scoreHtml(sc)}${reasonsHtml(sc)}</div>` : ''}</article>`;
     }).join('')}</div>`;
   } else {
@@ -1073,6 +1073,12 @@ function potential(c) {
   if (!c.subsHidden && c.subs >= 100) return { kind: 'subs', low: c.subs / 1000 * 10, high: c.subs / 1000 * 25, basis: 'rough' };
   return { kind: 'none', missing: ['the average views', ...(c.subsHidden ? ['the subscriber count'] : [])] };
 }
+// One line for a creator card in the list: the same range and label as the profile card.
+function potLine(c) {
+  const p = potential(c);
+  if (p.kind === 'none') return '<span class="muted">Cannot be estimated yet</span>';
+  return `<span class="num" style="text-align:right">${usd(Math.round(p.low))} – ${usd(Math.round(p.high))}<br>${badge(p.basis === 'good' ? ['Good basis', 'good'] : p.basis === 'rough' ? ['Rough guess', 'warn'] : ['Fair basis', 'neutral'])}</span>`;
+}
 function potentialCard(c) {
   const p = potential(c), u = v => usd(Math.round(v));
   const body = p.kind === 'none'
@@ -1089,7 +1095,7 @@ S.price = priceDefaults(DB.creators.find(c => c.subs > 20000 && c.subs < 90000 &
 const NAV = [['overview', 'Overview'], ['creators', 'Creators'], ['sponsors', 'Sponsors', 1], ['deals', 'Deals'], ['emails', 'Emails'], ['inbox', 'Inbox'], ['claude', 'Claude'], ['app-settings', 'Settings']];
 function shell() {
   $('#app').innerHTML = `<div class="banner"><div class="banner__in"><strong>Prototype, fake data</strong><span class="m">Every person, company, email and number here is invented. Today is set to 25 Nov 2026.</span>
-    <details id="try"><summary>What to try</summary><ol><li>Creators: drag the subscriber slider, tick a niche, then remove a chip.</li><li>Click a creator. Confirm or reject a Detected record. Read the suggested sponsors.</li><li>Press Link on a suggestion, then find the new card on the Deals board.</li><li>Press "Draft pitch with Claude" and compare "Facts used" with "Left out".</li><li>Press Ctrl+K or ⌘K and search for a brand.</li><li>New: open a creator and look at the \"Sponsorship potential\" card in the top right corner.</li><li>Creators, then "Sponsorship price calculator": change the format or add usage rights and read the working. Or open a creator and press "Open in the calculator".</li></ol></details>
+    <details id="try"><summary>What to try</summary><ol><li>Creators: drag the subscriber slider, tick a niche, then remove a chip.</li><li>Click a creator. Confirm or reject a Detected record. Read the suggested sponsors.</li><li>Press Link on a suggestion, then find the new card on the Deals board.</li><li>Press "Draft pitch with Claude" and compare "Facts used" with "Left out".</li><li>Press Ctrl+K or ⌘K and search for a brand.</li><li>New: the Creators list opens as cards, each with a Potential line. Open a creator and look at the \"Sponsorship potential\" card in the top right corner.</li><li>Creators, then "Sponsorship price calculator": change the format or add usage rights and read the working. Or open a creator and press "Open in the calculator".</li></ol></details>
     <span class="grow"></span><label for="role" class="m">Viewing as</label><select id="role" data-role><option value="owner">Owner</option><option value="worker">Worker</option></select>
     <button type="button" data-act="demo" data-d="loading">Show loading state</button><button type="button" data-act="demo" data-d="error">Show error state</button></div></div>
     <header class="bar"><div class="bar__in"><a class="brand" href="#creators"><i aria-hidden="true">S</i> Smallfold</a><nav class="nav" aria-label="Main" id="nav"></nav>

@@ -1,7 +1,7 @@
 // The page address of the Creators list <-> a typed filter. Used by the list page, the side panel links, saved views
 // and the CSV export, so all of them see the same rows. Bad values are ignored, never an error.
 // Address keys (build plan, section 4): q, subs, sponsored, detected, recent, by, niche, status, contacted, views, lang,
-// country, email, tag, list, sort, dir, view, page, open, for.
+// country, email, tag, list, sort, dir, view (cards by default, view=table for the table), page, open, for.
 import { CONTACTED_OPTIONS, NICHE_SLUGS, NICHES, PAGE_SIZE, STATUSES, STATUS_LABEL, type CreatorStatus } from './constants';
 import { formatRange, formatShort, parseRange } from '../lists/numbers';
 import type { FilterDef } from '../lists/query';
@@ -94,7 +94,7 @@ export function parseFilters(p: Params): Filters {
     list: items(get(p, 'list'), uuid),
     sort: sortKey,
     dir: dir === 'asc' ? 'asc' : dir === 'desc' ? 'desc' : sortKey === 'name' ? 'asc' : 'desc',
-    view: get(p, 'view') === 'cards' ? 'cards' : 'table',
+    view: get(p, 'view') === 'table' ? 'table' : 'cards',
     page: Number.isFinite(page) && page >= 1 ? Math.min(page, 100000) : 1,
     open: uuid(get(p, 'open')) ?? uuid(legacyView) ?? '',
     for: uuid(get(p, 'for')) ?? '',
@@ -128,7 +128,7 @@ export function filtersToQuery(f: Partial<Filters> & { creator?: string; edit?: 
   if (sort !== DEFAULT_SORT) sp.set('sort', sort);
   const dirDefault = sort === 'name' ? 'asc' : 'desc';
   if (f.dir && f.dir !== dirDefault) sp.set('dir', f.dir);
-  if (f.view === 'cards') sp.set('view', 'cards');
+  if (f.view === 'table') sp.set('view', 'table'); // cards are the default and stay out of the address
   if (f.page && f.page > 1) sp.set('page', String(f.page));
   if (f.open) sp.set('open', f.open);
   if (f.for && sort === 'match') sp.set('for', f.for);

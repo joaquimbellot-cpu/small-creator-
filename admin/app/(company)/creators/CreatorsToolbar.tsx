@@ -1,13 +1,16 @@
 'use client';
-// Above the results: sort, table or cards, saved views and "Copy link".
+// Above the results: sort, cards or table, saved views and "Copy link".
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
-import { Button, Checkbox, CompactSelect, ConfirmButton, Input, Menu, MenuItem, MenuRule, Segmented, TABLE_CARDS, useToast } from '@/components/ui';
+import { Button, Checkbox, CompactSelect, ConfirmButton, Input, Menu, MenuItem, MenuRule, Segmented, useToast } from '@/components/ui';
 import { cleanQuery, DEFAULT_SORT, type SortKey } from '@/lib/creators/filters';
 import type { ListNav } from '@/lib/lists/useListNav';
 import { ForPicker } from '@/components/matching/ForPicker';
 import { deleteView, saveView } from './list-actions';
 import s from './creators.module.css';
+
+// Cards first: they are the default view of this list (the Sponsors list keeps TABLE_CARDS).
+const CARDS_TABLE = [{ value: 'cards', label: 'Cards' }, { value: 'table', label: 'Table' }];
 
 export type SavedView = { id: string; owner_id: string; name: string; query: string; is_shared: boolean };
 
@@ -68,7 +71,7 @@ export function CreatorsToolbar({ nav, sort, dir, view, savedViews, staffId }: {
     <>
       <CompactSelect label="Sort by" value={current} onChange={onSort} options={SORT_CHOICES.map((c) => ({ value: c.value, label: c.label }))} />
       {sort === 'match' ? <ForPicker kind="brand" valueId={nav.get('for')} onChange={(id) => nav.set('for', id)} /> : null}
-      <Segmented inline label="View" options={TABLE_CARDS} value={view} onChange={(v) => nav.set('view', v === 'table' ? null : v)} />
+      <Segmented inline label="View" options={CARDS_TABLE} value={view} onChange={(v) => nav.set('view', v === 'cards' ? null : v)} />
       <Menu label="Saved views">
         {({ close }) => (
           <>

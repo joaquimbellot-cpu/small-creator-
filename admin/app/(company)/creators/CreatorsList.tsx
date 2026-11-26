@@ -7,6 +7,7 @@ import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } fro
 import {
   Button, Chips, EmptyState, FilterRailButton, LinkButton, Notice, Pagination, SidePanel, SkeletonCards, SkeletonRows, useToast,
 } from '@/components/ui';
+import type { Potential } from '@/lib/pricing';
 import { MAX_BULK_IDS, PAGE_SIZE, type ListRow } from '@/lib/creators/constants';
 import { creatorFilterDefs, parseFilters } from '@/lib/creators/filters';
 import { chipsFromParams, removeChip, clearFilters } from '@/lib/lists/query';
@@ -21,8 +22,8 @@ import s from './creators.module.css';
 export type RelaxOption = { id: string; label: string; query: string; n: number };
 const STORE = 'creators.selection';
 
-export function CreatorsList({ rows, total, all, counts, names, savedViews, staffId, youtubeEnabled, relax, panel, panelFor, openName, failed }: {
-  rows: ListRow[]; total: number; all: number; counts: Record<string, Record<string, number>>;
+export function CreatorsList({ rows, potentials, total, all, counts, names, savedViews, staffId, youtubeEnabled, relax, panel, panelFor, openName, failed }: {
+  rows: ListRow[]; potentials: Record<string, Potential>; total: number; all: number; counts: Record<string, Record<string, number>>;
   names: OptionNames; savedViews: SavedView[]; staffId: string; youtubeEnabled: boolean;
   relax: RelaxOption[]; panel: ReactNode; panelFor: string; openName: string; failed: boolean;
 }) {
@@ -104,7 +105,7 @@ export function CreatorsList({ rows, total, all, counts, names, savedViews, staf
     if (!next.get('sponsored') && !next.get('recent') && !next.get('by')) next.delete('detected');
     nav.replaceAll(next);
   };
-  const rowProps = { rows, selected, onToggle: toggle, onToggleAll: toggleAll, hrefFor, onOpen: open, detected: f.detected };
+  const rowProps = { rows, potentials, selected, onToggle: toggle, onToggleAll: toggleAll, hrefFor, onOpen: open, detected: f.detected };
 
   return (
     <div className="list-layout">
@@ -129,7 +130,7 @@ export function CreatorsList({ rows, total, all, counts, names, savedViews, staf
               <div style={{ marginTop: 'var(--s-3)' }}><Button size="sm" onClick={() => router.refresh()}>Try again</Button></div>
             </Notice>
           ) : pending ? (
-            f.view === 'cards' ? <SkeletonCards count={6} /> : <SkeletonRows rows={8} columns={6} />
+            f.view === 'table' ? <SkeletonRows rows={8} columns={6} /> : <SkeletonCards count={6} />
           ) : rows.length === 0 ? (
             <EmptyState
               title={hasFilters ? 'No creators match all of these filters' : 'No creators yet'}
@@ -144,7 +145,7 @@ export function CreatorsList({ rows, total, all, counts, names, savedViews, staf
             >
               {hasFilters ? (relax.length ? 'Removing one filter brings results back:' : 'Try clearing the filters.') : 'Add one by hand or import a CSV file.'}
             </EmptyState>
-          ) : f.view === 'cards' ? <CreatorsCards {...rowProps} /> : <CreatorsRows {...rowProps} />}
+          ) : f.view === 'table' ? <CreatorsRows {...rowProps} /> : <CreatorsCards {...rowProps} />}
           {failed ? null : (
             <Pagination page={f.page} pageSize={PAGE_SIZE} total={total} hrefFor={(p) => { const q = new URLSearchParams(nav.params); q.delete('open'); if (p > 1) q.set('page', String(p)); else q.delete('page'); const t = q.toString(); return t ? `?${t}` : '?'; }} />
           )}

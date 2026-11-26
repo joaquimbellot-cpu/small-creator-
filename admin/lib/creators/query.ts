@@ -80,3 +80,19 @@ export async function loadOptionNames(supabase: Client) {
   type Named = { id: string; name: string };
   return { brands: (brands.data ?? []) as Named[], tags: (tags.data ?? []) as Named[], lists: (lists.data ?? []) as Named[] };
 }
+
+export type PotentialExtras = { id: string; engagement_rate: number | string | null; audience_countries: string | null };
+
+/**
+ * The two profile figures the list rows do not carry (engagement rate, audience countries) for the creators on this page,
+ * so a card can show the same "Sponsorship potential" as the profile. One query, row level security applies, no contact data.
+ * Returns an empty map when the query fails: the cards then leave the line out rather than show a different figure.
+ */
+export async function loadPotentialExtras(supabase: Client, ids: string[]): Promise<Map<string, PotentialExtras>> {
+  const out = new Map<string, PotentialExtras>();
+  if (!ids.length) return out;
+  const { data, error } = await supabase.from('creators').select('id, engagement_rate, audience_countries').in('id', ids.slice(0, PAGE_SIZE));
+  if (error) { console.error('creators: potential figures failed', error.code ?? error); return out; }
+  for (const r of (data ?? []) as PotentialExtras[]) out.set(r.id, r);
+  return out;
+}

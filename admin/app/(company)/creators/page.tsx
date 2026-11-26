@@ -6,7 +6,8 @@ import { requireStaff } from '@/lib/auth/staff';
 import { createClient } from '@/lib/supabase/server';
 import { PAGE_SIZE, type ListRow } from '@/lib/creators/constants';
 import { filtersToQuery, parseFilters, type Filters } from '@/lib/creators/filters';
-import { loadFacets, loadOptionNames, loadPage, loadRelax, type Relax } from '@/lib/creators/query';
+import { loadFacets, loadOptionNames, loadPage, loadPotentialExtras, loadRelax, type Relax } from '@/lib/creators/query';
+import { sponsorshipPotential, type Potential } from '@/lib/pricing';
 import { youtubeEnabled } from '@/lib/youtube';
 import { CreatorProfile } from './profile/CreatorProfile';
 import { CreatorDialog } from './CreatorDialog';
@@ -51,6 +52,20 @@ export default async function Page({ searchParams }: { searchParams: Promise<SP>
   } catch (e) {
     console.error('creators: list failed', (e as { code?: string })?.code ?? e);
     failed = true;
+  }
+
+  // Sponsorship potential for the cards and the table: the same inputs as the profile card (the rows carry the first three).
+  const potentials: Record<string, Potential> = {};
+  if (!failed && rows.length) {
+    const extras = await loadPotentialExtras(supabase, rows.map((r) => r.id));
+    for (const r of rows) {
+      const x = extras.get(r.id);
+      if (!x) continue;
+      potentials[r.id] = sponsorshipPotential({
+        subscribers: r.subscribers, avgViews: r.avg_views, nicheSlug: r.niche_slug,
+        engagementRate: x.engagement_rate == null ? null : Number(x.engagement_rate), audienceCountries: x.audience_countries,
+      });
+    }
   }
 
   // A page number past the end gives no rows: go to the last page.
@@ -139,7 +154,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<SP>
       </div>
       <CreatorsSubnav />
       <CreatorsList
-        rows={rows} total={total} all={all} counts={counts} names={names} savedViews={savedViews} staffId={staff.id}
+        rows={rows} potentials={potentials} total={total} all={all} counts={counts} names={names} savedViews={savedViews} staffId={staff.id}
         youtubeEnabled={youtubeEnabled()} relax={relax} panel={panel} panelFor={f.open} openName={openName} failed={failed}
       />
       {dialog}
