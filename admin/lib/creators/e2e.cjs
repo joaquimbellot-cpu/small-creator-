@@ -38,6 +38,7 @@ const rowsCount = (page) => page.locator('table tbody tr').count();
     ok((await rowsCount(page)) === 25, 'page 1 has 25 rows');
     ok((await page.locator('.list-count').textContent()).trim() === `${total} creators`, `shows total ${total}`);
     ok(await page.getByText(`1–25 of ${total}`).isVisible(), 'pager text');
+    await page.waitForTimeout(1000); // let the page hydrate before clicking
     await page.getByRole('link', { name: 'Next' }).click();
     await page.waitForURL(/page=2/);
     ok((await rowsCount(page)) === Math.min(25, total - 25), 'page 2 rows');
@@ -76,6 +77,7 @@ const rowsCount = (page) => page.locator('table tbody tr').count();
     const [wid, wname, wemail, wdeals, wearn] = wren;
     const auditBefore = Number(sql(`select count(*) from audit_log where action='creator.viewed' and entity_id='${wid}'`));
     await page.goto(BASE + '/creators?view=table&q=' + encodeURIComponent(wemail));
+    await page.locator('table tbody tr').first().waitFor(); await page.waitForTimeout(1000); // let the page hydrate before clicking
     await page.locator('table tbody tr').first().locator('td').nth(2).click();
     await page.waitForURL(/open=/);
     const dlg = page.getByRole('dialog');
@@ -196,6 +198,7 @@ const rowsCount = (page) => page.locator('table tbody tr').count();
     ok((await anon.request.post(BASE + '/api/creators/status', { data: { ids: [aid], status: 'new' } })).status() === 401, 'bulk status: anonymous -> 401');
     const aidName = sql(`select full_name from creators where id='${aid}'`);
     await page.goto(BASE + '/creators?q=' + encodeURIComponent(aidName));
+    await page.getByRole('checkbox', { name: `Select ${aidName}` }).waitFor(); await page.waitForTimeout(1000); // let the page hydrate (the cards are the default view)
     await page.getByRole('checkbox', { name: `Select ${aidName}` }).check();
     await page.getByLabel('Change status to').selectOption('replied');
     await page.getByRole('button', { name: 'Change status' }).click();
@@ -267,6 +270,7 @@ const rowsCount = (page) => page.locator('table tbody tr').count();
 
     console.log('layout');
     await page.goto(BASE + '/creators?view=table&q=zz.imp');
+    await page.locator('table tbody tr').first().waitFor(); await page.waitForTimeout(1000); // let the page hydrate before clicking
     await page.locator('table tbody tr').first().locator('td').nth(2).click();
     await page.getByRole('dialog').waitFor();
     await page.screenshot({ path: shot });
