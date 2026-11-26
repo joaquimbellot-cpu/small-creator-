@@ -213,7 +213,7 @@ const noSideScroll = (page) => page.evaluate(() => document.documentElement.scro
     await page.getByRole('dialog').getByRole('button', { name: 'Save changes' }).click();
     await page.getByText('Head of partnerships').waitFor();
     ok(sql(`select role_title from brand_contacts where full_name = 'ZZ Person One' and brand_id = '${row[0]}'`) === 'Head of partnerships', 'edit contact saved');
-    ok(sql("select count(*) from audit_log where action like 'brand_contact.%' and details::text ~* '(@|linkedin|555)'") === '0', 'no email, phone or LinkedIn in any contact audit line');
+    ok(sql("select count(*) from audit_log where action like 'brand_contact.%' and details::text ~* '(@|linkedin|555-01|\\+1)'") === '0', 'no email, phone or LinkedIn in any contact audit line');   // "555-01" and "+1", not a bare "555": a random id can contain 555
     // edit sponsor
     await page.getByRole('button', { name: 'Edit', exact: true }).first().click();
     await page.getByRole('dialog').getByLabel('Industry').fill('Testing two');
